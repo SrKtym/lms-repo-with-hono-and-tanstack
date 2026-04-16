@@ -1,13 +1,11 @@
 {
-  "extends": "@lms-repo/config/tsconfig.base.json",
-  "compilerOptions": {
-    "composite": true,
-    "outDir": "dist",
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"]
-    },
-    "jsx": "react-jsx",
-    "jsxImportSource": "hono/jsx"
-  }
+	"extends": "@lms-repo/config/tsconfig.base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"ignoreDeprecations": 6.0,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"]
+		}
+	}
 }

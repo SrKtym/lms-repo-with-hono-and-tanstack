@@ -1,0 +1,267 @@
+import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
+import { Settings } from "@lms-repo/ui/assets/icons/settings";
+import {
+	AnimatePresence,
+	domAnimation,
+	LayoutGroup,
+	LazyMotion,
+} from "motion/react";
+import * as m from "motion/react-m";
+import { useState } from "react";
+import { CancelButton, DefaultButton } from "../button";
+import { BaseCard } from "../cards/base-card";
+import { NotificationsModal } from "../modals/notifications-modal";
+
+interface Notifications {
+	id: number;
+	title: string;
+	message: string;
+	type: "assignment" | "feedback" | "material" | "system";
+	read: boolean;
+	timestamp: Date;
+	priority: "high" | "medium" | "low";
+}
+
+// モック通知データ
+const mockNotifications: Notifications = [
+	{
+		id: 1,
+		title: "データ構造とアルゴリズム",
+		message:
+			"新しい課題「二分探索木の実装」が追加されました。締切は今週末です。提出するファイルのフォーマットはwordまたはexcelでお願いします。",
+		type: "assignment",
+		read: false,
+		timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2時間前
+		priority: "high",
+	},
+	{
+		id: 2,
+		title: "Web開発基礎",
+		message:
+			"プロジェクトのレビューが完了しました。フィードバックを確認してください。",
+		type: "feedback",
+		read: false,
+		timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5時間前
+		priority: "medium",
+	},
+	{
+		id: 3,
+		title: "人工知能論",
+		message: "来週の講義資料がアップロードされました。事前学習をお願いします。",
+		type: "material",
+		read: true,
+		timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1日前
+		priority: "low",
+	},
+	{
+		id: 4,
+		title: "システムメンテナンス",
+		message:
+			"明日午前2時〜4時にシステムメンテナンスを実施します。ご不便をおかけします。",
+		type: "system",
+		read: false,
+		timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6時間前
+		priority: "medium",
+	},
+];
+
+export function NotificationsListCard() {
+	const [notifications, setNotifications] = useState(mockNotifications);
+	const [selectedNotification, setSelectedNotification] = useState<
+		number | null
+	>(null);
+
+	const markAsRead = (id: number) => {
+		setNotifications((prev) =>
+			prev.map((notification) =>
+				notification.id === id ? { ...notification, read: true } : notification,
+			),
+		);
+	};
+
+	const deleteNotification = (id: number) => {
+		setNotifications((prev) => prev.filter((n) => n.id !== id));
+	};
+
+	const markAllAsRead = () => {
+		setNotifications((prev) =>
+			prev.map((notification) => ({ ...notification, read: true })),
+		);
+	};
+
+	const getNotificationIcon = (type: string) => {
+		switch (type) {
+			case "assignment":
+				return "📝";
+			case "feedback":
+				return "💬";
+			case "material":
+				return "📚";
+			case "system":
+				return "⚙️";
+			default:
+				return "📢";
+		}
+	};
+
+	const getPriorityColor = (priority: string) => {
+		switch (priority) {
+			case "high":
+				return "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950";
+			case "medium":
+				return "border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950";
+			case "low":
+				return "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950";
+			default:
+				return "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900";
+		}
+	};
+
+	const formatTimestamp = (date: Date) => {
+		const now = new Date();
+		const diffMs = now.getTime() - date.getTime();
+		const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+		const diffDays = Math.floor(diffHours / 24);
+
+		if (diffDays > 0) return `${diffDays}日前`;
+		if (diffHours > 0) return `${diffHours}時間前`;
+		return "たった今";
+	};
+
+	const unreadCount = notifications.filter((n) => !n.read).length;
+
+	return (
+		<LazyMotion features={domAnimation}>
+			<LayoutGroup>
+				<>
+					<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50/30 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-purple-900/20">
+						{/* Decorative background elements */}
+						<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/10 blur-2xl" />
+						<div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-gradient-to-tr from-pink-400/10 to-purple-400/10 blur-xl" />
+
+						<div className="relative z-10">
+							<div className="sticky top-0 z-10 border-b p-3">
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-2">
+										<BellAnimation width={24} height={24} />
+										<h1 className="font-semibold text-lg">通知</h1>
+										{unreadCount > 0 && (
+											<span className="rounded-full bg-red-500 px-2 py-1 font-medium text-white text-xs">
+												{unreadCount}
+											</span>
+										)}
+									</div>
+									<div className="flex items-center gap-2">
+										{unreadCount > 0 && (
+											<DefaultButton size="sm" onPress={markAllAsRead}>
+												すべて既読
+											</DefaultButton>
+										)}
+										<DefaultButton aria-label="settings" isIconOnly>
+											<Settings width={24} height={24} />
+										</DefaultButton>
+									</div>
+								</div>
+							</div>
+
+							<div className="h-[380px] overflow-y-auto">
+								{notifications.length === 0 && (
+									<m.div
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										transition={{ duration: 0.3 }}
+										className="relative flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400"
+									>
+										<div className="absolute inset-0" />
+										<div className="relative z-10">
+											<p className="font-medium">通知はありません</p>
+											<p className="mt-1 text-sm">
+												新しい通知がここに表示されます
+											</p>
+										</div>
+									</m.div>
+								)}
+
+								<m.div
+									className="space-y-3 p-4"
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ duration: 0.3 }}
+								>
+									<AnimatePresence initial={false} mode="popLayout">
+										{notifications.map((notification) => (
+											<m.div
+												key={notification.id}
+												layoutId={notification.id.toString()}
+												layout
+												initial={{ opacity: 0, y: 50, scale: 0.3 }}
+												animate={{ opacity: 1, y: 0, scale: 1 }}
+												transition={{ duration: 0.3 }}
+												exit={{
+													opacity: 0,
+													scale: 0.5,
+												}}
+												whileHover={{ scale: 1.02 }}
+												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
+													!notification.read ? "font-semibold" : ""
+												} ${getPriorityColor(notification.priority)} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
+												onClick={() => {
+													markAsRead(notification.id);
+													setSelectedNotification(notification.id);
+												}}
+											>
+												<div className="flex items-start gap-3">
+													<span className="mt-1 flex-shrink-0 text-base">
+														{getNotificationIcon(notification.type)}
+													</span>
+													<div className="min-w-0 flex-1">
+														<div className="mb-1 flex items-center justify-between gap-2">
+															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
+																{notification.title}
+															</h3>
+															<span className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
+																{formatTimestamp(notification.timestamp)}
+															</span>
+														</div>
+														<p className="line-clamp-2 text-gray-600 text-xs dark:text-gray-400">
+															{notification.message}
+														</p>
+													</div>
+												</div>
+
+												{!notification.read && (
+													<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
+												)}
+
+												<CancelButton
+													aria-label="delete notification"
+													className="absolute right-1 bottom-1 rounded-full opacity-0 transition-opacity hover:opacity-100"
+													size="sm"
+													isIconOnly
+													onPress={() => {
+														deleteNotification(notification.id);
+													}}
+												>
+													<span className="text-lg">×</span>
+												</CancelButton>
+											</m.div>
+										))}
+									</AnimatePresence>
+								</m.div>
+							</div>
+						</div>
+					</BaseCard>
+
+					{/* Notification Modal */}
+					<NotificationsModal
+						notification={
+							notifications.find((n) => n.id === selectedNotification) || null
+						}
+						onClose={() => setSelectedNotification(null)}
+						onDelete={deleteNotification}
+					/>
+				</>
+			</LayoutGroup>
+		</LazyMotion>
+	);
+}

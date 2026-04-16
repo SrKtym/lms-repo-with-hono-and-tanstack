@@ -1,0 +1,34 @@
+# ベースイメージ
+FROM oven/bun:latest
+
+# 作業ディレクトリ
+WORKDIR /lms-repo
+
+# 依存関係のコピー(ホストのルートからdockerの/lms-repoに)
+# docker-compose.ymlのbuild contextでビルド対象をルートディレクトリとしている
+COPY package.json ./
+COPY bun.lock ./
+COPY turbo.json ./
+COPY apps/server/package.json ./apps/server/
+COPY packages/api/package.json ./packages/api/
+COPY packages/auth/package.json ./packages/auth/
+COPY packages/db/package.json ./packages/db/
+COPY packages/env/package.json ./packages/env/
+COPY packages/config/package.json ./packages/config/
+
+# docker開発用に必要なパッケージをインストール（本番環境では不要）
+RUN apt-get update && apt-get install -y \
+    curl \
+    procps \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# 依存関係をインストール
+RUN bun install
+
+# ポートの公開
+EXPOSE 3000
+
+# 開発サーバーの立ち上げ
+CMD ["bun", "run", "dev:server"]
+

@@ -1,0 +1,52 @@
+import { TabsFor2fa } from "@lms-repo/ui/components/tabs";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import OtpVerifyForm from "@/components/public/otp-verify-form";
+import TotpVerifyForm from "@/components/public/totp-verify-form";
+
+export const Route = createFileRoute("/_auth/verify-otp")({
+	component: RouteComponent,
+});
+
+function RouteComponent() {
+	const navigate = useNavigate();
+	const [activeTab, setActiveTab] = useState<"totp" | "otp">("totp");
+
+	const handleVerificationSuccess = () => {
+		// 2FA authentication success, redirect to dashboard
+		navigate({ to: "/dashboard" });
+	};
+
+	const handleTabChange = (tab: "totp" | "otp") => {
+		setActiveTab(tab);
+	};
+
+	return (
+		<div className="w-full max-w-md p-6">
+			<div className="mb-8 text-center">
+				<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-gray-100">
+					2要素認証
+				</h1>
+				<p className="text-gray-600 dark:text-gray-400">
+					認証アプリまたはSMSからコードを入力してください
+				</p>
+			</div>
+
+			<TabsFor2fa
+				totpForm={
+					<TotpVerifyForm
+						onSuccess={handleVerificationSuccess}
+						isActive={activeTab === "totp"}
+					/>
+				}
+				otpForm={
+					<OtpVerifyForm
+						onSuccess={handleVerificationSuccess}
+						isActive={activeTab === "otp"}
+					/>
+				}
+				onTabChange={handleTabChange}
+			/>
+		</div>
+	);
+}

@@ -1,0 +1,66 @@
+import { DefaultAvatar } from "../avatar";
+import { BaseCard } from "../cards/base-card";
+import { DefaultChip } from "../chip";
+import { Image } from "../image";
+
+// Type definitions
+interface CourseCardProps {
+	course: {
+		id: string;
+		name: string;
+		classroom: string;
+		professor: string;
+		credits: number;
+		schedule: string;
+		status?: string;
+	};
+	coverImage?: string;
+	LinkComponent: React.ReactNode;
+}
+
+// CourseCard component
+export function CourseCard({
+	coverImage,
+	course,
+	LinkComponent,
+}: CourseCardProps) {
+	return (
+		<BaseCard key={course.id} className="border border-divider px-0 pt-0">
+			<Image
+				src={coverImage ?? ""}
+				alt={course.name}
+				width={600}
+				height={250}
+			/>
+			<div className="p-3">
+				<div className="flex gap-3">
+					<DefaultAvatar userName={course.name} />
+					<div className="flex-1">
+						<h3 className="font-medium text-lg">{course.name}</h3>
+						<div className="flex flex-col gap-1 text-gray-600 text-sm dark:text-gray-400">
+							<p>担当教員: {course.professor}</p>
+							<p>教室: {course.classroom}</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div className="space-y-2 border-divider border-t px-4 py-3">
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-2">
+						<DefaultChip size="sm">{course.credits} 単位</DefaultChip>
+						<DefaultChip size="sm">{course.schedule}</DefaultChip>
+					</div>
+					{course.status && (
+						<DefaultChip
+							size="sm"
+							color={course.status === "active" ? "success" : "default"}
+						>
+							{course.status}
+						</DefaultChip>
+					)}
+				</div>
+				{LinkComponent}
+			</div>
+		</BaseCard>
+	);
+}

@@ -1,0 +1,19 @@
+{
+	"name": "@lms-repo/api",
+	"type": "module",
+	"exports": {
+		".": {
+			"default": "./src/index.ts"
+		}
+	},
+	"scripts": {},
+	"dependencies": {
+		"@lms-repo/auth": "workspace:*",
+		"@lms-repo/db": "workspace:*",
+		"hono": "catalog:",
+		"@hono/zod-validator": "^0.7.6"
+	},
+	"devDependencies": {
+		"typescript": "catalog:"
+	}
+}

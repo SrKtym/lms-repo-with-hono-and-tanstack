@@ -1,0 +1,221 @@
+import { authClient } from "@lms-repo/auth/web";
+import { DefaultButton } from "@lms-repo/ui/components/button";
+import { InputForForm } from "@lms-repo/ui/components/input";
+import { useForm } from "@tanstack/react-form";
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { z } from "zod";
+
+export default function RequestResetPasswordForm() {
+	const [error, setError] = useState<string>("");
+	const [isSuccess, setIsSuccess] = useState(false);
+
+	const form = useForm({
+		defaultValues: {
+			email: "",
+		},
+		onSubmit: async ({ value }) => {
+			try {
+				setError("");
+				setIsSuccess(false);
+
+				await authClient.requestPasswordReset(
+					{
+						email: value.email,
+						redirectTo: "/reset-password",
+					},
+					{
+						onError: (error) => {
+							const errorMessage =
+								error.error.message ||
+								error.error.statusText ||
+								"Failed to send reset email";
+							setError(errorMessage);
+							console.error("Password reset request error:", error);
+						},
+					},
+				);
+
+				setIsSuccess(true);
+			} catch (err) {
+				setError("An unexpected error occurred. Please try again.");
+				console.error("Unexpected error during password reset request:", err);
+			}
+		},
+		validators: {
+			onSubmit: z.object({
+				email: z.string().email("Please enter a valid email address"),
+			}),
+		},
+	});
+
+	return (
+		<div className="w-full space-y-6">
+			{/* Header Section */}
+			<div className="text-center">
+				<div className="mb-6 flex justify-center">
+					<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
+						<svg
+							className="h-6 w-6 text-orange-600 dark:text-orange-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+							/>
+						</svg>
+					</div>
+				</div>
+				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
+					Reset Your Password
+				</h3>
+				<p className="text-gray-600 text-sm dark:text-gray-400">
+					Enter your email address and we'll send you a link to reset your
+					password
+				</p>
+			</div>
+
+			{/* Form */}
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+					form.handleSubmit();
+				}}
+				className="space-y-4"
+			>
+				<form.Field name="email">
+					{(field) => (
+						<div className="space-y-3">
+							<InputForForm
+								inputProps={{
+									id: field.name,
+									name: field.name,
+									type: "email",
+									value: field.state.value,
+									onBlur: field.handleBlur,
+									onChange: (e) => {
+										field.handleChange(e.target.value);
+										setError(""); // Clear error on input
+									},
+									placeholder: "Enter your email address",
+									className: "w-full",
+								}}
+								labelProps={{
+									children: "Email Address",
+								}}
+							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500 text-sm">
+									{error?.message}
+								</p>
+							))}
+						</div>
+					)}
+				</form.Field>
+
+				{/* Error Message */}
+				{error && (
+					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
+						<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+					</div>
+				)}
+
+				{/* Success Message */}
+				{isSuccess && (
+					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
+						<div className="flex items-center">
+							<svg
+								className="mr-3 h-5 w-5 text-green-600 dark:text-green-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth={2}
+									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+								/>
+							</svg>
+							<div>
+								<h4 className="font-medium text-green-800 dark:text-green-200">
+									Reset Email Sent!
+								</h4>
+								<p className="text-green-600 text-sm dark:text-green-400">
+									Check your email for the password reset link
+								</p>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Submit Button */}
+				<form.Subscribe
+					selector={(state) => ({
+						canSubmit: state.canSubmit,
+						isSubmitting: state.isSubmitting,
+					})}
+				>
+					{({ canSubmit, isSubmitting }) => (
+						<DefaultButton
+							type="submit"
+							className="w-full"
+							isDisabled={!canSubmit || isSubmitting || isSuccess}
+						>
+							{isSubmitting ? (
+								<>
+									<svg
+										className="mr-2 h-4 w-4 animate-spin"
+										fill="none"
+										viewBox="0 0 24 24"
+									>
+										<circle
+											className="opacity-25"
+											cx="12"
+											cy="12"
+											r="10"
+											stroke="currentColor"
+											strokeWidth="4"
+										/>
+										<path
+											className="opacity-75"
+											fill="currentColor"
+											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+										/>
+									</svg>
+									Sending Reset Link...
+								</>
+							) : (
+								"Send Reset Link"
+							)}
+						</DefaultButton>
+					)}
+				</form.Subscribe>
+			</form>
+
+			{/* Success State - Additional Info */}
+			{isSuccess && (
+				<div className="text-center">
+					<p className="text-gray-500 text-sm dark:text-gray-400">
+						Didn't receive the email? Check your spam folder or try again
+					</p>
+				</div>
+			)}
+
+			{/* Back to Sign In */}
+			<div className="text-center">
+				<Link
+					to="/sign-in"
+					className="text-blue-600 text-sm hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+				>
+					Back to Sign In
+				</Link>
+			</div>
+		</div>
+	);
+}

@@ -1,19 +1,15 @@
 {
-  "compilerOptions": {
-    "strict": true,
-    "esModuleInterop": true,
-    "jsx": "react-jsx",
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "verbatimModuleSyntax": true,
-    "skipLibCheck": true,
-    "types": ["vite/client"],
-    "rootDirs": ["."],
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@lms-repo/ui/*": ["../../packages/ui/src/*"]
-    }
-  }
+	"extends": "@lms-repo/config/tsconfig.base.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"ignoreDeprecations": "6.0",
+		"lib": ["ESNext", "DOM"],
+		"jsx": "react-jsx",
+		"types": ["vite/client"],
+		"rootDirs": ["."],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@lms-repo/ui/*": ["../../packages/ui/src/*"]
+		}
+	}
 }
