@@ -1,3 +1,5 @@
+this project is ongoing
+
 # lms-repo
 
 This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, and more.
@@ -22,6 +24,18 @@ First, install the dependencies:
 
 ```bash
 pnpm install
+```
+
+or
+
+```bash
+bun install
+```
+
+or with docker
+
+```bash
+docker compose -f docker/docker-compose.dev.yml up -d
 ```
 
 ## Database Setup
@@ -88,6 +102,13 @@ lms-repo/
 │   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
 ```
+
+依存の流れ
+server → packages/api, auth, env, ui, config
+web → packages/api, auth, db, env, config
+packages/api → packages/auth → packages/db, env, config
+packages/db → packages/env, config
+
 
 ## Available Scripts
 
