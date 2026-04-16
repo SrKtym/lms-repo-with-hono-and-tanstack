@@ -1,0 +1,24 @@
+{
+  "name": "@lms-repo/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@lms-repo/db": "workspace:*",
+    "@lms-repo/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@lms-repo/config": "workspace:*",
+    "typescript": "^5"
+  }
+}
