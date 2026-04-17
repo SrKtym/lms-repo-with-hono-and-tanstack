@@ -5,6 +5,7 @@ import {
 	foreignKey,
 	index,
 	integer,
+	pgEnum,
 	pgTable,
 	primaryKey,
 	text,
@@ -12,6 +13,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { assignmentFormat } from "../constants";
 import { user } from "./auth";
+
+const requirements = ["必修", "選択必修", "任意"] as const;
+export const requirementsEnum = pgEnum("requirements", requirements);
 
 // 学生テーブル
 export const students = pgTable("students", {
@@ -52,10 +56,10 @@ export const courses = pgTable(
 			.$defaultFn(() => crypto.randomUUID()),
 		name: text("name").notNull(),
 		targetGrade: integer("target_grade").notNull(),
-		weekdays: text("weekdays").notNull(),
+		weekdays: integer("weekdays").notNull(),
 		period: integer("period").notNull(),
 		credits: integer("credits").notNull(),
-		requirements: text("requirements"),
+		requirements: requirementsEnum("requirements").notNull(),
 		classRoom: text("class_room").notNull(),
 		departmentId: text("department_id")
 			.notNull()
@@ -66,6 +70,7 @@ export const courses = pgTable(
 	},
 	(t) => [
 		check("target_grade_range", between(t.targetGrade, 1, 4)),
+		check("weekdays_range", between(t.weekdays, 1, 5)),
 		check("period_range", between(t.period, 1, 5)),
 		check("credits_range", between(t.credits, 1, 4)),
 	],
