@@ -12,7 +12,7 @@ export const socialScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 1,
 		credits: 2,
 		requirements: "必修",
-		classRoom: "L101"
+		classRoom: "L101",
 	},
 	{
 		name: "演習ⅰ",
@@ -21,7 +21,7 @@ export const socialScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 2,
 		credits: 1,
 		requirements: "必修",
-		classRoom: "L201"
+		classRoom: "L201",
 	},
 	{
 		name: "演習ⅱ",
@@ -30,7 +30,7 @@ export const socialScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 3,
 		credits: 1,
 		requirements: "必修",
-		classRoom: "L301"
+		classRoom: "L301",
 	},
 	{
 		name: "卒業論文",
@@ -39,7 +39,7 @@ export const socialScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 4,
 		credits: 4,
 		requirements: "必修",
-		classRoom: "L401"
+		classRoom: "L401",
 	},
 ];
 
@@ -52,7 +52,7 @@ export const naturalScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 2,
 		credits: 1,
 		requirements: "必修",
-		classRoom: "L102"
+		classRoom: "L102",
 	},
 	{
 		name: "学生実験・演習ⅰ",
@@ -61,7 +61,7 @@ export const naturalScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 3,
 		credits: 2,
 		requirements: "必修",
-		classRoom: "L202"
+		classRoom: "L202",
 	},
 	{
 		name: "学生実験・演習ⅱ",
@@ -70,7 +70,7 @@ export const naturalScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 4,
 		credits: 2,
 		requirements: "必修",
-		classRoom: "L302"
+		classRoom: "L302",
 	},
 	{
 		name: "卒業研究",
@@ -79,7 +79,7 @@ export const naturalScienceCommonCourses: Omit<Courses, Optional>[] = [
 		period: 5,
 		credits: 4,
 		requirements: "必修",
-		classRoom: "L402"
+		classRoom: "L402",
 	},
 ];
 
