@@ -32,7 +32,7 @@ or
 bun install
 ```
 
-or with docker
+and with docker(optional)
 
 ```bash
 docker compose -f docker/docker-compose.dev.yml up -d
