@@ -129,6 +129,15 @@ export const literatureCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L111",
 	},
 	{
+		name: "文学史",
+		targetGrade: 2,
+		weekdays: 2,
+		period: 1,
+		credits: 2,
+		requirements: "選択必修",
+		classRoom: "L211",
+	},
+	{
 		name: "西洋史",
 		targetGrade: 3,
 		weekdays: 3,
