@@ -41,7 +41,7 @@ export const faculties = pgTable("faculties", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
-	name: text("name").notNull(),
+	name: text("name").unique().notNull(),
 });
 
 // 学科テーブル
@@ -49,7 +49,7 @@ export const departments = pgTable("departments", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
-	name: text("name").notNull(),
+	name: text("name").unique().notNull(),
 	facultyId: text("faculty_id")
 		.notNull()
 		.references(() => faculties.id),
