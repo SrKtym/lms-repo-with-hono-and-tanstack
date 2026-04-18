@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { z } from "zod";
 
 dotenv.config({
+	encoding: "utf8",
 	path: "../../apps/server/.env",
 	debug: true,
 });
