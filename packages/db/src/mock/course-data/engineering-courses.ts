@@ -564,13 +564,4 @@ export const engineeringCourses: Omit<Courses, Optional>[] = [
 		requirements: "任意",
 		classRoom: "AR305",
 	},
-	{
-		name: "建築設計",
-		targetGrade: 4,
-		weekdays: 4,
-		period: 5,
-		credits: 2,
-		requirements: "選択必修",
-		classRoom: "AR106",
-	},
 ];

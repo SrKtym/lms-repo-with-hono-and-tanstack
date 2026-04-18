@@ -112,7 +112,7 @@ export const educationCourses: Omit<Courses, Optional>[] = [
 		classRoom: "ED304",
 	},
 	{
-		name: "国際教育論",
+		name: "高等教育論",
 		targetGrade: 4,
 		weekdays: 5,
 		period: 1,
@@ -121,7 +121,7 @@ export const educationCourses: Omit<Courses, Optional>[] = [
 		classRoom: "ED105",
 	},
 	{
-		name: "教育技術論",
+		name: "教育技術学",
 		targetGrade: 3,
 		weekdays: 3,
 		period: 4,

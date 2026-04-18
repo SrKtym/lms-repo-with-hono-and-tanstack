@@ -112,31 +112,13 @@ export const scienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "M304",
 	},
 	{
-		name: "応用数学",
-		targetGrade: 4,
-		weekdays: 4,
-		period: 5,
-		credits: 2,
-		requirements: "任意",
-		classRoom: "M105",
-	},
-	{
-		name: "物理学演習",
+		name: "統計数学",
 		targetGrade: 3,
 		weekdays: 1,
 		period: 2,
 		credits: 1,
 		requirements: "任意",
 		classRoom: "M202",
-	},
-	{
-		name: "計算物理学",
-		targetGrade: 4,
-		weekdays: 4,
-		period: 5,
-		credits: 2,
-		requirements: "任意",
-		classRoom: "M105",
 	},
 	// Physics Department
 	{
@@ -221,7 +203,7 @@ export const scienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "P303",
 	},
 	{
-		name: "天体物理学",
+		name: "原子物理学",
 		targetGrade: 3,
 		weekdays: 4,
 		period: 5,
@@ -266,7 +248,7 @@ export const scienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "P106",
 	},
 	{
-		name: "物理学実験",
+		name: "核物理学",
 		targetGrade: 2,
 		weekdays: 5,
 		period: 1,

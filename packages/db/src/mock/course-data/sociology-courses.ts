@@ -131,7 +131,7 @@ export const sociologyCourses: Omit<Courses, Optional>[] = [
 		classRoom: "S205",
 	},
 	{
-		name: "人格心理学",
+		name: "社会心理学",
 		targetGrade: 2,
 		weekdays: 1,
 		period: 2,
@@ -174,15 +174,6 @@ export const sociologyCourses: Omit<Courses, Optional>[] = [
 		credits: 2,
 		requirements: "任意",
 		classRoom: "S107",
-	},
-	{
-		name: "集団心理学",
-		targetGrade: 4,
-		weekdays: 1,
-		period: 2,
-		credits: 2,
-		requirements: "任意",
-		classRoom: "S207",
 	},
 	{
 		name: "消費者心理学",

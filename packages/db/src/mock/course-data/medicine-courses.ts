@@ -49,15 +49,6 @@ export const medicineCourses: Omit<Courses, Optional>[] = [
 		classRoom: "MD202",
 	},
 	{
-		name: "栄養学",
-		targetGrade: 3,
-		weekdays: 2,
-		period: 3,
-		credits: 2,
-		requirements: "任意",
-		classRoom: "MD302",
-	},
-	{
 		name: "内科学",
 		targetGrade: 3,
 		weekdays: 1,
@@ -192,15 +183,6 @@ export const medicineCourses: Omit<Courses, Optional>[] = [
 		credits: 2,
 		requirements: "任意",
 		classRoom: "NS102",
-	},
-	{
-		name: "母性看護学",
-		targetGrade: 4,
-		weekdays: 1,
-		period: 2,
-		credits: 2,
-		requirements: "任意",
-		classRoom: "NS202",
 	},
 	{
 		name: "精神看護学",
@@ -339,7 +321,7 @@ export const medicineCourses: Omit<Courses, Optional>[] = [
 		classRoom: "HL102",
 	},
 	{
-		name: " nutrition",
+		name: "栄養学",
 		targetGrade: 3,
 		weekdays: 2,
 		period: 3,
