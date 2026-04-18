@@ -21,7 +21,7 @@ export const socialScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L101",
 	},
 	{
-		name: "データ分析",
+		name: "演習ⅰ",
 		targetGrade: 3,
 		weekdays: 2,
 		period: 2,
@@ -30,7 +30,7 @@ export const socialScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L201",
 	},
 	{
-		name: "数学Ⅱ",
+		name: "演習ⅱ",
 		targetGrade: 4,
 		weekdays: 3,
 		period: 3,
@@ -39,7 +39,7 @@ export const socialScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L301",
 	},
 	{
-		name: "批判的思考",
+		name: "卒業論文",
 		targetGrade: 4,
 		weekdays: 4,
 		period: 4,
@@ -61,7 +61,7 @@ export const naturalScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L102",
 	},
 	{
-		name: "学生実験・演習Ⅰ",
+		name: "学生実験・演習ⅰ",
 		targetGrade: 3,
 		weekdays: 3,
 		period: 3,
@@ -70,7 +70,7 @@ export const naturalScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L202",
 	},
 	{
-		name: "学生実験・演習Ⅱ",
+		name: "学生実験・演習ⅱ",
 		targetGrade: 4,
 		weekdays: 4,
 		period: 4,
@@ -79,7 +79,7 @@ export const naturalScienceCourses: Omit<Courses, Optional>[] = [
 		classRoom: "L302",
 	},
 	{
-		name: "情報リテラシー",
+		name: "卒業研究",
 		targetGrade: 4,
 		weekdays: 5,
 		period: 5,
