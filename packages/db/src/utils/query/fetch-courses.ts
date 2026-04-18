@@ -8,7 +8,7 @@ import {
 	user,
 } from "../../schema";
 
-export async function fetchCourses(weekdays: string, period: string) {
+export async function fetchCourses(weekdays: number, period: number) {
 	// const courses = await db.query.courses.findMany({
 	//     columns: {
 	//         name: true,

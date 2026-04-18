@@ -1,4 +1,4 @@
-import type { user } from "./schema/auth";
+import type { user } from "../schema/auth";
 
 type User = typeof user.$inferInsert;
 type Optional = "id";

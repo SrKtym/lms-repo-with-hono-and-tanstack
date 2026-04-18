@@ -14,7 +14,7 @@
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate",
-		"db:seed": "tsx src/seed.ts"
+		"db:seed": "bunx tsx src/seed.ts"
 	},
 	"dependencies": {
 		"@lms-repo/env": "workspace:*",
