@@ -93,7 +93,6 @@ export const coursesMaster = {
 			"出版論",
 			"メディア論",
 			"ジャーナリズム論",
-			"広告論",
 			...socialScienceCourses,
 		],
 	},
