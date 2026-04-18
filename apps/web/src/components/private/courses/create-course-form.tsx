@@ -42,9 +42,7 @@ export function CreateCourseForm() {
 				requirements: z.enum([...options], {
 					error: "履修区分を選択してください。",
 				}),
-				classRoom: z
-					.string()
-					.regex(/^L[1-9][0-9]{2}$/, "教室はL101のように入力してください"),
+				classRoom: z.string(),
 			}),
 		},
 	});
