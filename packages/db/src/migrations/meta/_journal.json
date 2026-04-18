@@ -1,62 +1,13 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1774771628571,
-			"tag": "0000_flawless_blade",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1774956210952,
-			"tag": "0001_cheerful_jigsaw",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1775012779790,
-			"tag": "0002_burly_stature",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1775015006349,
-			"tag": "0003_lonely_mephisto",
-			"breakpoints": true
-		},
-		{
-			"idx": 4,
-			"version": "7",
-			"when": 1775031243609,
-			"tag": "0004_round_stepford_cuckoos",
-			"breakpoints": true
-		},
-		{
-			"idx": 5,
-			"version": "7",
-			"when": 1775119981680,
-			"tag": "0005_new_mandarin",
-			"breakpoints": true
-		},
-		{
-			"idx": 6,
-			"version": "7",
-			"when": 1775120152651,
-			"tag": "0006_safe_zuras",
-			"breakpoints": true
-		},
-		{
-			"idx": 7,
-			"version": "7",
-			"when": 1775206021781,
-			"tag": "0007_slippery_madrox",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1776493599371,
+      "tag": "0000_silly_blue_marvel",
+      "breakpoints": true
+    }
+  ]
 }

@@ -516,11 +516,3 @@ export const coursesMaster = {
 		],
 	},
 };
-
-export const assignmentFormat = [
-	"text",
-	"pdf",
-	"excel",
-	"word",
-	"powerpoint",
-] as const;

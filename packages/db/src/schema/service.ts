@@ -11,11 +11,17 @@ import {
 	text,
 	timestamp,
 } from "drizzle-orm/pg-core";
-import { assignmentFormat } from "../constants";
 import { user } from "./auth";
 
 const requirements = ["必修", "選択必修", "任意"] as const;
 export const requirementsEnum = pgEnum("requirements", requirements);
+export const assignmentFormat = [
+	"text",
+	"pdf",
+	"excel",
+	"word",
+	"powerpoint",
+] as const;
 
 // 学生テーブル
 export const students = pgTable("students", {
@@ -26,7 +32,9 @@ export const students = pgTable("students", {
 	departmentId: text("department_id")
 		.notNull()
 		.references(() => departments.id),
-});
+}, (t) => [
+	check("grade_range", between(t.grade, 1, 4))
+]);
 
 // 学部テーブル
 export const faculties = pgTable("faculties", {
