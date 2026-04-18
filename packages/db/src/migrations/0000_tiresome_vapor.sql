@@ -97,7 +97,7 @@ CREATE TABLE "assignments" (
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"created_by" text NOT NULL,
-	CONSTRAINT "points_range" CHECK ("assignments"."points" between $1 and $2),
+	CONSTRAINT "points_range" CHECK ("assignments"."points" >= 0 AND "assignments"."points" <= 100),
 	CONSTRAINT "format_enum" CHECK ("assignments"."format" IN ($1$2$3$4$5$6$7$8$9))
 );
 --> statement-breakpoint
@@ -120,10 +120,10 @@ CREATE TABLE "courses" (
 	"class_room" text NOT NULL,
 	"department_id" text NOT NULL,
 	"professor_id" text NOT NULL,
-	CONSTRAINT "target_grade_range" CHECK ("courses"."target_grade" between $1 and $2),
-	CONSTRAINT "weekdays_range" CHECK ("courses"."weekdays" between $1 and $2),
-	CONSTRAINT "period_range" CHECK ("courses"."period" between $1 and $2),
-	CONSTRAINT "credits_range" CHECK ("courses"."credits" between $1 and $2)
+	CONSTRAINT "target_grade_range" CHECK ("courses"."target_grade" >= 1 AND "courses"."target_grade" <= 4),
+	CONSTRAINT "weekdays_range" CHECK ("courses"."weekdays" >= 1 AND "courses"."weekdays" <= 5),
+	CONSTRAINT "period_range" CHECK ("courses"."period" >= 1 AND "courses"."period" <= 5),
+	CONSTRAINT "credits_range" CHECK ("courses"."credits" >= 1 AND "courses"."credits" <= 4)
 );
 --> statement-breakpoint
 CREATE TABLE "departments" (
@@ -152,8 +152,8 @@ CREATE TABLE "notifications" (
 );
 --> statement-breakpoint
 CREATE TABLE "registration" (
-	"user_id" text,
-	"course_id" text,
+	"user_id" text NOT NULL,
+	"course_id" text NOT NULL,
 	CONSTRAINT "registration_user_id_course_id_pk" PRIMARY KEY("user_id","course_id")
 );
 --> statement-breakpoint
@@ -173,12 +173,12 @@ CREATE TABLE "students" (
 	"id" text PRIMARY KEY NOT NULL,
 	"grade" integer NOT NULL,
 	"department_id" text NOT NULL,
-	CONSTRAINT "grade_range" CHECK ("students"."grade" between $1 and $2)
+	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4)
 );
 --> statement-breakpoint
 CREATE TABLE "submisson_status" (
-	"user_id" text,
-	"assignment_id" text,
+	"user_id" text NOT NULL,
+	"assignment_id" text NOT NULL,
 	"is_submitted" boolean DEFAULT false NOT NULL,
 	"score" integer,
 	CONSTRAINT "submisson_status_user_id_assignment_id_pk" PRIMARY KEY("user_id","assignment_id"),

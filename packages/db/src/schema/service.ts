@@ -1,4 +1,4 @@
-import { between, sql } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import {
 	boolean,
 	check,
@@ -33,7 +33,7 @@ export const students = pgTable("students", {
 		.notNull()
 		.references(() => departments.id),
 }, (t) => [
-	check("grade_range", between(t.grade, 1, 4))
+	check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)
 ]);
 
 // 学部テーブル
@@ -77,10 +77,10 @@ export const courses = pgTable(
 			.references(() => user.id),
 	},
 	(t) => [
-		check("target_grade_range", between(t.targetGrade, 1, 4)),
-		check("weekdays_range", between(t.weekdays, 1, 5)),
-		check("period_range", between(t.period, 1, 5)),
-		check("credits_range", between(t.credits, 1, 4)),
+		check("target_grade_range", sql`${t.targetGrade} >= 1 AND ${t.targetGrade} <= 4`),
+		check("weekdays_range", sql`${t.weekdays} >= 1 AND ${t.weekdays} <= 5`),
+		check("period_range", sql`${t.period} >= 1 AND ${t.period} <= 5`),
+		check("credits_range", sql`${t.credits} >= 1 AND ${t.credits} <= 4`),
 	],
 );
 
@@ -88,8 +88,8 @@ export const courses = pgTable(
 export const registration = pgTable(
 	"registration",
 	{
-		userId: text("user_id"),
-		courseId: text("course_id"),
+		userId: text("user_id").notNull(),
+		courseId: text("course_id").notNull(),
 	},
 	(t) => [
 		primaryKey({ columns: [t.userId, t.courseId] }),
@@ -162,10 +162,10 @@ export const assignments = pgTable(
 			.references(() => user.id),
 	},
 	(t) => [
-		check("points_range", between(t.points, 0, 100)),
+		check("points_range", sql`${t.points} >= 0 AND ${t.points} <= 100`),
 		check(
 			"format_enum",
-			sql`${t.format} IN (${sql.join([...assignmentFormat], ",")})`,
+			sql`${t.format} IN (${sql.raw([...assignmentFormat].map(f => `'${f}'`).join(','))})`,
 		),
 	],
 );
@@ -198,8 +198,8 @@ export const fileSubmissionsMetadata = pgTable("file_submissions_metadata", {
 export const submissonStatus = pgTable(
 	"submisson_status",
 	{
-		userId: text("user_id"),
-		assignmentId: text("assignment_id"),
+		userId: text("user_id").notNull(),
+		assignmentId: text("assignment_id").notNull(),
 		isSubmitted: boolean("is_submitted").default(false).notNull(),
 		score: integer("score"),
 	},

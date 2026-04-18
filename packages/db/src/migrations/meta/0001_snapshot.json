@@ -1,6 +1,6 @@
 {
-  "id": "94ed7f51-9b9d-4343-a171-d8c0568e1edc",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "e9cd4323-9291-42c5-b8bb-cd42d8fb2720",
+  "prevId": "94ed7f51-9b9d-4343-a171-d8c0568e1edc",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -711,7 +711,7 @@
         },
         "format_enum": {
           "name": "format_enum",
-          "value": "\"assignments\".\"format\" IN ($1$2$3$4$5$6$7$8$9)"
+          "value": "\"assignments\".\"format\" IN ('text','pdf','excel','word','powerpoint')"
         }
       },
       "isRLSEnabled": false

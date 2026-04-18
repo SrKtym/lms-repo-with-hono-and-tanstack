@@ -1,0 +1,2 @@
+ALTER TABLE "assignments" DROP CONSTRAINT "format_enum";--> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "format_enum" CHECK ("assignments"."format" IN ('text','pdf','excel','word','powerpoint'));
