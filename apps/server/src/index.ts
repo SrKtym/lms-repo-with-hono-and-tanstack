@@ -1,14 +1,15 @@
 import { fullRoutes } from "@lms-repo/api";
+import { auth } from "@lms-repo/auth/server";
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { authMiddleware } from "./middleware/auth";
 
 const app = new Hono()
 	.basePath("/api")
 	.use(
 		"/*",
-
 		// グローバルミドルウェア
 		logger(),
 		cors({
@@ -37,8 +38,11 @@ const app = new Hono()
 		// },
 		// }),
 	)
-
+	// 認証ミドルウェア
+	.on(["POST", "GET"], "/auth/*", (c) =>
+		auth.handler(c.req.raw),
+	)
 	// ルーティング
-	.route("/", fullRoutes);
+	.route("/", fullRoutes.use(authMiddleware));
 
 export default app;

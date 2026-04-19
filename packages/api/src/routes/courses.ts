@@ -1,13 +1,18 @@
 import { zValidator } from "@hono/zod-validator";
-import { fetchSession } from "@lms-repo/auth/utils/fetch-session";
 import { fetchCourses, fetchRegisteredCourses } from "@lms-repo/db/utils/query/courses";
 import type { Courses } from "@lms-repo/db/types";
 import { Hono } from "hono";
 import { z } from "zod";
 import { createCourses } from "@lms-repo/db/utils/mutation/courses";
+import type { Session } from "@lms-repo/auth/server";
 
 // 講義に関するロジック
-export const coursesRoute = new Hono()
+export const coursesRoute = new Hono<{
+	Variables: {
+		user: Session["user"] | null;
+		session: Session["session"] | null;
+	};
+}>()
 	.get("/search", 
 		zValidator("json", z.custom<Pick<Courses, "weekdays" | "period">>()),
 		async (c) => {
@@ -16,10 +21,10 @@ export const coursesRoute = new Hono()
 			return c.json(result, 200);
 		})
 	.get("/registered", async (c) => {
-		const session = await fetchSession(c);
+		const session = c.get("user");
 		if (!session) return c.json({ message: "not authenticated" }, 401);
 
-		const userId = session.user.id;
+		const userId = session.id;
 		const result = await fetchRegisteredCourses(userId);
 		return c.json(result, 200);
 	})
@@ -34,7 +39,7 @@ export const coursesRoute = new Hono()
 		"/multiple",
 		zValidator("json", z.object({ name: z.string() })),
 		async (c) => {
-			const session = await fetchSession(c);
+			const session = c.get("session");
 			return c.json({ message: "course created", session }, 201);
 		},
 	);
