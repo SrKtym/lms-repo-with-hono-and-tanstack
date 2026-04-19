@@ -24,17 +24,19 @@ export const assignmentFormat = [
 ] as const;
 
 // 学生テーブル
-export const students = pgTable("students", {
-	id: text("id")
-		.primaryKey()
-		.references(() => user.id),
-	grade: integer("grade").notNull(),
-	departmentId: text("department_id")
-		.notNull()
-		.references(() => departments.id),
-}, (t) => [
-	check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)
-]);
+export const students = pgTable(
+	"students",
+	{
+		id: text("id")
+			.primaryKey()
+			.references(() => user.id),
+		grade: integer("grade").notNull(),
+		departmentId: text("department_id")
+			.notNull()
+			.references(() => departments.id),
+	},
+	(t) => [check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)],
+);
 
 // 学部テーブル
 export const faculties = pgTable("faculties", {
@@ -77,7 +79,10 @@ export const courses = pgTable(
 			.references(() => user.id),
 	},
 	(t) => [
-		check("target_grade_range", sql`${t.targetGrade} >= 1 AND ${t.targetGrade} <= 4`),
+		check(
+			"target_grade_range",
+			sql`${t.targetGrade} >= 1 AND ${t.targetGrade} <= 4`,
+		),
 		check("weekdays_range", sql`${t.weekdays} >= 1 AND ${t.weekdays} <= 5`),
 		check("period_range", sql`${t.period} >= 1 AND ${t.period} <= 5`),
 		check("credits_range", sql`${t.credits} >= 1 AND ${t.credits} <= 4`),
@@ -165,7 +170,7 @@ export const assignments = pgTable(
 		check("points_range", sql`${t.points} >= 0 AND ${t.points} <= 100`),
 		check(
 			"format_enum",
-			sql`${t.format} IN (${sql.raw([...assignmentFormat].map(f => `'${f}'`).join(','))})`,
+			sql`${t.format} IN (${sql.raw([...assignmentFormat].map((f) => `'${f}'`).join(","))})`,
 		),
 	],
 );

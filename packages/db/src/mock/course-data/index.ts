@@ -1,16 +1,16 @@
-import type { Courses, Optional } from "./types";
-import { literatureCourses } from "./literature-courses";
-import { economicsCourses } from "./economics-courses";
-import { lawCourses } from "./law-courses";
-import { educationCourses } from "./education-courses";
-import { sociologyCourses } from "./sociology-courses";
-import { scienceCourses } from "./science-courses";
-import { engineeringCourses } from "./engineering-courses";
+import type { Courses, CoursesOptional } from "../../types";
 import { agricultureCourses } from "./agriculture-courses";
+import { economicsCourses } from "./economics-courses";
+import { educationCourses } from "./education-courses";
+import { engineeringCourses } from "./engineering-courses";
+import { lawCourses } from "./law-courses";
+import { literatureCourses } from "./literature-courses";
 import { medicineCourses } from "./medicine-courses";
+import { scienceCourses } from "./science-courses";
+import { sociologyCourses } from "./sociology-courses";
 
 // Common courses for social sciences
-export const socialScienceCourses: Omit<Courses, Optional>[] = [
+export const socialScienceCourses: Omit<Courses, CoursesOptional>[] = [
 	{
 		name: "基礎ゼミ",
 		targetGrade: 2,
@@ -50,7 +50,7 @@ export const socialScienceCourses: Omit<Courses, Optional>[] = [
 ];
 
 // Common courses for natural sciences
-export const naturalScienceCourses: Omit<Courses, Optional>[] = [
+export const naturalScienceCourses: Omit<Courses, CoursesOptional>[] = [
 	{
 		name: "基礎演習",
 		targetGrade: 2,
@@ -90,7 +90,7 @@ export const naturalScienceCourses: Omit<Courses, Optional>[] = [
 ];
 
 // General education courses
-export const generalEducationCourses: Omit<Courses, Optional>[] = [
+export const generalEducationCourses: Omit<Courses, CoursesOptional>[] = [
 	{
 		name: "体育実技（バレーボール）",
 		targetGrade: 1,
@@ -238,7 +238,7 @@ export const generalEducationCourses: Omit<Courses, Optional>[] = [
 ];
 
 // Export all courses combined
-export const allCourses: Omit<Courses, Optional>[] = [
+export const allCourses: Omit<Courses, CoursesOptional>[] = [
 	...literatureCourses,
 	...economicsCourses,
 	...lawCourses,
@@ -254,4 +254,4 @@ export const allCourses: Omit<Courses, Optional>[] = [
 ];
 
 // Export the main courseList for backward compatibility
-export const courseList: Omit<Courses, Optional>[] = allCourses;
+export const courseList: Omit<Courses, CoursesOptional>[] = allCourses;

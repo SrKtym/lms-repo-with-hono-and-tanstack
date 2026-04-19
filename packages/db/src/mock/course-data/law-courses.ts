@@ -1,7 +1,7 @@
-import type { Courses, Optional } from "./types";
+import type { Courses, CoursesOptional } from "../../types";
 
 // Law Faculty Courses
-export const lawCourses: Omit<Courses, Optional>[] = [
+export const lawCourses: Omit<Courses, CoursesOptional>[] = [
 	// Law Department
 	{
 		name: "民法",

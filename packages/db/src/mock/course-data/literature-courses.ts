@@ -1,7 +1,7 @@
-import type { Courses, Optional } from "./types";
+import type { Courses, CoursesOptional } from "../../types";
 
 // Literature Faculty Courses
-export const literatureCourses: Omit<Courses, Optional>[] = [
+export const literatureCourses: Omit<Courses, CoursesOptional>[] = [
 	// History Department
 	{
 		name: "史学概論",
@@ -662,5 +662,5 @@ export const literatureCourses: Omit<Courses, Optional>[] = [
 		credits: 2,
 		requirements: "任意",
 		classRoom: "L143",
-	}
+	},
 ];

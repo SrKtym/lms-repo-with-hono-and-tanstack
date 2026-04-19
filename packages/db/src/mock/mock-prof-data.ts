@@ -1,7 +1,4 @@
-import type { user } from "../schema/auth";
-
-type User = typeof user.$inferInsert;
-type Optional = "id";
+import type { User, UserOptional } from "../types";
 
 const defaultUserValues = {
 	emailVerified: true,
@@ -9,7 +6,7 @@ const defaultUserValues = {
 	twoFactorEnabled: true,
 };
 
-export const mockProfessors: Omit<User, Optional>[] = [
+export const mockProfessors: Omit<User, UserOptional>[] = [
 	{
 		name: "田村四郎",
 		email: "prof1@university.ac.jp",
