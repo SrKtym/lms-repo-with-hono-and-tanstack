@@ -6,4 +6,4 @@ export async function fetchSession(c: Context) {
 		headers: c.req.raw.headers,
 	});
 	return session;
-};
+}

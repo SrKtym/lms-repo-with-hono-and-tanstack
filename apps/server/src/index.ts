@@ -39,9 +39,7 @@ const app = new Hono()
 		// }),
 	)
 	// 認証ミドルウェア
-	.on(["POST", "GET"], "/auth/*", (c) =>
-		auth.handler(c.req.raw),
-	)
+	.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
 	// ルーティング
 	.route("/", fullRoutes.use(authMiddleware));
 

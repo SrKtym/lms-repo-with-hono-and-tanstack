@@ -1,7 +1,7 @@
+import { eq } from "drizzle-orm";
 import { db } from "../../index";
 import { schedules } from "../../schema";
 import type { Schedules } from "../../types";
-import { eq } from "drizzle-orm";
 
 export async function createSchedules(schedulesData: Schedules) {
 	const schedulesList = await db.insert(schedules).values(schedulesData);
@@ -14,9 +14,11 @@ export async function updateSchedules(schedulesData: Schedules) {
 }
 
 export async function deleteSchedules(schedulesData: Schedules) {
-    if (!schedulesData.id) {
-        throw new Error("Schedule is not found");
-    }
-	const schedulesList = await db.delete(schedules).where(eq(schedules.id, schedulesData.id));
+	if (!schedulesData.id) {
+		throw new Error("Schedule is not found");
+	}
+	const schedulesList = await db
+		.delete(schedules)
+		.where(eq(schedules.id, schedulesData.id));
 	return schedulesList;
 }
