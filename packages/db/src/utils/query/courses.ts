@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	courses,
@@ -26,7 +26,7 @@ export async function fetchCourses(weekdays: number, period: number) {
 		.innerJoin(user, eq(courses.professorId, user.id))
 		.innerJoin(departments, eq(courses.departmentId, departments.id))
 		.innerJoin(faculties, eq(departments.facultyId, faculties.id))
-		.where(eq(courses.weekdays, weekdays) && eq(courses.period, period));
+		.where(and(eq(courses.weekdays, weekdays), eq(courses.period, period)));
 
 	return courseList;
 }

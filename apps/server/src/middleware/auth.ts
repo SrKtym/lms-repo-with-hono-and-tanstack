@@ -4,17 +4,14 @@ import { createMiddleware } from "hono/factory";
 
 export const authMiddleware = createMiddleware<{
 	Variables: {
-		user: Session["user"] | null;
-		session: Session["session"] | null;
+		user: Session["user"]
+		session: Session["session"]
 	};
 }>(async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
 	if (!session) {
-		c.set("user", null);
-		c.set("session", null);
-		await next();
-		return;
+		return c.json({ message: "not authenticated" }, 401);
 	}
 
 	c.set("user", session.user);
