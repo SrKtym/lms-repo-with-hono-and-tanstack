@@ -9,7 +9,7 @@ import { authMiddleware } from "./middleware/auth";
 const app = new Hono()
 	.basePath("/api")
 	.use(
-		"/*",
+		"*",
 		// グローバルミドルウェア
 		logger(),
 		cors({
@@ -40,8 +40,7 @@ const app = new Hono()
 	)
 	// 認証ミドルウェア
 	.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
-	.use("/*", authMiddleware)
 	// ルーティング
-	.route("/", fullRoutes);
+	.route("/", fullRoutes.use(authMiddleware));
 
 export default app;

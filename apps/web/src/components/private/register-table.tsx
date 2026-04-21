@@ -33,7 +33,7 @@ export function RegisterTable({ courses }: { courses: FetchRegisteredCoursesRetu
 	
 	// 講義の検索
 	const handleSearchCourses = async (weekdays: string, period: string) => {
-		const res = await client.courses.$get({
+		const res = await client.api.courses.$get({
 			query: {
 				weekdays,
 				period,
@@ -45,7 +45,7 @@ export function RegisterTable({ courses }: { courses: FetchRegisteredCoursesRetu
 
 	// 講義の削除
 	const handleDeleteCourse = async (courseId: string) => {
-		const res = await client.courses[":courseId"].$delete({
+		const res = await client.api.courses[":courseId"].$delete({
 			param: {
 				courseId,
 			},
