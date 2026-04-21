@@ -3,6 +3,7 @@ import type React from "react";
 import { useState } from "react";
 import { CancelButton, DefaultButton } from "../button";
 import { InputForForm } from "../input";
+import { getLocalTimeZone, now } from "@lms-repo/ui/lib/utils";
 
 interface Schedule {
 	title: string;
@@ -102,6 +103,10 @@ export function CreateScheduleModal({
 										children: "期間",
 									}}
 									dateRangePickerProps={{
+										defaultValue: {
+											start: now(getLocalTimeZone()),
+											end: now(getLocalTimeZone()),
+										},
 										onChange: (value) => {
 											if (value && value.start && value.end) {
 												// DateRangePicker from Date object conversion

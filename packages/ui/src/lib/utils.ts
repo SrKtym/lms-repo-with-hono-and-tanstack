@@ -1,4 +1,4 @@
-export { cn } from "@heroui/react";
+export { cn, parseColor } from "@heroui/react";
 export {
 	DateFormatter,
 	type DateValue,

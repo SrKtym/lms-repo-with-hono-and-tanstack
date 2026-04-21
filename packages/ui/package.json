@@ -21,6 +21,7 @@
 		"check-types": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@lms-repo/db": "workspace:*",
 		"@heroui/react": "^3.0.1",
 		"@heroui/styles": "^3.0.1",
 		"@internationalized/date": "^3.12.0",

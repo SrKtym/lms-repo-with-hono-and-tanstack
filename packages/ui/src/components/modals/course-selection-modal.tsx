@@ -1,21 +1,11 @@
 import { Modal } from "@heroui/react";
 import { CancelButton } from "../button";
-
-export interface Course {
-	id: string;
-	name: string;
-	instructor: string;
-	credits: string;
-	schedule: string;
-	day: string;
-	period: string;
-	status?: string;
-}
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
-	onCourseSelect: (course: Course) => void;
-	availableCourses: Course[];
+	onCourseSelect: (course: FetchRegisteredCoursesReturnType[number]) => void;
+	availableCourses: FetchRegisteredCoursesReturnType;
 	selectedCell: { day: string; period: string } | null;
 }
 
@@ -52,7 +42,7 @@ export function CourseSelectionModal({
 											{course.name}
 										</div>
 										<div className="text-gray-600 text-sm dark:text-gray-400">
-											<p>担当教員: {course.instructor}</p>
+											<p>担当教員: {course.professor}</p>
 											<p>単位: {course.credits}</p>
 										</div>
 									</div>

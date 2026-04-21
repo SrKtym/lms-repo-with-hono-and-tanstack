@@ -1,10 +1,12 @@
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useForm } from "@tanstack/react-form";
+import { client } from "@/lib/hono-client";
 import { z } from "zod";
 
 export function CreateCourseForm() {
 	const options = ["必修", "選択必修", "任意"] as const;
+	type Requirements = typeof options[number];
 
 	const form = useForm({
 		defaultValues: {
@@ -12,13 +14,18 @@ export function CreateCourseForm() {
 			targetGrade: "",
 			weekdays: "",
 			period: "",
-			credit: "",
-			requirements: "任意",
+			credits: "",
+			requirements: "任意" as Requirements,
 			classRoom: "",
+			departmentId: "",
+			professorId: "",
 		},
 		onSubmit: async ({ value }) => {
-			// コース作成のロジックをここに実装
-			console.log("コースが作成されました:", value);
+			const res = await client.courses.single.$post({
+				form: { ...value },
+			});
+			const data = await res.json();
+			console.log(data);
 		},
 		validators: {
 			onSubmit: z.object({
@@ -34,7 +41,7 @@ export function CreateCourseForm() {
 					.int("時限は整数で入力してください")
 					.min(1, "時限は1から5の間で入力してください")
 					.max(5, "時限は1から5の間で入力してください"),
-				credit: z.coerce
+				credits: z.coerce
 					.number<string>()
 					.int("単位数は整数で入力してください")
 					.min(1, "単位数は1から4の間で入力してください")
@@ -43,6 +50,8 @@ export function CreateCourseForm() {
 					error: "履修区分を選択してください。",
 				}),
 				classRoom: z.string(),
+				departmentId: z.string().min(1),
+				professorId: z.string().min(1),
 			}),
 		},
 	});
@@ -148,7 +157,7 @@ export function CreateCourseForm() {
 				)}
 			</form.Field>
 
-			<form.Field name="credit">
+			<form.Field name="credits">
 				{(field) => (
 					<div className="space-y-2">
 						<InputForForm
@@ -176,7 +185,7 @@ export function CreateCourseForm() {
 					<div className="space-y-2">
 						<DefaultSelect
 							value={field.state.value}
-							onValueChange={(value) => field.handleChange(value)}
+							onValueChange={(value) => field.handleChange(value as Requirements)}
 							items={[...options]}
 							ariaLabel="select requirements"
 						/>
@@ -198,6 +207,41 @@ export function CreateCourseForm() {
 								value: field.state.value,
 								onBlur: field.handleBlur,
 								onChange: (e) => field.handleChange(e.target.value),
+							}}
+						/>
+					</div>
+				)}
+			</form.Field>
+			<form.Field name="departmentId">
+				{(field) => (
+					<div className="space-y-2">
+						<InputForForm
+							labelProps={{
+								children: "学科ID",
+							}}
+							inputProps={{
+								id: field.name,
+								name: field.name,
+								type: "hidden",
+								value: field.state.value,
+							}}
+						/>
+					</div>
+				)}
+			</form.Field>
+
+			<form.Field name="professorId">
+				{(field) => (
+					<div className="space-y-2">
+						<InputForForm
+							labelProps={{
+								children: "教員ID",
+							}}
+							inputProps={{
+								id: field.name,
+								name: field.name,
+								type: "hidden",
+								value: field.state.value
 							}}
 						/>
 					</div>

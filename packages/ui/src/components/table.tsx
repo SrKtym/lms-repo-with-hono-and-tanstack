@@ -3,12 +3,12 @@ import { EmptyState, Table } from "@heroui/react";
 import { useState } from "react";
 import { CheckboxForDataTable } from "./checkbox";
 
-type Column = {
+interface Column {
 	id: string;
 	name: string;
-};
+}
 
-type Row = {
+interface Row {
 	[columnId: string]: string | undefined;
 };
 

@@ -1,7 +1,9 @@
 import { InputForForm } from "@lms-repo/ui/components/input";
+import { ColorSwatchPicker } from "@lms-repo/ui/components/color-swatch-picker";
 import {
 	getLocalTimeZone,
 	now,
+	parseColor,
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
@@ -14,7 +16,7 @@ export function CreateScheduleForm() {
 			title: "",
 			description: "",
 			timeSpan: { start: dateTime, end: dateTime },
-			theme: "#000000",
+			theme: "#3B82F6",
 		},
 		onSubmit: async ({ value }) => {
 			// スケジュール作成のロジックをここに実装
@@ -43,7 +45,8 @@ export function CreateScheduleForm() {
 					}),
 				theme: z
 					.string()
-					.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください"),
+					.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください")
+					.transform((value) => parseColor(value)),
 			}),
 		},
 	});
@@ -135,6 +138,21 @@ export function CreateScheduleForm() {
 							}}
 							isRequired={true}
 						/>
+					</div>
+				)}
+			</form.Field>
+			<form.Field name="theme">
+				{(field) => (
+					<div className="space-y-2">
+						<ColorSwatchPicker
+							value={field.state.value}
+							onChange={(color) => field.handleChange(color.toString())}
+						/>
+						{field.state.meta.errors.map((error) => (
+							<p key={error?.message} className="text-red-500">
+								{error?.message}
+							</p>
+						))}
 					</div>
 				)}
 			</form.Field>

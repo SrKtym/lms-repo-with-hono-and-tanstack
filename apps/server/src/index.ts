@@ -18,7 +18,6 @@ const app = new Hono()
 			allowHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
 		}),
-		authMiddleware,
 		// secureHeaders({
 		// contentSecurityPolicy: {
 		// 	defaultSrc: ["'self'"],
@@ -41,6 +40,7 @@ const app = new Hono()
 	)
 	// 認証ミドルウェア
 	.on(["POST", "GET"], "/auth/*", (c) => auth.handler(c.req.raw))
+	.use("/*", authMiddleware)
 	// ルーティング
 	.route("/", fullRoutes);
 

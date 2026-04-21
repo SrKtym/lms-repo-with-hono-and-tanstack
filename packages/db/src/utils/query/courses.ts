@@ -34,6 +34,7 @@ export async function fetchCourses(weekdays: number, period: number) {
 export async function fetchRegisteredCourses(userId: string) {
 	const registeredCourseList = await db
 		.select({
+			id: courses.id,
 			name: courses.name,
 			weekdays: courses.weekdays,
 			period: courses.period,
@@ -41,6 +42,7 @@ export async function fetchRegisteredCourses(userId: string) {
 			targetGrade: courses.targetGrade,
 			requirements: courses.requirements,
 			classRoom: courses.classRoom,
+			professor: user.name,
 		})
 		.from(courses)
 		.innerJoin(registration, eq(courses.id, registration.courseId))
