@@ -5,7 +5,7 @@ import { client } from "@/lib/hono-client";
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
 	loader: async () => {
-		const courses = await client.courses.registered.$get();
+		const courses = await client.api.courses.registered.$get();
 		const data = await courses.json();
 		return { courses: data };
 	},

@@ -6,6 +6,7 @@ import { notificationsRoute } from "./routes/notifications";
 import { schedulesRoute } from "./routes/schedules";
 
 export const fullRoutes = new Hono()
+	.basePath("/api")
 	.route("/courses", coursesRoute)
 	.route("/schedules", schedulesRoute)
 	.route("/assignments", assignmentsRoute)
