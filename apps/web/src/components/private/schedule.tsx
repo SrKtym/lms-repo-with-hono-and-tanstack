@@ -6,30 +6,21 @@ import { useState } from "react";
 import { DayView } from "./schedules/day-view";
 import { MonthView } from "./schedules/month-view";
 import { WeekView } from "./schedules/week-view";
+import type { Courses, Schedules } from "@lms-repo/db/types";
 
-interface Course {
-	id: string;
-	name: string;
-	instructor: string;
-	credits: string;
-	schedule: string;
-	status?: "registered" | "available";
-	week?: string[];
-	period?: string[];
+interface ScheduleProps {
+	courses: Courses[];
+	schedules: Schedules[];
+	onCreateSchedule?: (schedule: Omit<Schedules, "id">) => void;
 }
 
-export interface Schedule {
+interface Event {
 	id: string;
 	title: string;
 	start: Date;
 	end: Date;
-	description?: string;
-}
-
-interface ScheduleProps {
-	courses: Course[];
-	schedules: Schedule[];
-	onCreateSchedule?: (schedule: Omit<Schedule, "id">) => void;
+	type: "course" | "schedule";
+	color?: string;
 }
 
 export function Schedule({
@@ -41,12 +32,6 @@ export function Schedule({
 		"month",
 	);
 	const [currentDate, setCurrentDate] = useState(new Date());
-	const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-
-	// 登録済みの講義のみをフィルタリング
-	const registeredCourses = courses.filter(
-		(course) => course.status === "registered",
-	);
 
 	// 曜日の配列
 	const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
@@ -143,7 +128,7 @@ export function Schedule({
 
 	// 週カレンダーデータを生成
 	const generateWeekCalendar = () => {
-		const { startOfWeek, endOfWeek } = getWeekRange(currentDate);
+		const { startOfWeek } = getWeekRange(currentDate);
 		const weekData = [];
 
 		for (let i = 0; i < 7; i++) {
@@ -170,15 +155,14 @@ export function Schedule({
 
 	// 指定された日のイベントを取得
 	const getEventsForDay = (date: Date) => {
-		const events = [];
+		const events: Event[] = [];
 
 		// 講義を追加
-		registeredCourses.forEach((course) => {
-			if (course.week && course.period) {
+		courses.forEach((course) => {
+			if (course.weekdays && course.period) {
 				const dayIndex = date.getDay();
-				const dayName = weekDaysFull[dayIndex];
 
-				if (course.week.includes(dayName)) {
+				if (course.weekdays === dayIndex) {
 					course.period.forEach((period) => {
 						const hour = Number.parseInt(period) * 2 + 7; // 1限=9時, 2限=11時...
 						const start = new Date(date);
@@ -201,11 +185,13 @@ export function Schedule({
 
 		// 個人スケジュールを追加
 		schedules.forEach((schedule) => {
-			if (isSameDay(schedule.start, date) || isSameDay(schedule.end, date)) {
+			if (isSameDay(schedule.startTime, date) || isSameDay(schedule.endTime, date)) {
 				events.push({
 					...schedule,
-					type: "personal",
+					type: "schedule",
 					color: "bg-gray-500",
+					start: schedule.startTime,
+					end: schedule.endTime,
 				});
 			}
 		});
