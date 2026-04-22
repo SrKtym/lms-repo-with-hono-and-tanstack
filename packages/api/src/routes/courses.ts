@@ -53,12 +53,12 @@ export const coursesRoute = new Hono<{
 			return c.json({ message: "course created", userId }, 201);
 		},
 	)
-	.delete(
-		"unregister/:courseId",
-		zValidator("param", z.string()),
+	.post(
+		"unregister",
+		zValidator("json", z.object({ courseId: z.string() })),
 		async (c) => {
 			const { userId } = c.get("session");
-			const courseId = c.req.valid("param");
+			const { courseId } = c.req.valid("json");
 			const result = await deleteCourse(courseId, userId);
 			return c.json(result);
 		},

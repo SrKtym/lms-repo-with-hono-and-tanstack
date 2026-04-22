@@ -15,7 +15,7 @@ interface CourseCardProps {
 		status?: string;
 	};
 	coverImage?: string;
-	LinkComponent: React.ReactNode;
+	LinkComponent?: React.ReactNode;
 }
 
 // CourseCard component

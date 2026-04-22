@@ -20,12 +20,6 @@ interface TimeTableCardProps {
 	availableCourses: FetchCoursesReturnType;
 }
 
-interface TimeSlot {
-	day: number;
-	period: number;
-	course: FetchRegisteredCoursesReturnType[number] | null;
-}
-
 export function TimeTableCard({
 	courses,
 	onDeleteCourse,
@@ -139,6 +133,7 @@ export function TimeTableCard({
 																<OutlineButton
 																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
 																	size="sm"
+																	onPress={() => targetSlot.course && onDeleteCourse(targetSlot.course.id)}
 																>
 																	<Trash width={12} height={12} />
 																</OutlineButton>

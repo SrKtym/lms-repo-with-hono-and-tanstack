@@ -1,7 +1,7 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import * as m from "motion/react-m";
-import { LazyMotionProvider } from "../../lazymotion-provider";
+import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
 
 interface MonthDay {
 	date: Date;

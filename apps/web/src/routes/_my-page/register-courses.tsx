@@ -8,12 +8,12 @@ import { DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { CourseDrawer } from "@lms-repo/ui/components/drawer";
 import { ConfirmationModal } from "@lms-repo/ui/components/modals/confirmation-modal";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { z } from "zod";
-import { LazyMotionProvider } from "@/components/lazymotion-provider";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/main";
 
@@ -42,7 +42,6 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		
 		// Prefetch data into TanStack Query cache
 		queryClient.setQueryData(["registered-courses"], result);
-		
 		return result;
 	},
 });
@@ -98,7 +97,7 @@ function RouteComponent() {
 
 	const courses = registeredCourses?.courses || [];
 
-	// Handle cell click to update searchParams
+	// search paramsのセット
 	const handleCellClick = (day: number, period: number) => {
 		navigate({
 			to: "/register-courses",
@@ -107,22 +106,77 @@ function RouteComponent() {
 	};
 
 	// 講義の登録
-	const handleRegisterCourses = async (courseId: string) => {
-		const res = await client.api.courses.register.single.$post({
-			json: courseId,
-		});
-		const data = await res.json();
-		return data;
-	};
+	const handleRegisterCourses = useMutation({
+		mutationFn: async (courseId: string) => {
+			const res = await client.api.courses.register.single.$post({
+				json: courseId,
+			});
+			const data = await res.json();
+			return data;
+		},
+		onMutate: async (courseId) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
+			
+			// Snapshot the previous value
+			const previousCourses = queryClient.getQueryData(["registered-courses"]);
+			
+			// Optimistically update to the new value
+			const courseToRegister = searchCourses?.find((course) => course.id === courseId);
+			if (courseToRegister) {
+				queryClient.setQueryData(["registered-courses"], (old: any) => ({
+					courses: [...(old?.courses || []), courseToRegister]
+				}));
+			}
+			
+			return { previousCourses };
+		},
+		onError: (err, courseId, context) => {
+			// If the mutation fails, use the context returned from onMutate to roll back
+			if (context?.previousCourses) {
+				queryClient.setQueryData(["registered-courses"], context.previousCourses);
+			}
+		},
+		onSettled: () => {
+			// Always refetch after error or success
+			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
+		},
+	});
 
 	// 講義の削除
-	const handleDeleteCourse = async (courseId: string) => {
-		const res = await client.api.courses.unregister[":courseId"].$delete({
-			param: courseId,
-		});
-		const data = await res.json();
-		return data;
-	};
+	const handleDeleteCourse = useMutation({
+		mutationFn: async (courseId: string) => {
+			const res = await client.api.courses.unregister.$post({
+				json: { courseId },
+			});
+			const data = await res.json();
+			return data;
+		},
+		onMutate: async (courseId) => {
+			// Cancel any outgoing refetches
+			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
+			
+			// Snapshot the previous value
+			const previousCourses = queryClient.getQueryData(["registered-courses"]);
+			
+			// Optimistically remove the course from the list
+			queryClient.setQueryData(["registered-courses"], (old: any) => ({
+				courses: old?.courses?.filter((course: any) => course.id !== courseId) || []
+			}));
+			
+			return { previousCourses };
+		},
+		onError: (err, courseId, context) => {
+			// If the mutation fails, use the context returned from onMutate to roll back
+			if (context?.previousCourses) {
+				queryClient.setQueryData(["registered-courses"], context.previousCourses);
+			}
+		},
+		onSettled: () => {
+			// Always refetch after error or success
+			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
+		},
+	});
 
 	return (
 		<div className="space-y-6 p-3">
@@ -222,8 +276,8 @@ function RouteComponent() {
 							>
 								<TimeTableCard
 									courses={courses}
-									onDeleteCourse={handleDeleteCourse}
-									onCourseSelect={handleRegisterCourses}
+									onDeleteCourse={handleDeleteCourse.mutate}
+									onCourseSelect={handleRegisterCourses.mutate}
 									onCellClick={handleCellClick}
 									isLoading={isLoading}
 									availableCourses={searchCourses || []}

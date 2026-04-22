@@ -2,6 +2,7 @@ import { Modal } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { CancelButton } from "../button";
 import { Loader } from "../loader";
+import { useNavigate } from "@tanstack/react-router";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
@@ -20,6 +21,13 @@ export function CourseSelectionModal({
 	isLoading = false,
 }: CourseSelectionModalProps) {
 	const days = ["月", "火", "水", "木", "金", "土", "日"];
+	// const navigate = useNavigate();
+	// const handleResetSearch = () => {
+	// 	navigate({
+	// 		to: "/register-courses",
+	// 		search: {},
+	// 	});
+	// };
 
 	return (
 		<Modal>

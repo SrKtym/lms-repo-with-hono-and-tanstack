@@ -5,7 +5,6 @@ import { List } from "@lms-repo/ui/assets/icons/list";
 import { Menu } from "@lms-repo/ui/assets/icons/menu";
 import { MessagesSquare } from "@lms-repo/ui/assets/icons/messages-square";
 import { SquarePlus } from "@lms-repo/ui/assets/icons/square-plus";
-import type React from "react";
 import { DropdownButton } from "../button";
 
 export const links = [
@@ -55,7 +54,9 @@ export function DropdownMenuForNavLink({
 					<Dropdown.Section>
 						{links.map(({ to, label }) => (
 							<Dropdown.Item key={to}>
-								<LinkComponent to={to}>{label}</LinkComponent>
+								<LinkComponent to={to}>
+									{label}
+								</LinkComponent>
 							</Dropdown.Item>
 						))}
 					</Dropdown.Section>

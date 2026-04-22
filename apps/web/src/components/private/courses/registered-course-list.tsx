@@ -7,7 +7,7 @@ import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { LazyMotionProvider } from "../../lazymotion-provider";
+import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
 
 interface CourseData {
 	course: {
