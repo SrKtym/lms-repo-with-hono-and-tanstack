@@ -1,5 +1,4 @@
 // ダッシュボードレイアウト
-
 import { authClient } from "@lms-repo/auth/web";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "@/components/header";

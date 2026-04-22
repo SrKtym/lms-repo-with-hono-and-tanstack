@@ -11,6 +11,7 @@ import {
 export async function fetchCourses(weekdays: number, period: number) {
 	const courseList = await db
 		.select({
+			id: courses.id,
 			name: courses.name,
 			weekdays: courses.weekdays,
 			period: courses.period,

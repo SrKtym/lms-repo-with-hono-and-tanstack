@@ -1,21 +1,23 @@
 import { Modal } from "@heroui/react";
+import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { CancelButton } from "../button";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
-	onCourseSelect: (course: FetchRegisteredCoursesReturnType[number]) => void;
-	availableCourses: FetchRegisteredCoursesReturnType;
-	selectedCell: { day: string; period: string } | null;
+	onCourseSelect: (course: FetchCoursesReturnType[number]) => void;
+	selectedCell: { day: string; period: string };
+	availableCourses: FetchCoursesReturnType;
 }
 
 // Course selection modal
 export function CourseSelectionModal({
 	triggerButton,
 	onCourseSelect,
-	availableCourses,
 	selectedCell,
+	availableCourses,
 }: CourseSelectionModalProps) {
+	const days = ["月", "火", "水", "木", "金", "土", "日"];
+
 	return (
 		<Modal>
 			{triggerButton}
@@ -25,9 +27,7 @@ export function CourseSelectionModal({
 						<Modal.CloseTrigger />
 						<Modal.Header>
 							<Modal.Heading className="text-gray-900 dark:text-white">
-								{selectedCell
-									? `${selectedCell.day} ${selectedCell.period} の講義を選択`
-									: "講義を選択"}
+								{`${days[Number.parseInt(selectedCell.day) - 1]}曜日 ${selectedCell.period}限 の講義を選択`}
 							</Modal.Heading>
 						</Modal.Header>
 						<Modal.Body>

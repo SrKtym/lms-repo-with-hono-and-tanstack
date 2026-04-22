@@ -1,4 +1,4 @@
-import { ColorSwatchPicker as Picker, type Color } from "@heroui/react";
+import { type Color, ColorSwatchPicker as Picker } from "@heroui/react";
 
 interface ColorSwatchPickerProps {
 	value: string;
@@ -6,10 +6,7 @@ interface ColorSwatchPickerProps {
 }
 
 // 汎用カラースイッチピッカー
-export function ColorSwatchPicker({
-	value,
-	onChange,
-}: ColorSwatchPickerProps) {
+export function ColorSwatchPicker({ value, onChange }: ColorSwatchPickerProps) {
 	return (
 		<Picker value={value} onChange={onChange}>
 			<Picker.Item color="#F43F5E">

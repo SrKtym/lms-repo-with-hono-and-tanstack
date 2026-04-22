@@ -1,7 +1,7 @@
 import { Drawer } from "@heroui/react";
-import { DataTable } from "./table";
 import { CancelButton } from "./button";
 import { CustomPagination } from "./pagination";
+import { DataTable } from "./table";
 
 export function CourseDrawer({
 	triggerButton,
