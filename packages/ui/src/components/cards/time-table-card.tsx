@@ -39,12 +39,14 @@ export function TimeTableCard({
 	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
 	// 時間割データを作成
-	Array.from({ length: 5 }).forEach((_, index) => {
-		const day = index + 1;
-		const period = index + 1;
-		const course =
-			courses.find((c) => c.weekdays === day && c.period === period) || null;
-		timeSlots.push({ day, period, course });
+	Array.from({ length: 5 }).forEach((_, dayIndex) => {
+		const day = dayIndex + 1;
+		Array.from({ length: 5 }).forEach((_, periodIndex) => {
+			const period = periodIndex + 1;
+			const course =
+				courses.find((c) => c.weekdays === day && c.period === period) || null;
+			timeSlots.push({ day, period, course });
+		});
 	});
 
 	return (
@@ -56,40 +58,40 @@ export function TimeTableCard({
 							<th className="border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
 								時間
 							</th>
-							{timeSlots.map((slot, index) => (
+							{timeSlots.map(({ day }) => (
 								<m.th
-									key={slot.day}
+									key={day}
 									initial={{ opacity: 0, y: -10 }}
 									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
+									transition={{ duration: 0.2, delay: 0.1 + day * 0.05 }}
 									className="min-w-[120px] border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800"
 								>
-									{` ${days[slot.day]}曜日 `}
+									{` ${days[day]} `}
 								</m.th>
 							))}
 						</tr>
 					</thead>
 					<tbody>
-						{timeSlots.map((slot, index) => (
+						{timeSlots.map(({ period }) => (
 							<m.tr
-								key={slot.period}
+								key={period}
 								initial={{ opacity: 0, x: -20 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{
 									duration: 0.2,
-									delay: 0.2 + index * 0.05,
+									delay: 0.2 + period * 0.05,
 								}}
 							>
 								<td className="border border-gray-300 bg-gray-50 p-2 text-center font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-									{`${slot.period}限`}
+									{`${period} `}
 								</td>
-								{timeSlots.map((slot) => {
+								{timeSlots.map(({ day }) => {
 									const targetSlot = timeSlots.find(
-										(s) => s.day === slot.day && s.period === slot.period,
+										(s) => s.day === day && s.period === period,
 									);
 									return (
 										<m.td
-											key={`${targetSlot?.day}-${targetSlot?.period}`}
+											key={`${day}-${period}`}
 											className="h-20 border border-gray-300 p-1 align-top dark:border-gray-600"
 										>
 											<AnimatePresence mode="wait">
@@ -119,7 +121,7 @@ export function TimeTableCard({
 																		<OutlineButton
 																				className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
 																				size="sm"
-																				onClick={() => onCellClick?.(slot.day, slot.period)}
+																				onClick={() => onCellClick?.(day, period)}
 																			>
 																				<Edit width={10} height={10} />
 																			</OutlineButton>
@@ -128,8 +130,8 @@ export function TimeTableCard({
 																		onCourseSelect(course.id)
 																	}
 																	selectedCell={{
-																		day: slot.day.toString(),
-																		period: slot.period.toString(),
+																		day: day.toString(),
+																		period: period.toString(),
 																	}}
 																	availableCourses={availableCourses}
 																	isLoading={isLoading}
@@ -148,7 +150,7 @@ export function TimeTableCard({
 														triggerButton={
 															<OutlineButton 
 																className="h-full rounded-lg"
-																onClick={() => onCellClick?.(slot.day, slot.period)}
+																onClick={() => onCellClick?.(day, period)}
 															>
 																<Plus />
 															</OutlineButton>
@@ -157,8 +159,8 @@ export function TimeTableCard({
 															onCourseSelect(course.id)
 														}
 														selectedCell={{
-															day: slot?.day.toString(),
-															period: slot?.period.toString(),
+															day: day.toString(),
+															period: period.toString(),
 														}}
 														availableCourses={availableCourses}
 														isLoading={isLoading}
