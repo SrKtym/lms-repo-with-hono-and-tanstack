@@ -15,7 +15,7 @@ import { useState } from "react";
 import { z } from "zod";
 import { LazyMotionProvider } from "@/components/lazymotion-provider";
 import { client } from "@/lib/hono-client";
-import { queryClient } from "@/lib/query-client";
+import { queryClient } from "@/main";
 
 interface TableState {
 	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
