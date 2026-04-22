@@ -7,7 +7,6 @@ import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { useState } from "react";
 import { OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
 import { BaseCard } from "./base-card";

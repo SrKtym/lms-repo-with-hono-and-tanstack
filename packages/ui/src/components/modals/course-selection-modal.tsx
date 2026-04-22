@@ -1,6 +1,7 @@
 import { Modal } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { CancelButton } from "../button";
+import { Loader } from "../loader";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
@@ -34,11 +35,7 @@ export function CourseSelectionModal({
 						</Modal.Header>
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
-								{isLoading ? (
-									<div className="flex justify-center py-8">
-										<div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
-									</div>
-								) : (
+								{isLoading ? <Loader /> : (
 									availableCourses.map((course) => (
 										<div
 											key={course.id}
@@ -49,15 +46,14 @@ export function CourseSelectionModal({
 												{course.name}
 											</div>
 											<div className="text-gray-600 text-sm dark:text-gray-400">
-												<p>singleLine:1</p>
-												<p>singleLine:1</p>
+												<p>{days[Number.parseInt(selectedCell.day) - 1]}・{selectedCell.period}</p>
 											</div>
 										</div>
 									))
 								)}
 								{!isLoading && availableCourses.length === 0 && (
 									<div className="py-8 text-center text-gray-500 dark:text-gray-400">
-										<p>singleLine:1</p>
+										<p>該当する講義が見つかりません</p>
 									</div>
 								)}
 							</div>
