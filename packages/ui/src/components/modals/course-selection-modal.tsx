@@ -7,6 +7,7 @@ interface CourseSelectionModalProps {
 	onCourseSelect: (course: FetchCoursesReturnType[number]) => void;
 	selectedCell: { day: string; period: string };
 	availableCourses: FetchCoursesReturnType;
+	isLoading?: boolean;
 }
 
 // Course selection modal
@@ -15,6 +16,7 @@ export function CourseSelectionModal({
 	onCourseSelect,
 	selectedCell,
 	availableCourses,
+	isLoading = false,
 }: CourseSelectionModalProps) {
 	const days = ["月", "火", "水", "木", "金", "土", "日"];
 
@@ -32,24 +34,30 @@ export function CourseSelectionModal({
 						</Modal.Header>
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
-								{availableCourses.map((course) => (
-									<div
-										key={course.id}
-										onClick={() => onCourseSelect(course)}
-										className="cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
-									>
-										<div className="font-medium text-gray-900 dark:text-white">
-											{course.name}
-										</div>
-										<div className="text-gray-600 text-sm dark:text-gray-400">
-											<p>担当教員: {course.professor}</p>
-											<p>単位: {course.credits}</p>
-										</div>
+								{isLoading ? (
+									<div className="flex justify-center py-8">
+										<div className="h-8 w-8 animate-spin rounded-full border-4 border-gray-300 border-t-blue-500"></div>
 									</div>
-								))}
-								{availableCourses.length === 0 && (
+								) : (
+									availableCourses.map((course) => (
+										<div
+											key={course.id}
+											onClick={() => onCourseSelect(course)}
+											className="cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
+										>
+											<div className="font-medium text-gray-900 dark:text-white">
+												{course.name}
+											</div>
+											<div className="text-gray-600 text-sm dark:text-gray-400">
+												<p>singleLine:1</p>
+												<p>singleLine:1</p>
+											</div>
+										</div>
+									))
+								)}
+								{!isLoading && availableCourses.length === 0 && (
 									<div className="py-8 text-center text-gray-500 dark:text-gray-400">
-										該当する講義がありません
+										<p>singleLine:1</p>
 									</div>
 								)}
 							</div>

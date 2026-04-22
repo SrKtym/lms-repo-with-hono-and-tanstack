@@ -16,6 +16,9 @@ interface TimeTableCardProps {
 	courses: FetchRegisteredCoursesReturnType;
 	onDeleteCourse: (courseId: string) => void;
 	onCourseSelect: (courseId: string) => void;
+	onCellClick?: (day: number, period: number) => void;
+	isLoading?: boolean;
+	availableCourses: FetchCoursesReturnType;
 }
 
 interface TimeSlot {
@@ -28,11 +31,11 @@ export function TimeTableCard({
 	courses,
 	onDeleteCourse,
 	onCourseSelect,
+	onCellClick,
+	isLoading = false,
+	availableCourses,
 }: TimeTableCardProps) {
 	const timeSlots: TimeSlot[] = [];
-	const [availableCourses, setAvailableCourses] =
-		useState<FetchCoursesReturnType>([]);
-
 	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
 	// 時間割データを作成
@@ -114,11 +117,12 @@ export function TimeTableCard({
 																<CourseSelectionModal
 																	triggerButton={
 																		<OutlineButton
-																			className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
-																			size="sm"
-																		>
-																			<Edit width={10} height={10} />
-																		</OutlineButton>
+																				className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
+																				size="sm"
+																				onClick={() => onCellClick?.(slot.day, slot.period)}
+																			>
+																				<Edit width={10} height={10} />
+																			</OutlineButton>
 																	}
 																	onCourseSelect={(course) =>
 																		onCourseSelect(course.id)
@@ -128,6 +132,7 @@ export function TimeTableCard({
 																		period: slot.period.toString(),
 																	}}
 																	availableCourses={availableCourses}
+																	isLoading={isLoading}
 																/>
 																<OutlineButton
 																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
@@ -141,7 +146,10 @@ export function TimeTableCard({
 												) : (
 													<CourseSelectionModal
 														triggerButton={
-															<OutlineButton className="h-full rounded-lg">
+															<OutlineButton 
+																className="h-full rounded-lg"
+																onClick={() => onCellClick?.(slot.day, slot.period)}
+															>
 																<Plus />
 															</OutlineButton>
 														}
@@ -153,6 +161,7 @@ export function TimeTableCard({
 															period: slot?.period.toString(),
 														}}
 														availableCourses={availableCourses}
+														isLoading={isLoading}
 													/>
 												)}
 											</AnimatePresence>
