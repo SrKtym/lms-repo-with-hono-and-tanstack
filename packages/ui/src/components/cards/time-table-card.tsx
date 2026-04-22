@@ -119,12 +119,12 @@ export function TimeTableCard({
 																<CourseSelectionModal
 																	triggerButton={
 																		<OutlineButton
-																				className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
-																				size="sm"
-																				onClick={() => onCellClick?.(day, period)}
-																			>
-																				<Edit width={10} height={10} />
-																			</OutlineButton>
+																			className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
+																			size="sm"
+																			onPress={() => onCellClick?.(day, period)}
+																		>
+																			<Edit width={10} height={10} />
+																		</OutlineButton>
 																	}
 																	onCourseSelect={(course) =>
 																		onCourseSelect(course.id)
@@ -150,7 +150,7 @@ export function TimeTableCard({
 														triggerButton={
 															<OutlineButton 
 																className="h-full rounded-lg"
-																onClick={() => onCellClick?.(day, period)}
+																onPress={() => onCellClick?.(day, period)}
 															>
 																<Plus />
 															</OutlineButton>
