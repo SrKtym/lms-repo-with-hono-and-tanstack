@@ -35,19 +35,20 @@ export function TimeTableCard({
 	isLoading = false,
 	availableCourses,
 }: TimeTableCardProps) {
-	const timeSlots: TimeSlot[] = [];
 	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
-	// 時間割データを作成
-	Array.from({ length: 5 }).forEach((_, dayIndex) => {
-		const day = dayIndex + 1;
-		Array.from({ length: 5 }).forEach((_, periodIndex) => {
+	// Generate timeSlots and extract unique values
+	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) => 
+		Array.from({ length: 5 }, (_, periodIndex) => {
+			const day = dayIndex + 1;
 			const period = periodIndex + 1;
-			const course =
-				courses.find((c) => c.weekdays === day && c.period === period) || null;
-			timeSlots.push({ day, period, course });
-		});
-	});
+			const course = courses.find((c) => c.weekdays === day && c.period === period) || null;
+			return { day, period, course };
+		})
+	).flat();
+
+	const uniqueDays = [...new Set(timeSlots.map((slot) => slot.day))];
+	const uniquePeriods = [...new Set(timeSlots.map((slot) => slot.period))];
 
 	return (
 		<BaseCard className="p-6">
@@ -58,7 +59,7 @@ export function TimeTableCard({
 							<th className="border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
 								時間
 							</th>
-							{timeSlots.map(({ day }) => (
+							{uniqueDays.map((day) => (
 								<m.th
 									key={day}
 									initial={{ opacity: 0, y: -10 }}
@@ -72,7 +73,7 @@ export function TimeTableCard({
 						</tr>
 					</thead>
 					<tbody>
-						{timeSlots.map(({ period }) => (
+						{uniquePeriods.map((period) => (
 							<m.tr
 								key={period}
 								initial={{ opacity: 0, x: -20 }}
@@ -85,7 +86,7 @@ export function TimeTableCard({
 								<td className="border border-gray-300 bg-gray-50 p-2 text-center font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
 									{`${period} `}
 								</td>
-								{timeSlots.map(({ day }) => {
+								{uniqueDays.map((day) => {
 									const targetSlot = timeSlots.find(
 										(s) => s.day === day && s.period === period,
 									);
