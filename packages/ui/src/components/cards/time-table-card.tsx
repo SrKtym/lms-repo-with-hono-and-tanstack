@@ -1,42 +1,47 @@
+import type {
+	FetchCoursesReturnType,
+	FetchRegisteredCoursesReturnType,
+} from "@lms-repo/db/utils/query/courses";
 import { Edit } from "@lms-repo/ui/assets/icons/edit";
 import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import { useState } from "react";
 import { OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
 import { BaseCard } from "./base-card";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 
 interface TimeTableCardProps {
 	courses: FetchRegisteredCoursesReturnType;
-	onDeleteCourse?: (weekdays: string, period: string) => void;
-	onCellPress?: (day: string, period: string) => void;
+	onDeleteCourse: (courseId: string) => void;
+	onCourseSelect: (courseId: string) => void;
 }
 
 interface TimeSlot {
-	day: string;
-	period: string;
+	day: number;
+	period: number;
 	course: FetchRegisteredCoursesReturnType[number] | null;
 }
 
 export function TimeTableCard({
 	courses,
 	onDeleteCourse,
-	onCellPress,
+	onCourseSelect,
 }: TimeTableCardProps) {
 	const timeSlots: TimeSlot[] = [];
-	const days = ["月曜", "火曜", "水曜", "木曜", "金曜"];
-	const periods = ["1限", "2限", "3限", "4限", "5限"];
+	const [availableCourses, setAvailableCourses] =
+		useState<FetchCoursesReturnType>([]);
+
+	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
 	// 時間割データを作成
-	days.forEach((day) => {
-		periods.forEach((period) => {
-			const registeredCourse = courses.find(
-				(c) => c.weekdays === Number(day) && c.period === Number(period),
-			);
-			timeSlots.push({ day, period, course: registeredCourse || null });
-		});
+	Array.from({ length: 5 }).forEach((_, index) => {
+		const day = index + 1;
+		const period = index + 1;
+		const course =
+			courses.find((c) => c.weekdays === day && c.period === period) || null;
+		timeSlots.push({ day, period, course });
 	});
 
 	return (
@@ -48,46 +53,46 @@ export function TimeTableCard({
 							<th className="border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
 								時間
 							</th>
-							{days.map((day, index) => (
+							{timeSlots.map((slot, index) => (
 								<m.th
-									key={day}
+									key={slot.day}
 									initial={{ opacity: 0, y: -10 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.2, delay: 0.1 + index * 0.05 }}
 									className="min-w-[120px] border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800"
 								>
-									{day}
+									{` ${days[slot.day]}曜日 `}
 								</m.th>
 							))}
 						</tr>
 					</thead>
 					<tbody>
-						{periods.map((period, periodIndex) => (
+						{timeSlots.map((slot, index) => (
 							<m.tr
-								key={period}
+								key={slot.period}
 								initial={{ opacity: 0, x: -20 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{
 									duration: 0.2,
-									delay: 0.2 + periodIndex * 0.05,
+									delay: 0.2 + index * 0.05,
 								}}
 							>
 								<td className="border border-gray-300 bg-gray-50 p-2 text-center font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-									{period}
+									{`${slot.period}限`}
 								</td>
-								{days.map((day) => {
-									const slot = timeSlots.find(
-										(s) => s.day === day && s.period === period,
+								{timeSlots.map((slot) => {
+									const targetSlot = timeSlots.find(
+										(s) => s.day === slot.day && s.period === slot.period,
 									);
 									return (
 										<m.td
-											key={`${day}-${period}`}
+											key={`${targetSlot?.day}-${targetSlot?.period}`}
 											className="h-20 border border-gray-300 p-1 align-top dark:border-gray-600"
 										>
 											<AnimatePresence mode="wait">
-												{slot?.course ? (
+												{targetSlot?.course ? (
 													<m.div
-														key={slot.course.id}
+														key={targetSlot.course.id}
 														initial={{ opacity: 0, scale: 0.8 }}
 														animate={{ opacity: 1, scale: 1 }}
 														exit={{ opacity: 0, scale: 0.8 }}
@@ -95,13 +100,13 @@ export function TimeTableCard({
 														className="group relative h-full rounded border p-2 text-xs hover:shadow-md"
 													>
 														<div className="truncate font-semibold text-xs">
-															{slot.course.name}
+															{targetSlot.course.name}
 														</div>
 														<div className="mt-1 truncate text-gray-600 dark:text-gray-300">
-															{slot.course.professor}
+															{targetSlot.course.professor}
 														</div>
 														<div className="mt-1 text-gray-500 dark:text-gray-400">
-															{slot.course.credits}単位
+															{targetSlot.course.credits}単位
 														</div>
 														{/* Action buttons */}
 														<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -115,14 +120,18 @@ export function TimeTableCard({
 																			<Edit width={10} height={10} />
 																		</OutlineButton>
 																	}
-																	onCourseSelect={() => onCellPress?.(day, period)}
-																	availableCourses={courses}
-																	selectedCell={{ day, period }}
+																	onCourseSelect={(course) =>
+																		onCourseSelect(course.id)
+																	}
+																	selectedCell={{
+																		day: slot.day.toString(),
+																		period: slot.period.toString(),
+																	}}
+																	availableCourses={availableCourses}
 																/>
 																<OutlineButton
 																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
 																	size="sm"
-																	onPress={() => onDeleteCourse?.(day, period)}
 																>
 																	<Trash width={12} height={12} />
 																</OutlineButton>
@@ -132,15 +141,18 @@ export function TimeTableCard({
 												) : (
 													<CourseSelectionModal
 														triggerButton={
-															<OutlineButton className="h-full rounded-lg" onPress={() => {}}>
+															<OutlineButton className="h-full rounded-lg">
 																<Plus />
 															</OutlineButton>
 														}
-														onCourseSelect={(course) => {
-															console.log(course);
+														onCourseSelect={(course) =>
+															onCourseSelect(course.id)
+														}
+														selectedCell={{
+															day: slot?.day.toString(),
+															period: slot?.period.toString(),
 														}}
-														availableCourses={courses}
-														selectedCell={{ day, period }}
+														availableCourses={availableCourses}
 													/>
 												)}
 											</AnimatePresence>

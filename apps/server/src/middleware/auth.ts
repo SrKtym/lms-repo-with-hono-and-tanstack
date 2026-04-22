@@ -4,8 +4,8 @@ import { createMiddleware } from "hono/factory";
 
 export const authMiddleware = createMiddleware<{
 	Variables: {
-		user: Session["user"]
-		session: Session["session"]
+		user: Session["user"];
+		session: Session["session"];
 	};
 }>(async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });

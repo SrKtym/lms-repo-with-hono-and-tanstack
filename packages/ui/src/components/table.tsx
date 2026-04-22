@@ -10,7 +10,7 @@ interface Column {
 
 interface Row {
 	[columnId: string]: string | undefined;
-};
+}
 
 // 汎用テーブル
 export function DataTable({

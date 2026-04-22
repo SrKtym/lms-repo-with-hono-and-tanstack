@@ -1,5 +1,5 @@
-import { InputForForm } from "@lms-repo/ui/components/input";
 import { ColorSwatchPicker } from "@lms-repo/ui/components/color-swatch-picker";
+import { InputForForm } from "@lms-repo/ui/components/input";
 import {
 	getLocalTimeZone,
 	now,

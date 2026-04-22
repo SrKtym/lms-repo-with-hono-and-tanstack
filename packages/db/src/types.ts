@@ -4,6 +4,7 @@ import type {
 	comments,
 	courses,
 	notifications,
+	registration,
 	schedules,
 } from "@lms-repo/db/schema/service";
 import type { user } from "./schema/auth";
@@ -15,6 +16,7 @@ export type Assignments = typeof assignments.$inferInsert;
 export type Comments = typeof comments.$inferInsert;
 export type Notifications = typeof notifications.$inferInsert;
 export type Schedules = typeof schedules.$inferInsert;
+export type Registration = typeof registration.$inferInsert;
 
 export type CoursesOptional = "id" | "departmentId" | "professorId";
 export type UserOptional = "id";

@@ -1,9 +1,9 @@
 import { Modal } from "@heroui/react";
+import { getLocalTimeZone, now } from "@lms-repo/ui/lib/utils";
 import type React from "react";
 import { useState } from "react";
 import { CancelButton, DefaultButton } from "../button";
 import { InputForForm } from "../input";
-import { getLocalTimeZone, now } from "@lms-repo/ui/lib/utils";
 
 interface Schedule {
 	title: string;

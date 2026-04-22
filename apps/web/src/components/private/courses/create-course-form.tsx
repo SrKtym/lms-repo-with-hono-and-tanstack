@@ -1,12 +1,12 @@
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useForm } from "@tanstack/react-form";
-import { client } from "@/lib/hono-client";
 import { z } from "zod";
+import { client } from "@/lib/hono-client";
 
 export function CreateCourseForm() {
 	const options = ["必修", "選択必修", "任意"] as const;
-	type Requirements = typeof options[number];
+	type Requirements = (typeof options)[number];
 
 	const form = useForm({
 		defaultValues: {
@@ -185,7 +185,9 @@ export function CreateCourseForm() {
 					<div className="space-y-2">
 						<DefaultSelect
 							value={field.state.value}
-							onValueChange={(value) => field.handleChange(value as Requirements)}
+							onValueChange={(value) =>
+								field.handleChange(value as Requirements)
+							}
 							items={[...options]}
 							ariaLabel="select requirements"
 						/>
@@ -241,7 +243,7 @@ export function CreateCourseForm() {
 								id: field.name,
 								name: field.name,
 								type: "hidden",
-								value: field.state.value
+								value: field.state.value,
 							}}
 						/>
 					</div>
