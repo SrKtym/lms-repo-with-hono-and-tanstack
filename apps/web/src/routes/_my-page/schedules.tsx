@@ -1,7 +1,4 @@
-import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
-import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import { CreateScheduleModal } from "@lms-repo/ui/components/modals/create-schedule-modal";
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -9,7 +6,8 @@ import { DayView } from "@/components/private/schedules/day-view";
 import { MonthView } from "@/components/private/schedules/month-view";
 import { WeekView } from "@/components/private/schedules/week-view";
 import { useRegisteredCourses } from "@/hooks/courses";
-import { useCreateSchedule, useSchedules } from "@/hooks/schedules";
+import { useSchedules } from "@/hooks/schedules";
+import { CreateScheduleForm } from "@/components/private/schedules/create-schedule-form";
 
 export interface Event {
 	id: string;
@@ -269,6 +267,7 @@ function RouteComponent() {
 									{view === "month" ? "月" : view === "week" ? "週" : "日"}
 								</m.button>
 							))}
+							<CreateScheduleForm />
 						</div>
 					</div>
 				</m.div>

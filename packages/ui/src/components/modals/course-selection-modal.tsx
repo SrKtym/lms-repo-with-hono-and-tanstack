@@ -37,7 +37,7 @@ export function CourseSelectionModal({
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
 								{isLoading ? (
-									<Loader className="min-h-0" />
+									<Loader className="min-h-auto" />
 								) : (
 									availableCourses.map((course) => (
 										<div

@@ -72,7 +72,7 @@ export function CreateScheduleForm() {
 					e.stopPropagation;
 					form.handleSubmit();
 				}}
-				className="form-field"
+				className="form-field p-1"
 			>
 				<form.Field name="title">
 					{(field) => (

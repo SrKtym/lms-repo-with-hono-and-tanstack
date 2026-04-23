@@ -16,12 +16,15 @@ export const schedulesRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.get("/select", zValidator("param", z.string().optional()), async (c) => {
-		const { userId } = c.get("session");
-		const scheduleId = c.req.valid("param");
-		const result = await fetchSchedules(userId, scheduleId);
-		return c.json(result, 200);
-	})
+	.get(
+		"/select", 
+		zValidator("param", z.string().optional()), 
+		async (c) => {
+			const { userId } = c.get("session");
+			const scheduleId = c.req.valid("param");
+			const result = await fetchSchedules(userId, scheduleId);
+			return c.json(result, 200);
+		})
 	.post(
 		"/create",
 		zValidator("json", z.custom<Omit<Schedules, SchedulesOptional>>()),
@@ -35,8 +38,11 @@ export const schedulesRoute = new Hono<{
 			return c.json(result);
 		},
 	)
-	.post("/delete", zValidator("json", z.string()), async (c) => {
-		const scheduleId = c.req.valid("json");
-		const result = await deleteSchedules(scheduleId);
-		return c.json(result);
-	});
+	.post(
+		"/delete", 
+		zValidator("json", z.string()), 
+		async (c) => {
+			const scheduleId = c.req.valid("json");
+			const result = await deleteSchedules(scheduleId);
+			return c.json(result);
+		});
