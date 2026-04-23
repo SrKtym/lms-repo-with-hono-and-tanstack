@@ -2,7 +2,7 @@ import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import * as m from "motion/react-m";
 import type { Event } from "@/routes/_my-page/schedules";
-import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { CurrentTimeIndicator } from "../current-time-indicator";
 
 interface WeekDay {
