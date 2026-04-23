@@ -1,20 +1,13 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import * as m from "motion/react-m";
+import type { Event } from "@/routes/_my-page/schedules";
 import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
 import { CurrentTimeIndicator } from "../current-time-indicator";
 
 interface WeekDay {
 	date: Date;
 	isToday: boolean;
-}
-
-interface Event {
-	id: string;
-	title: string;
-	start: Date;
-	end: Date;
-	color: string;
 }
 
 interface WeekViewProps {
@@ -149,10 +142,10 @@ export function WeekView({
 
 										{/* イベント */}
 										{events.map((event) => {
-											const startHour = event.start.getHours();
-											const startMinute = event.start.getMinutes();
-											const endHour = event.end.getHours();
-											const endMinute = event.end.getMinutes();
+											const startHour = event.startTime.getHours();
+											const startMinute = event.startTime.getMinutes();
+											const endHour = event.endTime.getHours();
+											const endMinute = event.endTime.getMinutes();
 
 											const top = (startHour + startMinute / 60) * 64;
 											const height =
@@ -170,11 +163,14 @@ export function WeekView({
 														delay: events.indexOf(event) * 0.1,
 														duration: 0.3,
 													}}
-													className={`absolute right-1 left-1 rounded p-1 text-white text-xs ${event.color}`}
+													className={
+														"absolute right-1 left-1 rounded p-1 text-white text-xs"
+													}
 													style={{
 														top: `${top}px`,
 														height: `${height}px`,
 														minHeight: "20px",
+														backgroundColor: event.theme,
 													}}
 													whileHover={{ scale: 1.02, zIndex: 10 }}
 													whileTap={{ scale: 0.98 }}
@@ -183,7 +179,7 @@ export function WeekView({
 														{event.title}
 													</div>
 													<div className="text-xs opacity-80">
-														{event.start.toLocaleTimeString("ja-JP", {
+														{event.startTime.toLocaleTimeString("ja-JP", {
 															hour: "2-digit",
 															minute: "2-digit",
 														})}

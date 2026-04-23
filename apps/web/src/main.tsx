@@ -1,10 +1,8 @@
 import { Loader } from "@lms-repo/ui/components/loader";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
+import { QueryClientProvider, queryClient } from "@/lib/query-client";
 import { routeTree } from "./routeTree.gen";
-
-export const queryClient = new QueryClient();
 
 const router = createRouter({
 	routeTree,
@@ -29,6 +27,6 @@ if (!rootElement.innerHTML) {
 	root.render(
 		<QueryClientProvider client={queryClient}>
 			<RouterProvider router={router} />
-		</QueryClientProvider>
+		</QueryClientProvider>,
 	);
 }

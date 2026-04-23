@@ -1,8 +1,7 @@
-import { Modal } from "@heroui/react";
+import { Modal, useOverlayState } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { CancelButton } from "../button";
 import { Loader } from "../loader";
-import { useNavigate } from "@tanstack/react-router";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
@@ -21,16 +20,10 @@ export function CourseSelectionModal({
 	isLoading = false,
 }: CourseSelectionModalProps) {
 	const days = ["月", "火", "水", "木", "金", "土", "日"];
-	// const navigate = useNavigate();
-	// const handleResetSearch = () => {
-	// 	navigate({
-	// 		to: "/register-courses",
-	// 		search: {},
-	// 	});
-	// };
+	const state = useOverlayState();
 
 	return (
-		<Modal>
+		<Modal state={state}>
 			{triggerButton}
 			<Modal.Backdrop variant="transparent">
 				<Modal.Container size="lg">
@@ -43,7 +36,9 @@ export function CourseSelectionModal({
 						</Modal.Header>
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
-								{isLoading ? <Loader /> : (
+								{isLoading ? (
+									<Loader className="min-h-0" />
+								) : (
 									availableCourses.map((course) => (
 										<div
 											key={course.id}
@@ -54,7 +49,10 @@ export function CourseSelectionModal({
 												{course.name}
 											</div>
 											<div className="text-gray-600 text-sm dark:text-gray-400">
-												<p>{days[Number.parseInt(selectedCell.day) - 1]}・{selectedCell.period}</p>
+												<p>
+													{days[Number.parseInt(selectedCell.day) - 1]}・
+													{selectedCell.period}
+												</p>
 											</div>
 										</div>
 									))

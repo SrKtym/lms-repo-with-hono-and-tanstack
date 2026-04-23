@@ -31,13 +31,14 @@ export function TimeTableCard({
 	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
 	// Generate timeSlots and extract unique values
-	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) => 
+	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) =>
 		Array.from({ length: 5 }, (_, periodIndex) => {
 			const day = dayIndex + 1;
 			const period = periodIndex + 1;
-			const course = courses.find((c) => c.weekdays === day && c.period === period) || null;
+			const course =
+				courses.find((c) => c.weekdays === day && c.period === period) || null;
 			return { day, period, course };
-		})
+		}),
 	).flat();
 
 	const uniqueDays = [...new Set(timeSlots.map((slot) => slot.day))];
@@ -133,7 +134,10 @@ export function TimeTableCard({
 																<OutlineButton
 																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
 																	size="sm"
-																	onPress={() => targetSlot.course && onDeleteCourse(targetSlot.course.id)}
+																	onPress={() =>
+																		targetSlot.course &&
+																		onDeleteCourse(targetSlot.course.id)
+																	}
 																>
 																	<Trash width={12} height={12} />
 																</OutlineButton>
@@ -143,7 +147,7 @@ export function TimeTableCard({
 												) : (
 													<CourseSelectionModal
 														triggerButton={
-															<OutlineButton 
+															<OutlineButton
 																className="h-full rounded-lg"
 																onPress={() => onCellClick?.(day, period)}
 															>

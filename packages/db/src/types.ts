@@ -19,4 +19,5 @@ export type Schedules = typeof schedules.$inferInsert;
 export type Registration = typeof registration.$inferInsert;
 
 export type CoursesOptional = "id" | "departmentId" | "professorId";
+export type SchedulesOptional = "id" | "createdBy";
 export type UserOptional = "id";

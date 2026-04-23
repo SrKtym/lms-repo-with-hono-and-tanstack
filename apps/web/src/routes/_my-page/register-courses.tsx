@@ -7,15 +7,18 @@ import { Search } from "@lms-repo/ui/assets/icons/search";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { CourseDrawer } from "@lms-repo/ui/components/drawer";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { ConfirmationModal } from "@lms-repo/ui/components/modals/confirmation-modal";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { z } from "zod";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import { client } from "@/lib/hono-client";
-import { queryClient } from "@/main";
+import {
+	useRegisterCourse,
+	useRegisteredCourses,
+	useSearchCourses,
+	useUnregisterCourse,
+} from "@/hooks/courses";
 
 interface TableState {
 	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
@@ -29,26 +32,12 @@ interface TableState {
 
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
-	validateSearch: z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
-	loader: async () => {
-		const res = await client.api.courses.search.registered.$get();
-		const data = await res.json();
-		let result;
-		if ("message" in data) {
-			result = { courses: [] };
-		} else {
-			result = { courses: data };
-		}
-		
-		// Prefetch data into TanStack Query cache
-		queryClient.setQueryData(["registered-courses"], result);
-		return result;
-	},
+	validateSearch:
+		z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
 });
 
 function RouteComponent() {
 	const params = Route.useSearch();
-	const registeredCoursesData = Route.useLoaderData();
 	const navigate = useNavigate();
 	const [state] = useState<TableState>({
 		selectedCourse: null,
@@ -60,42 +49,17 @@ function RouteComponent() {
 		editFormData: null,
 	});
 
-	const { data: registeredCourses } = useQuery({
-		queryKey: ["registered-courses"],
-		queryFn: async () => {
-			const res = await client.api.courses.search.registered.$get();
-			const data = await res.json();
-			if ("message" in data) {
-				return { courses: [] };
-			}
-			return { courses: data };
-		},
-		initialData: registeredCoursesData,
-		staleTime: 5 * 60 * 1000, // 5 minutes
-	});
+	const { data: courses = [] } = useRegisteredCourses();
+	const { data: searchCourses = [], isLoading } = useSearchCourses(
+		params.weekdays,
+		params.period,
+	);
 
-	const { data: searchCourses, isLoading } = useQuery({
-		queryKey: ["search-courses", params.weekdays, params.period],
-		queryFn: async () => {
-			if (!params.weekdays || !params.period) {
-				return [];
-			}
-			const res = await client.api.courses.search[":weekdays"][
-				":period"
-			].$get({
-				param: {
-					weekdays: params.weekdays.toString(),
-					period: params.period.toString(),
-				},
-			});
-			const data = await res.json();
-			return data;
-		},
-		enabled: !!params.weekdays && !!params.period,
-		staleTime: 5 * 60 * 1000, // 5 minutes
-	});
+	// 講義の登録
+	const handleRegisterCourses = useRegisterCourse(searchCourses);
 
-	const courses = registeredCourses?.courses || [];
+	// 講義の削除
+	const handleDeleteCourse = useUnregisterCourse();
 
 	// search paramsのセット
 	const handleCellClick = (day: number, period: number) => {
@@ -104,79 +68,6 @@ function RouteComponent() {
 			search: { weekdays: day, period },
 		});
 	};
-
-	// 講義の登録
-	const handleRegisterCourses = useMutation({
-		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.register.single.$post({
-				json: courseId,
-			});
-			const data = await res.json();
-			return data;
-		},
-		onMutate: async (courseId) => {
-			// Cancel any outgoing refetches
-			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
-			
-			// Snapshot the previous value
-			const previousCourses = queryClient.getQueryData(["registered-courses"]);
-			
-			// Optimistically update to the new value
-			const courseToRegister = searchCourses?.find((course) => course.id === courseId);
-			if (courseToRegister) {
-				queryClient.setQueryData(["registered-courses"], (old: any) => ({
-					courses: [...(old?.courses || []), courseToRegister]
-				}));
-			}
-			
-			return { previousCourses };
-		},
-		onError: (err, courseId, context) => {
-			// If the mutation fails, use the context returned from onMutate to roll back
-			if (context?.previousCourses) {
-				queryClient.setQueryData(["registered-courses"], context.previousCourses);
-			}
-		},
-		onSettled: () => {
-			// Always refetch after error or success
-			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
-		},
-	});
-
-	// 講義の削除
-	const handleDeleteCourse = useMutation({
-		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.unregister.$post({
-				json: { courseId },
-			});
-			const data = await res.json();
-			return data;
-		},
-		onMutate: async (courseId) => {
-			// Cancel any outgoing refetches
-			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
-			
-			// Snapshot the previous value
-			const previousCourses = queryClient.getQueryData(["registered-courses"]);
-			
-			// Optimistically remove the course from the list
-			queryClient.setQueryData(["registered-courses"], (old: any) => ({
-				courses: old?.courses?.filter((course: any) => course.id !== courseId) || []
-			}));
-			
-			return { previousCourses };
-		},
-		onError: (err, courseId, context) => {
-			// If the mutation fails, use the context returned from onMutate to roll back
-			if (context?.previousCourses) {
-				queryClient.setQueryData(["registered-courses"], context.previousCourses);
-			}
-		},
-		onSettled: () => {
-			// Always refetch after error or success
-			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
-		},
-	});
 
 	return (
 		<div className="space-y-6 p-3">
@@ -220,7 +111,7 @@ function RouteComponent() {
 							>
 								<h2 className="font-bold text-xl">時間割</h2>
 								<m.div
-									key={courses?.length || 0}
+									key={courses.length}
 									initial={{ scale: 0.8, opacity: 0 }}
 									animate={{ opacity: 1, scale: 1 }}
 									transition={{ duration: 0.2 }}
@@ -280,7 +171,7 @@ function RouteComponent() {
 									onCourseSelect={handleRegisterCourses.mutate}
 									onCellClick={handleCellClick}
 									isLoading={isLoading}
-									availableCourses={searchCourses || []}
+									availableCourses={searchCourses}
 								/>
 							</m.div>
 						</div>

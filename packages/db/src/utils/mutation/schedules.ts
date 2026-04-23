@@ -4,21 +4,28 @@ import { schedules } from "../../schema";
 import type { Schedules } from "../../types";
 
 export async function createSchedules(schedulesData: Schedules) {
-	const schedulesList = await db.insert(schedules).values(schedulesData);
-	return schedulesList;
+	try {
+		await db.insert(schedules).values(schedulesData);
+		return { message: "スケジュールの作成に成功しました。", status: 201 };
+	} catch (error) {
+		return { message: "スケジュールの作成に失敗しました。", status: 500 };
+	}
 }
 
 export async function updateSchedules(schedulesData: Schedules) {
-	const schedulesList = await db.update(schedules).set(schedulesData);
-	return schedulesList;
+	try {
+		await db.update(schedules).set(schedulesData);
+		return { message: "スケジュールの更新に成功しました。", status: 200 };
+	} catch (error) {
+		return { message: "スケジュールの更新に失敗しました。", status: 500 };
+	}
 }
 
-export async function deleteSchedules(schedulesData: Schedules) {
-	if (!schedulesData.id) {
-		throw new Error("Schedule is not found");
+export async function deleteSchedules(scheduleId: string) {
+	try {
+		await db.delete(schedules).where(eq(schedules.id, scheduleId));
+		return { message: "スケジュールの削除に成功しました。", status: 200 };
+	} catch (error) {
+		return { message: "スケジュールの削除に失敗しました。", status: 500 };
 	}
-	const schedulesList = await db
-		.delete(schedules)
-		.where(eq(schedules.id, schedulesData.id));
-	return schedulesList;
 }

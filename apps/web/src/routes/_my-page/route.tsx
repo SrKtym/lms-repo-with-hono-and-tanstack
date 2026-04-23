@@ -1,4 +1,4 @@
-// ダッシュボードレイアウト
+// マイページレイアウト
 import { authClient } from "@lms-repo/auth/web";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "@/components/header";
@@ -13,6 +13,7 @@ export const Route = createFileRoute("/_my-page")({
 				throw: true,
 			});
 		}
+
 		return { session };
 	},
 	loader: ({ context }) => {

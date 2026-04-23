@@ -18,7 +18,7 @@ export function Header({ email, name, image }: UserData) {
 		<>
 			<div className="flex flex-row items-center justify-between px-3 py-2">
 				<nav className="flex items-center gap-4 text-lg">
-					<DropdownMenuForNavLink LinkComponent={Link}/>
+					<DropdownMenuForNavLink LinkComponent={Link} />
 					<div className="flex items-center gap-2">
 						<Books />
 						<h1 className="font-bold text-3xl">LMS</h1>

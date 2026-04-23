@@ -21,7 +21,7 @@ export function CreateCourseForm() {
 			professorId: "",
 		},
 		onSubmit: async ({ value }) => {
-			const res = await client.api.courses.single.$post({
+			const res = await client.api.courses.create.$post({
 				form: { ...value },
 			});
 			const data = await res.json();

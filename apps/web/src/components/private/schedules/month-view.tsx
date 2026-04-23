@@ -1,20 +1,13 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import * as m from "motion/react-m";
+import type { Event } from "@/routes/_my-page/schedules";
 import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
 
 interface MonthDay {
 	date: Date;
 	isCurrentMonth: boolean;
 	isToday: boolean;
-}
-
-interface Event {
-	id: string;
-	title: string;
-	start: Date;
-	end: Date;
-	color: string;
 }
 
 interface MonthViewProps {
@@ -131,7 +124,10 @@ export function MonthView({
 												initial={{ opacity: 0, x: -10 }}
 												animate={{ opacity: 1, x: 0 }}
 												transition={{ delay: index * 0.05 }}
-												className={`cursor-pointer truncate rounded p-1 text-white text-xs ${event.color}`}
+												className={
+													"cursor-pointer truncate rounded p-1 text-white text-xs"
+												}
+												style={{ backgroundColor: event.theme }}
 												whileHover={{ scale: 1.05 }}
 											>
 												{event.title}

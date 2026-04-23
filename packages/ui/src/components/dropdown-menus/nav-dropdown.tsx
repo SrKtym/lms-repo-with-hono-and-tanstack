@@ -54,9 +54,7 @@ export function DropdownMenuForNavLink({
 					<Dropdown.Section>
 						{links.map(({ to, label }) => (
 							<Dropdown.Item key={to}>
-								<LinkComponent to={to}>
-									{label}
-								</LinkComponent>
+								<LinkComponent to={to}>{label}</LinkComponent>
 							</Dropdown.Item>
 						))}
 					</Dropdown.Section>

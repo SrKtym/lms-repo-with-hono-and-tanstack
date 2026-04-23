@@ -1,17 +1,9 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import * as m from "motion/react-m";
+import type { Event } from "@/routes/_my-page/schedules";
 import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
 import { CurrentTimeIndicator } from "../current-time-indicator";
-
-interface Event {
-	id: string;
-	title: string;
-	start: Date;
-	end: Date;
-	description?: string;
-	color: string;
-}
 
 interface DayViewProps {
 	currentDate: Date;
@@ -97,10 +89,10 @@ export function DayView({
 						<CurrentTimeIndicator pixelsPerHour={80} />
 
 						{events.map((event) => {
-							const startHour = event.start.getHours();
-							const startMinute = event.start.getMinutes();
-							const endHour = event.end.getHours();
-							const endMinute = event.end.getMinutes();
+							const startHour = event.startTime.getHours();
+							const startMinute = event.startTime.getMinutes();
+							const endHour = event.endTime.getHours();
+							const endMinute = event.endTime.getMinutes();
 
 							const top = (startHour + startMinute / 60) * 80; // 80px per hour
 							const height =
@@ -118,11 +110,14 @@ export function DayView({
 										type: "spring",
 										stiffness: 100,
 									}}
-									className={`absolute right-2 left-2 rounded-lg p-3 text-white shadow-lg ${event.color}`}
+									className={
+										"absolute right-2 left-2 rounded-lg p-3 text-white shadow-lg"
+									}
 									style={{
 										top: `${top}px`,
 										height: `${height}px`,
 										minHeight: "40px",
+										backgroundColor: event.theme,
 									}}
 									whileHover={{
 										scale: 1.02,
@@ -133,12 +128,12 @@ export function DayView({
 								>
 									<div className="mb-1 font-bold text-sm">{event.title}</div>
 									<div className="text-xs opacity-90">
-										{event.start.toLocaleTimeString("ja-JP", {
+										{event.startTime.toLocaleTimeString("ja-JP", {
 											hour: "2-digit",
 											minute: "2-digit",
 										})}{" "}
 										-{" "}
-										{event.end.toLocaleTimeString("ja-JP", {
+										{event.endTime.toLocaleTimeString("ja-JP", {
 											hour: "2-digit",
 											minute: "2-digit",
 										})}
