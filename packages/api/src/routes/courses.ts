@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { Courses, Registration } from "@lms-repo/db/types";
+import type { Courses } from "@lms-repo/db/types";
 import {
 	createCourses,
 	deleteCourse,

@@ -47,7 +47,7 @@ export async function fetchRegisteredCourses(userId: string) {
 		})
 		.from(courses)
 		.innerJoin(registration, eq(courses.id, registration.courseId))
-		.innerJoin(user, eq(registration.userId, user.id))
+		.innerJoin(user, eq(courses.professorId, user.id))
 		.where(eq(registration.userId, userId));
 
 	return registeredCourseList;

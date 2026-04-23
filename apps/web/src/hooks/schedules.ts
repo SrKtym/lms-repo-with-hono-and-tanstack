@@ -52,7 +52,7 @@ export const useCreateSchedule = () => {
 
 			return { previousSchedules };
 		},
-		onError: (err, scheduleData, context) => {
+		onError: (_err, _scheduleData, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousSchedules) {
 				queryClient.setQueryData(["schedules"], context.previousSchedules);
@@ -90,7 +90,7 @@ export const useDeleteSchedule = () => {
 
 			return { previousSchedules };
 		},
-		onError: (err, scheduleId, context) => {
+		onError: (_err, _scheduleId, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousSchedules) {
 				queryClient.setQueryData(["schedules"], context.previousSchedules);
