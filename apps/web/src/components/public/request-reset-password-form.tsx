@@ -71,11 +71,10 @@ export default function RequestResetPasswordForm() {
 					</div>
 				</div>
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
-					Reset Your Password
+					パスワードのリセット
 				</h3>
 				<p className="text-gray-600 text-sm dark:text-gray-400">
-					Enter your email address and we'll send you a link to reset your
-					password
+					メールアドレスを入力することで、パスワードをリセットするためのメールが送信されます。
 				</p>
 			</div>
 

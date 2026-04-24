@@ -8,7 +8,7 @@ interface CourseSelectionModalProps {
 	onCourseSelect: (course: FetchCoursesReturnType[number]) => void;
 	selectedCell: { day: string; period: string };
 	availableCourses: FetchCoursesReturnType;
-	isLoading?: boolean;
+	isPending?: boolean;
 }
 
 // Course selection modal
@@ -17,7 +17,7 @@ export function CourseSelectionModal({
 	onCourseSelect,
 	selectedCell,
 	availableCourses,
-	isLoading = false,
+	isPending = false,
 }: CourseSelectionModalProps) {
 	const days = ["月", "火", "水", "木", "金", "土", "日"];
 	const state = useOverlayState();
@@ -36,7 +36,7 @@ export function CourseSelectionModal({
 						</Modal.Header>
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
-								{isLoading ? (
+								{isPending ? (
 									<Loader className="min-h-auto" />
 								) : (
 									availableCourses.map((course) => (
@@ -57,7 +57,7 @@ export function CourseSelectionModal({
 										</div>
 									))
 								)}
-								{!isLoading && availableCourses.length === 0 && (
+								{!isPending && availableCourses.length === 0 && (
 									<div className="py-8 text-center text-gray-500 dark:text-gray-400">
 										<p>該当する講義が見つかりません</p>
 									</div>

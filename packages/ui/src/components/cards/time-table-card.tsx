@@ -16,7 +16,7 @@ interface TimeTableCardProps {
 	onDeleteCourse: (courseId: string) => void;
 	onCourseSelect: (courseId: string) => void;
 	onCellClick?: (day: number, period: number) => void;
-	isLoading?: boolean;
+	isPending?: boolean;
 	availableCourses: FetchCoursesReturnType;
 }
 
@@ -25,7 +25,7 @@ export function TimeTableCard({
 	onDeleteCourse,
 	onCourseSelect,
 	onCellClick,
-	isLoading = false,
+	isPending = false,
 	availableCourses,
 }: TimeTableCardProps) {
 	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
@@ -129,7 +129,7 @@ export function TimeTableCard({
 																		period: period.toString(),
 																	}}
 																	availableCourses={availableCourses}
-																	isLoading={isLoading}
+																	isPending={isPending}
 																/>
 																<OutlineButton
 																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
@@ -162,7 +162,7 @@ export function TimeTableCard({
 															period: period.toString(),
 														}}
 														availableCourses={availableCourses}
-														isLoading={isLoading}
+														isPending={isPending}
 													/>
 												)}
 											</AnimatePresence>

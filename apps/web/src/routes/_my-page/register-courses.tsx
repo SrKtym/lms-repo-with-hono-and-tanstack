@@ -68,7 +68,7 @@ function RouteComponent() {
 	});
 
 	// 講義の検索
-	const { data: searchCourses = [], isLoading } = useSearchCourses(
+	const { data: searchCourses = [], isPending } = useSearchCourses(
 		params.weekdays,
 		params.period,
 	);
@@ -188,7 +188,7 @@ function RouteComponent() {
 									onDeleteCourse={handleDeleteCourse.mutateAsync}
 									onCourseSelect={handleRegisterCourses.mutateAsync}
 									onCellClick={handleCellClick}
-									isLoading={isLoading}
+									isPending={isPending}
 									availableCourses={searchCourses}
 								/>
 							</m.div>

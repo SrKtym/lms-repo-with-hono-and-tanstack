@@ -81,10 +81,10 @@ export default function ResetPassword({ token }: { token: string }) {
 					</div>
 				</div>
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
-					Reset Your Password
+					パスワードをリセット
 				</h3>
 				<p className="text-gray-600 text-sm dark:text-gray-400">
-					Enter your new password and confirm it to complete the reset
+					新しいパスワードを入力し、確認してリセットを完了してください
 				</p>
 			</div>
 
@@ -187,7 +187,7 @@ export default function ResetPassword({ token }: { token: string }) {
 							</svg>
 							<div>
 								<h4 className="font-medium text-green-800 dark:text-green-200">
-									Password Reset Successful!
+									パスワードのリセットに成功しました。
 								</h4>
 								<p className="text-green-600 text-sm dark:text-green-400">
 									Your password has been reset successfully. You can now sign in
