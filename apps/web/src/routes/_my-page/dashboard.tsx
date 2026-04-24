@@ -27,13 +27,8 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 			queryClient.ensureQueryData({
 				queryKey: ["schedules"],
 				queryFn: async () => {
-					const res = await client.api.schedules.select.$get({
-						query: {
-							scheduleId: undefined,
-						},
-					});
+					const res = await client.api.schedules.select.$get();
 					const data = await res.json();
-					// Convert string dates to Date objects
 					return data.map((schedule) => ({
 						...schedule,
 						startTime: new Date(schedule.startTime),

@@ -39,11 +39,7 @@ export const Route = createFileRoute("/_my-page/schedules")({
 			queryClient.ensureQueryData({
 				queryKey: ["schedules"],
 				queryFn: async () => {
-					const res = await client.api.schedules.select.$get({
-						query: {
-							scheduleId: undefined,
-						},
-					});
+					const res = await client.api.schedules.select.$get();
 					const data = await res.json();
 					return data;
 				},

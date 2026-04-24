@@ -5,7 +5,7 @@ import {
 	createSchedules,
 	deleteSchedules,
 } from "@lms-repo/db/utils/mutation/schedules";
-import { fetchSchedules } from "@lms-repo/db/utils/query/schedules";
+import { fetchScheduleById, fetchSchedules } from "@lms-repo/db/utils/query/schedules";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -18,11 +18,16 @@ export const schedulesRoute = new Hono<{
 }>()
 	.get(
 		"/select", 
-		zValidator("query", z.object({ scheduleId: z.string().optional() })), 
 		async (c) => {
 			const { userId } = c.get("session");
-			const { scheduleId } = c.req.valid("query");
-			const result = await fetchSchedules(userId, scheduleId);
+			const result = await fetchSchedules(userId);
+			return c.json(result, 200);
+		})
+	.get(
+		"/select/:scheduleId",
+		async (c) => {
+			const scheduleId = c.req.param("scheduleId");
+			const result = await fetchScheduleById(scheduleId);
 			return c.json(result, 200);
 		})
 	.post(
