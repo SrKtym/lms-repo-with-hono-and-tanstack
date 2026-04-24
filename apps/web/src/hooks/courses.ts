@@ -78,7 +78,7 @@ export const useRegisterCourse = (
 
 			return { previousCourses };
 		},
-		onError: (err, courseId, context) => {
+		onError: (_err, _courseId, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousCourses) {
 				queryClient.setQueryData(
@@ -119,7 +119,7 @@ export const useUnregisterCourse = () => {
 
 			return { previousCourses };
 		},
-		onError: (err, courseId, context) => {
+		onError: (_err, _courseId, context) => {
 			// If the mutation fails, use the context returned from onMutate to roll back
 			if (context?.previousCourses) {
 				queryClient.setQueryData(

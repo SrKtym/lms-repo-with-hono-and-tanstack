@@ -12,9 +12,9 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
 	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
-	const { data: courses } = useRegisteredCourses();
+	const { data: courses = [] } = useRegisteredCourses();
 
-	if (!courseId) return <RegisteredCourseList />;
+	if (!courseId) return <RegisteredCourseList courses={courses} />;
 	if (!contentId) return <RegisteredCourseInfos courseId={courseId} />;
 	return <RegisteredCourseContents />;
 }

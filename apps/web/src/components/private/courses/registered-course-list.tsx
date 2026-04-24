@@ -7,130 +7,36 @@ import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { LazyMotionProvider } from "../../../../../../packages/ui/src/components/lazymotion-provider";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 
-interface CourseData {
-	course: {
-		id: string;
-		name: string;
-		instructor: string;
-		credits: number;
-		schedule: string;
-		room: string;
-	};
-	progress: number; // 進捗率（例: 75）
-	nextAssignment: string; // 次の課題名
-	nextDeadline: Date; // 次の課題の締切日時
-	grade: string | null; // 成績（例: "A-", "B+", null）
-	coverImage?: string; // カバー画像URL
-}
-
-// モック講義データ
-const mockCourseDataList = [
-	{
-		course: {
-			id: "course-1",
-			name: "データ構造とアルゴリズム",
-			instructor: "山田 太郎",
-			credits: 2,
-			schedule: "月曜 2限",
-			room: "A101",
-		},
-		progress: 75,
-		nextAssignment: "二分探索木の実装",
-		nextDeadline: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000), // 3日後
-		grade: "A-",
-	},
-	{
-		course: {
-			id: "course-2",
-			name: "コンピュータネットワーク",
-			instructor: "鈴木 一郎",
-			credits: 2,
-			schedule: "火曜 3限",
-			room: "B205",
-		},
-		progress: 60,
-		nextAssignment: "TCP/IPプロトコル調査",
-		nextDeadline: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5日後
-		grade: "B+",
-	},
-	{
-		course: {
-			id: "course-3",
-			name: "データベースシステム",
-			instructor: "佐藤 花子",
-			credits: 3,
-			schedule: "水曜 1限",
-			room: "C302",
-		},
-		progress: 85,
-		nextAssignment: "正規化問題",
-		nextDeadline: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2日後
-		grade: "A",
-	},
-	{
-		course: {
-			id: "course-4",
-			name: "ソフトウェア工学",
-			instructor: "田中 次郎",
-			credits: 2,
-			schedule: "木曜 4限",
-			room: "D108",
-		},
-		progress: 45,
-		nextAssignment: "設計書作成",
-		nextDeadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7日後
-		grade: null,
-	},
-	{
-		course: {
-			id: "course-5",
-			name: "人工知能基礎",
-			instructor: "伊藤 三郎",
-			credits: 3,
-			schedule: "金曜 2限",
-			room: "E201",
-		},
-		progress: 90,
-		nextAssignment: "機械学習モデル実装",
-		nextDeadline: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000), // 1日後
-		grade: "A+",
-	},
-];
-
-const selectItems = ["進捗順", "講義名順", "締切順"];
-
-const dataLength = mockCourseDataList.length;
-const coverImageList = Array.from(
-	{ length: dataLength },
-	(_, i) => `https://img.heroui.chat/image/landscape?w=800&h=200&u=${i + 1}`,
-);
-const mockDataWithCoverImages = mockCourseDataList.map((course, index) => ({
-	...course,
-	coverImage: coverImageList[index],
-}));
-
-export default function RegisteredCourseList() {
-	const [courseDataList] = useState(mockDataWithCoverImages);
+export default function RegisteredCourseList({ courses }: { courses: FetchRegisteredCoursesReturnType }) {
+	const selectItems = ["進捗順", "講義名順", "締切順"];
+	const dataLength = courses.length;
+	const coverImageList = Array.from(
+		{ length: dataLength },
+		(_, i) => `https://img.heroui.chat/image/landscape?w=800&h=200&u=${i + 1}`,
+	);
+	const coursesWithCoverImages = courses.map((course, index) => ({
+		...course,
+		coverImage: coverImageList[index],
+	}));
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isTeacher] = useState(false); // 簡略化のため常にfalse
 	const [sortOrder, setSortOrder] = useState("進捗順");
 
 	// 検索フィルタリング
-	const filteredCourses = courseDataList.filter(
+	const filteredCourses = coursesWithCoverImages.filter(
 		(course) =>
-			course.course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			course.course.instructor
-				.toLowerCase()
-				.includes(searchQuery.toLowerCase()),
+			course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			course.professor.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
 	return (
 		<div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/10">
 			<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-6">
 				<div className="mb-6 items-center justify-between space-y-3 sm:flex">
-					<h1 className="font-google-sans font-medium text-2xl text-gray-900 dark:text-gray-100">
+					<h1 className="font-medium text-2xl text-gray-900 dark:text-gray-100">
 						登録済みの講義
 					</h1>
 					<div className="flex items-center gap-4">
@@ -175,7 +81,7 @@ export default function RegisteredCourseList() {
 							>
 								{filteredCourses.map((currentCourseData) => (
 									<m.div
-										key={currentCourseData.course.name}
+										key={currentCourseData.id}
 										variants={{
 											hidden: { opacity: 0, y: 20 },
 											visible: {
@@ -190,20 +96,12 @@ export default function RegisteredCourseList() {
 											transition={{ duration: 0.2 }}
 										>
 											<CourseCard
-												coverImage={currentCourseData.coverImage}
-												course={{
-													id: currentCourseData.course.id,
-													name: currentCourseData.course.name,
-													classroom: currentCourseData.course.room,
-													professor: currentCourseData.course.instructor,
-													credits: currentCourseData.course.credits,
-													schedule: currentCourseData.course.schedule,
-												}}
+												course={currentCourseData}
 												LinkComponent={
 													<Link
 														to="/course-list/{-$course-id}/{-$content-id}"
 														params={{
-															"course-id": currentCourseData.course.id,
+															"course-id": currentCourseData.id,
 														}}
 													>
 														<DefaultButton size="sm">
