@@ -21,7 +21,7 @@ export function CreateScheduleForm() {
 			title: "",
 			description: "",
 			timeSpan: { start: dateTime, end: dateTime },
-			theme: "#3B82F6",
+			theme: "#059669",
 		},
 		onSubmit: async ({ value }) => {
 			const scheduleData: Omit<Schedules, SchedulesOptional> = {
@@ -36,7 +36,7 @@ export function CreateScheduleForm() {
 				title: z
 					.string()
 					.transform((value) => (value === "" ? "タイトルなし" : value)),
-				description: z.string().min(1, "説明は必須です"),
+				description: z.string(),
 				timeSpan: z
 					.object({
 						start: z.custom<ZonedDateTime>(),

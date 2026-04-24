@@ -131,7 +131,7 @@ export const schedules = pgTable("schedules", {
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
 	title: text("title").notNull().default("タイトルなし"),
-	description: text("description"),
+	description: text("description").notNull().default(""),
 	startTime: timestamp("start_time", { mode: "date", precision: 0 }).notNull(),
 	endTime: timestamp("end_time", { mode: "date", precision: 0 }).notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -139,7 +139,7 @@ export const schedules = pgTable("schedules", {
 		.defaultNow()
 		.$onUpdate(() => new Date())
 		.notNull(),
-	theme: text("theme").notNull().default("#000000"),
+	theme: text("theme").notNull().default("#059669"),
 	createdBy: text("created_by")
 		.notNull()
 		.references(() => user.id),
