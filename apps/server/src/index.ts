@@ -8,7 +8,7 @@ import { authMiddleware } from "./middleware/auth";
 
 const app = new Hono()
 	.use(
-		"/*",
+		"*",
 		// グローバルミドルウェア
 		logger(),
 		cors({

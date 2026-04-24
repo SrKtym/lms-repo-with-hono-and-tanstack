@@ -3,6 +3,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
 
+// 曜日と時限から講義を取得するカスタムフック
 export const useSearchCourses = (weekdays?: number, period?: number) => {
 	return useQuery({
 		queryKey: ["search-courses", weekdays, period],
@@ -24,6 +25,7 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 	});
 };
 
+// 講義を登録するカスタムフック
 export const useRegisterCourse = (
 	searchCourses?: FetchRegisteredCoursesReturnType,
 ) => {
@@ -36,17 +38,17 @@ export const useRegisterCourse = (
 			return data;
 		},
 		onMutate: async (courseId) => {
-			// Cancel any outgoing refetches
+			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
 
-			// Snapshot the previous value
+			// キャッシュされているデータを同期的に取得する
 			const previousCourses = queryClient.getQueryData(["registered-courses"]);
 
-			// Optimistically update to the new value
 			const courseToRegister = searchCourses?.find(
 				(course) => course.id === courseId,
 			);
 			if (courseToRegister) {
+				// 楽観的更新
 				queryClient.setQueryData(
 					["registered-courses"],
 					(old: FetchRegisteredCoursesReturnType) => [...old, courseToRegister],
@@ -81,13 +83,13 @@ export const useUnregisterCourse = () => {
 			return data;
 		},
 		onMutate: async (courseId) => {
-			// Cancel any outgoing refetches
+			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
 
-			// Snapshot the previous value
+			// キャッシュされているデータを同期的に取得する
 			const previousCourses = queryClient.getQueryData(["registered-courses"]);
 
-			// Optimistically update to the new value
+			// 楽観的更新
 			queryClient.setQueryData(
 				["registered-courses"],
 				(old: FetchRegisteredCoursesReturnType) =>

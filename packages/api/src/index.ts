@@ -6,11 +6,10 @@ import { notificationsRoute } from "./routes/notifications";
 import { schedulesRoute } from "./routes/schedules";
 
 export const fullRoutes = new Hono()
-	.basePath("/api")
-	.route("/courses", coursesRoute)
-	.route("/schedules", schedulesRoute)
-	.route("/assignments", assignmentsRoute)
-	.route("/announcements", announcementsRoute)
-	.route("/notifications", notificationsRoute);
+	.route("api/courses", coursesRoute)
+	.route("api/schedules", schedulesRoute)
+	.route("api/assignments", assignmentsRoute)
+	.route("api/announcements", announcementsRoute)
+	.route("api/notifications", notificationsRoute);
 
 export type FullRoutes = typeof fullRoutes;
