@@ -18,10 +18,10 @@ export const schedulesRoute = new Hono<{
 }>()
 	.get(
 		"/select", 
-		zValidator("param", z.string().optional()), 
+		zValidator("query", z.object({ scheduleId: z.string().optional() })), 
 		async (c) => {
 			const { userId } = c.get("session");
-			const scheduleId = c.req.valid("param");
+			const { scheduleId } = c.req.valid("query");
 			const result = await fetchSchedules(userId, scheduleId);
 			return c.json(result, 200);
 		})

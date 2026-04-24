@@ -1,13 +1,30 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Notifications } from "@/components/private/notifications";
-import { useRegisteredCourses } from "@/hooks/courses";
+import { queryClient } from "@/lib/query-client";
+import { client } from "@/lib/hono-client";
 
 export const Route = createFileRoute("/_my-page/notifications")({
 	component: RouteComponent,
+	loader: async () => {
+		// キャッシュからデータ取得（既にプリフェッチ済み）
+		const courses = await queryClient.ensureQueryData({
+			queryKey: ["registered-courses"],
+			queryFn: async () => {
+				const res = await client.api.courses.search.registered.$get();
+				const data = await res.json();
+				if ("message" in data) {
+					return [];
+				}
+				return data;
+			},
+			staleTime: 5 * 60 * 1000,
+		});
+		return { courses };
+	},
 });
 
 function RouteComponent() {
-	const { data: courses } = useRegisteredCourses();
+	const { courses } = Route.useLoaderData();
 
 	// 講義関連の通知を生成
 	const courseNotifications =

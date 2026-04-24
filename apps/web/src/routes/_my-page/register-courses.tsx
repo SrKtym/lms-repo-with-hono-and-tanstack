@@ -15,10 +15,11 @@ import { useState } from "react";
 import { z } from "zod";
 import {
 	useRegisterCourse,
-	useRegisteredCourses,
 	useSearchCourses,
 	useUnregisterCourse,
 } from "@/hooks/courses";
+import { queryClient } from "@/lib/query-client";
+import { client } from "@/lib/hono-client";
 
 interface TableState {
 	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
@@ -34,9 +35,26 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
 	validateSearch:
 		z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
+	loader: async () => {
+		// キャッシュからデータ取得（既にプリフェッチ済み）
+		const courses = await queryClient.ensureQueryData({
+			queryKey: ["registered-courses"],
+			queryFn: async () => {
+				const res = await client.api.courses.search.registered.$get();
+				const data = await res.json();
+				if ("message" in data) {
+					return [];
+				}
+				return data;
+			},
+			staleTime: 5 * 60 * 1000,
+		});
+		return { courses };
+	},
 });
 
 function RouteComponent() {
+	const { courses } = Route.useLoaderData();
 	const params = Route.useSearch();
 	const navigate = useNavigate();
 	const [state] = useState<TableState>({
@@ -49,7 +67,7 @@ function RouteComponent() {
 		editFormData: null,
 	});
 
-	const { data: courses = [] } = useRegisteredCourses();
+	// 講義の検索
 	const { data: searchCourses = [], isLoading } = useSearchCourses(
 		params.weekdays,
 		params.period,

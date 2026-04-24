@@ -2,11 +2,22 @@
 import { authClient } from "@lms-repo/auth/web";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "@/components/header";
+import { queryClient } from "@/lib/query-client";
 
 export const Route = createFileRoute("/_my-page")({
 	component: MyPageLayoutComponent,
 	beforeLoad: async () => {
-		const session = await authClient.getSession();
+		// セッションデータをキャッシュまたは取得
+		const session = await queryClient.ensureQueryData({
+			queryKey: ["session"],
+			queryFn: async () => {
+				const result = await authClient.getSession();
+				return result;
+			},
+			staleTime: 5 * 60 * 1000, // 5 minutes
+			gcTime: 10 * 60 * 1000, // 10 minutes
+		});
+
 		if (!session.data) {
 			redirect({
 				to: "/sign-in",

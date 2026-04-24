@@ -3,29 +3,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
 
-export const useRegisteredCourses = (
-	initialData?: FetchRegisteredCoursesReturnType,
-) => {
-	return useQuery({
-		queryKey: ["registered-courses"],
-		queryFn: async () => {
-			const res = await client.api.courses.search.registered.$get();
-			const data = await res.json();
-			if ("message" in data) {
-				return [];
-			}
-			return data;
-		},
-		initialData,
-		staleTime: 5 * 60 * 1000, // 5 minutes
-		gcTime: 10 * 60 * 1000, // 10 minutes (garbage collection)
-		refetchOnWindowFocus: false,
-		refetchOnReconnect: true,
-		retry: 3,
-		retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-	});
-};
-
 export const useSearchCourses = (weekdays?: number, period?: number) => {
 	return useQuery({
 		queryKey: ["search-courses", weekdays, period],

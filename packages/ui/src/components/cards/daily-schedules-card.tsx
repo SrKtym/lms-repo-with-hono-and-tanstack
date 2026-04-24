@@ -3,95 +3,14 @@ import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { BaseCard } from "../cards/base-card";
-
-// Mock data for demonstration
-const mockCourses = [
-	{
-		id: 1,
-		title: "データ構造とアルゴリズム",
-		day: "月曜日",
-		start: "09:00",
-		end: "10:30",
-		period: 1,
-	},
-	{
-		id: 2,
-		title: "Web開発基礎",
-		day: "月曜日",
-		start: "13:00",
-		end: "14:30",
-		period: 3,
-	},
-	{
-		id: 3,
-		title: "人工知能論",
-		day: "火曜日",
-		start: "10:45",
-		end: "12:15",
-		period: 2,
-	},
-];
-
-const mockSchedules = [
-	{
-		id: 1,
-		title: "勉強会",
-		description: "アルゴリズム勉強会",
-		start: "15:00",
-		end: "18:20",
-	},
-	{
-		id: 2,
-		title: "課題提出",
-		description: "データ構造レポート提出",
-		start: "18:00",
-		end: "18:30",
-	},
-	{
-		id: 3,
-		title: "会議",
-		description: "プロジェクト会議",
-		start: "18:00",
-		end: "20:00",
-	},
-];
-
-const daysOfWeek = [
-	"日曜日",
-	"月曜日",
-	"火曜日",
-	"水曜日",
-	"木曜日",
-	"金曜日",
-	"土曜日",
-];
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 
 // 小数時間
 const decimalHours = (date: Date) => {
 	const hours = date.getHours();
 	const minutes = date.getMinutes();
 	return hours + minutes / 60;
-};
-
-// 日時文字列から日時オブジェクトを生成
-const getDateFromTimeString = (timeStr: string) => {
-	const parts = timeStr.split(":").map(Number);
-	const hours = parts[0];
-	const minutes = parts[1];
-
-	// Validate that hours and minutes are valid numbers
-	if (
-		typeof hours !== "number" ||
-		typeof minutes !== "number" ||
-		isNaN(hours) ||
-		isNaN(minutes)
-	) {
-		throw new Error(`Invalid time format: ${timeStr}`);
-	}
-
-	const date = new Date();
-	date.setHours(hours, minutes, 0, 0);
-	return date;
 };
 
 // 現在進行中であるかどうかを判定
@@ -109,21 +28,42 @@ const isProgressingOrUpcoming = (start: Date, end: Date) => {
 	return "past";
 };
 
-export function DailySchedulesCard() {
+export function DailySchedulesCard({ 
+	courses,
+	schedules 
+}: { 
+	courses: FetchRegisteredCoursesReturnType,
+	schedules: FetchSchedulesReturnType
+ }) {
 	// 本日の講義を取得
-	const todayCourse = mockCourses
-		.filter((course) => course.day === daysOfWeek[new Date().getDay()])
-		.map((course) => ({
-			...course,
-			start: getDateFromTimeString(course.start),
-			end: getDateFromTimeString(course.end),
-		}));
+	const todayCourse = courses
+		.filter((course) => course.weekdays === new Date().getDay())
+		.map((course) => {
+			// Convert period to actual time (assuming period 1 = 09:00, period 2 = 10:30, etc.)
+			const periodToTime = (period: number) => {
+				const startHour = 8 + (period - 1) * 1.5; // 09:00 for period 1
+				const endHour = startHour + 1.5; // 1.5 hour classes
+				return {
+					start: new Date().setHours(Math.floor(startHour), (startHour % 1) * 60, 0, 0),
+					end: new Date().setHours(Math.floor(endHour), (endHour % 1) * 60, 0, 0),
+				};
+			};
+			
+			const times = periodToTime(course.period);
+			
+			return {
+				...course,
+				start: times.start,
+				end: times.end,
+				title: course.name, // Add title for display
+			};
+		});
 
 	// 本日のスケジュールを取得
-	const todaySchedule = mockSchedules.map((schedule) => ({
+	const todaySchedule = schedules.map((schedule) => ({
 		...schedule,
-		start: getDateFromTimeString(schedule.start),
-		end: getDateFromTimeString(schedule.end),
+		start: schedule.startTime,
+		end: schedule.endTime,
 	}));
 
 	// 重複する予定を検出する関数

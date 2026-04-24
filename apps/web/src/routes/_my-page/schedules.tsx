@@ -5,8 +5,8 @@ import { useState } from "react";
 import { DayView } from "@/components/private/schedules/day-view";
 import { MonthView } from "@/components/private/schedules/month-view";
 import { WeekView } from "@/components/private/schedules/week-view";
-import { useRegisteredCourses } from "@/hooks/courses";
-import { useSchedules } from "@/hooks/schedules";
+import { queryClient } from "@/lib/query-client";
+import { client } from "@/lib/hono-client";
 import { CreateScheduleForm } from "@/components/private/schedules/create-schedule-form";
 
 export interface Event {
@@ -21,11 +21,41 @@ export interface Event {
 
 export const Route = createFileRoute("/_my-page/schedules")({
 	component: RouteComponent,
+	loader: async () => {
+		// キャッシュからデータ取得（既にプリフェッチ済み）
+		const [courses, schedules] = await Promise.all([
+			queryClient.ensureQueryData({
+				queryKey: ["registered-courses"],
+				queryFn: async () => {
+					const res = await client.api.courses.search.registered.$get();
+					const data = await res.json();
+					if ("message" in data) {
+						return [];
+					}
+					return data;
+				},
+				staleTime: 5 * 60 * 1000,
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["schedules"],
+				queryFn: async () => {
+					const res = await client.api.schedules.select.$get({
+						query: {
+							scheduleId: undefined,
+						},
+					});
+					const data = await res.json();
+					return data;
+				},
+				staleTime: 5 * 60 * 1000,
+			}),
+		]);
+		return { courses, schedules };
+	},
 });
 
 function RouteComponent() {
-	const { data: courses = [] } = useRegisteredCourses();
-	const { data: schedules = [] } = useSchedules();
+	const { courses = [], schedules = [] } = Route.useLoaderData();
 	const [selectedView, setSelectedView] = useState<"month" | "week" | "day">(
 		"month",
 	);
@@ -160,13 +190,13 @@ function RouteComponent() {
 
 		// スケジュールデータをイベントに変換
 		schedules.forEach((schedule) => {
-			if (isSameDay(schedule.startTime, date)) {
+			if (isSameDay(new Date(schedule.startTime), date)) {
 				events.push({
 					id: schedule.id,
 					title: schedule.title,
 					description: schedule.description || "",
-					startTime: schedule.startTime,
-					endTime: schedule.endTime,
+					startTime: new Date(schedule.startTime),
+					endTime: new Date(schedule.endTime),
 					theme: schedule.theme,
 					type: "schedule",
 				});
