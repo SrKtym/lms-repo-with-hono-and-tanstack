@@ -30,8 +30,22 @@ export const Route = createFileRoute(
 function RouteComponent() {
 	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
 	const { courses = [] } = Route.useLoaderData();
+	const dataLength = courses.length;
+	const coverImageList = Array.from(
+		{ length: dataLength },
+		(_, i) => `https://img.heroui.chat/image/landscape?w=800&h=200&u=${i + 1}`,
+	);
+	const coursesWithCoverImage = courses.map((course, index) => ({
+		...course,
+		coverImage: coverImageList[index],
+	}));
 
-	if (!courseId) return <RegisteredCourseList courses={courses} />;
-	if (!contentId) return <RegisteredCourseInfos courseId={courseId} />;
+	if (!courseId) return <RegisteredCourseList coursesWithCoverImage={coursesWithCoverImage} />;
+	if (!contentId) {
+		const targetCourse = coursesWithCoverImage.find((course) => course.id === courseId);
+		return (
+			<RegisteredCourseInfos courseWithCoverImage={targetCourse} />
+		);
+	}
 	return <RegisteredCourseContents />;
 }

@@ -38,6 +38,19 @@ export const students = pgTable(
 	(t) => [check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)],
 );
 
+// 教授テーブル
+export const professors = pgTable(
+	"professors",
+	{
+		id: text("id")
+			.primaryKey()
+			.references(() => user.id),
+		departmentId: text("department_id")
+			.notNull()
+			.references(() => departments.id),
+	},
+);
+
 // 学部テーブル
 export const faculties = pgTable("faculties", {
 	id: text("id")
@@ -165,6 +178,9 @@ export const assignments = pgTable(
 		createdBy: text("created_by")
 			.notNull()
 			.references(() => user.id),
+		courseId: text("course_id")
+			.notNull()
+			.references(() => courses.id),
 	},
 	(t) => [
 		check("points_range", sql`${t.points} >= 0 AND ${t.points} <= 100`),

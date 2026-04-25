@@ -25,7 +25,6 @@ export function CreateCourseForm() {
 				form: { ...value },
 			});
 			const data = await res.json();
-			console.log(data);
 		},
 		validators: {
 			onSubmit: z.object({

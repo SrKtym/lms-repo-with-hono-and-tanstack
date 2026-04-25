@@ -11,26 +11,17 @@ import * as m from "motion/react-m";
 import { useState } from "react";
 
 export default function RegisteredCourseList({
-	courses,
+	coursesWithCoverImage,
 }: {
-	courses: FetchRegisteredCoursesReturnType;
+	coursesWithCoverImage: (FetchRegisteredCoursesReturnType[number] & { coverImage?: string })[];
 }) {
 	const selectItems = ["進捗順", "講義名順", "締切順"];
-	const dataLength = courses.length;
-	const coverImageList = Array.from(
-		{ length: dataLength },
-		(_, i) => `https://img.heroui.chat/image/landscape?w=800&h=200&u=${i + 1}`,
-	);
-	const coursesWithCoverImages = courses.map((course, index) => ({
-		...course,
-		coverImage: coverImageList[index],
-	}));
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isTeacher] = useState(false); // 簡略化のため常にfalse
 	const [sortOrder, setSortOrder] = useState("進捗順");
 
 	// 検索フィルタリング
-	const filteredCourses = coursesWithCoverImages.filter(
+	const filteredCourses = coursesWithCoverImage.filter(
 		(course) =>
 			course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			course.professor.toLowerCase().includes(searchQuery.toLowerCase()),

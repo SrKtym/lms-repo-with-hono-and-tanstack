@@ -5,82 +5,8 @@ import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-car
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { Link } from "@tanstack/react-router";
-
-// Mock data
-const mockCourseData = {
-	name: "Web Development",
-	classroom: "Room 301",
-	professor: "Dr. Smith",
-	coverImage:
-		"https://images.unsplash.com/photo-1516321318423-f06f85e504b3?fit=crop",
-};
-
-const mockAnnouncements = [
-	{
-		id: 1,
-		title: "Welcome to Web Development Course",
-		content:
-			"Welcome everyone! This course covers modern web development technologies including HTML, CSS, JavaScript, and popular frameworks.",
-		type: "Information",
-		createdAt: new Date("2024-01-15"),
-	},
-	{
-		id: 2,
-		title: "Assignment 1 Due Date Extended",
-		content:
-			"Due to popular request, the due date for Assignment 1 has been extended to next Friday. Please make sure to submit on time.",
-		type: "Assignment",
-		createdAt: new Date("2024-01-20"),
-	},
-	{
-		id: 3,
-		title: "Survey: Course Feedback",
-		content:
-			"Please take a few minutes to complete the course feedback survey. Your input helps us improve the course for future students.",
-		type: "Survey",
-		createdAt: new Date("2024-01-18"),
-	},
-];
-
-const mockAssignments = [
-	{
-		id: 1,
-		title: "HTML & CSS Portfolio",
-		description:
-			"Create a personal portfolio website using HTML and CSS. Include at least 3 different pages with responsive design.",
-		dueDate: new Date("2024-02-01"),
-		points: 100,
-		type: "Project",
-	},
-	{
-		id: 2,
-		title: "JavaScript Fundamentals Quiz",
-		description:
-			"Complete the online quiz covering basic JavaScript concepts including variables, functions, and DOM manipulation.",
-		dueDate: new Date("2024-01-25"),
-		points: 50,
-		type: "Quiz",
-	},
-	{
-		id: 3,
-		title: "React Component Library",
-		description:
-			"Build a reusable component library using React. Include at least 5 different components with proper documentation.",
-		dueDate: new Date("2024-02-15"),
-		points: 150,
-		type: "Project",
-	},
-	{
-		id: 4,
-		title: "API Integration Assignment",
-		description:
-			"Integrate a public API into your web application. Handle data fetching, error states, and loading indicators.",
-		dueDate: new Date("2024-02-08"),
-		points: 75,
-		type: "Assignment",
-	},
-];
 
 const mockMembers = [
 	{ id: 1, name: "Alice Johnson", role: "Student", avatar: "AJ" },
@@ -90,18 +16,15 @@ const mockMembers = [
 ];
 
 export default function RegisteredCourseInfos({
-	courseId,
+	courseWithCoverImage,
 }: {
-	courseId: string;
+	courseWithCoverImage?: FetchRegisteredCoursesReturnType[number] & { coverImage?: string };
 }) {
+	if (!courseWithCoverImage) {
+		return <div>Course not found</div>;
+	}
 	const isTeacher = true;
 	const options = ["お知らせ", "課題", "メンバー"];
-
-	// Mock functions
-	const course = mockCourseData;
-	const coverImage = mockCourseData.coverImage;
-	const announcements = mockAnnouncements;
-	const assignmentData = mockAssignments;
 
 	const handleCreateAnnouncement = () => {
 		console.log("Create announcement clicked");
@@ -117,7 +40,7 @@ export default function RegisteredCourseInfos({
 			<div className="relative flex h-48 items-end md:h-64">
 				<div className="absolute inset-0">
 					<Image
-						src={coverImage}
+						src={courseWithCoverImage.coverImage || ""}
 						layout="fullWidth"
 						sizes="100vw"
 						className="h-full"
@@ -142,10 +65,10 @@ export default function RegisteredCourseInfos({
 					<div className="flex flex-col items-start justify-between md:flex-row md:items-end">
 						<div className="text-white">
 							<h1 className="font-medium text-2xl md:text-3xl">
-								{course.name}
+								{courseWithCoverImage.name}
 							</h1>
-							<p className="mt-1 text-white/80">{course.classroom}</p>
-							<p className="text-white/80">{course.professor}</p>
+							<p className="mt-1 text-white/80">{courseWithCoverImage.classRoom}</p>
+							<p className="text-white/80">{courseWithCoverImage.professor}</p>
 						</div>
 
 						<div className="mt-4 md:mt-0">
@@ -170,7 +93,7 @@ export default function RegisteredCourseInfos({
 										お知らせ
 									</h2>
 									{isTeacher && (
-										<DefaultButton onClick={handleCreateAnnouncement}>
+										<DefaultButton onPress={handleCreateAnnouncement}>
 											お知らせを作成
 										</DefaultButton>
 									)}
@@ -201,7 +124,7 @@ export default function RegisteredCourseInfos({
 										課題
 									</h2>
 									{isTeacher && (
-										<DefaultButton onClick={handleCreateAssignment}>
+										<DefaultButton onPress={handleCreateAssignment}>
 											課題を作成
 										</DefaultButton>
 									)}

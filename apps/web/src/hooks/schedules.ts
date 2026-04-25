@@ -33,7 +33,7 @@ export const useCreateSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleData: Omit<Schedules, SchedulesOptional>) => {
 			const res = await client.api.schedules.create.$post({
-				json: scheduleData,
+				form: scheduleData,
 			});
 			const data = await res.json();
 			return data;
