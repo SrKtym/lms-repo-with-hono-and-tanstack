@@ -2,12 +2,13 @@ import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider"
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
+import { CreateScheduleForm } from "@/components/private/schedules/create-schedule-form";
 import { DayView } from "@/components/private/schedules/day-view";
 import { MonthView } from "@/components/private/schedules/month-view";
 import { WeekView } from "@/components/private/schedules/week-view";
-import { queryClient } from "@/lib/query-client";
 import { client } from "@/lib/hono-client";
-import { CreateScheduleForm } from "@/components/private/schedules/create-schedule-form";
+import { queryClient } from "@/lib/query-client";
+import { useSchedules } from "@/hooks/schedules";
 
 export interface Event {
 	id: string;
@@ -23,7 +24,7 @@ export const Route = createFileRoute("/_my-page/schedules")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules] = await Promise.all([
+		const [courses, initialSchedules] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
 				queryFn: async () => {
@@ -46,16 +47,18 @@ export const Route = createFileRoute("/_my-page/schedules")({
 				staleTime: 5 * 60 * 1000,
 			}),
 		]);
-		return { courses, schedules };
+		return { courses, initialSchedules };
 	},
 });
 
 function RouteComponent() {
-	const { courses = [], schedules = [] } = Route.useLoaderData();
+	const { courses = [], initialSchedules } = Route.useLoaderData();
 	const [selectedView, setSelectedView] = useState<"month" | "week" | "day">(
 		"month",
 	);
 	const [currentDate, setCurrentDate] = useState(new Date());
+
+	const { data: schedules = [] } = useSchedules(initialSchedules);
 
 	// 曜日の配列
 	const weekDays = ["日", "月", "火", "水", "木", "金", "土"];

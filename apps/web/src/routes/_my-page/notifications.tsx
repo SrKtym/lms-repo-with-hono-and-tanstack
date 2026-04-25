@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Notifications } from "@/components/private/notifications";
-import { queryClient } from "@/lib/query-client";
 import { client } from "@/lib/hono-client";
+import { queryClient } from "@/lib/query-client";
 
 export const Route = createFileRoute("/_my-page/notifications")({
 	component: RouteComponent,

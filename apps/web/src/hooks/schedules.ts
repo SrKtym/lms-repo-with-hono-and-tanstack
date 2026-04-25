@@ -14,13 +14,7 @@ export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 				},
 			});
 			const data = await res.json();
-			return data.map((schedule) => ({
-				...schedule,
-				startTime: new Date(schedule.startTime),
-				endTime: new Date(schedule.endTime),
-				createdAt: new Date(schedule.createdAt),
-				updatedAt: new Date(schedule.updatedAt),
-			}));
+			return data;
 		},
 		initialData,
 		staleTime: 5 * 60 * 1000, // 5 minutes

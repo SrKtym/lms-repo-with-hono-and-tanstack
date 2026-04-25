@@ -10,10 +10,7 @@ interface CourseCardProps {
 }
 
 // CourseCard component
-export function CourseCard({
-	course,
-	LinkComponent,
-}: CourseCardProps) {
+export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 	return (
 		<BaseCard key={course.id} className="border border-divider px-0 pt-0">
 			<Image
@@ -28,7 +25,9 @@ export function CourseCard({
 					<div className="flex-1">
 						<h3 className="font-medium text-lg">{course.name}</h3>
 						<div className="flex flex-col gap-1 text-gray-600 text-sm dark:text-gray-400">
-							<p>{course.weekdays}曜 {course.period}限</p>
+							<p>
+								{course.weekdays}曜 {course.period}限
+							</p>
 							<p>{course.credits} 単位</p>
 							<p>担当教員: {course.professor}</p>
 							<p>教室: {course.classRoom}</p>
@@ -36,9 +35,7 @@ export function CourseCard({
 					</div>
 				</div>
 			</div>
-			<div className="border-divider border-t px-4 py-3">
-				{LinkComponent}
-			</div>
+			<div className="border-divider border-t px-4 py-3">{LinkComponent}</div>
 		</BaseCard>
 	);
 }

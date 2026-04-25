@@ -15,11 +15,12 @@ import { useState } from "react";
 import { z } from "zod";
 import {
 	useRegisterCourse,
+	useRegisteredCourses,
 	useSearchCourses,
 	useUnregisterCourse,
 } from "@/hooks/courses";
-import { queryClient } from "@/lib/query-client";
 import { client } from "@/lib/hono-client";
+import { queryClient } from "@/lib/query-client";
 
 interface TableState {
 	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
@@ -37,7 +38,7 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
 	loader: async () => {
 		// キャッシュからデータ取得（既にプリフェッチ済み）
-		const courses = await queryClient.ensureQueryData({
+		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: async () => {
 				const res = await client.api.courses.search.registered.$get();
@@ -49,12 +50,12 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 			},
 			staleTime: 5 * 60 * 1000,
 		});
-		return { courses };
+		return { initialCourses };
 	},
 });
 
 function RouteComponent() {
-	const { courses } = Route.useLoaderData();
+	const { initialCourses } = Route.useLoaderData();
 	const params = Route.useSearch();
 	const navigate = useNavigate();
 	const [state] = useState<TableState>({
@@ -66,6 +67,9 @@ function RouteComponent() {
 		isEditMode: false,
 		editFormData: null,
 	});
+
+	// 登録済み講義の取得
+	const { data: courses = [] } = useRegisteredCourses(initialCourses);
 
 	// 講義の検索
 	const { data: searchCourses = [], isPending } = useSearchCourses(

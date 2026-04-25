@@ -1,16 +1,20 @@
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { BookOpen } from "@lms-repo/ui/assets/icons/book-open";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { CourseCard } from "@lms-repo/ui/components/cards/course-card";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { DefaultSearchField } from "@lms-repo/ui/components/search-field";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 
-export default function RegisteredCourseList({ courses }: { courses: FetchRegisteredCoursesReturnType }) {
+export default function RegisteredCourseList({
+	courses,
+}: {
+	courses: FetchRegisteredCoursesReturnType;
+}) {
 	const selectItems = ["進捗順", "講義名順", "締切順"];
 	const dataLength = courses.length;
 	const coverImageList = Array.from(

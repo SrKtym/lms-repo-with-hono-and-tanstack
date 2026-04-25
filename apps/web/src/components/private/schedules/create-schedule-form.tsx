@@ -170,7 +170,7 @@ export function CreateScheduleForm() {
 						<div className="space-y-2">
 							<ColorSwatchPicker
 								value={field.state.value}
-								onChange={(color) => field.handleChange(color.toString())}
+								onChange={(color) => field.handleChange(color.toString("hex"))}
 							/>
 							{field.state.meta.errors.map((error) => (
 								<p key={error?.message} className="text-red-500">

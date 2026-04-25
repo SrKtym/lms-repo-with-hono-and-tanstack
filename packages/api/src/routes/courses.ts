@@ -45,14 +45,18 @@ export const coursesRoute = new Hono<{
 		const result = await registerCourses(courseId, userId);
 		return c.json(result);
 	})
-	.post("register/multiple", zValidator("json", z.array(z.string())), async (c) => {
-		const { userId } = c.get("session");
-		const courseIds = c.req.valid("json");
-		const results = await Promise.all(
-			courseIds.map(courseId => registerCourses(courseId, userId))
-		);
-		return c.json(results);
-	})
+	.post(
+		"register/multiple",
+		zValidator("json", z.array(z.string())),
+		async (c) => {
+			const { userId } = c.get("session");
+			const courseIds = c.req.valid("json");
+			const results = await Promise.all(
+				courseIds.map((courseId) => registerCourses(courseId, userId)),
+			);
+			return c.json(results);
+		},
+	)
 	.post("unregister", zValidator("json", z.string()), async (c) => {
 		const { userId } = c.get("session");
 		const courseId = c.req.valid("json");

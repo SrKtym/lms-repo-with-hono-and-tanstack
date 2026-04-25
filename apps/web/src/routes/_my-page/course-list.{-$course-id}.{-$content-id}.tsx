@@ -2,8 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import RegisteredCourseContents from "@/components/private/courses/registered-course-contents";
 import RegisteredCourseInfos from "@/components/private/courses/registered-course-infos";
 import RegisteredCourseList from "@/components/private/courses/registered-course-list";
-import { queryClient } from "@/lib/query-client";
 import { client } from "@/lib/hono-client";
+import { queryClient } from "@/lib/query-client";
 
 export const Route = createFileRoute(
 	"/_my-page/course-list/{-$course-id}/{-$content-id}",

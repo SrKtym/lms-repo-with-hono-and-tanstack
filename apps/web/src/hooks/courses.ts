@@ -3,6 +3,25 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
 
+// 登録済み講義を取得するカスタムフック
+export const useRegisteredCourses = (
+	initialData?: FetchRegisteredCoursesReturnType,
+) => {
+	return useQuery({
+		queryKey: ["registered-courses"],
+		queryFn: async () => {
+			const res = await client.api.courses.search.registered.$get();
+			const data = await res.json();
+			if ("message" in data) {
+				return [];
+			}
+			return data;
+		},
+		staleTime: 5 * 60 * 1000,
+		initialData,
+	});
+};
+
 // 曜日と時限から講義を取得するカスタムフック
 export const useSearchCourses = (weekdays?: number, period?: number) => {
 	return useQuery({

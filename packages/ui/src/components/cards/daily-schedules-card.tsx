@@ -1,10 +1,10 @@
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
 import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { BaseCard } from "../cards/base-card";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
-import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 
 // 小数時間
 const decimalHours = (date: Date) => {
@@ -28,13 +28,13 @@ const isProgressingOrUpcoming = (start: Date, end: Date) => {
 	return "past";
 };
 
-export function DailySchedulesCard({ 
+export function DailySchedulesCard({
 	courses,
-	schedules 
-}: { 
-	courses: FetchRegisteredCoursesReturnType,
-	schedules: FetchSchedulesReturnType
- }) {
+	schedules,
+}: {
+	courses: FetchRegisteredCoursesReturnType;
+	schedules: FetchSchedulesReturnType;
+}) {
 	// 本日の講義を取得
 	const todayCourse = courses
 		.filter((course) => course.weekdays === new Date().getDay())
@@ -44,13 +44,23 @@ export function DailySchedulesCard({
 				const startHour = 8 + (period - 1) * 1.5; // 09:00 for period 1
 				const endHour = startHour + 1.5; // 1.5 hour classes
 				return {
-					start: new Date().setHours(Math.floor(startHour), (startHour % 1) * 60, 0, 0),
-					end: new Date().setHours(Math.floor(endHour), (endHour % 1) * 60, 0, 0),
+					start: new Date().setHours(
+						Math.floor(startHour),
+						(startHour % 1) * 60,
+						0,
+						0,
+					),
+					end: new Date().setHours(
+						Math.floor(endHour),
+						(endHour % 1) * 60,
+						0,
+						0,
+					),
 				};
 			};
-			
+
 			const times = periodToTime(course.period);
-			
+
 			return {
 				...course,
 				start: times.start,
@@ -289,7 +299,6 @@ export function DailySchedulesCard({
 					<div className="relative p-12 text-center">
 						<div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-blue-50/30 dark:from-gray-800/50 dark:to-blue-900/30" />
 						<div className="relative z-10">
-							<CalendarAnimation width={48} height={48} />
 							<p className="mt-4 font-medium text-gray-500 dark:text-gray-400">
 								本日の予定はありません
 							</p>
