@@ -8,13 +8,16 @@ export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 	return useQuery({
 		queryKey: ["schedules"],
 		queryFn: async () => {
-			const res = await client.api.schedules.select.$get({
-				query: {
-					scheduleId: undefined,
-				},
-			});
+			const res = await client.api.schedules.select.$get();
 			const data = await res.json();
-			return data;
+			const parsedData = data.map((schedule) => {
+				return {
+					...schedule,
+					startTime: new Date(schedule.startTime),
+					endTime: new Date(schedule.endTime),
+				};
+			});
+			return parsedData;
 		},
 		initialData,
 		staleTime: 5 * 60 * 1000, // 5 minutes

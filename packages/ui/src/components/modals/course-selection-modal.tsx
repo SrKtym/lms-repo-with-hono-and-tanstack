@@ -23,7 +23,7 @@ export function CourseSelectionModal({
 	const state = useOverlayState();
 
 	return (
-		<Modal state={state}>
+		<Modal key={`${selectedCell.day}-${selectedCell.period}`} state={state}>
 			{triggerButton}
 			<Modal.Backdrop variant="transparent">
 				<Modal.Container size="lg">

@@ -42,7 +42,14 @@ export const Route = createFileRoute("/_my-page/schedules")({
 				queryFn: async () => {
 					const res = await client.api.schedules.select.$get();
 					const data = await res.json();
-					return data;
+					const parsedData = data.map((schedule) => {
+						return {
+							...schedule,
+							startTime: new Date(schedule.startTime),
+							endTime: new Date(schedule.endTime),
+						};
+					});
+					return parsedData;
 				},
 				staleTime: 5 * 60 * 1000,
 			}),
@@ -57,7 +64,6 @@ function RouteComponent() {
 		"month",
 	);
 	const [currentDate, setCurrentDate] = useState(new Date());
-
 	const { data: schedules = [] } = useSchedules(initialSchedules);
 
 	// 曜日の配列

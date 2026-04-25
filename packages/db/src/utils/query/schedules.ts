@@ -4,7 +4,15 @@ import { schedules } from "../../schema";
 
 export async function fetchSchedules(userId: string) {
 	const schedulesList = await db
-		.select()
+		.select({
+			id: schedules.id,
+			title: schedules.title,
+			description: schedules.description,
+			startTime: schedules.startTime,
+			endTime: schedules.endTime,
+			theme: schedules.theme,
+			createdBy: schedules.createdBy,
+		})
 		.from(schedules)
 		.where(eq(schedules.createdBy, userId));
 
