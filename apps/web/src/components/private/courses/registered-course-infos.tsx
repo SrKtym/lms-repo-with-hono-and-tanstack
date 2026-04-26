@@ -1,3 +1,6 @@
+import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
+import type { FetchAssignmentsReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
@@ -5,7 +8,6 @@ import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-car
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { Link } from "@tanstack/react-router";
 
 const mockMembers = [
@@ -15,11 +17,19 @@ const mockMembers = [
 	{ id: 4, name: "Dr. Smith", role: "Instructor", avatar: "DS" },
 ];
 
+interface RegisteredCourseInfosProps {
+	courseWithCoverImage?: FetchRegisteredCoursesReturnType[number] & {
+		coverImage?: string;
+	};
+	announcements: FetchAnnouncementsFromUserCoursesReturnType;
+	assignments: FetchAssignmentsReturnType;
+}
+
 export default function RegisteredCourseInfos({
 	courseWithCoverImage,
-}: {
-	courseWithCoverImage?: FetchRegisteredCoursesReturnType[number] & { coverImage?: string };
-}) {
+	announcements,
+	assignments,
+}: RegisteredCourseInfosProps) {
 	if (!courseWithCoverImage) {
 		return <div>Course not found</div>;
 	}
@@ -67,7 +77,9 @@ export default function RegisteredCourseInfos({
 							<h1 className="font-medium text-2xl md:text-3xl">
 								{courseWithCoverImage.name}
 							</h1>
-							<p className="mt-1 text-white/80">{courseWithCoverImage.classRoom}</p>
+							<p className="mt-1 text-white/80">
+								{courseWithCoverImage.classRoom}
+							</p>
 							<p className="text-white/80">{courseWithCoverImage.professor}</p>
 						</div>
 
@@ -130,15 +142,15 @@ export default function RegisteredCourseInfos({
 									)}
 								</div>
 
-								{assignmentData.length > 0 ? (
+								{assignments.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-										{assignmentData.map((assignment) => (
+										{assignments.map((assignment) => (
 											<Link
 												key={assignment.id}
 												to="/course-list/{-$course-id}/{-$content-id}"
 												params={(prev) => ({
 													...prev,
-													"content-id": assignment.id.toString(),
+													"content-id": assignment.id,
 												})}
 												className="block"
 											>

@@ -13,7 +13,9 @@ import { useState } from "react";
 export default function RegisteredCourseList({
 	coursesWithCoverImage,
 }: {
-	coursesWithCoverImage: (FetchRegisteredCoursesReturnType[number] & { coverImage?: string })[];
+	coursesWithCoverImage: (FetchRegisteredCoursesReturnType[number] & {
+		coverImage?: string;
+	})[];
 }) {
 	const selectItems = ["進捗順", "講義名順", "締切順"];
 	const [searchQuery, setSearchQuery] = useState("");

@@ -15,13 +15,15 @@ import { user } from "./auth";
 
 const requirements = ["必修", "選択必修", "任意"] as const;
 export const requirementsEnum = pgEnum("requirements", requirements);
-export const assignmentFormat = [
+const assignmentFormat = [
 	"text",
 	"pdf",
 	"excel",
 	"word",
 	"powerpoint",
 ] as const;
+
+const announcementType = ["資料", "アンケート", "その他"] as const;
 
 // 学生テーブル
 export const students = pgTable(
@@ -39,17 +41,14 @@ export const students = pgTable(
 );
 
 // 教授テーブル
-export const professors = pgTable(
-	"professors",
-	{
-		id: text("id")
-			.primaryKey()
-			.references(() => user.id),
-		departmentId: text("department_id")
-			.notNull()
-			.references(() => departments.id),
-	},
-);
+export const professors = pgTable("professors", {
+	id: text("id")
+		.primaryKey()
+		.references(() => user.id),
+	departmentId: text("department_id")
+		.notNull()
+		.references(() => departments.id),
+});
 
 // 学部テーブル
 export const faculties = pgTable("faculties", {
@@ -122,21 +121,33 @@ export const registration = pgTable(
 );
 
 // お知らせテーブル
-export const announcements = pgTable("announcements", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	title: text("title").notNull(),
-	description: text("description").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => new Date())
-		.notNull(),
-	createdBy: text("created_by")
-		.notNull()
-		.references(() => user.id),
-});
+export const announcements = pgTable(
+	"announcements",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		title: text("title").notNull(),
+		description: text("description").notNull(),
+		type: text("type").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+		createdBy: text("created_by")
+			.notNull()
+			.references(() => user.id),
+	},
+	(t) => [
+		check(
+			"type_check",
+			sql`${t.type} IN (${sql.raw(
+				[...announcementType].map((t) => `'${t}'`).join(", "),
+			)})`,
+		),
+	],
+);
 
 // スケジュールテーブル
 export const schedules = pgTable("schedules", {

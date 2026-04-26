@@ -19,8 +19,8 @@ import {
 	useSearchCourses,
 	useUnregisterCourse,
 } from "@/hooks/courses";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
 interface TableState {
 	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
@@ -40,14 +40,7 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		// キャッシュからデータ取得（既にプリフェッチ済み）
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
-			queryFn: async () => {
-				const res = await client.api.courses.search.registered.$get();
-				const data = await res.json();
-				if ("message" in data) {
-					return [];
-				}
-				return data;
-			},
+			queryFn: fetchRegisteredCoursesQueryFn,
 			staleTime: 5 * 60 * 1000,
 		});
 		return { initialCourses };

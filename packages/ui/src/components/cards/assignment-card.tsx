@@ -1,24 +1,15 @@
+import type { FetchAssignmentsReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileText } from "../../assets/icons/file-text";
 import { getFileColor } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
-// Type definitions
-interface AssignmentData {
-	id: number;
-	title: string;
-	description?: string;
-	dueDate: Date;
-	points?: number;
-	type: string;
-}
-
-interface AssignmentCardProps {
-	assignment: AssignmentData;
-}
-
 // AssignmentCard component
-export function AssignmentCard({ assignment }: AssignmentCardProps) {
+export function AssignmentCard({
+	assignment,
+}: {
+	assignment: FetchAssignmentsReturnType[number];
+}) {
 	const dateOptions: Intl.DateTimeFormatOptions = {
 		year: "numeric",
 		month: "short",
@@ -51,14 +42,14 @@ export function AssignmentCard({ assignment }: AssignmentCardProps) {
 							</h3>
 							<div className="mt-1 flex items-center gap-2 text-gray-500 text-sm dark:text-gray-400">
 								<span>
-									Due:{" "}
+									期限:{" "}
 									{assignment.dueDate.toLocaleDateString(
 										"default",
 										dateOptions,
 									)}
 								</span>
 								{isOverdue && (
-									<span className="font-medium text-danger">Overdue</span>
+									<span className="font-medium text-danger">期限切れ</span>
 								)}
 								{!isOverdue && daysUntilDue <= 3 && (
 									<span className="font-medium text-warning">
@@ -70,8 +61,8 @@ export function AssignmentCard({ assignment }: AssignmentCardProps) {
 							</div>
 						</div>
 
-						<DefaultChip size="sm" color={getFileColor(assignment.type)}>
-							{assignment.type}
+						<DefaultChip size="sm" color={getFileColor(assignment.format)}>
+							{assignment.format}
 						</DefaultChip>
 					</div>
 

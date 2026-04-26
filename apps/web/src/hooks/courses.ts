@@ -2,6 +2,7 @@ import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
 // 登録済み講義を取得するカスタムフック
 export const useRegisteredCourses = (
@@ -9,14 +10,7 @@ export const useRegisteredCourses = (
 ) => {
 	return useQuery({
 		queryKey: ["registered-courses"],
-		queryFn: async () => {
-			const res = await client.api.courses.search.registered.$get();
-			const data = await res.json();
-			if ("message" in data) {
-				return [];
-			}
-			return data;
-		},
+		queryFn: fetchRegisteredCoursesQueryFn,
 		staleTime: 5 * 60 * 1000,
 		initialData,
 	});

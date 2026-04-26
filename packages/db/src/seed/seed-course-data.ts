@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "..";
 import { coursesMaster } from "../mock/constants";
 import { courseList } from "../mock/course-data";
-import { courses, departments, faculties, user } from "../schema";
+import { courses, departments, faculties, professors, user } from "../schema";
 
 export async function seedCourseData() {
 	const facultyNames = Object.keys(coursesMaster).filter(
@@ -70,11 +70,11 @@ export async function seedCourseData() {
 				.from(user)
 				.where(eq(user.role, "professor"));
 
-			// Track professor assignments and their departments
+			// 教授の割り当てと所属学科を追跡
 			const professorCourseCount = new Map<string, number>();
 			const professorDepartmentMap = new Map<string, string>(); // professorId -> departmentId
 
-			// Helper function to find suitable professor for a course
+			// ヘルパー
 			function findSuitableProfessor(
 				departmentId: string,
 				professorIds: { id: string }[],
@@ -83,7 +83,7 @@ export async function seedCourseData() {
 				let attempts = 0;
 				const maxAttempts = professorIds.length * 3;
 
-				// Try to find a professor with constraints
+				// 制約のある教授を探す
 				while (attempts < maxAttempts && !selectedProfessorId) {
 					const randomIndex = Math.floor(Math.random() * professorIds.length);
 					const professorId = professorIds[randomIndex]?.id;
@@ -96,15 +96,15 @@ export async function seedCourseData() {
 					const currentCount = professorCourseCount.get(professorId) || 0;
 					const assignedDepartment = professorDepartmentMap.get(professorId);
 
-					// Check assignment constraints
+					// Assignment constraintsをチェック
 					if (currentCount < 2) {
 						if (currentCount === 0) {
-							// 1-lecture: can be assigned to any department
+							// 1講義目: どの学科でも割り当て可能
 							selectedProfessorId = professorId;
 							professorCourseCount.set(professorId, 1);
 							professorDepartmentMap.set(professorId, departmentId);
 						} else if (currentCount === 1) {
-							// 2-lecture: must be from the same department as first course
+							// 2講義目: 最初の講義と同じ学科である必要がある
 							if (assignedDepartment === departmentId) {
 								selectedProfessorId = professorId;
 								professorCourseCount.set(professorId, 2);
@@ -117,7 +117,7 @@ export async function seedCourseData() {
 				return selectedProfessorId;
 			}
 
-			// Helper function to find professor with minimum course count
+			// ヘルパー: 最も少ない講義数の教授を探す
 			function findProfessorWithMinimumCount(
 				departmentId: string,
 				professorIds: { id: string }[],
@@ -129,7 +129,7 @@ export async function seedCourseData() {
 					const count = professorCourseCount.get(professor.id) || 0;
 					const assignedDept = professorDepartmentMap.get(professor.id);
 
-					// Prefer professors with 0 courses, then 1 course in same department
+					// 0講義の教授を優先、その後同じ学科の1講義の教授
 					if (count === 0) {
 						minCount = count;
 						minProfessorId = professor.id;
@@ -147,7 +147,7 @@ export async function seedCourseData() {
 					const currentCount = professorCourseCount.get(minProfessorId) || 0;
 					professorCourseCount.set(minProfessorId, currentCount + 1);
 
-					// Set department assignment for first course
+					// 最初の講義の場合、学科を設定
 					if (currentCount === 0) {
 						professorDepartmentMap.set(minProfessorId, departmentId);
 					}
@@ -156,7 +156,7 @@ export async function seedCourseData() {
 				return minProfessorId;
 			}
 
-			// Helper function to assign professor as last resort
+			// ヘルパー: 最後の手段として教授を割り当てる
 			function assignProfessorAsLastResort(
 				departmentId: string,
 				professorIds: { id: string }[],
@@ -176,7 +176,7 @@ export async function seedCourseData() {
 				return professorId;
 			}
 
-			// Assign professors to all courses
+			// 教授を割り当てる
 			departmentNames.forEach((deptName) => {
 				const departmentId = deptMapping.get(deptName);
 				if (!departmentId) throw new Error(`Department ${deptName} not found`);
@@ -188,13 +188,13 @@ export async function seedCourseData() {
 					);
 					if (!courseValue) throw new Error(`Course ${courseName} not found`);
 
-					// Try to find suitable professor with constraints
+					// 制約のある教授を探す
 					let selectedProfessorId = findSuitableProfessor(
 						departmentId,
 						professorIds,
 					);
 
-					// If no suitable professor found, assign to professor with minimum count
+					// 教授が見つからなければ、最も少ない講義数の教授に割り当てる
 					if (!selectedProfessorId) {
 						selectedProfessorId = findProfessorWithMinimumCount(
 							departmentId,
@@ -202,7 +202,7 @@ export async function seedCourseData() {
 						);
 					}
 
-					// Last resort: assign to any available professor
+					// 最後の手段: どの教授も割り当てられない場合、任意の教授に割り当てる
 					if (!selectedProfessorId) {
 						selectedProfessorId = assignProfessorAsLastResort(
 							departmentId,
@@ -222,6 +222,18 @@ export async function seedCourseData() {
 				});
 			});
 
+			// 教授データの登録（重複を避けるためにユニークな教授のみ）
+			const uniqueProfessors = new Map<string, string>(); // professorId -> departmentId
+			courseValues.forEach((course) => {
+				uniqueProfessors.set(course.professorId, course.departmentId);
+			});
+
+			const professorValues = Array.from(uniqueProfessors.entries()).map(([id, departmentId]) => ({
+				id,
+				departmentId,
+			}));
+			
+			await tx.insert(professors).values(professorValues).onConflictDoNothing();
 			// 講義の登録
 			await tx.insert(courses).values(courseValues).onConflictDoNothing();
 

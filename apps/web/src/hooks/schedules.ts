@@ -3,22 +3,12 @@ import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedule
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import { fetchSchedulesQueryFn } from "@/utils/query-utils";
 
 export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 	return useQuery({
 		queryKey: ["schedules"],
-		queryFn: async () => {
-			const res = await client.api.schedules.select.$get();
-			const data = await res.json();
-			const parsedData = data.map((schedule) => {
-				return {
-					...schedule,
-					startTime: new Date(schedule.startTime),
-					endTime: new Date(schedule.endTime),
-				};
-			});
-			return parsedData;
-		},
+		queryFn: fetchSchedulesQueryFn,
 		initialData,
 		staleTime: 5 * 60 * 1000, // 5 minutes
 		gcTime: 10 * 60 * 1000, // 10 minutes (garbage collection)
@@ -33,7 +23,7 @@ export const useCreateSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleData: Omit<Schedules, SchedulesOptional>) => {
 			const res = await client.api.schedules.create.$post({
-				form: scheduleData,
+				json: scheduleData,
 			});
 			const data = await res.json();
 			return data;
@@ -70,7 +60,7 @@ export const useDeleteSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleId: string) => {
 			const res = await client.api.schedules.delete.$post({
-				json: scheduleId,
+				json: { scheduleId },
 			});
 			const data = await res.json();
 			return data;

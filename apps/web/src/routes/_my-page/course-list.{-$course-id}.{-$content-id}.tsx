@@ -2,34 +2,51 @@ import { createFileRoute } from "@tanstack/react-router";
 import RegisteredCourseContents from "@/components/private/courses/registered-course-contents";
 import RegisteredCourseInfos from "@/components/private/courses/registered-course-infos";
 import RegisteredCourseList from "@/components/private/courses/registered-course-list";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import {
+	fetchAnnouncementsQueryFn,
+	fetchAssignmentsQueryFn,
+	fetchRegisteredCoursesQueryFn,
+} from "@/utils/query-utils";
 
 export const Route = createFileRoute(
 	"/_my-page/course-list/{-$course-id}/{-$content-id}",
 )({
 	component: RouteComponent,
-	loader: async () => {
+	loader: async ({ params: { "content-id": contentId } }) => {
 		// キャッシュからデータ取得（既にプリフェッチ済み）
-		const courses = await queryClient.ensureQueryData({
-			queryKey: ["registered-courses"],
-			queryFn: async () => {
-				const res = await client.api.courses.search.registered.$get();
-				const data = await res.json();
-				if ("message" in data) {
-					return [];
-				}
-				return data;
-			},
-			staleTime: 5 * 60 * 1000, // 5 minutes
-		});
-		return { courses };
+		const [courses, announcements, assignments] = await Promise.all([
+			queryClient.ensureQueryData({
+				queryKey: ["registered-courses"],
+				queryFn: fetchRegisteredCoursesQueryFn,
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
+
+			queryClient.ensureQueryData({
+				queryKey: ["announcements-related-courses"],
+				queryFn: fetchAnnouncementsQueryFn,
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["assignments", contentId],
+				queryFn: () => fetchAssignmentsQueryFn(contentId),
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
+		]);
+
+		return { courses, announcements, assignments };
 	},
 });
 
 function RouteComponent() {
 	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
-	const { courses = [] } = Route.useLoaderData();
+	const {
+		courses = [],
+		announcements = [],
+		assignments = [],
+	} = Route.useLoaderData();
+
+	// 各講義のカバー画像を生成し、coursesWithCoverImageに追加
 	const dataLength = courses.length;
 	const coverImageList = Array.from(
 		{ length: dataLength },
@@ -40,11 +57,20 @@ function RouteComponent() {
 		coverImage: coverImageList[index],
 	}));
 
-	if (!courseId) return <RegisteredCourseList coursesWithCoverImage={coursesWithCoverImage} />;
-	if (!contentId) {
-		const targetCourse = coursesWithCoverImage.find((course) => course.id === courseId);
+	if (!courseId)
 		return (
-			<RegisteredCourseInfos courseWithCoverImage={targetCourse} />
+			<RegisteredCourseList coursesWithCoverImage={coursesWithCoverImage} />
+		);
+	if (!contentId) {
+		const targetCourse = coursesWithCoverImage.find(
+			(course) => course.id === courseId,
+		);
+		return (
+			<RegisteredCourseInfos
+				courseWithCoverImage={targetCourse}
+				announcements={announcements}
+				assignments={assignments}
+			/>
 		);
 	}
 	return <RegisteredCourseContents />;

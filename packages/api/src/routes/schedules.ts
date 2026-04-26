@@ -19,28 +19,22 @@ export const schedulesRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.get(
-		"/select",
-		async (c) => {
-			const { userId } = c.get("session");
-			const result = await fetchSchedules(userId);
-			return c.json(result, 200);
-		},
-	)
-	.get(
-		"/select/:scheduleId",
-		async (c) => {
-			const scheduleId = c.req.param("scheduleId");
-			const result = await fetchScheduleById(scheduleId);
-			return c.json(result, 200);
-		},
-	)
+	.get("/select", async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchSchedules(userId);
+		return c.json(result, 200);
+	})
+	.get("/select/:scheduleId", async (c) => {
+		const scheduleId = c.req.param("scheduleId");
+		const result = await fetchScheduleById(scheduleId);
+		return c.json(result, 200);
+	})
 	.post(
 		"/create",
-		zValidator("form", z.custom<Omit<Schedules, SchedulesOptional>>()),
+		zValidator("json", z.custom<Omit<Schedules, SchedulesOptional>>()),
 		async (c) => {
 			const { userId } = c.get("session");
-			const scheduleData = c.req.valid("form");
+			const scheduleData = c.req.valid("json");
 			const result = await createSchedules({
 				...scheduleData,
 				createdBy: userId,
@@ -50,9 +44,14 @@ export const schedulesRoute = new Hono<{
 	)
 	.post(
 		"/delete",
-		zValidator("json", z.string()),
+		zValidator(
+			"json",
+			z.object({
+				scheduleId: z.string(),
+			}),
+		),
 		async (c) => {
-			const scheduleId = c.req.valid("json");
+			const { scheduleId } = c.req.valid("json");
 			const result = await deleteSchedules(scheduleId);
 			return c.json(result);
 		},

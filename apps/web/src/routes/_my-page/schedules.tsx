@@ -6,9 +6,12 @@ import { CreateScheduleForm } from "@/components/private/schedules/create-schedu
 import { DayView } from "@/components/private/schedules/day-view";
 import { MonthView } from "@/components/private/schedules/month-view";
 import { WeekView } from "@/components/private/schedules/week-view";
-import { client } from "@/lib/hono-client";
-import { queryClient } from "@/lib/query-client";
 import { useSchedules } from "@/hooks/schedules";
+import { queryClient } from "@/lib/query-client";
+import {
+	fetchRegisteredCoursesQueryFn,
+	fetchSchedulesQueryFn,
+} from "@/utils/query-utils";
 
 export interface Event {
 	id: string;
@@ -27,30 +30,12 @@ export const Route = createFileRoute("/_my-page/schedules")({
 		const [courses, initialSchedules] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
-				queryFn: async () => {
-					const res = await client.api.courses.search.registered.$get();
-					const data = await res.json();
-					if ("message" in data) {
-						return [];
-					}
-					return data;
-				},
+				queryFn: fetchRegisteredCoursesQueryFn,
 				staleTime: 5 * 60 * 1000,
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["schedules"],
-				queryFn: async () => {
-					const res = await client.api.schedules.select.$get();
-					const data = await res.json();
-					const parsedData = data.map((schedule) => {
-						return {
-							...schedule,
-							startTime: new Date(schedule.startTime),
-							endTime: new Date(schedule.endTime),
-						};
-					});
-					return parsedData;
-				},
+				queryFn: fetchSchedulesQueryFn,
 				staleTime: 5 * 60 * 1000,
 			}),
 		]);

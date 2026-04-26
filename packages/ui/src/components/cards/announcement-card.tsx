@@ -1,29 +1,21 @@
+import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
 import { FileQuestion } from "../../assets/icons/file-question";
 import { FileText } from "../../assets/icons/file-text";
 import { Info } from "../../assets/icons/info";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
-// Type definitions
-interface AnnouncementData {
-	id: number;
-	title: string;
-	content: string;
-	type: string;
-	createdAt: Date;
-}
-
-interface AnnouncementCardProps {
-	data: AnnouncementData;
-}
-
 // AnnouncementCard component
-export function AnnouncementCard({ data }: AnnouncementCardProps) {
+export function AnnouncementCard({
+	data,
+}: {
+	data: FetchAnnouncementsFromUserCoursesReturnType[number];
+}) {
 	function getFileIcon(type: string) {
 		switch (type) {
-			case "Information":
+			case "資料":
 				return <FileText />;
-			case "Survey":
+			case "アンケート":
 				return <FileQuestion />;
 			default:
 				return <Info />;
@@ -34,11 +26,9 @@ export function AnnouncementCard({ data }: AnnouncementCardProps) {
 		type: string,
 	): "default" | "success" | "warning" | "danger" | "accent" {
 		switch (type) {
-			case "Information":
+			case "資料":
 				return "default";
-			case "Assignment":
-				return "warning";
-			case "Survey":
+			case "アンケート":
 				return "accent";
 			default:
 				return "default";
@@ -83,7 +73,7 @@ export function AnnouncementCard({ data }: AnnouncementCardProps) {
 
 					<div className="mt-3">
 						<p className="text-gray-700 leading-relaxed dark:text-gray-300">
-							{data.content}
+							{data.description}
 						</p>
 					</div>
 				</div>

@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Notifications } from "@/components/private/notifications";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/notifications")({
 	component: RouteComponent,
@@ -9,14 +9,7 @@ export const Route = createFileRoute("/_my-page/notifications")({
 		// キャッシュからデータ取得（既にプリフェッチ済み）
 		const courses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
-			queryFn: async () => {
-				const res = await client.api.courses.search.registered.$get();
-				const data = await res.json();
-				if ("message" in data) {
-					return [];
-				}
-				return data;
-			},
+			queryFn: fetchRegisteredCoursesQueryFn,
 			staleTime: 5 * 60 * 1000,
 		});
 		return { courses };
