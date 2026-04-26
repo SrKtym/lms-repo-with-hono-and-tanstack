@@ -53,11 +53,10 @@ export default function RegisteredCourseInfos({
 						src={courseWithCoverImage.coverImage || ""}
 						layout="fullWidth"
 						sizes="100vw"
-						className="h-full"
+						className="h-full object-cover"
 						alt="Course background"
-						objectFit="cover"
 						decoding="async"
-						priority={true}
+						priority="true"
 					/>
 					<div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 					<Link

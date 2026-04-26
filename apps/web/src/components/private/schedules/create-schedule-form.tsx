@@ -24,10 +24,11 @@ export function CreateScheduleForm() {
 			theme: "#059669",
 		},
 		onSubmit: async ({ value }) => {
+			const { timeSpan, ...rest } = value;
 			const scheduleData: Omit<Schedules, SchedulesOptional> = {
-				...value,
-				startTime: value.timeSpan.start.toDate(),
-				endTime: value.timeSpan.end.toDate(),
+				...rest,
+				startTime: timeSpan.start.toDate(),
+				endTime: timeSpan.end.toDate(),
 			};
 			await createSchedule.mutateAsync(scheduleData);
 		},
@@ -44,11 +45,9 @@ export function CreateScheduleForm() {
 					})
 					.refine((value) => dateTime <= value.start, {
 						error: "開始日時は現在時刻以降でなければなりません。",
-						path: ["start"],
 					})
-					.refine((value) => value.end > value.start, {
+					.refine((value) => value.start < value.end, {
 						error: "開始日時は終了日時よりも前でなければなりません。",
-						path: ["start"],
 					}),
 				theme: z
 					.string()
