@@ -19,7 +19,7 @@ export default function ResetPassword({ token }: { token: string }) {
 			try {
 				setError("");
 				setIsSuccess(false);
-
+				
 				await authClient.resetPassword(
 					{
 						token: token,
@@ -30,17 +30,15 @@ export default function ResetPassword({ token }: { token: string }) {
 							const errorMessage =
 								error.error.message ||
 								error.error.statusText ||
-								"Failed to reset password";
+								"パスワードのリセットに失敗しました";
 							setError(errorMessage);
-							console.error("Password reset error:", error);
 						},
 					},
 				);
 
 				setIsSuccess(true);
 			} catch (err) {
-				setError("An unexpected error occurred. Please try again.");
-				console.error("Unexpected error during password reset:", err);
+				setError("予期しないエラーが発生しました。お手数ですが再度試行してください。");
 			}
 		},
 		validators: {
@@ -96,6 +94,7 @@ export default function ResetPassword({ token }: { token: string }) {
 					form.handleSubmit();
 				}}
 				className="space-y-4"
+				aria-describedby="reset-password-error"
 			>
 				<form.Field
 					name="password"
@@ -107,6 +106,7 @@ export default function ResetPassword({ token }: { token: string }) {
 									name: field.name,
 									type: "password",
 									value: field.state.value,
+									"aria-describedby": "password-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => {
 										field.handleChange(e.target.value);
@@ -121,7 +121,7 @@ export default function ResetPassword({ token }: { token: string }) {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500 text-sm">
+								<p id="password-error" key={error?.message} className="text-red-500 text-sm">
 									{error?.message}
 								</p>
 							))}
@@ -139,6 +139,7 @@ export default function ResetPassword({ token }: { token: string }) {
 									name: field.name,
 									type: "password",
 									value: field.state.value,
+									"aria-describedby": "confirm-password-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => {
 										field.handleChange(e.target.value);
@@ -153,7 +154,7 @@ export default function ResetPassword({ token }: { token: string }) {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500 text-sm">
+								<p id="confirm-password-error" key={error?.message} className="text-red-500 text-sm">
 									{error?.message}
 								</p>
 							))}
@@ -164,7 +165,7 @@ export default function ResetPassword({ token }: { token: string }) {
 				{/* Error Message */}
 				{error && (
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-						<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+						<p id="reset-password-error" className="text-red-600 text-sm dark:text-red-400">{error}</p>
 					</div>
 				)}
 
@@ -190,8 +191,7 @@ export default function ResetPassword({ token }: { token: string }) {
 									パスワードのリセットに成功しました。
 								</h4>
 								<p className="text-green-600 text-sm dark:text-green-400">
-									Your password has been reset successfully. You can now sign in
-									with your new password.
+									パスワードが正常にリセットされました。新しいパスワードでサインインできます。
 								</p>
 							</div>
 						</div>
@@ -227,10 +227,10 @@ export default function ResetPassword({ token }: { token: string }) {
 											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 										/>
 									</svg>
-									Resetting Password...
+									パスワードをリセット中...
 								</>
 							) : (
-								"Reset Password"
+								"パスワードをリセット"
 							)}
 						</DefaultButton>
 					)}
@@ -241,7 +241,7 @@ export default function ResetPassword({ token }: { token: string }) {
 			{isSuccess && (
 				<div className="text-center">
 					<p className="text-gray-500 text-sm dark:text-gray-400">
-						Redirecting to sign in page in a moment...
+						サインインページにリダイレクトされます。
 					</p>
 				</div>
 			)}
@@ -252,7 +252,7 @@ export default function ResetPassword({ token }: { token: string }) {
 					to="/sign-in"
 					className="text-blue-600 text-sm hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
 				>
-					Back to Sign In
+					サインインに戻る
 				</Link>
 			</div>
 		</div>

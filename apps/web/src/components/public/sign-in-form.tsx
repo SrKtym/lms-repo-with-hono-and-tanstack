@@ -6,8 +6,10 @@ import { useForm } from "@tanstack/react-form";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 import { SocialLoginField } from "./social-login-field";
+import { useState } from "react";
 
 export default function SignInForm() {
+	const [error, setError] = useState<string>("");
 	const navigate = useNavigate({
 		from: "/",
 	});
@@ -26,7 +28,7 @@ export default function SignInForm() {
 					console.error(ctx.error.error.message || ctx.error.error.statusText);
 				},
 			},
-		});
+		})
 	};
 
 	const form = useForm({
@@ -35,22 +37,28 @@ export default function SignInForm() {
 			password: "",
 		},
 		onSubmit: async ({ value }) => {
-			await authClient.signIn.email(
-				{
-					email: value.email,
-					password: value.password,
-				},
-				{
-					onSuccess: () => {
-						navigate({
-							to: "/dashboard",
-						});
+			try {
+				setError("");
+				
+				await authClient.signIn.email(
+					{
+						email: value.email,
+						password: value.password,
 					},
-					onError: (error) => {
-						console.error(error.error.message || error.error.statusText);
+					{
+						onSuccess: () => {
+							navigate({
+								to: "/dashboard",
+							});
+						},
+						onError: (error) => {
+							console.error(error.error.message || error.error.statusText);
+						},
 					},
-				},
-			);
+				);
+			} catch (err) {
+				setError("予期しないエラーが発生しました。お手数ですが再度試行してください。");
+			}
 		},
 		validators: {
 			onSubmit: z.object({
@@ -75,6 +83,7 @@ export default function SignInForm() {
 					form.handleSubmit();
 				}}
 				className="form-field"
+				aria-describedby="sign-in-error"
 			>
 				<form.Field name="email">
 					{(field) => (
@@ -85,6 +94,7 @@ export default function SignInForm() {
 									name: field.name,
 									type: "email",
 									value: field.state.value,
+									"aria-describedby": "email-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -94,7 +104,7 @@ export default function SignInForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p id="email-error" key={error?.message} className="text-red-500">
 									{error?.message}
 								</p>
 							))}
@@ -112,6 +122,7 @@ export default function SignInForm() {
 									type: "password",
 									value: field.state.value,
 									minLength: 8,
+									"aria-describedby": "password-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -121,13 +132,20 @@ export default function SignInForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p id="password-error" key={error?.message} className="text-red-500">
 									{error?.message}
 								</p>
 							))}
 						</div>
 					)}
 				</form.Field>
+
+				{/* Error Message */}
+				{error && (
+					<div id="sign-in-error" className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
+						<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+					</div>
+				)}
 
 				<SocialLoginField onPasskeySignIn={handlePasskeySignIn} />
 

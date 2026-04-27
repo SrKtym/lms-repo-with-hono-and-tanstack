@@ -14,6 +14,7 @@
 	},
 	"scripts": {},
 	"dependencies": {
+		"@lms-repo/emails": "workspace:*",
 		"@lms-repo/db": "workspace:*",
 		"@lms-repo/env": "workspace:*",
 		"hono": "catalog:",

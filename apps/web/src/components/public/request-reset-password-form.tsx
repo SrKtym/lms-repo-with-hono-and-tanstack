@@ -18,7 +18,7 @@ export default function RequestResetPasswordForm() {
 			try {
 				setError("");
 				setIsSuccess(false);
-
+				
 				await authClient.requestPasswordReset(
 					{
 						email: value.email,
@@ -29,22 +29,20 @@ export default function RequestResetPasswordForm() {
 							const errorMessage =
 								error.error.message ||
 								error.error.statusText ||
-								"Failed to send reset email";
+								"リセットメールの送信に失敗しました";
 							setError(errorMessage);
-							console.error("Password reset request error:", error);
 						},
 					},
 				);
 
 				setIsSuccess(true);
 			} catch (err) {
-				setError("An unexpected error occurred. Please try again.");
-				console.error("Unexpected error during password reset request:", err);
+				setError("予期しないエラーが発生しました。お手数ですが再度試行してください。");
 			}
 		},
 		validators: {
 			onSubmit: z.object({
-				email: z.string().email("Please enter a valid email address"),
+				email: z.email("有効なメールアドレスを入力してください"),
 			}),
 		},
 	});
@@ -86,6 +84,7 @@ export default function RequestResetPasswordForm() {
 					form.handleSubmit();
 				}}
 				className="space-y-4"
+				aria-describedby="request-reset-password-error"
 			>
 				<form.Field name="email">
 					{(field) => (
@@ -96,20 +95,21 @@ export default function RequestResetPasswordForm() {
 									name: field.name,
 									type: "email",
 									value: field.state.value,
+									"aria-describedby": "email-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => {
 										field.handleChange(e.target.value);
 										setError(""); // Clear error on input
 									},
-									placeholder: "Enter your email address",
+									placeholder: "メールアドレスを入力してください",
 									className: "w-full",
 								}}
 								labelProps={{
-									children: "Email Address",
+									children: "メールアドレス",
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500 text-sm">
+								<p id="email-error" key={error?.message} className="text-red-500 text-sm">
 									{error?.message}
 								</p>
 							))}
@@ -120,7 +120,7 @@ export default function RequestResetPasswordForm() {
 				{/* Error Message */}
 				{error && (
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-						<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+						<p id="request-reset-password-error" className="text-red-600 text-sm dark:text-red-400">{error}</p>
 					</div>
 				)}
 
@@ -143,10 +143,10 @@ export default function RequestResetPasswordForm() {
 							</svg>
 							<div>
 								<h4 className="font-medium text-green-800 dark:text-green-200">
-									Reset Email Sent!
+									リセットメールを送信しました
 								</h4>
 								<p className="text-green-600 text-sm dark:text-green-400">
-									Check your email for the password reset link
+									メールアドレスを確認してください
 								</p>
 							</div>
 						</div>
@@ -187,10 +187,10 @@ export default function RequestResetPasswordForm() {
 											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
 										/>
 									</svg>
-									Sending Reset Link...
+									リセットリンクを送信中...
 								</>
 							) : (
-								"Send Reset Link"
+								"リセットリンクを送信"
 							)}
 						</DefaultButton>
 					)}
@@ -201,7 +201,7 @@ export default function RequestResetPasswordForm() {
 			{isSuccess && (
 				<div className="text-center">
 					<p className="text-gray-500 text-sm dark:text-gray-400">
-						Didn't receive the email? Check your spam folder or try again
+						メールが届かない場合は、スパムフォルダを確認するか、もう一度お試しください
 					</p>
 				</div>
 			)}
@@ -212,7 +212,7 @@ export default function RequestResetPasswordForm() {
 					to="/sign-in"
 					className="text-blue-600 text-sm hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
 				>
-					Back to Sign In
+					サインインに戻る
 				</Link>
 			</div>
 		</div>

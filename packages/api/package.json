@@ -9,6 +9,7 @@
 	"scripts": {},
 	"dependencies": {
 		"@lms-repo/auth": "workspace:*",
+		"@lms-repo/emails": "workspace:",
 		"@lms-repo/db": "workspace:*",
 		"hono": "catalog:",
 		"@hono/zod-validator": "^0.7.6"

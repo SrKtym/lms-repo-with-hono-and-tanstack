@@ -17,14 +17,12 @@ export default function PasskeyCard() {
 			const { error } = await authClient.passkey.addPasskey();
 
 			if (error) {
-				setError("Passkey registration failed. Please try again.");
-				console.error("Passkey registration error:", error);
+				setError("パスキーの登録に失敗しました。お手数ですが再度試行してください。");
 			} else {
 				setIsSuccess(true);
 			}
 		} catch (err) {
-			setError("An unexpected error occurred. Please try again.");
-			console.error("Unexpected error during passkey registration:", err);
+			setError("予期しないエラーが発生しました。お手数ですが再度試行してください。");
 		} finally {
 			setIsRegistering(false);
 		}
@@ -80,7 +78,7 @@ export default function PasskeyCard() {
 							</svg>
 							<div>
 								<h3 className="font-medium text-green-800 dark:text-green-200">
-									登録が成功しました！
+									登録が成功しました
 								</h3>
 								<p className="text-green-600 text-sm dark:text-green-400">
 									パスキーが正常に登録されました。これで、安全なログインに使用できます。
@@ -160,7 +158,7 @@ export default function PasskeyCard() {
 							</div>
 							<div className="flex-1">
 								<p className="text-gray-700 text-sm dark:text-gray-300">
-									<span className="font-medium">生体認証:</span>{" "}
+									<span className="font-medium">生体認証:</span>
 									パスワードではなく、指紋や顔認証、デバイスのPINを使用して認証します
 								</p>
 							</div>
@@ -182,7 +180,7 @@ export default function PasskeyCard() {
 							</div>
 							<div className="flex-1">
 								<p className="text-gray-700 text-sm dark:text-gray-300">
-									<span className="font-medium">クイックアクセス:</span>{" "}
+									<span className="font-medium">クイックアクセス:</span>
 									パスワードを覚える必要なく、ワンタップでログインできます
 								</p>
 							</div>

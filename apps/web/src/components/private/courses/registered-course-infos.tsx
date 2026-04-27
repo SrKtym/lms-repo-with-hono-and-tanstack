@@ -56,7 +56,7 @@ export default function RegisteredCourseInfos({
 						className="h-full object-cover"
 						alt="Course background"
 						decoding="async"
-						priority="true"
+						priority={true}
 					/>
 					<div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 					<Link

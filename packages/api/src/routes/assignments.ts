@@ -3,6 +3,7 @@ import type { Session } from "@lms-repo/auth/server";
 import {
 	fetchAssignmentById,
 	fetchAssignments,
+	fetchAllAssignments,
 } from "@lms-repo/db/utils/query/assignments";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -29,7 +30,15 @@ export const assignmentsRoute = new Hono<{
 		},
 	)
 	.get(
-		"/:assignmentId",
+		"/select/all",
+		async (c) => {
+			const { userId } = c.get("session");
+			const assignments = await fetchAllAssignments(userId);
+			return c.json(assignments, 200);
+		},
+	)
+	.get(
+		"/select/:assignmentId",
 		zValidator(
 			"param",
 			z.object({

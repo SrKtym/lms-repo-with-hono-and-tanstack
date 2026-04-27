@@ -8,8 +8,7 @@
 		"build": "vite build",
 		"serve": "vite preview",
 		"start": "vite",
-		"check-types": "vite build && tsc --noEmit",
-		"email:dev": "email dev --dir ./src/components/private/emails --port 4000"
+		"check-types": "vite build && tsc --noEmit"
 	},
 	"dependencies": {
 		"@lms-repo/api": "workspace:*",
@@ -21,7 +20,6 @@
 		"@tanstack/react-form": "^1.28.0",
 		"@tanstack/react-query": "^5.96.0",
 		"@tanstack/react-router": "catalog:",
-		"@react-email/components": "^1.0.10",
 		"dotenv": "catalog:",
 		"hono": "catalog:",
 		"motion": "catalog:",
@@ -31,7 +29,6 @@
 	},
 	"devDependencies": {
 		"@lms-repo/config": "workspace:*",
-		"@react-email/preview-server": "^5.2.10",
 		"@tanstack/react-router-devtools": "^1.141.1",
 		"@tanstack/router-plugin": "^1.141.1",
 		"@types/node": "^22.13.14",
@@ -39,7 +36,6 @@
 		"@types/react-dom": "catalog:",
 		"@vitejs/plugin-react": "^4.3.4",
 		"postcss": "^8.5.3",
-		"react-email": "^5.2.10",
 		"tailwindcss": "catalog:",
 		"typescript": "catalog:",
 		"vite": "^8.0.8"

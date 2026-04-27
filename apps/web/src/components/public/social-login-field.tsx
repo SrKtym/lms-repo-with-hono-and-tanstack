@@ -14,7 +14,7 @@ export function SocialLoginField({
 	const location = useLocation();
 	const providers = ["google", "github", "X"] as const;
 	const handleSocialSignIn = async (provider: (typeof providers)[number]) => {
-		const { data, error } = await authClient.signIn.social({
+		await authClient.signIn.social({
 			provider: provider,
 			callbackURL: "/dashboard",
 			errorCallbackURL: "/sign-in",

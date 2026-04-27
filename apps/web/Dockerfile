@@ -1,5 +1,5 @@
 # ベースイメージ
-FROM oven/bun:latest
+FROM oven/bun:1.3.11
 
 # 作業ディレクトリ
 WORKDIR /lms-repo
@@ -7,11 +7,11 @@ WORKDIR /lms-repo
 # 依存関係のコピー(ホストのルートからdockerの/lms-repoに)
 # docker-compose.ymlのbuild contextでビルド対象をルートディレクトリとしている
 COPY package.json ./
-COPY bun.lock ./
 COPY turbo.json ./
 COPY apps/web/package.json ./apps/web/
 COPY packages/api/package.json ./packages/api/
 COPY packages/auth/package.json ./packages/auth/
+COPY packages/emails/package.json ./packages/emails/
 COPY packages/db/package.json ./packages/db/
 COPY packages/ui/package.json ./packages/ui/
 COPY packages/env/package.json ./packages/env/
