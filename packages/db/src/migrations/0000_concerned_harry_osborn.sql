@@ -82,9 +82,11 @@ CREATE TABLE "announcements" (
 	"id" text PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
+	"type" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"created_by" text NOT NULL
+	"course_id" text NOT NULL,
+	CONSTRAINT "type_check" CHECK ("announcements"."type" IN ('資料', 'アンケート', 'その他'))
 );
 --> statement-breakpoint
 CREATE TABLE "assignments" (
@@ -96,9 +98,9 @@ CREATE TABLE "assignments" (
 	"format" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"created_by" text NOT NULL,
-	CONSTRAINT "points_range" CHECK ("assignments"."points" BETWEEN 0 AND 100),
-	CONSTRAINT "format_enum" CHECK ("assignments"."format" IN ('text','file','video','audio','image','link','quiz','survey','project'))
+	"course_id" text NOT NULL,
+	CONSTRAINT "points_range" CHECK ("assignments"."points" >= 0 AND "assignments"."points" <= 100),
+	CONSTRAINT "format_check" CHECK ("assignments"."format" IN ('text','pdf','excel','word','powerpoint'))
 );
 --> statement-breakpoint
 CREATE TABLE "comments" (
@@ -120,21 +122,23 @@ CREATE TABLE "courses" (
 	"class_room" text NOT NULL,
 	"department_id" text NOT NULL,
 	"professor_id" text NOT NULL,
-	CONSTRAINT "target_grade_range" CHECK ("courses"."target_grade" BETWEEN 1 AND 4),
-	CONSTRAINT "weekdays_range" CHECK ("courses"."weekdays" BETWEEN 1 AND 5),
-	CONSTRAINT "period_range" CHECK ("courses"."period" BETWEEN 1 AND 5),
-	CONSTRAINT "credits_range" CHECK ("courses"."credits" BETWEEN 1 AND 4)
+	CONSTRAINT "target_grade_range" CHECK ("courses"."target_grade" >= 1 AND "courses"."target_grade" <= 4),
+	CONSTRAINT "weekdays_range" CHECK ("courses"."weekdays" >= 1 AND "courses"."weekdays" <= 5),
+	CONSTRAINT "period_range" CHECK ("courses"."period" >= 1 AND "courses"."period" <= 5),
+	CONSTRAINT "credits_range" CHECK ("courses"."credits" >= 1 AND "courses"."credits" <= 4)
 );
 --> statement-breakpoint
 CREATE TABLE "departments" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
-	"faculty_id" text NOT NULL
+	"faculty_id" text NOT NULL,
+	CONSTRAINT "departments_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE "faculties" (
 	"id" text PRIMARY KEY NOT NULL,
-	"name" text NOT NULL
+	"name" text NOT NULL,
+	CONSTRAINT "faculties_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE "file_submissions_metadata" (
@@ -151,37 +155,49 @@ CREATE TABLE "notifications" (
 	"created_at" timestamp DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "professors" (
+	"id" text PRIMARY KEY NOT NULL,
+	"department_id" text NOT NULL
+);
+--> statement-breakpoint
 CREATE TABLE "registration" (
-	"user_id" text,
-	"course_id" text,
+	"user_id" text NOT NULL,
+	"course_id" text NOT NULL,
 	CONSTRAINT "registration_user_id_course_id_pk" PRIMARY KEY("user_id","course_id")
 );
 --> statement-breakpoint
 CREATE TABLE "schedules" (
 	"id" text PRIMARY KEY NOT NULL,
 	"title" text DEFAULT 'タイトルなし' NOT NULL,
-	"description" text,
+	"description" text DEFAULT '' NOT NULL,
 	"start_time" timestamp (0) NOT NULL,
 	"end_time" timestamp (0) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"theme" text DEFAULT '#000000' NOT NULL,
+	"theme" text DEFAULT '#059669' NOT NULL,
 	"created_by" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "students" (
 	"id" text PRIMARY KEY NOT NULL,
 	"grade" integer NOT NULL,
-	"department_id" text NOT NULL
+	"department_id" text NOT NULL,
+	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4)
 );
 --> statement-breakpoint
-CREATE TABLE "submisson_status" (
-	"user_id" text,
-	"assignment_id" text,
-	"is_submitted" boolean DEFAULT false NOT NULL,
+CREATE TABLE "submission_status" (
+	"user_id" text NOT NULL,
+	"assignment_id" text NOT NULL,
+	"status" text DEFAULT '未提出' NOT NULL,
 	"score" integer,
-	CONSTRAINT "submisson_status_user_id_assignment_id_pk" PRIMARY KEY("user_id","assignment_id"),
-	CONSTRAINT "score_range" CHECK (("submisson_status"."is_submitted" = false AND "submisson_status"."score" IS NULL) OR ("submisson_status"."is_submitted" = true AND "submisson_status"."score" >= 0 AND "submisson_status"."score" <= 100))
+	CONSTRAINT "submission_status_user_id_assignment_id_pk" PRIMARY KEY("user_id","assignment_id"),
+	CONSTRAINT "status_check" CHECK ("submission_status"."status" IN ('未提出','提出済み','評定済み')),
+	CONSTRAINT "score_range" CHECK (
+				CASE 
+					WHEN "submission_status"."status" IN ('未提出', '提出済み') THEN "submission_status"."score" IS NULL
+					WHEN "submission_status"."status" = '評定済み' THEN "submission_status"."score" >= 0 AND "submission_status"."score" <= 100
+				END
+			)
 );
 --> statement-breakpoint
 CREATE TABLE "text_submissions" (
@@ -197,18 +213,22 @@ ALTER TABLE "better_auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" 
 ALTER TABLE "better_auth"."passkeys" ADD CONSTRAINT "passkeys_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "better_auth"."session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "better_auth"."two_factors" ADD CONSTRAINT "two_factors_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "announcements" ADD CONSTRAINT "announcements_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "assignments" ADD CONSTRAINT "assignments_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "comments" ADD CONSTRAINT "comments_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "courses" ADD CONSTRAINT "courses_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "courses" ADD CONSTRAINT "courses_professor_id_user_id_fk" FOREIGN KEY ("professor_id") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "departments" ADD CONSTRAINT "departments_faculty_id_faculties_id_fk" FOREIGN KEY ("faculty_id") REFERENCES "public"."faculties"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "announcements" ADD CONSTRAINT "announcements_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "assignments" ADD CONSTRAINT "assignments_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comments" ADD CONSTRAINT "comments_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "courses" ADD CONSTRAINT "courses_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "courses" ADD CONSTRAINT "courses_professor_id_user_id_fk" FOREIGN KEY ("professor_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "departments" ADD CONSTRAINT "departments_faculty_id_faculties_id_fk" FOREIGN KEY ("faculty_id") REFERENCES "public"."faculties"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "professors" ADD CONSTRAINT "professors_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "professors" ADD CONSTRAINT "professors_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "registration" ADD CONSTRAINT "registration_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "schedules" ADD CONSTRAINT "schedules_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "students" ADD CONSTRAINT "students_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "students" ADD CONSTRAINT "students_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "text_submissions" ADD CONSTRAINT "text_submissions_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "schedules" ADD CONSTRAINT "schedules_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "students" ADD CONSTRAINT "students_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "students" ADD CONSTRAINT "students_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "submission_status" ADD CONSTRAINT "submission_status_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "submission_status" ADD CONSTRAINT "submission_status_assignment_id_assignments_id_fk" FOREIGN KEY ("assignment_id") REFERENCES "public"."assignments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "text_submissions" ADD CONSTRAINT "text_submissions_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "better_auth"."account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "better_auth"."session" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "better_auth"."verification" USING btree ("identifier");

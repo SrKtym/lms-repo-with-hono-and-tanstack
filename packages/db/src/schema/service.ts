@@ -225,8 +225,8 @@ export const fileSubmissionsMetadata = pgTable("file_submissions_metadata", {
 });
 
 // 提出状況テーブル
-export const submissonStatus = pgTable(
-	"submisson_status",
+export const submissionStatus = pgTable(
+	"submission_status",
 	{
 		userId: text("user_id").notNull(),
 		assignmentId: text("assignment_id").notNull(),
@@ -251,8 +251,8 @@ export const submissonStatus = pgTable(
 			"score_range",
 			sql`
 				CASE 
-					WHEN ${t.status} IN ("未提出", "提出済み") THEN ${t.score} IS NULL
-					WHEN ${t.status} = "評定済み" THEN ${t.score} >= 0 AND ${t.score} <= 100
+					WHEN ${t.status} IN ('未提出', '提出済み') THEN ${t.score} IS NULL
+					WHEN ${t.status} = '評定済み' THEN ${t.score} >= 0 AND ${t.score} <= 100
 				END
 			`,
 		),

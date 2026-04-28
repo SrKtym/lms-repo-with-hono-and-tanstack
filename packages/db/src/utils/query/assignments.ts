@@ -4,7 +4,7 @@ import {
 	assignments,
 	courses,
 	registration,
-	submissonStatus,
+	submissionStatus,
 } from "../../schema";
 
 // ユーザーが登録している講義の担当教員からの課題を取得
@@ -17,14 +17,14 @@ export async function fetchAssignmentsFromUserCourses(userId: string) {
 			points: assignments.points,
 			dueDate: assignments.dueDate,
 			format: assignments.format,
-			status: submissonStatus.status,
-			score: submissonStatus.score,
+			status: submissionStatus.status,
+			score: submissionStatus.score,
 			courseName: courses.name,
 		})
 		.from(assignments)
 		.innerJoin(
-			submissonStatus,
-			eq(assignments.id, submissonStatus.assignmentId),
+			submissionStatus,
+			eq(assignments.id, submissionStatus.assignmentId),
 		)
 		.innerJoin(courses, eq(assignments.courseId, courses.id))
 		.innerJoin(registration, eq(courses.id, registration.courseId))
