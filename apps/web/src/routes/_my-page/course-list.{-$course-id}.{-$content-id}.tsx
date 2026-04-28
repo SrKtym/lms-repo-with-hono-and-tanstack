@@ -50,7 +50,7 @@ function RouteComponent() {
 	const dataLength = courses.length;
 	const coverImageList = Array.from(
 		{ length: dataLength },
-		(_, i) => `https://img.heroui.chat/image/landscape?w=800&h=200&u=${i + 1}`,
+		(_, i) => `https://img.heroui.chat/image/landscape?w=1200&h=400&u=${i + 1}`,
 	);
 	const coursesWithCoverImage = courses.map((course, index) => ({
 		...course,
