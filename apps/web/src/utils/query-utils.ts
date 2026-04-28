@@ -35,9 +35,8 @@ export const fetchAnnouncementsQueryFn = async () => {
 };
 
 // 課題取得用のqueryFn
-export const fetchAssignmentsQueryFn = async (courseId?: string) => {
-	const query = courseId ? { courseId } : {};
-	const res = await client.api.assignments.select.$get({ query });
+export const fetchAssignmentsQueryFn = async () => {
+	const res = await client.api.assignments.select.$get();
 	const data = await res.json();
 	const parsedData = data.map((assignment) => ({
 		...assignment,
@@ -45,15 +44,3 @@ export const fetchAssignmentsQueryFn = async (courseId?: string) => {
 	}));
 	return parsedData;
 };
-
-// 全ての課題取得用のqueryFn
-export const fetchAllAssignmentsQueryFn = async () => {
-	const res = await client.api.assignments.select.all.$get();
-	const data = await res.json();
-	const parsedData = data.map((assignment) => ({
-		...assignment,
-		dueDate: new Date(assignment.dueDate),
-	}));
-	return parsedData;
-};
-

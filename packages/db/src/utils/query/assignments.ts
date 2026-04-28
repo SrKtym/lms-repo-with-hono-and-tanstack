@@ -1,11 +1,14 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../index";
-import { assignments, registration } from "../../schema";
+import {
+	assignments,
+	courses,
+	registration,
+	submissonStatus,
+} from "../../schema";
 
-export async function fetchAssignments(courseId?: string) {
-	if (!courseId) {
-		return [];
-	}
+// ユーザーが登録している講義の担当教員からの課題を取得
+export async function fetchAssignmentsFromUserCourses(userId: string) {
 	const assignmentsList = await db
 		.select({
 			id: assignments.id,
@@ -14,38 +17,27 @@ export async function fetchAssignments(courseId?: string) {
 			points: assignments.points,
 			dueDate: assignments.dueDate,
 			format: assignments.format,
+			status: submissonStatus.status,
+			score: submissonStatus.score,
+			courseName: courses.name,
 		})
 		.from(assignments)
-		.where(eq(assignments.courseId, courseId));
-
-	return assignmentsList;
-}
-
-export type FetchAssignmentsReturnType = Awaited<
-	ReturnType<typeof fetchAssignments>
->;
-
-export async function fetchAllAssignments(userId: string) {
-	const assignmentsList = await db
-		.select({
-			id: assignments.id,
-			title: assignments.title,
-			description: assignments.description,
-			points: assignments.points,
-			dueDate: assignments.dueDate,
-			format: assignments.format,
-		})
-		.from(assignments)
-		.innerJoin(registration, eq(assignments.courseId, registration.courseId))
+		.innerJoin(
+			submissonStatus,
+			eq(assignments.id, submissonStatus.assignmentId),
+		)
+		.innerJoin(courses, eq(assignments.courseId, courses.id))
+		.innerJoin(registration, eq(courses.id, registration.courseId))
 		.where(eq(registration.userId, userId));
 
 	return assignmentsList;
 }
 
-export type FetchAllAssignmentsReturnType = Awaited<
-	ReturnType<typeof fetchAllAssignments>
+export type FetchAssignmentsFromUserCoursesReturnType = Awaited<
+	ReturnType<typeof fetchAssignmentsFromUserCourses>
 >;
 
+// IDから課題を取得
 export async function fetchAssignmentById(assignmentId: string) {
 	const assignment = await db
 		.select({

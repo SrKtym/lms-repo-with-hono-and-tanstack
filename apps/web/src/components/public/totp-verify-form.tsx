@@ -33,7 +33,9 @@ export default function TotpVerifyForm({
 				setIsSuccess(true);
 				onSuccess?.();
 			} catch (err) {
-				setError("認証コードが正しくありません。お手数ですが再度試行してください。");
+				setError(
+					"認証コードが正しくありません。お手数ですが再度試行してください。",
+				);
 			}
 		},
 		validators: {

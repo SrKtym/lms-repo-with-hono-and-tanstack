@@ -1,10 +1,13 @@
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { createFileRoute } from "@tanstack/react-router";
-import { queryClient } from "@/lib/query-client";
-import { fetchAnnouncementsQueryFn, fetchAllAssignmentsQueryFn } from "@/utils/query-utils";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import { queryClient } from "@/lib/query-client";
+import {
+	fetchAllAssignmentsQueryFn,
+	fetchAnnouncementsQueryFn,
+} from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/notifications")({
 	component: RouteComponent,
@@ -30,165 +33,165 @@ function RouteComponent() {
 	const { announcements, assignments } = Route.useLoaderData();
 
 	const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
-		const [expandedNotifications, setExpandedNotifications] = useState<
-			Set<string>
-		>(new Set());
-	
-		// フィルター適用
-		const filteredNotifications = notifications.filter((notification) => {
-			if (filter === "unread") return !notification.read;
-			if (filter === "read") return notification.read;
-			return true;
+	const [expandedNotifications, setExpandedNotifications] = useState<
+		Set<string>
+	>(new Set());
+
+	// フィルター適用
+	const filteredNotifications = notifications.filter((notification) => {
+		if (filter === "unread") return !notification.read;
+		if (filter === "read") return notification.read;
+		return true;
+	});
+
+	// 未読数
+	const unreadCount = notifications.filter((n) => !n.read).length;
+
+	// 通知タイプのスタイルを取得
+	const getNotificationStyle = (type: Notification["type"]) => {
+		switch (type) {
+			case "success":
+				return "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300";
+			case "warning":
+				return "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300";
+			case "error":
+				return "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300";
+			case "course":
+				return "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300";
+			default:
+				return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/20 dark:border-gray-700 dark:text-gray-300";
+		}
+	};
+
+	// 通知アイコンを取得
+	const getNotificationIcon = (type: Notification["type"]) => {
+		switch (type) {
+			case "success":
+				return (
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				);
+			case "warning":
+				return (
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+						/>
+					</svg>
+				);
+			case "error":
+				return (
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				);
+			case "course":
+				return (
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+						/>
+					</svg>
+				);
+			default:
+				return (
+					<svg
+						className="h-5 w-5"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							strokeLinecap="round"
+							strokeLinejoin="round"
+							strokeWidth={2}
+							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
+					</svg>
+				);
+		}
+	};
+
+	// 時間文字列を取得
+	const getTimeString = (date: Date) => {
+		const now = new Date();
+		const diff = now.getTime() - date.getTime();
+		const minutes = Math.floor(diff / (1000 * 60));
+		const hours = Math.floor(diff / (1000 * 60 * 60));
+		const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+		if (minutes < 1) return "たった今";
+		if (minutes < 60) return `${minutes}分前`;
+		if (hours < 24) return `${hours}時間前`;
+		if (days < 7) return `${days}日前`;
+
+		return date.toLocaleDateString("ja-JP", {
+			month: "short",
+			day: "numeric",
 		});
-	
-		// 未読数
-		const unreadCount = notifications.filter((n) => !n.read).length;
-	
-		// 通知タイプのスタイルを取得
-		const getNotificationStyle = (type: Notification["type"]) => {
-			switch (type) {
-				case "success":
-					return "bg-green-50 border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-300";
-				case "warning":
-					return "bg-yellow-50 border-yellow-200 text-yellow-800 dark:bg-yellow-900/20 dark:border-yellow-800 dark:text-yellow-300";
-				case "error":
-					return "bg-red-50 border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-300";
-				case "course":
-					return "bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/20 dark:border-blue-800 dark:text-blue-300";
-				default:
-					return "bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-900/20 dark:border-gray-700 dark:text-gray-300";
-			}
-		};
-	
-		// 通知アイコンを取得
-		const getNotificationIcon = (type: Notification["type"]) => {
-			switch (type) {
-				case "success":
-					return (
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-					);
-				case "warning":
-					return (
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
-							/>
-						</svg>
-					);
-				case "error":
-					return (
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-					);
-				case "course":
-					return (
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-							/>
-						</svg>
-					);
-				default:
-					return (
-						<svg
-							className="h-5 w-5"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
-					);
-			}
-		};
-	
-		// 時間文字列を取得
-		const getTimeString = (date: Date) => {
-			const now = new Date();
-			const diff = now.getTime() - date.getTime();
-			const minutes = Math.floor(diff / (1000 * 60));
-			const hours = Math.floor(diff / (1000 * 60 * 60));
-			const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-	
-			if (minutes < 1) return "たった今";
-			if (minutes < 60) return `${minutes}分前`;
-			if (hours < 24) return `${hours}時間前`;
-			if (days < 7) return `${days}日前`;
-	
-			return date.toLocaleDateString("ja-JP", {
-				month: "short",
-				day: "numeric",
-			});
-		};
-	
-		// 通知の展開/折りたたみ
-		const toggleExpand = (id: string) => {
-			const newExpanded = new Set(expandedNotifications);
-			if (newExpanded.has(id)) {
-				newExpanded.delete(id);
-			} else {
-				newExpanded.add(id);
-			}
-			setExpandedNotifications(newExpanded);
-		};
-	
-		// 通知を既読にする
-		const handleMarkAsRead = (id: string) => {
-			if (onMarkAsRead) {
-				onMarkAsRead(id);
-			}
-		};
-	
-		// 通知を削除
-		const handleDelete = (id: string) => {
-			if (onDelete) {
-				onDelete(id);
-			}
-		};
+	};
+
+	// 通知の展開/折りたたみ
+	const toggleExpand = (id: string) => {
+		const newExpanded = new Set(expandedNotifications);
+		if (newExpanded.has(id)) {
+			newExpanded.delete(id);
+		} else {
+			newExpanded.add(id);
+		}
+		setExpandedNotifications(newExpanded);
+	};
+
+	// 通知を既読にする
+	const handleMarkAsRead = (id: string) => {
+		if (onMarkAsRead) {
+			onMarkAsRead(id);
+		}
+	};
+
+	// 通知を削除
+	const handleDelete = (id: string) => {
+		if (onDelete) {
+			onDelete(id);
+		}
+	};
 
 	return (
 		<div className="space-y-6 p-3">

@@ -1,76 +1,26 @@
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { TrendingUp } from "@lms-repo/ui/assets/icons/trending-up";
 import { BaseCard } from "../cards/base-card";
 import { DefaultProgressBar } from "../progress-bar";
 
-// Mock assignment data
-const mockAssignments = [
-	{
-		id: 1,
-		title: "Data Structures Report",
-		course: "Data Structures and Algorithms",
-		status: "Submitted",
-		submittedDate: new Date("2024-04-01T10:30:00"),
-		dueDate: new Date("2024-04-05T23:59:59"),
-		grade: 85,
-	},
-	{
-		id: 2,
-		title: "Web Development Assignment",
-		course: "Web Development Fundamentals",
-		status: "Not Submitted",
-		submittedDate: null,
-		dueDate: new Date("2024-04-08T23:59:59"),
-		grade: null,
-	},
-	{
-		id: 3,
-		title: "AI Paper Summary",
-		course: "Artificial Intelligence",
-		status: "Submitted",
-		submittedDate: new Date("2024-04-03T15:45:00"),
-		dueDate: new Date("2024-04-10T23:59:59"),
-		grade: 92,
-	},
-	{
-		id: 4,
-		title: "Algorithm Implementation Test",
-		course: "Data Structures and Algorithms",
-		status: "Under Review",
-		submittedDate: new Date("2024-04-05T09:15:00"),
-		dueDate: new Date("2024-04-12T23:59:59"),
-		grade: null,
-	},
-	{
-		id: 5,
-		title: "React Project",
-		course: "Web Development Fundamentals",
-		status: "Not Started",
-		submittedDate: null,
-		dueDate: new Date("2024-04-15T23:59:59"),
-		grade: null,
-	},
-];
-
-export function AssignmentsProgressCard() {
-	// Analyze assignment data
-	const totalAssignments = mockAssignments.length;
-	const submittedAssignments = mockAssignments.filter(
-		(assignment) => assignment.status === "Submitted",
+export function AssignmentsProgressCard({
+	assignments,
+}: {
+	assignments: FetchAssignmentsFromUserCoursesReturnType;
+}) {
+	const totalAssignments = assignments.length;
+	const submittedAssignments = assignments.filter(
+		(assignment) => assignment.status === "提出済み",
 	);
-	const inProgressAssignments = mockAssignments.filter(
-		(assignment) => assignment.status === "Under Review",
+	const evaluatedAssignments = assignments.filter(
+		(assignment) => assignment.status === "評定済み",
 	);
-	const notStartedAssignments = mockAssignments.filter(
-		(assignment) => assignment.status === "Not Started",
-	);
-	const overdueAssignments = mockAssignments.filter(
-		(assignment) =>
-			assignment.status === "Not Submitted" && new Date() > assignment.dueDate,
+	const overdueAssignments = assignments.filter(
+		(assignment) => assignment.dueDate < new Date(),
 	);
 
 	const submittedCount = submittedAssignments.length;
-	const inProgressCount = inProgressAssignments.length;
-	const notStartedCount = notStartedAssignments.length;
+	const evaluatedCount = evaluatedAssignments.length;
 	const overdueCount = overdueAssignments.length;
 
 	const completionRate =
@@ -80,7 +30,7 @@ export function AssignmentsProgressCard() {
 	const averageGrade =
 		submittedAssignments.length > 0
 			? Math.round(
-					submittedAssignments.reduce((sum, a) => sum + (a.grade || 0), 0) /
+					submittedAssignments.reduce((sum, a) => sum + (a.score || 0), 0) /
 						submittedAssignments.length,
 				)
 			: 0;
@@ -136,19 +86,10 @@ export function AssignmentsProgressCard() {
 
 					<div className="rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-950">
 						<div className="font-bold text-blue-600 text-lg dark:text-blue-400">
-							{inProgressCount}
+							{evaluatedCount}
 						</div>
 						<div className="text-blue-700 text-xs dark:text-blue-300">
-							評定中
-						</div>
-					</div>
-
-					<div className="rounded-lg border border-orange-200 bg-orange-50 p-3 dark:border-orange-800 dark:bg-orange-950">
-						<div className="font-bold text-lg text-orange-600 dark:text-orange-400">
-							{notStartedCount}
-						</div>
-						<div className="text-orange-700 text-xs dark:text-orange-300">
-							未着手
+							評定済み
 						</div>
 					</div>
 

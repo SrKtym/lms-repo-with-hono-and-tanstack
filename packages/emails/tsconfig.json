@@ -1,5 +1,5 @@
 {
-    "extends": "@lms-repo/config/tsconfig.base.json",
+	"extends": "@lms-repo/config/tsconfig.base.json",
 	"compilerOptions": {
 		"baseUrl": ".",
 		"lib": ["ESNext", "DOM"],

@@ -1,7 +1,7 @@
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 
 interface Notification {
 	id: string;

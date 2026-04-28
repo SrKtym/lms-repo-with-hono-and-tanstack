@@ -19,7 +19,7 @@ export default function ResetPassword({ token }: { token: string }) {
 			try {
 				setError("");
 				setIsSuccess(false);
-				
+
 				await authClient.resetPassword(
 					{
 						token: token,
@@ -38,7 +38,9 @@ export default function ResetPassword({ token }: { token: string }) {
 
 				setIsSuccess(true);
 			} catch (err) {
-				setError("予期しないエラーが発生しました。お手数ですが再度試行してください。");
+				setError(
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				);
 			}
 		},
 		validators: {
@@ -121,7 +123,11 @@ export default function ResetPassword({ token }: { token: string }) {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p id="password-error" key={error?.message} className="text-red-500 text-sm">
+								<p
+									id="password-error"
+									key={error?.message}
+									className="text-red-500 text-sm"
+								>
 									{error?.message}
 								</p>
 							))}
@@ -154,7 +160,11 @@ export default function ResetPassword({ token }: { token: string }) {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p id="confirm-password-error" key={error?.message} className="text-red-500 text-sm">
+								<p
+									id="confirm-password-error"
+									key={error?.message}
+									className="text-red-500 text-sm"
+								>
 									{error?.message}
 								</p>
 							))}
@@ -165,7 +175,12 @@ export default function ResetPassword({ token }: { token: string }) {
 				{/* Error Message */}
 				{error && (
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-						<p id="reset-password-error" className="text-red-600 text-sm dark:text-red-400">{error}</p>
+						<p
+							id="reset-password-error"
+							className="text-red-600 text-sm dark:text-red-400"
+						>
+							{error}
+						</p>
 					</div>
 				)}
 

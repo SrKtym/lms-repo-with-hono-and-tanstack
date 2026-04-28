@@ -56,7 +56,7 @@ function RouteComponent() {
 				<div className="space-y-3">
 					<Link to="/request-reset-password" className="block w-full">
 						<div className="flex w-full items-center justify-center rounded-lg border border-blue-600 bg-blue-600 px-4 py-3 text-white transition-colors hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600">
-							<ArrowLeft width={20} className="mr-2" />
+							<ArrowLeft width={20} />
 							再試行する
 						</div>
 					</Link>
@@ -64,7 +64,7 @@ function RouteComponent() {
 					<Link to="/sign-in" className="block w-full">
 						<div className="flex w-full items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-3 text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">
 							サインインページへ戻る
-							<ArrowRight width={20} className="ml-2" />
+							<ArrowRight width={20} />
 						</div>
 					</Link>
 				</div>

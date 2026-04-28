@@ -22,8 +22,8 @@ const assignmentFormat = [
 	"word",
 	"powerpoint",
 ] as const;
-
 const announcementType = ["資料", "アンケート", "その他"] as const;
+const statusList = ["未提出", "提出済み", "評定済み"] as const;
 
 // 学生テーブル
 export const students = pgTable(
@@ -31,11 +31,11 @@ export const students = pgTable(
 	{
 		id: text("id")
 			.primaryKey()
-			.references(() => user.id),
+			.references(() => user.id, { onDelete: "cascade" }),
 		grade: integer("grade").notNull(),
 		departmentId: text("department_id")
 			.notNull()
-			.references(() => departments.id),
+			.references(() => departments.id, { onDelete: "cascade" }),
 	},
 	(t) => [check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)],
 );
@@ -44,10 +44,10 @@ export const students = pgTable(
 export const professors = pgTable("professors", {
 	id: text("id")
 		.primaryKey()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 	departmentId: text("department_id")
 		.notNull()
-		.references(() => departments.id),
+		.references(() => departments.id, { onDelete: "cascade" }),
 });
 
 // 学部テーブル
@@ -66,7 +66,7 @@ export const departments = pgTable("departments", {
 	name: text("name").unique().notNull(),
 	facultyId: text("faculty_id")
 		.notNull()
-		.references(() => faculties.id),
+		.references(() => faculties.id, { onDelete: "cascade" }),
 });
 
 // 講義テーブル
@@ -85,10 +85,10 @@ export const courses = pgTable(
 		classRoom: text("class_room").notNull(),
 		departmentId: text("department_id")
 			.notNull()
-			.references(() => departments.id),
+			.references(() => departments.id, { onDelete: "cascade" }),
 		professorId: text("professor_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => user.id, { onDelete: "cascade" }),
 	},
 	(t) => [
 		check(
@@ -114,9 +114,10 @@ export const registration = pgTable(
 			columns: [t.courseId],
 			foreignColumns: [courses.id],
 		}).onDelete("cascade"),
-		foreignKey({ columns: [t.userId], foreignColumns: [user.id] }).onDelete(
-			"cascade",
-		),
+		foreignKey({
+			columns: [t.userId],
+			foreignColumns: [user.id],
+		}).onDelete("cascade"),
 	],
 );
 
@@ -135,9 +136,9 @@ export const announcements = pgTable(
 			.defaultNow()
 			.$onUpdate(() => new Date())
 			.notNull(),
-		createdBy: text("created_by")
+		courseId: text("course_id")
 			.notNull()
-			.references(() => user.id),
+			.references(() => courses.id, { onDelete: "cascade" }),
 	},
 	(t) => [
 		check(
@@ -166,7 +167,7 @@ export const schedules = pgTable("schedules", {
 	theme: text("theme").notNull().default("#059669"),
 	createdBy: text("created_by")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 });
 
 // 課題テーブル
@@ -186,9 +187,6 @@ export const assignments = pgTable(
 			.defaultNow()
 			.$onUpdate(() => new Date())
 			.notNull(),
-		createdBy: text("created_by")
-			.notNull()
-			.references(() => user.id),
 		courseId: text("course_id")
 			.notNull()
 			.references(() => courses.id),
@@ -196,7 +194,7 @@ export const assignments = pgTable(
 	(t) => [
 		check("points_range", sql`${t.points} >= 0 AND ${t.points} <= 100`),
 		check(
-			"format_enum",
+			"format_check",
 			sql`${t.format} IN (${sql.raw([...assignmentFormat].map((f) => `'${f}'`).join(","))})`,
 		),
 	],
@@ -216,7 +214,7 @@ export const textSubmissions = pgTable("text_submissions", {
 		.notNull(),
 	createdBy: text("created_by")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 });
 
 // ファイル形式の提出物メタデータ
@@ -232,15 +230,31 @@ export const submissonStatus = pgTable(
 	{
 		userId: text("user_id").notNull(),
 		assignmentId: text("assignment_id").notNull(),
-		isSubmitted: boolean("is_submitted").default(false).notNull(),
+		status: text("status").notNull().default("未提出"),
 		score: integer("score"),
 	},
 	(t) => [
 		primaryKey({ columns: [t.userId, t.assignmentId] }),
+		foreignKey({
+			columns: [t.userId],
+			foreignColumns: [user.id],
+		}).onDelete("cascade"),
+		foreignKey({
+			columns: [t.assignmentId],
+			foreignColumns: [assignments.id],
+		}).onDelete("cascade"),
+		check(
+			"status_check",
+			sql`${t.status} IN (${sql.raw([...statusList].map((s) => `'${s}'`).join(","))})`,
+		),
 		check(
 			"score_range",
-			sql`(${t.isSubmitted} = false AND ${t.score} IS NULL) OR 
-        (${t.isSubmitted} = true AND ${t.score} >= 0 AND ${t.score} <= 100)`,
+			sql`
+				CASE 
+					WHEN ${t.status} IN ("未提出", "提出済み") THEN ${t.score} IS NULL
+					WHEN ${t.status} = "評定済み" THEN ${t.score} >= 0 AND ${t.score} <= 100
+				END
+			`,
 		),
 	],
 );
@@ -271,7 +285,7 @@ export const comments = pgTable("comments", {
 		.notNull(),
 	createdBy: text("created_by")
 		.notNull()
-		.references(() => user.id),
+		.references(() => user.id, { onDelete: "cascade" }),
 });
 
 // // リレーション

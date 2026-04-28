@@ -13,7 +13,7 @@ export const Route = createFileRoute(
 	"/_my-page/course-list/{-$course-id}/{-$content-id}",
 )({
 	component: RouteComponent,
-	loader: async ({ params: { "content-id": contentId } }) => {
+	loader: async () => {
 		// キャッシュからデータ取得（既にプリフェッチ済み）
 		const [courses, announcements, assignments] = await Promise.all([
 			queryClient.ensureQueryData({
@@ -28,8 +28,8 @@ export const Route = createFileRoute(
 				staleTime: 5 * 60 * 1000, // 5 minutes
 			}),
 			queryClient.ensureQueryData({
-				queryKey: ["assignments", contentId],
-				queryFn: () => fetchAssignmentsQueryFn(contentId),
+				queryKey: ["assignments-related-courses"],
+				queryFn: fetchAssignmentsQueryFn,
 				staleTime: 5 * 60 * 1000, // 5 minutes
 			}),
 		]);

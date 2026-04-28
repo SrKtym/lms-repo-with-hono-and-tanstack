@@ -1,3 +1,5 @@
+import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import {
@@ -12,61 +14,7 @@ import { CancelButton, DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 import { NotificationsModal } from "../modals/notifications-modal";
 
-interface Notifications {
-	id: number;
-	title: string;
-	message: string;
-	type: "assignment" | "feedback" | "material" | "system";
-	read: boolean;
-	timestamp: Date;
-	priority: "high" | "medium" | "low";
-}
-
-// モック通知データ
-const mockNotifications: Notifications = [
-	{
-		id: 1,
-		title: "データ構造とアルゴリズム",
-		message:
-			"新しい課題「二分探索木の実装」が追加されました。締切は今週末です。提出するファイルのフォーマットはwordまたはexcelでお願いします。",
-		type: "assignment",
-		read: false,
-		timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2時間前
-		priority: "high",
-	},
-	{
-		id: 2,
-		title: "Web開発基礎",
-		message:
-			"プロジェクトのレビューが完了しました。フィードバックを確認してください。",
-		type: "feedback",
-		read: false,
-		timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5時間前
-		priority: "medium",
-	},
-	{
-		id: 3,
-		title: "人工知能論",
-		message: "来週の講義資料がアップロードされました。事前学習をお願いします。",
-		type: "material",
-		read: true,
-		timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1日前
-		priority: "low",
-	},
-	{
-		id: 4,
-		title: "システムメンテナンス",
-		message:
-			"明日午前2時〜4時にシステムメンテナンスを実施します。ご不便をおかけします。",
-		type: "system",
-		read: false,
-		timestamp: new Date(Date.now() - 6 * 60 * 60 * 1000), // 6時間前
-		priority: "medium",
-	},
-];
-
 export function NotificationsListCard() {
-	const [notifications, setNotifications] = useState(mockNotifications);
 	const [selectedNotification, setSelectedNotification] = useState<
 		number | null
 	>(null);
@@ -91,13 +39,13 @@ export function NotificationsListCard() {
 
 	const getNotificationIcon = (type: string) => {
 		switch (type) {
-			case "assignment":
+			case "課題":
 				return "📝";
-			case "feedback":
+			case "アンケート":
 				return "💬";
-			case "material":
+			case "資料":
 				return "📚";
-			case "system":
+			case "システム":
 				return "⚙️";
 			default:
 				return "📢";

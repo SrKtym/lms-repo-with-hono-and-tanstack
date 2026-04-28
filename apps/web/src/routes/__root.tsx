@@ -1,14 +1,15 @@
 // ルートレイアウト
+
+import { DefaultButton } from "@lms-repo/ui/components/button";
 import { ThemeProvider } from "@lms-repo/ui/components/theme-provider";
 import {
 	createRootRouteWithContext,
+	type ErrorComponentProps,
 	HeadContent,
 	Link,
 	Outlet,
-	type ErrorComponentProps,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
-import { DefaultButton } from "@lms-repo/ui/components/button";
 import "../index.css";
 
 export type RouterAppContext = {};
@@ -88,29 +89,24 @@ function CommonErrorComponent({ error }: ErrorComponentProps) {
 							/>
 						</svg>
 					</div>
-					<h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
+					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
 						エラーが発生しました
 					</h1>
 					<p className="mb-4 text-gray-600 dark:text-gray-400">
 						申し訳ありません。予期しないエラーが発生しました。
 					</p>
 					{error && (
-						<div className="mb-6 rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
+						<div className="mb-6 rounded-md bg-red-50 p-3 text-red-800 text-sm dark:bg-red-900/20 dark:text-red-400">
 							{error.message || "不明なエラー"}
 						</div>
 					)}
 				</div>
 				<div className="space-y-3">
 					<Link to=".">
-						<DefaultButton className="w-full">
-							ページを再読み込み
-						</DefaultButton>
+						<DefaultButton className="w-full">ページを再読み込み</DefaultButton>
 					</Link>
 					<Link to="/">
-						<DefaultButton
-							variant="outline"
-							className="w-full"
-						>
+						<DefaultButton variant="outline" className="w-full">
 							ホームに戻る
 						</DefaultButton>
 					</Link>

@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
-import { coursesMaster } from "../mock/constants";
+import { coursesMaster } from "../mock/course-master";
 import { courseList } from "../mock/course-data";
 import { courses, departments, faculties, professors, user } from "../schema";
 
@@ -228,11 +228,13 @@ export async function seedCourseData() {
 				uniqueProfessors.set(course.professorId, course.departmentId);
 			});
 
-			const professorValues = Array.from(uniqueProfessors.entries()).map(([id, departmentId]) => ({
-				id,
-				departmentId,
-			}));
-			
+			const professorValues = Array.from(uniqueProfessors.entries()).map(
+				([id, departmentId]) => ({
+					id,
+					departmentId,
+				}),
+			);
+
 			await tx.insert(professors).values(professorValues).onConflictDoNothing();
 			// 講義の登録
 			await tx.insert(courses).values(courseValues).onConflictDoNothing();

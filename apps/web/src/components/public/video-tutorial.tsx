@@ -1,6 +1,6 @@
 import { DefaultButton } from "@lms-repo/ui/components/button";
-import * as m from "motion/react-m";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import * as m from "motion/react-m";
 import { useState } from "react";
 
 export function VideoTutorial() {
@@ -238,7 +238,9 @@ export function VideoTutorial() {
 								<div className="mt-6 flex justify-between">
 									<DefaultButton
 										variant="outline"
-										onClick={() => handleStepChange(Math.max(0, currentStep - 1))}
+										onClick={() =>
+											handleStepChange(Math.max(0, currentStep - 1))
+										}
 										isDisabled={currentStep === 0}
 									>
 										戻る

@@ -2,8 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import {
 	fetchAssignmentById,
-	fetchAssignments,
-	fetchAllAssignments,
+	fetchAssignmentsFromUserCourses,
 } from "@lms-repo/db/utils/query/assignments";
 import { Hono } from "hono";
 import { z } from "zod";
@@ -15,28 +14,11 @@ export const assignmentsRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.get(
-		"/select",
-		zValidator(
-			"query",
-			z.object({
-				courseId: z.string().optional(),
-			}),
-		),
-		async (c) => {
-			const { courseId } = c.req.valid("query");
-			const assignments = await fetchAssignments(courseId);
-			return c.json(assignments, 200);
-		},
-	)
-	.get(
-		"/select/all",
-		async (c) => {
-			const { userId } = c.get("session");
-			const assignments = await fetchAllAssignments(userId);
-			return c.json(assignments, 200);
-		},
-	)
+	.get("/select", async (c) => {
+		const { userId } = c.get("session");
+		const assignments = await fetchAssignmentsFromUserCourses(userId);
+		return c.json(assignments, 200);
+	})
 	.get(
 		"/select/:assignmentId",
 		zValidator(

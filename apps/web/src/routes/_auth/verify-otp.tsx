@@ -45,7 +45,7 @@ function RouteComponent() {
 						isActive={activeTab === "otp"}
 					/>
 				}
-				onTabChange={handleTabChange}
+				// onTabChange={handleTabChange}
 			/>
 		</div>
 	);

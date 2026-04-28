@@ -1,7 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { DefaultButton } from "@lms-repo/ui/components/button";
-import { Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { DeviceShowcase } from "@/components/public/device-showcase";
 import { FeaturesSection } from "@/components/public/features-section";
 import { Footer } from "@/components/public/footer";

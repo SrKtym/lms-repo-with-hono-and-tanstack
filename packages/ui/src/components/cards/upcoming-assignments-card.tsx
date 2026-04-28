@@ -1,74 +1,27 @@
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileDocument } from "@lms-repo/ui/assets/icons/file-document";
+import { FileText } from "@lms-repo/ui/assets/icons/file-text";
+import { MSExcel } from "@lms-repo/ui/assets/icons/ms-excel";
+import { MSPowerpoint } from "@lms-repo/ui/assets/icons/ms-powerpoint";
+import { MSword } from "@lms-repo/ui/assets/icons/ms-word";
+import { PDFFile } from "@lms-repo/ui/assets/icons/pdf-file";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import { useState } from "react";
 import { DefaultButton } from "../button";
 import { DefaultSelect } from "../select";
 import { BaseCard } from "./base-card";
 
-// モックデータ
-const mockAssignments = [
-	{
-		id: "1",
-		title: "データ構造レポート",
-		description: "二分探索木の実装と分析",
-		courseName: "データ構造とアルゴリズム",
-		courseId: "1",
-		dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // 2日後
-		priority: "high",
-		status: "pending",
-		type: "essay",
-	},
-	{
-		id: "2",
-		title: "Web開発ミニプロジェクト",
-		description: "Reactを使用したTODOアプリの作成",
-		courseName: "Web開発基礎",
-		courseId: "3",
-		dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5日後
-		priority: "medium",
-		status: "pending",
-		type: "project",
-	},
-	{
-		id: "3",
-		title: "アルゴリズム小テスト",
-		description: "ソートアルゴリズムに関する選択問題",
-		courseName: "データ構造とアルゴリズム",
-		courseId: "1",
-		dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 1週間後
-		priority: "medium",
-		status: "pending",
-		type: "quiz",
-	},
-	{
-		id: "4",
-		title: "論文読解",
-		description: "機械学習に関する最新論文の要約",
-		courseName: "人工知能論",
-		courseId: "2",
-		dueDate: new Date(Date.now() + 12 * 24 * 60 * 60 * 1000), // 12日後
-		priority: "low",
-		status: "pending",
-		type: "reading",
-	},
-];
-
-const mockCourseDataList = [
-	{ course: { name: "データ構造とアルゴリズム" } },
-	{ course: { name: "Web開発基礎" } },
-	{ course: { name: "人工知能論" } },
-];
-
-export function UpcomingAssignmentsCard() {
+export function UpcomingAssignmentsCard({
+	assignments,
+}: {
+	assignments: FetchAssignmentsFromUserCoursesReturnType;
+}) {
 	const [selectedPeriod, setSelectedPeriod] = useState("7日以内");
 
-	const assignments = mockAssignments.filter(
+	const filteredAssignments = assignments.filter(
 		(assignment) =>
-			mockCourseDataList.find(
-				({ course }) => course.name === assignment.courseName,
-			) &&
 			assignment.dueDate.getTime() - new Date().getTime() <=
-				(selectedPeriod === "3日以内" ? 3 : 7) * 24 * 60 * 60 * 1000,
+			(selectedPeriod === "3日以内" ? 3 : 7) * 24 * 60 * 60 * 1000,
 	);
 
 	const getDaysUntilDue = (dueDate: Date) => {
@@ -82,31 +35,18 @@ export function UpcomingAssignmentsCard() {
 		return `${diffDays}日後`;
 	};
 
-	const getPriorityColor = (priority: string) => {
-		switch (priority) {
-			case "high":
-				return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950 border-red-200 dark:border-red-800";
-			case "medium":
-				return "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-950 border-yellow-200 dark:border-yellow-800";
-			case "low":
-				return "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800";
+	const getTypeIcon = (format: string) => {
+		switch (format) {
+			case "powerpoint":
+				return <MSPowerpoint />;
+			case "pdf":
+				return <PDFFile />;
+			case "excel":
+				return <MSExcel />;
+			case "word":
+				return <MSword />;
 			default:
-				return "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 border-gray-200 dark:border-gray-700";
-		}
-	};
-
-	const getTypeIcon = (type: string) => {
-		switch (type) {
-			case "essay":
-				return "📝";
-			case "quiz":
-				return "📋";
-			case "project":
-				return "🚀";
-			case "reading":
-				return "📚";
-			default:
-				return "📄";
+				return <FileText />;
 		}
 	};
 
@@ -150,7 +90,7 @@ export function UpcomingAssignmentsCard() {
 									<div className="flex-1">
 										<div className="mb-1 flex items-center gap-2">
 											<span className="text-sm">
-												{getTypeIcon(assignment.type)}
+												{getTypeIcon(assignment.format)}
 											</span>
 											<h3 className="font-semibold text-gray-900 text-sm dark:text-gray-100">
 												{assignment.title}
@@ -176,19 +116,6 @@ export function UpcomingAssignmentsCard() {
 												{getDaysUntilDue(assignment.dueDate)}
 											</span>
 										</div>
-									</div>
-
-									<div className="flex flex-col items-end gap-1">
-										<span
-											className={`rounded-full border px-2 py-0.5 font-medium text-xs ${getPriorityColor(assignment.priority)}`}
-										>
-											{assignment.priority === "high"
-												? "高"
-												: assignment.priority === "medium"
-													? "中"
-													: "低"}
-											優先度
-										</span>
 									</div>
 								</div>
 							</div>

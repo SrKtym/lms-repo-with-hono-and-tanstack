@@ -5,6 +5,8 @@ import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-
 import { createFileRoute } from "@tanstack/react-router";
 import { queryClient } from "@/lib/query-client";
 import {
+	fetchAnnouncementsQueryFn,
+	fetchAssignmentsQueryFn,
 	fetchRegisteredCoursesQueryFn,
 	fetchSchedulesQueryFn,
 } from "@/utils/query-utils";
@@ -12,8 +14,8 @@ import {
 export const Route = createFileRoute("/_my-page/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
-		// キャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules] = await Promise.all([
+		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
+		const [courses, schedules, announcements, assignments] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
 				queryFn: fetchRegisteredCoursesQueryFn,
@@ -25,13 +27,30 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 				queryFn: fetchSchedulesQueryFn,
 				staleTime: 5 * 60 * 1000,
 			}),
+
+			queryClient.ensureQueryData({
+				queryKey: ["announcements-related-courses"],
+				queryFn: fetchAnnouncementsQueryFn,
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
+
+			queryClient.ensureQueryData({
+				queryKey: ["assignments-related-courses"],
+				queryFn: fetchAssignmentsQueryFn,
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
 		]);
-		return { courses, schedules };
+		return { courses, schedules, announcements, assignments };
 	},
 });
 
 function RouteComponent() {
-	const { courses = [], schedules = [] } = Route.useLoaderData();
+	const {
+		courses = [],
+		schedules = [],
+		announcements = [],
+		assignments = [],
+	} = Route.useLoaderData();
 
 	return (
 		<div className="p-3">
@@ -55,21 +74,21 @@ function RouteComponent() {
 				{/* Desktop Layout - Left Column */}
 				<div className="hidden lg:col-span-2 lg:block lg:space-y-6">
 					<DailySchedulesCard courses={courses} schedules={schedules} />
-					<UpcomingAssignmentsCard />
+					<UpcomingAssignmentsCard assignments={assignments} />
 				</div>
 
 				{/* Desktop Layout - Right Column */}
 				<div className="hidden lg:block lg:space-y-6">
 					<NotificationsListCard />
-					<AssignmentsProgressCard />
+					<AssignmentsProgressCard assignments={assignments} />
 				</div>
 
 				{/* Mobile Layout - Custom Order */}
 				<div className="space-y-4 lg:hidden">
 					<DailySchedulesCard courses={courses} schedules={schedules} />
 					<NotificationsListCard />
-					<UpcomingAssignmentsCard />
-					<AssignmentsProgressCard />
+					<UpcomingAssignmentsCard assignments={assignments} />
+					<AssignmentsProgressCard assignments={assignments} />
 				</div>
 			</div>
 		</div>
