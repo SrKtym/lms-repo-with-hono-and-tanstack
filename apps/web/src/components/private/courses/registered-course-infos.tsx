@@ -1,5 +1,5 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
-import type { FetchAssignmentsReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
@@ -22,7 +22,7 @@ interface RegisteredCourseInfosProps {
 		coverImage?: string;
 	};
 	announcements: FetchAnnouncementsFromUserCoursesReturnType;
-	assignments: FetchAssignmentsReturnType;
+	assignments: FetchAssignmentsFromUserCoursesReturnType;
 }
 
 export default function RegisteredCourseInfos({
