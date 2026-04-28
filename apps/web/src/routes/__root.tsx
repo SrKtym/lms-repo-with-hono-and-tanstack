@@ -101,7 +101,7 @@ function CommonErrorComponent({ error }: ErrorComponentProps) {
 						</div>
 					)}
 				</div>
-				<div className="space-y-3">
+				<div className="flex flex-col gap-3">
 					<Link to=".">
 						<DefaultButton className="w-full">ページを再読み込み</DefaultButton>
 					</Link>
