@@ -53,7 +53,7 @@ export default function RegisteredCourseInfos({
 						src={courseWithCoverImage.coverImage || ""}
 						layout="fullWidth"
 						sizes="100vw"
-						className="h-full object-cover"
+						className="h-full w-full object-cover"
 						alt="Course background"
 						decoding="async"
 						priority={true}

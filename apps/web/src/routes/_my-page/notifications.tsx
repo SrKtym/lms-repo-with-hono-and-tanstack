@@ -5,8 +5,8 @@ import * as m from "motion/react-m";
 import { useState } from "react";
 import { queryClient } from "@/lib/query-client";
 import {
-	fetchAllAssignmentsQueryFn,
 	fetchAnnouncementsQueryFn,
+	fetchAssignmentsQueryFn
 } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/notifications")({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/_my-page/notifications")({
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["all-assignments"],
-				queryFn: fetchAllAssignmentsQueryFn,
+				queryFn: fetchAssignmentsQueryFn,
 				staleTime: 5 * 60 * 1000, // 5 minutes
 			}),
 		]);
