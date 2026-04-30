@@ -95,7 +95,7 @@ export default function ResetPassword({ token }: { token: string }) {
 					e.stopPropagation();
 					form.handleSubmit();
 				}}
-				className="space-y-4"
+				className="space-y-6"
 				aria-describedby="reset-password-error"
 			>
 				<form.Field

@@ -1,7 +1,4 @@
-import type {
-	FetchCoursesReturnType,
-	FetchRegisteredCoursesReturnType,
-} from "@lms-repo/db/utils/query/courses";
+import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { Search } from "@lms-repo/ui/assets/icons/search";
 import { DefaultButton } from "@lms-repo/ui/components/button";
@@ -11,7 +8,6 @@ import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider"
 import { ConfirmationModal } from "@lms-repo/ui/components/modals/confirmation-modal";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
-import { useState } from "react";
 import { z } from "zod";
 import {
 	useRegisterCourse,
@@ -21,16 +17,6 @@ import {
 } from "@/hooks/courses";
 import { queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
-
-interface TableState {
-	selectedCourse: FetchRegisteredCoursesReturnType[number] | null;
-	isModalOpen: boolean;
-	showCourseList: boolean;
-	selectedCell: { day: string; period: string } | null;
-	showCourseSelection: boolean;
-	isEditMode: boolean;
-	editFormData: FetchRegisteredCoursesReturnType[number] | null;
-}
 
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
@@ -51,15 +37,6 @@ function RouteComponent() {
 	const { initialCourses } = Route.useLoaderData();
 	const params = Route.useSearch();
 	const navigate = useNavigate();
-	const [state] = useState<TableState>({
-		selectedCourse: null,
-		isModalOpen: false,
-		showCourseList: false,
-		selectedCell: null,
-		showCourseSelection: false,
-		isEditMode: false,
-		editFormData: null,
-	});
 
 	// 登録済み講義の取得
 	const { data: courses = [] } = useRegisteredCourses(initialCourses);
@@ -142,33 +119,56 @@ function RouteComponent() {
 												</DefaultButton>
 											}
 											onConfirm={() => {}}
-											title="confirm"
+											title="登録講義の確認"
 										>
 											<div className="space-y-4">
 												<p className="text-gray-700 dark:text-gray-300">
 													以下の講義を登録してもよろしいですか？
 												</p>
-												{state.selectedCourse && (
-													<div className="space-y-3 rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
-														<div className="flex items-start justify-between">
-															<div>
-																<h4 className="font-semibold text-gray-900 dark:text-white">
-																	{state.selectedCourse.name}
-																</h4>
-																<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
-																	担当教員: {state.selectedCourse.professor}
-																</p>
-																<p className="text-gray-600 text-sm dark:text-gray-400">
-																	単位数: {state.selectedCourse.credits}
-																</p>
-																<p className="text-gray-600 text-sm dark:text-gray-400">
-																	時間割: {state.selectedCourse.weekdays}{" "}
-																	{state.selectedCourse.period}
-																</p>
-															</div>
-														</div>
-													</div>
-												)}
+												<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+													<table className="w-full">
+														<thead>
+															<tr className="border-gray-200 border-b dark:border-gray-600">
+																<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
+																	講義名
+																</th>
+																<th className="pb-2 text-right font-semibold text-gray-900 dark:text-white">
+																	単位数
+																</th>
+															</tr>
+														</thead>
+														<tbody>
+															{courses.map((course, index) => (
+																<tr
+																	key={course.id}
+																	className={
+																		index < courses.length - 1
+																			? "border-gray-100 border-b dark:border-gray-600"
+																			: ""
+																	}
+																>
+																	<td className="py-2 text-gray-900 dark:text-white">
+																		{course.name}
+																	</td>
+																	<td className="py-2 text-right text-gray-900 dark:text-white">
+																		{course.credits}
+																	</td>
+																</tr>
+															))}
+															<tr className="border-gray-300 border-t-2 dark:border-gray-500">
+																<td className="py-2 font-bold text-gray-900 dark:text-white">
+																	合計単位数
+																</td>
+																<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
+																	{courses.reduce(
+																		(sum, course) => sum + course.credits,
+																		0,
+																	)}
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
 											</div>
 										</ConfirmationModal>
 									)}

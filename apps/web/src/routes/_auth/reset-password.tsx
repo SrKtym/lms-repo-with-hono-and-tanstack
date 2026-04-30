@@ -53,7 +53,7 @@ function RouteComponent() {
 				</div>
 
 				{/* Action Buttons */}
-				<div className="space-y-3">
+				<div className="space-y-4">
 					<Link to="/request-reset-password" className="block w-full">
 						<div className="flex w-full items-center justify-center rounded-lg border border-blue-600 bg-blue-600 px-4 py-3 text-white transition-colors hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-500 dark:hover:bg-blue-600">
 							<ArrowLeft width={20} />

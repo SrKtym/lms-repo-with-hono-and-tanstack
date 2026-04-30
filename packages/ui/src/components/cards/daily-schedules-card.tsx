@@ -1,6 +1,7 @@
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
+import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
 import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
@@ -35,30 +36,12 @@ export function DailySchedulesCard({
 	courses: FetchRegisteredCoursesReturnType;
 	schedules: FetchSchedulesReturnType;
 }) {
+	const { periodToTime } = usePeriodTime();
+
 	// 本日の講義を取得
 	const todayCourse = courses
 		.filter((course) => course.weekdays === new Date().getDay())
 		.map((course) => {
-			// Convert period to actual time (assuming period 1 = 09:00, period 2 = 10:30, etc.)
-			const periodToTime = (period: number) => {
-				const startHour = 8 + (period - 1) * 1.5; // 09:00 for period 1
-				const endHour = startHour + 1.5; // 1.5 hour classes
-				return {
-					start: new Date().setHours(
-						Math.floor(startHour),
-						(startHour % 1) * 60,
-						0,
-						0,
-					),
-					end: new Date().setHours(
-						Math.floor(endHour),
-						(endHour % 1) * 60,
-						0,
-						0,
-					),
-				};
-			};
-
 			const times = periodToTime(course.period);
 
 			return {

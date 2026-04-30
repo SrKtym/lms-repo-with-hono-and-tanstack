@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "..";
-import { coursesMaster } from "../mock/course-master";
 import { courseList } from "../mock/course-data";
+import { coursesMaster } from "../mock/course-master";
 import { courses, departments, faculties, professors, user } from "../schema";
 
 export async function seedCourseData() {

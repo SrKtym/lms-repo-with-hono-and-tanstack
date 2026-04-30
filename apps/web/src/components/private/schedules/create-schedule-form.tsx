@@ -25,11 +25,13 @@ export function CreateScheduleForm() {
 		},
 		onSubmit: async ({ value }) => {
 			const { timeSpan, ...rest } = value;
+
 			const scheduleData: Omit<Schedules, SchedulesOptional> = {
 				...rest,
 				startTime: timeSpan.start.toDate(),
 				endTime: timeSpan.end.toDate(),
 			};
+
 			await createSchedule.mutateAsync(scheduleData);
 		},
 		validators: {
@@ -48,7 +50,11 @@ export function CreateScheduleForm() {
 					})
 					.refine((value) => value.start < value.end, {
 						error: "開始日時は終了日時よりも前でなければなりません。",
-					}),
+					})
+					.transform((value) => ({
+						start: value.start.toDate(),
+						end: value.end.toDate(),
+					})),
 				theme: z
 					.string()
 					.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください"),
@@ -68,7 +74,7 @@ export function CreateScheduleForm() {
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
-					e.stopPropagation;
+					e.stopPropagation();
 					form.handleSubmit();
 				}}
 				className="form-field p-1"
@@ -143,9 +149,7 @@ export function CreateScheduleForm() {
 										start: field.state.value?.start,
 										end: field.state.value?.end,
 									},
-									onChange: (
-										value: { start: ZonedDateTime; end: ZonedDateTime } | null,
-									) => {
+									onChange: (value) => {
 										if (value) {
 											field.handleChange({
 												start: value.start,

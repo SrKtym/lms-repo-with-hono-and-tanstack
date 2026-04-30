@@ -89,7 +89,7 @@ function RouteComponent() {
 					e.stopPropagation();
 					form.handleSubmit();
 				}}
-				className="space-y-4"
+				className="space-y-6"
 				aria-describedby="request-reset-password-error"
 			>
 				<form.Field name="email">

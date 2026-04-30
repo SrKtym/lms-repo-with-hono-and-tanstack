@@ -22,7 +22,6 @@ import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAddPasskeyRouteImport } from './routes/_auth/add-passkey'
-import { Route as AuthAboutResetPasswordRouteImport } from './routes/_auth/about-reset-password'
 import { Route as AuthSetTwofactorRouteRouteImport } from './routes/_auth/set-twofactor/route'
 import { Route as AuthSetTwofactorRegisterTotpSecretkeyRouteImport } from './routes/_auth/set-twofactor/register-totp-secretkey'
 import { Route as MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport } from './routes/_my-page/course-list.{-$course-id}.{-$content-id}'
@@ -91,11 +90,6 @@ const AuthAddPasskeyRoute = AuthAddPasskeyRouteImport.update({
   path: '/add-passkey',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthAboutResetPasswordRoute = AuthAboutResetPasswordRouteImport.update({
-  id: '/about-reset-password',
-  path: '/about-reset-password',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
 const AuthSetTwofactorRouteRoute = AuthSetTwofactorRouteRouteImport.update({
   id: '/set-twofactor',
   path: '/set-twofactor',
@@ -119,7 +113,6 @@ const MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
-  '/about-reset-password': typeof AuthAboutResetPasswordRoute
   '/add-passkey': typeof AuthAddPasskeyRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -136,7 +129,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
-  '/about-reset-password': typeof AuthAboutResetPasswordRoute
   '/add-passkey': typeof AuthAddPasskeyRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
@@ -156,7 +148,6 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_my-page': typeof MyPageRouteRouteWithChildren
   '/_auth/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
-  '/_auth/about-reset-password': typeof AuthAboutResetPasswordRoute
   '/_auth/add-passkey': typeof AuthAddPasskeyRoute
   '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
@@ -175,7 +166,6 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/set-twofactor'
-    | '/about-reset-password'
     | '/add-passkey'
     | '/request-reset-password'
     | '/reset-password'
@@ -192,7 +182,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/set-twofactor'
-    | '/about-reset-password'
     | '/add-passkey'
     | '/request-reset-password'
     | '/reset-password'
@@ -211,7 +200,6 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_my-page'
     | '/_auth/set-twofactor'
-    | '/_auth/about-reset-password'
     | '/_auth/add-passkey'
     | '/_auth/request-reset-password'
     | '/_auth/reset-password'
@@ -325,13 +313,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAddPasskeyRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_auth/about-reset-password': {
-      id: '/_auth/about-reset-password'
-      path: '/about-reset-password'
-      fullPath: '/about-reset-password'
-      preLoaderRoute: typeof AuthAboutResetPasswordRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
     '/_auth/set-twofactor': {
       id: '/_auth/set-twofactor'
       path: '/set-twofactor'
@@ -372,7 +353,6 @@ const AuthSetTwofactorRouteRouteWithChildren =
 
 interface AuthRouteRouteChildren {
   AuthSetTwofactorRouteRoute: typeof AuthSetTwofactorRouteRouteWithChildren
-  AuthAboutResetPasswordRoute: typeof AuthAboutResetPasswordRoute
   AuthAddPasskeyRoute: typeof AuthAddPasskeyRoute
   AuthRequestResetPasswordRoute: typeof AuthRequestResetPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
@@ -383,7 +363,6 @@ interface AuthRouteRouteChildren {
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
   AuthSetTwofactorRouteRoute: AuthSetTwofactorRouteRouteWithChildren,
-  AuthAboutResetPasswordRoute: AuthAboutResetPasswordRoute,
   AuthAddPasskeyRoute: AuthAddPasskeyRoute,
   AuthRequestResetPasswordRoute: AuthRequestResetPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,

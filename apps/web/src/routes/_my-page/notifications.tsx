@@ -6,7 +6,7 @@ import { useState } from "react";
 import { queryClient } from "@/lib/query-client";
 import {
 	fetchAnnouncementsQueryFn,
-	fetchAssignmentsQueryFn
+	fetchAssignmentsQueryFn,
 } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/notifications")({

@@ -2,7 +2,7 @@ import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import * as m from "motion/react-m";
-import type { Event } from "@/routes/_my-page/schedules";
+import type { Event } from "@/hooks/use-course-events";
 import { CurrentTimeIndicator } from "../current-time-indicator";
 
 interface WeekDay {
@@ -178,12 +178,22 @@ export function WeekView({
 													<div className="truncate font-medium">
 														{event.title}
 													</div>
-													<div className="text-xs opacity-80">
+													<div className="text-xs opacity-90">
 														{event.startTime.toLocaleTimeString("ja-JP", {
+															hour: "2-digit",
+															minute: "2-digit",
+														})}{" "}
+														-{" "}
+														{event.endTime.toLocaleTimeString("ja-JP", {
 															hour: "2-digit",
 															minute: "2-digit",
 														})}
 													</div>
+													{event.description && (
+														<div className="mt-1 line-clamp-2 text-xs opacity-90">
+															{event.description}
+														</div>
+													)}
 												</m.div>
 											);
 										})}

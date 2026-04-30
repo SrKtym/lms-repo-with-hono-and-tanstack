@@ -16,12 +16,11 @@ export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 			<Image
 				src={course.coverImage ?? ""}
 				alt={course.name}
-				width={600}
-				height={250}
+				layout="fullWidth"
 			/>
 			<div className="p-3">
 				<div className="flex gap-3">
-					<DefaultAvatar userName={course.name} />
+					<DefaultAvatar userName={course.professor} />
 					<div className="flex-1">
 						<h3 className="font-medium text-lg">{course.name}</h3>
 						<div className="flex flex-col gap-1 text-gray-600 text-sm dark:text-gray-400">

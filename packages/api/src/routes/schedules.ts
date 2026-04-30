@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { Schedules, SchedulesOptional } from "@lms-repo/db/types";
 import {
 	createSchedules,
 	deleteSchedules,
@@ -31,7 +30,16 @@ export const schedulesRoute = new Hono<{
 	})
 	.post(
 		"/create",
-		zValidator("json", z.custom<Omit<Schedules, SchedulesOptional>>()),
+		zValidator(
+			"json",
+			z.object({
+				title: z.string().optional(),
+				description: z.string().optional(),
+				startTime: z.coerce.date(),
+				endTime: z.coerce.date(),
+				theme: z.string().optional(),
+			}),
+		),
 		async (c) => {
 			const { userId } = c.get("session");
 			const scheduleData = c.req.valid("json");
@@ -42,17 +50,8 @@ export const schedulesRoute = new Hono<{
 			return c.json(result);
 		},
 	)
-	.post(
-		"/delete",
-		zValidator(
-			"json",
-			z.object({
-				scheduleId: z.string(),
-			}),
-		),
-		async (c) => {
-			const { scheduleId } = c.req.valid("json");
-			const result = await deleteSchedules(scheduleId);
-			return c.json(result);
-		},
-	);
+	.post("/delete", zValidator("json", z.string()), async (c) => {
+		const scheduleId = c.req.valid("json");
+		const result = await deleteSchedules(scheduleId);
+		return c.json(result);
+	});

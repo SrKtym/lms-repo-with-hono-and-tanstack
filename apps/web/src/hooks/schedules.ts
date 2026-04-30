@@ -60,7 +60,7 @@ export const useDeleteSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleId: string) => {
 			const res = await client.api.schedules.delete.$post({
-				json: { scheduleId },
+				json: scheduleId,
 			});
 			const data = await res.json();
 			return data;
