@@ -32,13 +32,26 @@ export const schedulesRoute = new Hono<{
 		"/create",
 		zValidator(
 			"json",
-			z.object({
-				title: z.string().optional(),
-				description: z.string().optional(),
-				startTime: z.coerce.date(),
-				endTime: z.coerce.date(),
-				theme: z.string().optional(),
-			}),
+			z
+				.object({
+					title: z
+						.string()
+						.transform((value) => (value === "" ? "タイトルなし" : value))
+						.optional(),
+					description: z.string().optional(),
+					startTime: z.coerce.date(),
+					endTime: z.coerce.date(),
+					theme: z
+						.string()
+						.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください")
+						.optional(),
+				})
+				.refine((value) => new Date() <= value.startTime, {
+					error: "開始日時は現在時刻以降でなければなりません。",
+				})
+				.refine((value) => value.startTime < value.endTime, {
+					error: "開始日時は終了日時よりも前でなければなりません。",
+				}),
 		),
 		async (c) => {
 			const { userId } = c.get("session");

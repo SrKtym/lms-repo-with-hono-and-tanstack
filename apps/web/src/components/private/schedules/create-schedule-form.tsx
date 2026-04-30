@@ -36,28 +36,14 @@ export function CreateScheduleForm() {
 		},
 		validators: {
 			onSubmit: z.object({
-				title: z
-					.string()
-					.transform((value) => (value === "" ? "タイトルなし" : value)),
+				title: z.string(),
 				description: z.string(),
 				timeSpan: z
 					.object({
 						start: z.custom<ZonedDateTime>(),
 						end: z.custom<ZonedDateTime>(),
-					})
-					.refine((value) => dateTime <= value.start, {
-						error: "開始日時は現在時刻以降でなければなりません。",
-					})
-					.refine((value) => value.start < value.end, {
-						error: "開始日時は終了日時よりも前でなければなりません。",
-					})
-					.transform((value) => ({
-						start: value.start.toDate(),
-						end: value.end.toDate(),
-					})),
-				theme: z
-					.string()
-					.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください"),
+					}),
+				theme: z.string(),
 			}),
 		},
 	});
