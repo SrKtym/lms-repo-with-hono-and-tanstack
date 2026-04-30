@@ -4,12 +4,12 @@ import { schedules } from "../../schema";
 import type { Schedules } from "../../types";
 
 export async function createSchedules(schedulesData: Schedules) {
-	// try {
-	await db.insert(schedules).values(schedulesData);
-	return { message: "スケジュールの作成に成功しました。", status: 201 };
-	// } catch (error) {
-	// 	return { message: "スケジュールの作成に失敗しました。", status: 500 };
-	// }
+	try {
+		await db.insert(schedules).values(schedulesData);
+		return { message: "スケジュールの作成に成功しました。", status: 201 };
+	} catch (error) {
+		return { message: "スケジュールの作成に失敗しました。", status: 500 };
+	}
 }
 
 export async function updateSchedules(schedulesData: Schedules) {

@@ -9,6 +9,7 @@ import type {
 } from "@lms-repo/db/schema/service";
 import type { user } from "./schema/auth";
 
+// データ挿入時の型
 export type User = typeof user.$inferInsert;
 export type Courses = typeof courses.$inferInsert;
 export type Announcements = typeof announcements.$inferInsert;
@@ -18,6 +19,7 @@ export type Notifications = typeof notifications.$inferInsert;
 export type Schedules = typeof schedules.$inferInsert;
 export type Registration = typeof registration.$inferInsert;
 
+// データ挿入時のオプショナルフィールド
 export type CoursesOptional = "id" | "departmentId" | "professorId";
 export type SchedulesOptional = "id" | "createdBy" | "createdAt" | "updatedAt";
 export type AnnouncementsOptional = "id" | "createdBy";
