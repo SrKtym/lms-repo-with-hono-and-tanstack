@@ -1,5 +1,3 @@
-import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
-import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import {
@@ -13,29 +11,30 @@ import { useState } from "react";
 import { CancelButton, DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 import { NotificationsModal } from "../modals/notifications-modal";
+import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 
-export function NotificationsListCard() {
+export function NotificationsListCard({ notifications }: { notifications: FetchNotificationsReturnType }) {
 	const [selectedNotification, setSelectedNotification] = useState<
 		number | null
 	>(null);
 
-	const markAsRead = (id: number) => {
-		setNotifications((prev) =>
-			prev.map((notification) =>
-				notification.id === id ? { ...notification, read: true } : notification,
-			),
-		);
-	};
+	// const markAsRead = (id: number) => {
+	// 	setNotifications((prev) =>
+	// 		prev.map((notification) =>
+	// 			notification.id === id ? { ...notification, read: true } : notification,
+	// 		),
+	// 	);
+	// };
 
-	const deleteNotification = (id: number) => {
-		setNotifications((prev) => prev.filter((n) => n.id !== id));
-	};
+	// const deleteNotification = (id: number) => {
+	// 	setNotifications((prev) => prev.filter((n) => n.id !== id));
+	// };
 
-	const markAllAsRead = () => {
-		setNotifications((prev) =>
-			prev.map((notification) => ({ ...notification, read: true })),
-		);
-	};
+	// const markAllAsRead = () => {
+	// 	setNotifications((prev) =>
+	// 		prev.map((notification) => ({ ...notification, read: true })),
+	// 	);
+	// };
 
 	const getNotificationIcon = (type: string) => {
 		switch (type) {
@@ -76,7 +75,7 @@ export function NotificationsListCard() {
 		return "たった今";
 	};
 
-	const unreadCount = notifications.filter((n) => !n.read).length;
+	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
 	return (
 		<LazyMotion features={domAnimation}>
@@ -151,7 +150,7 @@ export function NotificationsListCard() {
 												}}
 												whileHover={{ scale: 1.02 }}
 												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
-													!notification.read ? "font-semibold" : ""
+													!notification.isRead ? "font-semibold" : ""
 												} ${getPriorityColor(notification.priority)} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
 												onClick={() => {
 													markAsRead(notification.id);
@@ -172,12 +171,12 @@ export function NotificationsListCard() {
 															</span>
 														</div>
 														<p className="line-clamp-2 text-gray-600 text-xs dark:text-gray-400">
-															{notification.message}
+															{notification.description}
 														</p>
 													</div>
 												</div>
 
-												{!notification.read && (
+												{!notification.isRead && (
 													<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
 												)}
 

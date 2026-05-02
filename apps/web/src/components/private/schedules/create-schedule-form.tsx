@@ -38,11 +38,10 @@ export function CreateScheduleForm() {
 			onSubmit: z.object({
 				title: z.string(),
 				description: z.string(),
-				timeSpan: z
-					.object({
-						start: z.custom<ZonedDateTime>(),
-						end: z.custom<ZonedDateTime>(),
-					}),
+				timeSpan: z.object({
+					start: z.custom<ZonedDateTime>(),
+					end: z.custom<ZonedDateTime>(),
+				}),
 				theme: z.string(),
 			}),
 		},

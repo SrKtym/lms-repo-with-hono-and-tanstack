@@ -80,7 +80,7 @@ export async function registerCourses(courseId: string, userId: string) {
 	}
 }
 
-export async function deleteCourse(courseId: string, userId: string) {
+export async function unregisterCourse(courseId: string, userId: string) {
 	try {
 		await db
 			.delete(registration)

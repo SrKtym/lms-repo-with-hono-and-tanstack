@@ -24,7 +24,7 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 			if (!weekdays || !period) {
 				return [];
 			}
-			const res = await client.api.courses.search[":weekdays"][":period"].$get({
+			const res = await client.api.courses[":weekdays"][":period"].$get({
 				param: {
 					weekdays: weekdays.toString(),
 					period: period.toString(),
@@ -44,7 +44,7 @@ export const useRegisterCourse = (
 ) => {
 	return useMutation({
 		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.register.single.$post({
+			const res = await client.api.courses.registered.$post({
 				json: courseId,
 			});
 			const data = await res.json();
@@ -86,10 +86,11 @@ export const useRegisterCourse = (
 	});
 };
 
+// 講義を登録解除するカスタムフック
 export const useUnregisterCourse = () => {
 	return useMutation({
 		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.unregister.$post({
+			const res = await client.api.courses.registered.$delete({
 				json: courseId,
 			});
 			const data = await res.json();

@@ -9,11 +9,11 @@ export const announcementsRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.get("/select/relatedCourses", async (c) => {
+	.post("/", async (c) => {
+		return c.json({ message: "announcement created" }, 201);
+	})
+	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const announcements = await fetchAnnouncementsFromUserCourses(userId);
 		return c.json(announcements);
-	})
-	.post("/create", async (c) => {
-		return c.json({ message: "announcement created" }, 201);
 	});

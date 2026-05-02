@@ -13,7 +13,7 @@ const app = new Hono()
 		logger(),
 		cors({
 			origin: env.CORS_ORIGIN,
-			allowMethods: ["GET", "POST", "OPTIONS"],
+			allowMethods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
 			allowHeaders: ["Content-Type", "Authorization"],
 			credentials: true,
 		}),

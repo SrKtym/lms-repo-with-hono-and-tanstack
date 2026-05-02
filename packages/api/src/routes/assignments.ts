@@ -14,25 +14,20 @@ export const assignmentsRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.get("/select", async (c) => {
+	.post("/", async (c) => {
+		return c.json({ message: "assignment created" }, 201);
+	})
+	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const assignments = await fetchAssignmentsFromUserCourses(userId);
 		return c.json(assignments, 200);
 	})
 	.get(
-		"/select/:assignmentId",
-		zValidator(
-			"param",
-			z.object({
-				assignmentId: z.string(),
-			}),
-		),
+		"/:id",
+		zValidator("param", z.string()),
 		async (c) => {
-			const { assignmentId } = c.req.valid("param");
+			const assignmentId = c.req.valid("param");
 			const assignment = await fetchAssignmentById(assignmentId);
 			return c.json(assignment, 200);
 		},
 	)
-	.post("/create", async (c) => {
-		return c.json({ message: "assignment created" }, 201);
-	});

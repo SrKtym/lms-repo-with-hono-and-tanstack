@@ -3,8 +3,8 @@ import type { Session } from "@lms-repo/auth/server";
 import type { Courses } from "@lms-repo/db/types";
 import {
 	createCourses,
-	deleteCourse,
 	registerCourses,
+	unregisterCourse,
 } from "@lms-repo/db/utils/mutation/courses";
 import {
 	fetchCourses,
@@ -19,9 +19,14 @@ export const coursesRoute = new Hono<{
 		user: Session["user"];
 		session: Session["session"];
 	};
-}>()
+}>()	
+	.post("/", zValidator("form", z.custom<Courses>()), async (c) => {
+		const courseData = c.req.valid("form");
+		const result = await createCourses(courseData);
+		return c.json(result);
+	})
 	.get(
-		"search/:weekdays/:period",
+		"/:weekdays/:period",
 		zValidator("param", z.custom<Pick<Courses, "weekdays" | "period">>()),
 		async (c) => {
 			const { weekdays, period } = c.req.valid("param");
@@ -29,25 +34,21 @@ export const coursesRoute = new Hono<{
 			return c.json(result, 200);
 		},
 	)
-	.get("search/registered", async (c) => {
-		const { userId } = c.get("session");
-		const result = await fetchRegisteredCourses(userId);
-		return c.json(result, 200);
-	})
-	.post("create", zValidator("form", z.custom<Courses>()), async (c) => {
-		const courseData = c.req.valid("form");
-		const result = await createCourses(courseData);
-		return c.json(result);
-	})
-	.post("register/single", zValidator("json", z.string()), async (c) => {
+	.basePath("/registered")
+	.post("/", zValidator("json", z.string()), async (c) => {
 		const { userId } = c.get("session");
 		const courseId = c.req.valid("json");
 		const result = await registerCourses(courseId, userId);
 		return c.json(result);
 	})
-	.post("unregister", zValidator("json", z.string()), async (c) => {
+	.get("/", async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchRegisteredCourses(userId);
+		return c.json(result, 200);
+	})
+	.delete("/", zValidator("json", z.string()), async (c) => {
 		const { userId } = c.get("session");
 		const courseId = c.req.valid("json");
-		const result = await deleteCourse(courseId, userId);
+		const result = await unregisterCourse(courseId, userId);
 		return c.json(result);
 	});

@@ -5,8 +5,8 @@ import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-
 import { createFileRoute } from "@tanstack/react-router";
 import { queryClient } from "@/lib/query-client";
 import {
-	fetchAnnouncementsQueryFn,
 	fetchAssignmentsQueryFn,
+	fetchNotificationsQueryFn,
 	fetchRegisteredCoursesQueryFn,
 	fetchSchedulesQueryFn,
 } from "@/utils/query-utils";
@@ -15,7 +15,7 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules, announcements, assignments] = await Promise.all([
+		const [courses, schedules, assignments, notifications] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
 				queryFn: fetchRegisteredCoursesQueryFn,
@@ -29,18 +29,18 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 			}),
 
 			queryClient.ensureQueryData({
-				queryKey: ["announcements-related-courses"],
-				queryFn: fetchAnnouncementsQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
-
-			queryClient.ensureQueryData({
 				queryKey: ["assignments-related-courses"],
 				queryFn: fetchAssignmentsQueryFn,
 				staleTime: 5 * 60 * 1000, // 5 minutes
 			}),
+
+			queryClient.ensureQueryData({
+				queryKey: ["notifications"],
+				queryFn: fetchNotificationsQueryFn,
+				staleTime: 5 * 60 * 1000, // 5 minutes
+			}),
 		]);
-		return { courses, schedules, announcements, assignments };
+		return { courses, schedules, assignments, notifications };
 	},
 });
 
@@ -48,8 +48,8 @@ function RouteComponent() {
 	const {
 		courses = [],
 		schedules = [],
-		announcements = [],
 		assignments = [],
+		notifications = []
 	} = Route.useLoaderData();
 
 	return (
@@ -79,14 +79,14 @@ function RouteComponent() {
 
 				{/* Desktop Layout - Right Column */}
 				<div className="hidden lg:block lg:space-y-6">
-					<NotificationsListCard />
+					<NotificationsListCard notifications={notifications}/>
 					<AssignmentsProgressCard assignments={assignments} />
 				</div>
 
 				{/* Mobile Layout - Custom Order */}
 				<div className="space-y-4 lg:hidden">
 					<DailySchedulesCard courses={courses} schedules={schedules} />
-					<NotificationsListCard />
+					<NotificationsListCard notifications={notifications}/>
 					<UpcomingAssignmentsCard assignments={assignments} />
 					<AssignmentsProgressCard assignments={assignments} />
 				</div>

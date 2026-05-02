@@ -22,7 +22,7 @@ export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 export const useCreateSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleData: Omit<Schedules, SchedulesOptional>) => {
-			const res = await client.api.schedules.create.$post({
+			const res = await client.api.schedules.$post({
 				json: scheduleData,
 			});
 			const data = await res.json();
@@ -59,7 +59,7 @@ export const useCreateSchedule = () => {
 export const useDeleteSchedule = () => {
 	return useMutation({
 		mutationFn: async (scheduleId: string) => {
-			const res = await client.api.schedules.delete.$post({
+			const res = await client.api.schedules.$delete({
 				json: scheduleId,
 			});
 			const data = await res.json();

@@ -2,7 +2,7 @@ import { client } from "../lib/hono-client";
 
 // 登録済みコース取得用のqueryFn
 export const fetchRegisteredCoursesQueryFn = async () => {
-	const res = await client.api.courses.search.registered.$get();
+	const res = await client.api.courses.registered.$get();
 	const data = await res.json();
 	if ("message" in data) {
 		return [];
@@ -12,7 +12,7 @@ export const fetchRegisteredCoursesQueryFn = async () => {
 
 // スケジュール取得用のqueryFn
 export const fetchSchedulesQueryFn = async () => {
-	const res = await client.api.schedules.select.$get();
+	const res = await client.api.schedules.$get();
 	const data = await res.json();
 	const parsedData = data.map((schedule) => ({
 		...schedule,
@@ -24,7 +24,7 @@ export const fetchSchedulesQueryFn = async () => {
 
 // お知らせ取得用のqueryFn
 export const fetchAnnouncementsQueryFn = async () => {
-	const res = await client.api.announcements.select.relatedCourses.$get();
+	const res = await client.api.announcements.$get();
 	const data = await res.json();
 	const parsedData = data.map((announcement) => ({
 		...announcement,
@@ -36,11 +36,22 @@ export const fetchAnnouncementsQueryFn = async () => {
 
 // 課題取得用のqueryFn
 export const fetchAssignmentsQueryFn = async () => {
-	const res = await client.api.assignments.select.$get();
+	const res = await client.api.assignments.$get();
 	const data = await res.json();
 	const parsedData = data.map((assignment) => ({
 		...assignment,
 		dueDate: new Date(assignment.dueDate),
+	}));
+	return parsedData;
+};
+
+// 通知取得用のqueryFn
+export const fetchNotificationsQueryFn = async () => {
+	const res = await client.api.notifications.$get();
+	const data = await res.json();
+	const parsedData = data.map((notification) => ({
+		...notification,
+		createdAt: new Date(notification.createdAt),
 	}));
 	return parsedData;
 };

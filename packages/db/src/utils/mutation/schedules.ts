@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../index";
 import { schedules } from "../../schema";
-import type { Schedules } from "../../types";
+import type { Schedules, SchedulesOptional } from "../../types";
 
 export async function createSchedules(schedulesData: Schedules) {
 	try {
@@ -12,7 +12,7 @@ export async function createSchedules(schedulesData: Schedules) {
 	}
 }
 
-export async function updateSchedules(schedulesData: Schedules) {
+export async function updateSchedules(schedulesData: Omit<Schedules, SchedulesOptional>) {
 	try {
 		await db.update(schedules).set(schedulesData);
 		return { message: "スケジュールの更新に成功しました。", status: 200 };
