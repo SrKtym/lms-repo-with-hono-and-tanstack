@@ -37,18 +37,25 @@ export const students = pgTable(
 			.notNull()
 			.references(() => departments.id, { onDelete: "cascade" }),
 	},
-	(t) => [check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`)],
+	(t) => [
+		index("students_department_id_idx").on(t.departmentId),
+		check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`),
+	],
 );
 
 // 教授テーブル
-export const professors = pgTable("professors", {
-	id: text("id")
-		.primaryKey()
-		.references(() => user.id, { onDelete: "cascade" }),
-	departmentId: text("department_id")
-		.notNull()
-		.references(() => departments.id, { onDelete: "cascade" }),
-});
+export const professors = pgTable(
+	"professors",
+	{
+		id: text("id")
+			.primaryKey()
+			.references(() => user.id, { onDelete: "cascade" }),
+		departmentId: text("department_id")
+			.notNull()
+			.references(() => departments.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("professors_department_id_idx").on(t.departmentId)],
+);
 
 // 学部テーブル
 export const faculties = pgTable("faculties", {
@@ -59,15 +66,19 @@ export const faculties = pgTable("faculties", {
 });
 
 // 学科テーブル
-export const departments = pgTable("departments", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	name: text("name").unique().notNull(),
-	facultyId: text("faculty_id")
-		.notNull()
-		.references(() => faculties.id, { onDelete: "cascade" }),
-});
+export const departments = pgTable(
+	"departments",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		name: text("name").unique().notNull(),
+		facultyId: text("faculty_id")
+			.notNull()
+			.references(() => faculties.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("departments_faculty_id_idx").on(t.facultyId)],
+);
 
 // 講義テーブル
 export const courses = pgTable(
@@ -88,9 +99,12 @@ export const courses = pgTable(
 			.references(() => departments.id, { onDelete: "cascade" }),
 		professorId: text("professor_id")
 			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
+			.references(() => professors.id, { onDelete: "cascade" }),
 	},
 	(t) => [
+		index("courses_department_id_idx").on(t.departmentId),
+		index("courses_professor_id_idx").on(t.professorId),
+		index("courses_weekdays_period_idx").on(t.weekdays, t.period),
 		check(
 			"target_grade_range",
 			sql`${t.targetGrade} >= 1 AND ${t.targetGrade} <= 4`,
@@ -109,6 +123,7 @@ export const registration = pgTable(
 		courseId: text("course_id").notNull(),
 	},
 	(t) => [
+		index("registration_course_id_idx").on(t.courseId),
 		primaryKey({ columns: [t.userId, t.courseId] }),
 		foreignKey({
 			columns: [t.courseId],
@@ -141,6 +156,7 @@ export const announcements = pgTable(
 			.references(() => courses.id, { onDelete: "cascade" }),
 	},
 	(t) => [
+		index("announcements_course_id_idx").on(t.courseId),
 		check(
 			"type_check",
 			sql`${t.type} IN (${sql.raw(
@@ -151,24 +167,31 @@ export const announcements = pgTable(
 );
 
 // スケジュールテーブル
-export const schedules = pgTable("schedules", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	title: text("title").notNull().default("タイトルなし"),
-	description: text("description").notNull().default(""),
-	startTime: timestamp("start_time", { mode: "date", precision: 0 }).notNull(),
-	endTime: timestamp("end_time", { mode: "date", precision: 0 }).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => new Date())
-		.notNull(),
-	theme: text("theme").notNull().default("#059669"),
-	createdBy: text("created_by")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-});
+export const schedules = pgTable(
+	"schedules",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		title: text("title").notNull().default("タイトルなし"),
+		description: text("description").notNull().default(""),
+		startTime: timestamp("start_time", {
+			mode: "date",
+			precision: 0,
+		}).notNull(),
+		endTime: timestamp("end_time", { mode: "date", precision: 0 }).notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+		theme: text("theme").notNull().default("#059669"),
+		createdBy: text("created_by")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("schedules_created_by_idx").on(t.createdBy)],
+);
 
 // 課題テーブル
 export const assignments = pgTable(
@@ -192,6 +215,7 @@ export const assignments = pgTable(
 			.references(() => courses.id),
 	},
 	(t) => [
+		index("assignments_course_id_idx").on(t.courseId),
 		check("points_range", sql`${t.points} >= 0 AND ${t.points} <= 100`),
 		check(
 			"format_check",
@@ -201,21 +225,25 @@ export const assignments = pgTable(
 );
 
 // テキスト形式の提出物
-export const textSubmissions = pgTable("text_submissions", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	title: text("title").notNull(),
-	description: text("description"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => new Date())
-		.notNull(),
-	createdBy: text("created_by")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-});
+export const textSubmissions = pgTable(
+	"text_submissions",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		title: text("title").notNull(),
+		description: text("description"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+		createdBy: text("created_by")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("text_submissions_created_by_idx").on(t.createdBy)],
+);
 
 // ファイル形式の提出物メタデータ
 export const fileSubmissionsMetadata = pgTable("file_submissions_metadata", {
@@ -270,23 +298,29 @@ export const notifications = pgTable("notifications", {
 	receiver: text("receiver").notNull(),
 	isRead: boolean("is_read").default(false).notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (t) => [
+	index("notifications_receiver_is_read_idx").on(t.receiver, t.isRead),
+]);
 
 // コメントテーブル
-export const comments = pgTable("comments", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	content: text("content").notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => new Date())
-		.notNull(),
-	createdBy: text("created_by")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-});
+export const comments = pgTable(
+	"comments",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		content: text("content").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+		createdBy: text("created_by")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("comments_created_by_idx").on(t.createdBy)],
+);
 
 // // リレーション
 // export const facultyRelations = relations(faculties, ({ many }) => ({
@@ -301,3 +335,4 @@ export const comments = pgTable("comments", {
 //         references: [faculties.id],
 //     }),
 // }));
+
