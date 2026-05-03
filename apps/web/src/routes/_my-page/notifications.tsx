@@ -1,27 +1,34 @@
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
+import {
+	useDeleteNotification,
+	useMarkAllNotificationsAsRead,
+	useMarkNotificationAsRead,
+	useNotifications,
+} from "@/hooks/notifications";
 import { queryClient } from "@/lib/query-client";
 import { fetchNotificationsQueryFn } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/notifications")({
 	component: RouteComponent,
 	loader: async () => {
-		const notifications = await queryClient.ensureQueryData({
+		const initialNotifications = await queryClient.ensureQueryData({
 			queryKey: ["notifications"],
 			queryFn: fetchNotificationsQueryFn,
 			staleTime: 5 * 60 * 1000, // 5 minutes
 		});
 
-		return { notifications };
+		return { initialNotifications };
 	},
 });
 
 function RouteComponent() {
-	const { notifications } = Route.useLoaderData();
-
+	const { initialNotifications } = Route.useLoaderData();
+	const { data: notifications = [] } = useNotifications(initialNotifications);
 	const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
 	const [expandedNotifications, setExpandedNotifications] = useState<
 		Set<string>
@@ -37,25 +44,6 @@ function RouteComponent() {
 	// 未読数
 	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-	// 時間文字列を取得
-	const getTimeString = (date: Date) => {
-		const now = new Date();
-		const diff = now.getTime() - date.getTime();
-		const minutes = Math.floor(diff / (1000 * 60));
-		const hours = Math.floor(diff / (1000 * 60 * 60));
-		const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-		if (minutes < 1) return "たった今";
-		if (minutes < 60) return `${minutes}分前`;
-		if (hours < 24) return `${hours}時間前`;
-		if (days < 7) return `${days}日前`;
-
-		return date.toLocaleDateString("ja-JP", {
-			month: "short",
-			day: "numeric",
-		});
-	};
-
 	// 通知の展開/折りたたみ
 	const toggleExpand = (id: string) => {
 		const newExpanded = new Set(expandedNotifications);
@@ -68,18 +56,11 @@ function RouteComponent() {
 	};
 
 	// 通知を既読にする
-	const handleMarkAsRead = (id: string) => {
-		if (onMarkAsRead) {
-			onMarkAsRead(id);
-		}
-	};
+	const markAsRead = useMarkNotificationAsRead();
+	const markAllAsRead = useMarkAllNotificationsAsRead();
 
 	// 通知を削除
-	const handleDelete = (id: string) => {
-		if (onDelete) {
-			onDelete(id);
-		}
-	};
+	const deleteNotification = useDeleteNotification();
 
 	return (
 		<div className="space-y-6 p-3">
@@ -100,21 +81,21 @@ function RouteComponent() {
 						</p>
 					</div>
 					<div className="flex items-center space-x-2">
-						{unreadCount > 0 && onMarkAllAsRead && (
+						{unreadCount > 0 && (
 							<m.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								onClick={onMarkAllAsRead}
+								onClick={() => markAllAsRead.mutate}
 								className="rounded-lg bg-blue-500 px-3 py-2 font-medium text-sm text-white transition-colors hover:bg-blue-600"
 							>
 								すべて既読
 							</m.button>
 						)}
-						{notifications.length > 0 && onClearAll && (
+						{notifications.length > 0 && (
 							<m.button
 								whileHover={{ scale: 1.05 }}
 								whileTap={{ scale: 0.95 }}
-								onClick={onClearAll}
+								onClick={() => console.log("delete all notifications")}
 								className="rounded-lg bg-red-500 px-3 py-2 font-medium text-sm text-white transition-colors hover:bg-red-600"
 							>
 								すべて削除
@@ -167,18 +148,18 @@ function RouteComponent() {
 									}`}
 									onClick={() => {
 										if (!notification.isRead) {
-											handleMarkAsRead(notification.id);
+											markAsRead.mutate(notification.id);
 										}
 										toggleExpand(notification.id);
 									}}
 								>
 									<div className="flex items-start justify-between">
 										<div className="flex items-start space-x-3">
-											<div
+											{/* <div
 												className={`rounded-full p-2 ${getNotificationStyle(notification.type)}`}
 											>
 												{getNotificationIcon(notification.type)}
-											</div>
+											</div> */}
 											<div className="flex-1">
 												<div className="flex items-center space-x-2">
 													<h3 className="font-semibold text-gray-900 dark:text-white">
@@ -192,30 +173,28 @@ function RouteComponent() {
 													{notification.description}
 												</p>
 												<p className="mt-2 text-gray-500 text-xs dark:text-gray-500">
-													{getTimeString(notification.createdAt)}
+													{formatTimestamp(notification.createdAt)}
 												</p>
-												{notification.action &&
-													expandedNotifications.has(notification.id) && (
-														<m.div
-															initial={{ opacity: 0, height: 0 }}
-															animate={{ opacity: 1, height: "auto" }}
-															exit={{ opacity: 0, height: 0 }}
-															transition={{ duration: 0.2 }}
-															className="mt-3"
+												{expandedNotifications.has(notification.id) && (
+													<m.div
+														initial={{ opacity: 0, height: 0 }}
+														animate={{ opacity: 1, height: "auto" }}
+														exit={{ opacity: 0, height: 0 }}
+														transition={{ duration: 0.2 }}
+														className="mt-3"
+													>
+														<m.button
+															whileHover={{ scale: 1.05 }}
+															whileTap={{ scale: 0.95 }}
+															onClick={(e) => {
+																e.stopPropagation();
+															}}
+															className="rounded-lg bg-blue-500 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-blue-600"
 														>
-															<m.button
-																whileHover={{ scale: 1.05 }}
-																whileTap={{ scale: 0.95 }}
-																onClick={(e) => {
-																	e.stopPropagation();
-																	notification.action?.onClick();
-																}}
-																className="rounded-lg bg-blue-500 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-blue-600"
-															>
-																{notification.action.label}
-															</m.button>
-														</m.div>
-													)}
+															{/* {notification.action.label} */}
+														</m.button>
+													</m.div>
+												)}
 											</div>
 										</div>
 										<div className="flex items-center space-x-2">
@@ -225,7 +204,7 @@ function RouteComponent() {
 													whileTap={{ scale: 0.9 }}
 													onClick={(e) => {
 														e.stopPropagation();
-														handleMarkAsRead(notification.id);
+														markAsRead.mutate(notification.id);
 													}}
 													className="rounded-full p-1 text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400"
 												>
@@ -249,7 +228,7 @@ function RouteComponent() {
 												whileTap={{ scale: 0.9 }}
 												onClick={(e) => {
 													e.stopPropagation();
-													handleDelete(notification.id);
+													deleteNotification.mutate(notification.id);
 												}}
 												className="rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
 											>

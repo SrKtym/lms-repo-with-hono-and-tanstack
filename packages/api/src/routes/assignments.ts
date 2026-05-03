@@ -22,12 +22,8 @@ export const assignmentsRoute = new Hono<{
 		const assignments = await fetchAssignmentsFromUserCourses(userId);
 		return c.json(assignments, 200);
 	})
-	.get(
-		"/:id",
-		zValidator("param", z.string()),
-		async (c) => {
-			const assignmentId = c.req.valid("param");
-			const assignment = await fetchAssignmentById(assignmentId);
-			return c.json(assignment, 200);
-		},
-	)
+	.get("/:id", zValidator("param", z.string()), async (c) => {
+		const assignmentId = c.req.valid("param");
+		const assignment = await fetchAssignmentById(assignmentId);
+		return c.json(assignment, 200);
+	});

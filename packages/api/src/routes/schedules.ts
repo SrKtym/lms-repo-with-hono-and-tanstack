@@ -40,21 +40,15 @@ export const schedulesRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
-	.post(
-		"/",
-		zValidator(
-			"json", formSchema
-		),
-		async (c) => {
-			const { userId } = c.get("session");
-			const scheduleData = c.req.valid("json");
-			const result = await createSchedules({
-				...scheduleData,
-				createdBy: userId,
-			});
-			return c.json(result);
-		},
-	)
+	.post("/", zValidator("json", formSchema), async (c) => {
+		const { userId } = c.get("session");
+		const scheduleData = c.req.valid("json");
+		const result = await createSchedules({
+			...scheduleData,
+			createdBy: userId,
+		});
+		return c.json(result);
+	})
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchSchedules(userId);
@@ -65,16 +59,11 @@ export const schedulesRoute = new Hono<{
 		const result = await fetchScheduleById(scheduleId);
 		return c.json(result, 200);
 	})
-	.patch(
-		"/",
-		zValidator(
-			"json", formSchema
-		), 
-		async (c) => {
-			const scheduleData = c.req.valid("json");
-			const result = await updateSchedules(scheduleData);
-			return c.json(result);
-		})
+	.patch("/", zValidator("json", formSchema), async (c) => {
+		const scheduleData = c.req.valid("json");
+		const result = await updateSchedules(scheduleData);
+		return c.json(result);
+	})
 	.delete("/", zValidator("json", z.string()), async (c) => {
 		const scheduleId = c.req.valid("json");
 		const result = await deleteSchedules(scheduleId);

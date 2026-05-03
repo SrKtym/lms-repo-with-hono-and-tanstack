@@ -35,7 +35,7 @@ export const Route = createFileRoute("/_my-page/schedules")({
 });
 
 function RouteComponent() {
-	const { courses = [], initialSchedules } = Route.useLoaderData();
+	const { courses, initialSchedules } = Route.useLoaderData();
 	const [selectedView, setSelectedView] = useState<"month" | "week" | "day">(
 		"month",
 	);

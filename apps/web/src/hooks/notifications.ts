@@ -5,12 +5,15 @@ import { queryClient } from "@/lib/query-client";
 import { fetchNotificationsQueryFn } from "@/utils/query-utils";
 
 // 通知一覧を取得するカスタムフック（ポーリング対応）
-export const useNotifications = (initialData?: FetchNotificationsReturnType, options?: {
-	enabled?: boolean;
-	refetchInterval?: number;
-}) => {
+export const useNotifications = (
+	initialData?: FetchNotificationsReturnType,
+	options?: {
+		enabled?: boolean;
+		refetchInterval?: number;
+	},
+) => {
 	const { enabled = true, refetchInterval = 5000 } = options || {}; // デフォルト5秒間隔
-	
+
 	return useQuery({
 		queryKey: ["notifications"],
 		queryFn: fetchNotificationsQueryFn,

@@ -1,46 +1,14 @@
+import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
+import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 
 interface NotificationModalProps {
-	notification: {
-		id: number;
-		title: string;
-		message: string;
-		type: string;
-		read: boolean;
-		timestamp: Date;
-		priority: string;
-	} | null;
+	notification: FetchNotificationsReturnType[number] | null;
 	onClose: () => void;
-	onDelete: (id: number) => void;
+	onDelete: (id: string) => void;
 }
-
-const getNotificationIcon = (type: string) => {
-	switch (type) {
-		case "assignment":
-			return "📚";
-		case "grade":
-			return "📊";
-		case "system":
-			return "⚙️";
-		case "announcement":
-			return "📢";
-		default:
-			return "📄";
-	}
-};
-
-const formatTimestamp = (timestamp: Date) => {
-	const now = new Date();
-	const diffMs = now.getTime() - timestamp.getTime();
-	const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-	const diffDays = Math.floor(diffHours / 24);
-
-	if (diffDays > 0) return `${diffDays}日前`;
-	if (diffHours > 0) return `${diffHours}時間前`;
-	return "たった今";
-};
 
 export function NotificationsModal({
 	notification,
@@ -70,15 +38,15 @@ export function NotificationsModal({
 							{/* Modal Header */}
 							<div className="flex items-center justify-between border-b p-6 dark:border-gray-700">
 								<div className="flex items-center gap-3">
-									<span className="text-2xl">
+									{/* <span className="text-2xl">
 										{getNotificationIcon(notification.type)}
-									</span>
+									</span> */}
 									<div>
 										<h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
 											{notification.title}
 										</h2>
 										<p className="text-gray-500 text-sm dark:text-gray-400">
-											{formatTimestamp(notification.timestamp)}
+											{formatTimestamp(notification.createdAt)}
 										</p>
 									</div>
 								</div>
@@ -95,7 +63,7 @@ export function NotificationsModal({
 							<div className="flex-1 overflow-y-auto p-6">
 								<div className="prose dark:prose-invert max-w-none">
 									<p className="text-gray-700 dark:text-gray-300">
-										{notification.message}
+										{notification.description}
 									</p>
 								</div>
 

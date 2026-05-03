@@ -182,8 +182,8 @@ function RouteComponent() {
 							>
 								<TimeTableCard
 									courses={courses}
-									onDeleteCourse={handleDeleteCourse.mutateAsync}
-									onCourseSelect={handleRegisterCourses.mutateAsync}
+									onDeleteCourse={handleDeleteCourse.mutate}
+									onCourseSelect={handleRegisterCourses.mutate}
 									onCellClick={handleCellClick}
 									isPending={isPending}
 									availableCourses={searchCourses}

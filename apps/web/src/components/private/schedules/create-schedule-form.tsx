@@ -32,7 +32,7 @@ export function CreateScheduleForm() {
 				endTime: timeSpan.end.toDate(),
 			};
 
-			await createSchedule.mutateAsync(scheduleData);
+			createSchedule.mutate(scheduleData);
 		},
 		validators: {
 			onSubmit: z.object({

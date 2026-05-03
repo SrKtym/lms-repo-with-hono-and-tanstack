@@ -41,4 +41,3 @@ export async function markAllNotificationsAsRead() {
 		return { message: "通知の既読処理に失敗しました。", status: 500 };
 	}
 }
-

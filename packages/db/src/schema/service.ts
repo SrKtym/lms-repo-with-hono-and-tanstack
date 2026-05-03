@@ -288,19 +288,21 @@ export const submissionStatus = pgTable(
 );
 
 // 通知テーブル
-export const notifications = pgTable("notifications", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	title: text("title").notNull(),
-	description: text("description").notNull(),
-	sender: text("sender").notNull(),
-	receiver: text("receiver").notNull(),
-	isRead: boolean("is_read").default(false).notNull(),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-}, (t) => [
-	index("notifications_receiver_is_read_idx").on(t.receiver, t.isRead),
-]);
+export const notifications = pgTable(
+	"notifications",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		title: text("title").notNull(),
+		description: text("description").notNull(),
+		sender: text("sender").notNull(),
+		receiver: text("receiver").notNull(),
+		isRead: boolean("is_read").default(false).notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+	},
+	(t) => [index("notifications_receiver_is_read_idx").on(t.receiver, t.isRead)],
+);
 
 // コメントテーブル
 export const comments = pgTable(
@@ -335,4 +337,3 @@ export const comments = pgTable(
 //         references: [faculties.id],
 //     }),
 // }));
-

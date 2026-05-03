@@ -12,7 +12,9 @@ export async function createSchedules(schedulesData: Schedules) {
 	}
 }
 
-export async function updateSchedules(schedulesData: Omit<Schedules, SchedulesOptional>) {
+export async function updateSchedules(
+	schedulesData: Omit<Schedules, SchedulesOptional>,
+) {
 	try {
 		await db.update(schedules).set(schedulesData);
 		return { message: "スケジュールの更新に成功しました。", status: 200 };

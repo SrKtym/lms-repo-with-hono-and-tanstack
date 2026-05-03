@@ -1,5 +1,7 @@
+import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Settings } from "@lms-repo/ui/assets/icons/settings";
+import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import {
 	AnimatePresence,
 	domAnimation,
@@ -11,69 +13,50 @@ import { useState } from "react";
 import { CancelButton, DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 import { NotificationsModal } from "../modals/notifications-modal";
-import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 
-export function NotificationsListCard({ notifications }: { notifications: FetchNotificationsReturnType }) {
+interface NotificationsListCardProps {
+	notifications: FetchNotificationsReturnType;
+	markAsRead: (id: string) => void;
+	markAllAsRead: () => void;
+	deleteNotification: (id: string) => void;
+}
+
+export function NotificationsListCard({
+	notifications,
+	markAsRead,
+	markAllAsRead,
+	deleteNotification,
+}: NotificationsListCardProps) {
 	const [selectedNotification, setSelectedNotification] = useState<
-		number | null
+		string | null
 	>(null);
-
-	// const markAsRead = (id: number) => {
-	// 	setNotifications((prev) =>
-	// 		prev.map((notification) =>
-	// 			notification.id === id ? { ...notification, read: true } : notification,
-	// 		),
-	// 	);
+	// const getNotificationIcon = (type: string) => {
+	// 	switch (type) {
+	// 		case "課題":
+	// 			return "📝";
+	// 		case "アンケート":
+	// 			return "💬";
+	// 		case "資料":
+	// 			return "📚";
+	// 		case "システム":
+	// 			return "⚙️";
+	// 		default:
+	// 			return "📢";
+	// 	}
 	// };
 
-	// const deleteNotification = (id: number) => {
-	// 	setNotifications((prev) => prev.filter((n) => n.id !== id));
+	// const getPriorityColor = (priority: string) => {
+	// 	switch (priority) {
+	// 		case "high":
+	// 			return "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950";
+	// 		case "medium":
+	// 			return "border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950";
+	// 		case "low":
+	// 			return "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950";
+	// 		default:
+	// 			return "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900";
+	// 	}
 	// };
-
-	// const markAllAsRead = () => {
-	// 	setNotifications((prev) =>
-	// 		prev.map((notification) => ({ ...notification, read: true })),
-	// 	);
-	// };
-
-	const getNotificationIcon = (type: string) => {
-		switch (type) {
-			case "課題":
-				return "📝";
-			case "アンケート":
-				return "💬";
-			case "資料":
-				return "📚";
-			case "システム":
-				return "⚙️";
-			default:
-				return "📢";
-		}
-	};
-
-	const getPriorityColor = (priority: string) => {
-		switch (priority) {
-			case "high":
-				return "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950";
-			case "medium":
-				return "border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950";
-			case "low":
-				return "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950";
-			default:
-				return "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900";
-		}
-	};
-
-	const formatTimestamp = (date: Date) => {
-		const now = new Date();
-		const diffMs = now.getTime() - date.getTime();
-		const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
-		const diffDays = Math.floor(diffHours / 24);
-
-		if (diffDays > 0) return `${diffDays}日前`;
-		if (diffHours > 0) return `${diffHours}時間前`;
-		return "たった今";
-	};
 
 	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -151,23 +134,23 @@ export function NotificationsListCard({ notifications }: { notifications: FetchN
 												whileHover={{ scale: 1.02 }}
 												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
 													!notification.isRead ? "font-semibold" : ""
-												} ${getPriorityColor(notification.priority)} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
+												} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
 												onClick={() => {
 													markAsRead(notification.id);
 													setSelectedNotification(notification.id);
 												}}
 											>
 												<div className="flex items-start gap-3">
-													<span className="mt-1 flex-shrink-0 text-base">
+													{/* <span className="mt-1 flex-shrink-0 text-base">
 														{getNotificationIcon(notification.type)}
-													</span>
+													</span> */}
 													<div className="min-w-0 flex-1">
 														<div className="mb-1 flex items-center justify-between gap-2">
 															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
 																{notification.title}
 															</h3>
 															<span className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
-																{formatTimestamp(notification.timestamp)}
+																{formatTimestamp(notification.createdAt)}
 															</span>
 														</div>
 														<p className="line-clamp-2 text-gray-600 text-xs dark:text-gray-400">

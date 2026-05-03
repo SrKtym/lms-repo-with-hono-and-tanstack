@@ -19,7 +19,7 @@ export const coursesRoute = new Hono<{
 		user: Session["user"];
 		session: Session["session"];
 	};
-}>()	
+}>()
 	.post("/", zValidator("form", z.custom<Courses>()), async (c) => {
 		const courseData = c.req.valid("form");
 		const result = await createCourses(courseData);

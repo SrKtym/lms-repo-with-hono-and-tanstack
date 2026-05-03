@@ -3,6 +3,12 @@ import { DailySchedulesCard } from "@lms-repo/ui/components/cards/daily-schedule
 import { NotificationsListCard } from "@lms-repo/ui/components/cards/notifications-list-card";
 import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-assignments-card";
 import { createFileRoute } from "@tanstack/react-router";
+import {
+	useDeleteNotification,
+	useMarkAllNotificationsAsRead,
+	useMarkNotificationAsRead,
+	useNotifications,
+} from "@/hooks/notifications";
 import { queryClient } from "@/lib/query-client";
 import {
 	fetchAssignmentsQueryFn,
@@ -15,42 +21,44 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules, assignments, notifications] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["registered-courses"],
-				queryFn: fetchRegisteredCoursesQueryFn,
-				staleTime: 5 * 60 * 1000,
-			}),
+		const [courses, schedules, assignments, initialNotifications] =
+			await Promise.all([
+				queryClient.ensureQueryData({
+					queryKey: ["registered-courses"],
+					queryFn: fetchRegisteredCoursesQueryFn,
+					staleTime: 5 * 60 * 1000,
+				}),
 
-			queryClient.ensureQueryData({
-				queryKey: ["schedules"],
-				queryFn: fetchSchedulesQueryFn,
-				staleTime: 5 * 60 * 1000,
-			}),
+				queryClient.ensureQueryData({
+					queryKey: ["schedules"],
+					queryFn: fetchSchedulesQueryFn,
+					staleTime: 5 * 60 * 1000,
+				}),
 
-			queryClient.ensureQueryData({
-				queryKey: ["assignments-related-courses"],
-				queryFn: fetchAssignmentsQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
+				queryClient.ensureQueryData({
+					queryKey: ["assignments-related-courses"],
+					queryFn: fetchAssignmentsQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
 
-			queryClient.ensureQueryData({
-				queryKey: ["notifications"],
-				queryFn: fetchNotificationsQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
-		]);
-		return { courses, schedules, assignments, notifications };
+				queryClient.ensureQueryData({
+					queryKey: ["notifications"],
+					queryFn: fetchNotificationsQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
+			]);
+		return { courses, schedules, assignments, initialNotifications };
 	},
 });
 
 function RouteComponent() {
-	const {
-		courses = [],
-		schedules = [],
-		assignments = [],
-		notifications = []
-	} = Route.useLoaderData();
+	const { courses, schedules, assignments, initialNotifications } =
+		Route.useLoaderData();
+
+	const { data: notifications = [] } = useNotifications(initialNotifications);
+	const markAsRead = useMarkNotificationAsRead();
+	const markAllAsRead = useMarkAllNotificationsAsRead();
+	const deleteNotification = useDeleteNotification();
 
 	return (
 		<div className="p-3">
@@ -79,14 +87,24 @@ function RouteComponent() {
 
 				{/* Desktop Layout - Right Column */}
 				<div className="hidden lg:block lg:space-y-6">
-					<NotificationsListCard notifications={notifications}/>
+					<NotificationsListCard
+						notifications={notifications}
+						markAsRead={markAsRead.mutate}
+						markAllAsRead={markAllAsRead.mutate}
+						deleteNotification={deleteNotification.mutate}
+					/>
 					<AssignmentsProgressCard assignments={assignments} />
 				</div>
 
 				{/* Mobile Layout - Custom Order */}
 				<div className="space-y-4 lg:hidden">
 					<DailySchedulesCard courses={courses} schedules={schedules} />
-					<NotificationsListCard notifications={notifications}/>
+					<NotificationsListCard
+						notifications={notifications}
+						markAsRead={markAsRead.mutate}
+						markAllAsRead={markAllAsRead.mutate}
+						deleteNotification={deleteNotification.mutate}
+					/>
 					<UpcomingAssignmentsCard assignments={assignments} />
 					<AssignmentsProgressCard assignments={assignments} />
 				</div>

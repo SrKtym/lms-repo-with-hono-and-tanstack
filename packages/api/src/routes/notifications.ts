@@ -1,5 +1,9 @@
 import type { Session } from "@lms-repo/auth/server";
-import { deleteNotification, markAllNotificationsAsRead, markNotificationAsRead } from "@lms-repo/db/utils/mutation/notifications";
+import {
+	deleteNotification,
+	markAllNotificationsAsRead,
+	markNotificationAsRead,
+} from "@lms-repo/db/utils/mutation/notifications";
 import { fetchNotifications } from "@lms-repo/db/utils/query/notifications";
 import { Hono } from "hono";
 

@@ -1,4 +1,4 @@
-import { and, eq, inArray } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	courses,
@@ -31,12 +31,7 @@ export async function fetchNotifications(userId: string) {
 		const notificationsList = await tx
 			.select()
 			.from(notifications)
-			.where(
-				and(
-					eq(notifications.isRead, false),
-					inArray(notifications.receiver, idList),
-				),
-			);
+			.where(inArray(notifications.receiver, idList));
 
 		return notificationsList;
 	});

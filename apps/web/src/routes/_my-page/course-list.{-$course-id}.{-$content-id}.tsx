@@ -40,11 +40,7 @@ export const Route = createFileRoute(
 
 function RouteComponent() {
 	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
-	const {
-		courses = [],
-		announcements = [],
-		assignments = [],
-	} = Route.useLoaderData();
+	const { courses, announcements, assignments } = Route.useLoaderData();
 
 	// 各講義のカバー画像を生成し、coursesWithCoverImageに追加
 	const dataLength = courses.length;

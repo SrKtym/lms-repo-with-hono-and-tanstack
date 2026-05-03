@@ -5,7 +5,9 @@ import { queryClient } from "@/lib/query-client";
 import { fetchAnnouncementsQueryFn } from "../utils/query-utils";
 
 // 登録済み講義に関連するアナウンスメントを取得するカスタムフック
-export const useAnnouncements = (initialData?: FetchAnnouncementsFromUserCoursesReturnType) => {
+export const useAnnouncements = (
+	initialData?: FetchAnnouncementsFromUserCoursesReturnType,
+) => {
 	return useQuery({
 		queryKey: ["announcements"],
 		queryFn: fetchAnnouncementsQueryFn,

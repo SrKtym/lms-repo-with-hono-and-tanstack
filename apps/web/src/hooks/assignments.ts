@@ -5,7 +5,9 @@ import { queryClient } from "@/lib/query-client";
 import { fetchAssignmentsQueryFn } from "../utils/query-utils";
 
 // 登録済み講義に関連する課題を取得するカスタムフック
-export const useAssignments = (initialData?: FetchAssignmentsFromUserCoursesReturnType) => {
+export const useAssignments = (
+	initialData?: FetchAssignmentsFromUserCoursesReturnType,
+) => {
 	return useQuery({
 		queryKey: ["assignments"],
 		queryFn: fetchAssignmentsQueryFn,
