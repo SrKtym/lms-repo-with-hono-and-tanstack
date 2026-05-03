@@ -5,7 +5,7 @@ services:
       # ビルド対象をルートディレクトリ（docker-compose.ymlのあるディレクトリから見た場合../）に設定
       context: ..
       # このブロックに限りカレントディレクトリはルートディレクトリを指す
-      dockerfile: apps/server/Dockerfile
+      dockerfile: apps/server/Dockerfile.dev
     ports:
       - 3000:3000
     volumes:
@@ -25,7 +25,7 @@ services:
       # ビルド対象をルートディレクトリ（docker-compose.ymlのあるディレクトリから見た場合../）に設定
       context: ..
       # このブロックに限りカレントディレクトリはルートディレクトリを指す
-      dockerfile: apps/web/Dockerfile
+      dockerfile: apps/web/Dockerfile.dev
     ports:
       - 3001:3001
     volumes:
