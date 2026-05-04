@@ -22,5 +22,6 @@ export type Registration = typeof registration.$inferInsert;
 // データ挿入時のオプショナルフィールド
 export type CoursesOptional = "id" | "departmentId" | "professorId";
 export type SchedulesOptional = "id" | "createdBy" | "createdAt" | "updatedAt";
-export type AnnouncementsOptional = "id" | "createdBy";
+export type AnnouncementsOptional = "id" | "createdAt" | "updatedAt";
+export type AssignmentsOptional = "id" | "courseId" | "createdAt" | "updatedAt";
 export type UserOptional = "id";

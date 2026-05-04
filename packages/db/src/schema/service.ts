@@ -13,9 +13,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
-const requirements = ["必修", "選択必修", "任意"] as const;
+export const requirements = ["必修", "選択必修", "任意"] as const;
 export const requirementsEnum = pgEnum("requirements", requirements);
-const assignmentFormat = [
+export const assignmentFormat = [
 	"text",
 	"pdf",
 	"excel",
@@ -201,7 +201,7 @@ export const assignments = pgTable(
 			.primaryKey()
 			.$defaultFn(() => crypto.randomUUID()),
 		title: text("title").notNull(),
-		description: text("description"),
+		description: text("description").notNull(),
 		points: integer("points").notNull(),
 		dueDate: timestamp("due_date", { mode: "date", precision: 0 }).notNull(),
 		format: text("format").notNull(),
@@ -232,7 +232,7 @@ export const textSubmissions = pgTable(
 			.primaryKey()
 			.$defaultFn(() => crypto.randomUUID()),
 		title: text("title").notNull(),
-		description: text("description"),
+		description: text("description").notNull().default(""),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()

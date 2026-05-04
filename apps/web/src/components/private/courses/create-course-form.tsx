@@ -3,49 +3,50 @@ import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { client } from "@/lib/hono-client";
+import { requirements } from "@lms-repo/db/schema/service";
+import { CreateCourseModal } from "@lms-repo/ui/components/modals/create-course-modal";
+import { DefaultButton } from "@lms-repo/ui/components/button";
 
 export function CreateCourseForm() {
-	const options = ["必修", "選択必修", "任意"] as const;
-	type Requirements = (typeof options)[number];
-
+	type Requirement = (typeof requirements)[number];
 	const form = useForm({
 		defaultValues: {
 			name: "",
-			targetGrade: "",
-			weekdays: "",
-			period: "",
-			credits: "",
-			requirements: "任意" as Requirements,
+			targetGrade: 1,
+			weekdays: 1,
+			period: 1,
+			credits: 1,
+			requirements: "任意" as Requirement,
 			classRoom: "",
 			departmentId: "",
 			professorId: "",
 		},
 		onSubmit: async ({ value }) => {
 			const res = await client.api.courses.$post({
-				form: { ...value },
+				json: value,
 			});
 			const data = await res.json();
 		},
 		validators: {
 			onSubmit: z.object({
 				name: z.string().min(1, "講義名は必須です"),
-				targetGrade: z.coerce
-					.number<string>()
+				targetGrade: z
+					.number()
 					.int("対象学年は整数で入力してください")
 					.min(1, "対象学年は1から4の間で入力してください")
 					.max(4, "対象学年は1から4の間で入力してください"),
-				weekdays: z.string().min(1, "曜日は必須です"),
-				period: z.coerce
-					.number<string>()
+				weekdays: z.number().min(1, "曜日は必須です"),
+				period: z
+					.number()
 					.int("時限は整数で入力してください")
 					.min(1, "時限は1から5の間で入力してください")
 					.max(5, "時限は1から5の間で入力してください"),
-				credits: z.coerce
-					.number<string>()
+				credits: z
+					.number()
 					.int("単位数は整数で入力してください")
 					.min(1, "単位数は1から4の間で入力してください")
 					.max(4, "単位数は1から4の間で入力してください"),
-				requirements: z.enum([...options], {
+				requirements: z.enum(requirements, {
 					error: "履修区分を選択してください。",
 				}),
 				classRoom: z.string(),
@@ -56,6 +57,13 @@ export function CreateCourseForm() {
 	});
 
 	return (
+		<CreateCourseModal 
+			triggerButton={
+				<DefaultButton>
+					作成
+				</DefaultButton>
+			}
+		>
 		<form
 			onSubmit={(e) => {
 				e.preventDefault();
@@ -106,7 +114,7 @@ export function CreateCourseForm() {
 								step: 1,
 								value: field.state.value,
 								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
+								onChange: (e) => field.handleChange(Number(e.target.value)),
 							}}
 						/>
 					</div>
@@ -126,7 +134,7 @@ export function CreateCourseForm() {
 								type: "text",
 								value: field.state.value,
 								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
+								onChange: (e) => field.handleChange(Number(e.target.value)),
 							}}
 						/>
 					</div>
@@ -149,7 +157,7 @@ export function CreateCourseForm() {
 								step: 1,
 								value: field.state.value,
 								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
+								onChange: (e) => field.handleChange(Number(e.target.value)),
 							}}
 						/>
 					</div>
@@ -172,7 +180,7 @@ export function CreateCourseForm() {
 								step: 1,
 								value: field.state.value,
 								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
+								onChange: (e) => field.handleChange(Number(e.target.value)),
 							}}
 						/>
 					</div>
@@ -185,9 +193,9 @@ export function CreateCourseForm() {
 						<DefaultSelect
 							value={field.state.value}
 							onValueChange={(value) =>
-								field.handleChange(value as Requirements)
+								field.handleChange(value as Requirement)
 							}
-							items={[...options]}
+							items={[...requirements]}
 							ariaLabel="select requirements"
 						/>
 					</div>
@@ -213,6 +221,7 @@ export function CreateCourseForm() {
 					</div>
 				)}
 			</form.Field>
+
 			<form.Field name="departmentId">
 				{(field) => (
 					<div className="space-y-2">
@@ -249,5 +258,6 @@ export function CreateCourseForm() {
 				)}
 			</form.Field>
 		</form>
+		</CreateCourseModal>
 	);
 }

@@ -2,15 +2,12 @@ import { Modal } from "@heroui/react";
 
 interface CreateAnnouncementModalProps {
 	triggerButton: React.ReactNode;
-	onCreateAnnouncement: (announcement: {
-		title: string;
-		content: string;
-	}) => void;
+	children: React.ReactNode;
 }
 
 export function CreateAnnouncementModal({
 	triggerButton,
-	onCreateAnnouncement,
+	children,
 }: CreateAnnouncementModalProps) {
 	return (
 		<Modal>
@@ -24,13 +21,7 @@ export function CreateAnnouncementModal({
 								お知らせの作成
 							</Modal.Heading>
 						</Modal.Header>
-						<Modal.Body>
-							{/* Form fields for title and content */}
-							{/* On submit, call onCreateAnnouncement with the form data */}
-						</Modal.Body>
-						<Modal.Footer>
-							{/* Submit button to create announcement */}
-						</Modal.Footer>
+						<Modal.Body>{children}</Modal.Body>
 					</Modal.Dialog>
 				</Modal.Container>
 			</Modal.Backdrop>

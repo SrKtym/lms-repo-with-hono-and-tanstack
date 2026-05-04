@@ -2,12 +2,12 @@ import { Modal } from "@heroui/react";
 
 interface CreateAssignmentModalProps {
 	triggerButton: React.ReactNode;
-	onCreateAssignment: (assignment: { title: string; content: string }) => void;
+	children: React.ReactNode;
 }
 
 export function CreateAssignmentModal({
 	triggerButton,
-	onCreateAssignment,
+	children,
 }: CreateAssignmentModalProps) {
 	return (
 		<Modal>
@@ -21,13 +21,7 @@ export function CreateAssignmentModal({
 								課題の作成
 							</Modal.Heading>
 						</Modal.Header>
-						<Modal.Body>
-							{/* Form fields for title and content */}
-							{/* On submit, call onCreateAnnouncement with the form data */}
-						</Modal.Body>
-						<Modal.Footer>
-							{/* Submit button to create announcement */}
-						</Modal.Footer>
+						<Modal.Body>{children}</Modal.Body>
 					</Modal.Dialog>
 				</Modal.Container>
 			</Modal.Backdrop>
