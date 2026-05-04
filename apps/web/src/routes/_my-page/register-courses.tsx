@@ -61,6 +61,8 @@ function RouteComponent() {
 		});
 	};
 
+	const totalCredits = courses.reduce((acc, course) => acc + course.credits, 0);
+
 	return (
 		<div className="space-y-6 p-3">
 			<LazyMotionProvider>
@@ -109,7 +111,7 @@ function RouteComponent() {
 									transition={{ duration: 0.2 }}
 									className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400"
 								>
-									<p>登録済み講義: {courses.length}件</p>
+									<p>取得予定の単位数: {totalCredits}単位</p>
 									{courses.length > 0 && (
 										<ConfirmationModal
 											triggerButton={
@@ -160,10 +162,7 @@ function RouteComponent() {
 																	合計単位数
 																</td>
 																<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
-																	{courses.reduce(
-																		(sum, course) => sum + course.credits,
-																		0,
-																	)}
+																	{totalCredits}
 																</td>
 															</tr>
 														</tbody>
