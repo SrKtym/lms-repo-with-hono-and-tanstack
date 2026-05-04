@@ -3,6 +3,7 @@ import { DailySchedulesCard } from "@lms-repo/ui/components/cards/daily-schedule
 import { NotificationsListCard } from "@lms-repo/ui/components/cards/notifications-list-card";
 import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-assignments-card";
 import { createFileRoute } from "@tanstack/react-router";
+import { useMemo } from "react";
 import {
 	useDeleteNotification,
 	useMarkAllNotificationsAsRead,
@@ -60,6 +61,12 @@ function RouteComponent() {
 	const markAllAsRead = useMarkAllNotificationsAsRead();
 	const deleteNotification = useDeleteNotification();
 
+	// Memoize DailySchedulesCard props to prevent animation re-triggers
+	const memoizedDailySchedulesProps = useMemo(() => ({
+		courses,
+		schedules,
+	}), [courses, schedules]);
+
 	return (
 		<div className="p-3">
 			{/* Dashboard Header */}
@@ -81,7 +88,7 @@ function RouteComponent() {
 			<div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
 				{/* Desktop Layout - Left Column */}
 				<div className="hidden lg:col-span-2 lg:block lg:space-y-6">
-					<DailySchedulesCard courses={courses} schedules={schedules} />
+					<DailySchedulesCard {...memoizedDailySchedulesProps} />
 					<UpcomingAssignmentsCard assignments={assignments} />
 				</div>
 
@@ -98,7 +105,7 @@ function RouteComponent() {
 
 				{/* Mobile Layout - Custom Order */}
 				<div className="space-y-4 lg:hidden">
-					<DailySchedulesCard courses={courses} schedules={schedules} />
+					<DailySchedulesCard {...memoizedDailySchedulesProps} />
 					<NotificationsListCard
 						notifications={notifications}
 						markAsRead={markAsRead.mutate}

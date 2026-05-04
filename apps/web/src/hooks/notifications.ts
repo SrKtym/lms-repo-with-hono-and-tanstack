@@ -12,7 +12,7 @@ export const useNotifications = (
 		refetchInterval?: number;
 	},
 ) => {
-	const { enabled = true, refetchInterval = 5000 } = options || {}; // デフォルト5秒間隔
+	const { enabled = true, refetchInterval = 10000 } = options || {}; // デフォルト10秒間隔
 
 	return useQuery({
 		queryKey: ["notifications"],

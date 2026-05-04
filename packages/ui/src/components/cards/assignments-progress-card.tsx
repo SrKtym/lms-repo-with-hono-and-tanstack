@@ -67,7 +67,7 @@ export function AssignmentsProgressCard({
 					<div className="flex justify-between text-gray-600 text-xs dark:text-gray-400">
 						<span>全体の進捗</span>
 						<span>
-							{submittedCount} / {totalAssignments} assignments
+							{submittedCount} / {totalAssignments}
 						</span>
 					</div>
 					<DefaultProgressBar value={completionRate} />

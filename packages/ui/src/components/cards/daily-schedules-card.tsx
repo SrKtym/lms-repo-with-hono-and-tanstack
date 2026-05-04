@@ -5,6 +5,7 @@ import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
 import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
+import { memo } from "react";
 import { BaseCard } from "../cards/base-card";
 
 // 小数時間
@@ -29,7 +30,7 @@ const isProgressingOrUpcoming = (start: Date, end: Date) => {
 	return "past";
 };
 
-export function DailySchedulesCard({
+function DailySchedulesCardComponent({
 	courses,
 	schedules,
 }: {
@@ -74,10 +75,10 @@ export function DailySchedulesCard({
 				if (index === otherIndex || processed.has(otherIndex)) return;
 
 				// 時間が重複しているかチェック
-				const scheduleStart = decimalHours(schedule.start);
-				const scheduleEnd = decimalHours(schedule.end);
-				const otherStart = decimalHours(otherSchedule.start);
-				const otherEnd = decimalHours(otherSchedule.end);
+				const scheduleStart = decimalHours(schedule.startTime);
+				const scheduleEnd = decimalHours(schedule.endTime);
+				const otherStart = decimalHours(otherSchedule.startTime);
+				const otherEnd = decimalHours(otherSchedule.endTime);
 
 				const isOverlapping =
 					(scheduleStart < otherEnd && scheduleEnd > otherStart) ||
@@ -349,3 +350,5 @@ export function DailySchedulesCard({
 		</BaseCard>
 	);
 }
+
+export const DailySchedulesCard = memo(DailySchedulesCardComponent);

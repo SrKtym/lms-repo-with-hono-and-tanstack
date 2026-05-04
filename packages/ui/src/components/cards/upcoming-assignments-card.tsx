@@ -125,7 +125,6 @@ export function UpcomingAssignmentsCard({
 					<div className="relative py-12 text-center">
 						<div className="absolute inset-0 bg-gradient-to-br from-gray-50/50 to-orange-50/30 dark:from-gray-800/50 dark:to-orange-900/30" />
 						<div className="relative z-10">
-							<FileDocument width={24} height={24} />
 							<p className="font-medium text-gray-500 dark:text-gray-400">
 								直近の課題はありません
 							</p>
