@@ -59,7 +59,11 @@ export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 							</Calendar.Header>
 							<Calendar.Grid>
 								<Calendar.GridHeader>
-									{(day) => <Calendar.HeaderCell>{day}</Calendar.HeaderCell>}
+									{(day) => (
+										<Calendar.HeaderCell className="dark:text-gray-300">
+											{day}
+										</Calendar.HeaderCell>
+									)}
 								</Calendar.GridHeader>
 								<Calendar.GridBody>
 									{(date) => <Calendar.Cell date={date} />}
@@ -67,30 +71,35 @@ export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 							</Calendar.Grid>
 							<Calendar.YearPickerGrid>
 								<Calendar.YearPickerGridBody>
-									{({ year }) => <Calendar.YearPickerCell year={year} />}
+									{({ year }) => (
+										<Calendar.YearPickerCell
+											className="dark:text-white dark:hover:bg-gray-700"
+											year={year}
+										/>
+									)}
 								</Calendar.YearPickerGridBody>
 							</Calendar.YearPickerGrid>
 						</Calendar>
+						<div className="flex items-center justify-between">
+							<Label>時刻</Label>
+							<TimeField
+								aria-label="Time"
+								granularity="minute"
+								hideTimeZone={true}
+								hourCycle={24}
+								name="time"
+								shouldForceLeadingZeros={true}
+								value={state.timeValue}
+								onChange={(v) => state.setTimeValue(v as TimeValue)}
+							>
+								<TimeField.Group variant="secondary">
+									<TimeField.Input>
+										{(segment) => <TimeField.Segment segment={segment} />}
+									</TimeField.Input>
+								</TimeField.Group>
+							</TimeField>
+						</div>
 					</Picker.Popover>
-					<div className="flex items-center justify-between">
-						<Label>日時</Label>
-						<TimeField
-							aria-label="Time"
-							granularity="minute"
-							hideTimeZone={true}
-							hourCycle={24}
-							name="time"
-							shouldForceLeadingZeros={true}
-							value={state.timeValue}
-							onChange={(v) => state.setTimeValue(v as TimeValue)}
-						>
-							<TimeField.Group variant="secondary">
-								<TimeField.Input>
-									{(segment) => <TimeField.Segment segment={segment} />}
-								</TimeField.Input>
-							</TimeField.Group>
-						</TimeField>
-					</div>
 				</>
 			)}
 		</Picker>

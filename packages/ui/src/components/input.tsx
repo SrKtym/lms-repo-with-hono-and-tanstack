@@ -1,6 +1,6 @@
 import { FieldError, Input, Label, TextArea, TextField } from "@heroui/react";
-import { DateRangePicker } from "./date-range-picker";
 import { DatePicker } from "./date-picker";
+import { DateRangePicker } from "./date-range-picker";
 
 interface InputForFormProps {
 	inputProps?: React.ComponentProps<typeof Input>;
@@ -26,9 +26,7 @@ export function InputForForm({
 			{inputProps && <Input {...inputProps} />}
 			{textAreaProps && <TextArea {...textAreaProps} />}
 			{datePickerProps && <DatePicker {...datePickerProps} />}
-			{dateRangePickerProps && (
-				<DateRangePicker {...dateRangePickerProps} />
-			)}
+			{dateRangePickerProps && <DateRangePicker {...dateRangePickerProps} />}
 			{!datePickerProps && !dateRangePickerProps && <FieldError />}
 		</TextField>
 	);
