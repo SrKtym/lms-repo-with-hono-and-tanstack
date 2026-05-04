@@ -9,6 +9,7 @@ import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
+import { CreateAssignmentForm } from "./create-assignment-form";
 
 const mockMembers = [
 	{ id: 1, name: "Alice Johnson", role: "Student", avatar: "AJ" },
@@ -38,10 +39,6 @@ export default function RegisteredCourseInfos({
 
 	const handleCreateAnnouncement = () => {
 		console.log("Create announcement clicked");
-	};
-
-	const handleCreateAssignment = () => {
-		console.log("Create assignment clicked");
 	};
 
 	return (
@@ -134,11 +131,7 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										課題
 									</h2>
-									{isTeacher && (
-										<DefaultButton onPress={handleCreateAssignment}>
-											課題を作成
-										</DefaultButton>
-									)}
+									{isTeacher && <CreateAssignmentForm />}
 								</div>
 
 								{assignments.length > 0 ? (

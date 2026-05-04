@@ -1,10 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
+import { createAssignments } from "@lms-repo/db/utils/mutation/assignments";
 import {
 	fetchAssignmentById,
 	fetchAssignmentsFromUserCourses,
 } from "@lms-repo/db/utils/query/assignments";
-import { createAssignments } from "@lms-repo/db/utils/mutation/assignments";
 import { Hono } from "hono";
 import { z } from "zod";
 

@@ -1,30 +1,35 @@
 import { FieldError, Input, Label, TextArea, TextField } from "@heroui/react";
 import { DateRangePicker } from "./date-range-picker";
+import { DatePicker } from "./date-picker";
+
+interface InputForFormProps {
+	inputProps?: React.ComponentProps<typeof Input>;
+	labelProps: React.ComponentProps<typeof Label>;
+	textAreaProps?: React.ComponentProps<typeof TextArea>;
+	datePickerProps?: React.ComponentProps<typeof DatePicker>;
+	dateRangePickerProps?: React.ComponentProps<typeof DateRangePicker>;
+	isRequired?: boolean;
+}
 
 // // フォーム用の入力コンポーネント
 export function InputForForm({
 	inputProps,
 	labelProps,
 	textAreaProps,
+	datePickerProps,
 	dateRangePickerProps,
 	isRequired,
-}: {
-	inputProps?: React.ComponentProps<typeof Input>;
-	labelProps: React.ComponentProps<typeof Label>;
-	textAreaProps?: React.ComponentProps<typeof TextArea>;
-	dateRangePickerProps?: React.ComponentProps<typeof DateRangePicker>;
-	isRequired?: boolean;
-}) {
+}: InputForFormProps) {
 	return (
 		<TextField fullWidth isRequired={isRequired ?? true}>
 			<Label {...labelProps}>{labelProps.children}</Label>
 			{inputProps && <Input {...inputProps} />}
 			{textAreaProps && <TextArea {...textAreaProps} />}
-			{dateRangePickerProps ? (
+			{datePickerProps && <DatePicker {...datePickerProps} />}
+			{dateRangePickerProps && (
 				<DateRangePicker {...dateRangePickerProps} />
-			) : (
-				<FieldError />
 			)}
+			{!datePickerProps && !dateRangePickerProps && <FieldError />}
 		</TextField>
 	);
 }

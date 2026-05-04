@@ -62,10 +62,13 @@ function RouteComponent() {
 	const deleteNotification = useDeleteNotification();
 
 	// Memoize DailySchedulesCard props to prevent animation re-triggers
-	const memoizedDailySchedulesProps = useMemo(() => ({
-		courses,
-		schedules,
-	}), [courses, schedules]);
+	const memoizedDailySchedulesProps = useMemo(
+		() => ({
+			courses,
+			schedules,
+		}),
+		[courses, schedules],
+	);
 
 	return (
 		<div className="p-3">

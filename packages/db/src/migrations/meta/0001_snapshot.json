@@ -1,6 +1,6 @@
 {
-	"id": "67be0159-fd81-43f9-8c56-0e34cc8b3efc",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "94d39fc9-e302-41fd-be79-faf188a52312",
+	"prevId": "2cffa98c-5bd9-422b-b74b-dd4b66e2b603",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -643,7 +643,7 @@
 					"name": "description",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				},
 				"points": {
 					"name": "points",
@@ -928,10 +928,11 @@
 					"onDelete": "cascade",
 					"onUpdate": "no action"
 				},
-				"courses_professor_id_professors_id_fk": {
-					"name": "courses_professor_id_professors_id_fk",
+				"courses_professor_id_user_id_fk": {
+					"name": "courses_professor_id_user_id_fk",
 					"tableFrom": "courses",
-					"tableTo": "professors",
+					"tableTo": "user",
+					"schemaTo": "better_auth",
 					"columnsFrom": ["professor_id"],
 					"columnsTo": ["id"],
 					"onDelete": "cascade",
@@ -1543,7 +1544,8 @@
 					"name": "description",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true,
+					"default": "''"
 				},
 				"created_at": {
 					"name": "created_at",

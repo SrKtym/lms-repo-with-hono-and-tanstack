@@ -1,6 +1,6 @@
 {
-	"id": "67be0159-fd81-43f9-8c56-0e34cc8b3efc",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "b48d3931-78ef-450c-883e-9011c793c286",
+	"prevId": "94d39fc9-e302-41fd-be79-faf188a52312",
 	"version": "7",
 	"dialect": "postgresql",
 	"tables": {
@@ -643,7 +643,7 @@
 					"name": "description",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true
 				},
 				"points": {
 					"name": "points",
@@ -1543,7 +1543,8 @@
 					"name": "description",
 					"type": "text",
 					"primaryKey": false,
-					"notNull": false
+					"notNull": true,
+					"default": "''"
 				},
 				"created_at": {
 					"name": "created_at",

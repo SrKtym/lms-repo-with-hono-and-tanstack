@@ -111,7 +111,7 @@ function RouteComponent() {
 									transition={{ duration: 0.2 }}
 									className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400"
 								>
-									<p>取得予定の単位数: {totalCredits}単位</p>
+									<p>取得予定の単位数: {totalCredits}</p>
 									{courses.length > 0 && (
 										<ConfirmationModal
 											triggerButton={

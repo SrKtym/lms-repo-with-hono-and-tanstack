@@ -131,8 +131,8 @@ export function CreateScheduleForm() {
 								}}
 								dateRangePickerProps={{
 									defaultValue: {
-										start: field.state.value?.start,
-										end: field.state.value?.end,
+										start: field.state.value.start,
+										end: field.state.value.end,
 									},
 									onChange: (value) => {
 										if (value) {

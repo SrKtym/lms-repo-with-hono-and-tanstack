@@ -1,34 +1,46 @@
 import { assignmentFormat } from "@lms-repo/db/schema/service";
+import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
+import { CreateAssignmentModal } from "@lms-repo/ui/components/modals/create-assignment-modal";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useForm } from "@tanstack/react-form";
+import { useParams } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateAssignment } from "@/hooks/assignments";
-import { useParams } from "@tanstack/react-router";
-import { CreateAssignmentModal } from "@lms-repo/ui/components/modals/create-assignment-modal";
-import { DefaultButton } from "@lms-repo/ui/components/button";
+import {
+	getLocalTimeZone,
+	now,
+	type ZonedDateTime,
+} from "@lms-repo/ui/lib/utils";
 
 export function CreateAssignmentForm() {
-	const { "course-id": courseId } = useParams({ from: "/_my-page/course-list/{-$course-id}/{-$content-id}" });
+	const dateTime = now(getLocalTimeZone());
+	const { "course-id": courseId } = useParams({
+		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
+	});
 	const createAssignment = useCreateAssignment();
 	const form = useForm({
 		defaultValues: {
 			title: "",
 			description: "",
 			points: 0,
-			dueDate: new Date(),
+			dueDate: dateTime,
 			format: "text",
 			courseId: "",
 		},
 		onSubmit: async ({ value }) => {
-			createAssignment.mutate(value);
+			const { dueDate, ...rest } = value;
+			createAssignment.mutate({
+				...rest,
+				dueDate: dueDate.toDate(),
+			});
 		},
 		validators: {
 			onSubmit: z.object({
 				title: z.string().min(1),
 				description: z.string(),
 				points: z.number(),
-				dueDate: z.date().min(new Date()),
+				dueDate: z.custom<ZonedDateTime>(),
 				format: z.enum(assignmentFormat),
 				courseId: z.string().min(1),
 			}),
@@ -37,11 +49,7 @@ export function CreateAssignmentForm() {
 
 	return (
 		<CreateAssignmentModal
-			triggerButton={
-				<DefaultButton>
-					作成
-				</DefaultButton>
-			}
+			triggerButton={<DefaultButton>課題の作成</DefaultButton>}
 		>
 			<form
 				onSubmit={(e) => {
@@ -49,7 +57,7 @@ export function CreateAssignmentForm() {
 					e.stopPropagation;
 					form.handleSubmit();
 				}}
-				className="form-field"
+				className="form-field p-1"
 			>
 				<form.Field name="title">
 					{(field) => (
@@ -121,13 +129,13 @@ export function CreateAssignmentForm() {
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								inputProps={{
-									id: field.name,
-									name: field.name,
-									type: "date",
-									value: field.state.value.toISOString().split("T")[0],
-									onBlur: field.handleBlur,
-									onChange: (e) => field.handleChange(new Date(e.target.value)),
+								datePickerProps={{
+									defaultValue: field.state.value,
+									onChange: (value) => {
+										if (value) {
+											field.handleChange(value);
+										}
+									},
 								}}
 								labelProps={{
 									htmlFor: field.name,
@@ -152,6 +160,20 @@ export function CreateAssignmentForm() {
 				</form.Field>
 
 				<input type="hidden" name="courseId" value={courseId} />
+
+				<div className="flex justify-end gap-2">
+					<CancelButton slot="close">キャンセル</CancelButton>
+					<form.Subscribe>
+						{({ canSubmit, isSubmitting }) => (
+							<DefaultButton
+								type="submit"
+								isDisabled={!canSubmit || isSubmitting}
+							>
+								{isSubmitting ? "処理中..." : "作成"}
+							</DefaultButton>
+						)}
+					</form.Subscribe>
+				</div>
 			</form>
 		</CreateAssignmentModal>
 	);
