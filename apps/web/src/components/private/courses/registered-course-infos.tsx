@@ -9,6 +9,7 @@ import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
+import { CreateAnnouncementForm } from "./create-announcement-form";
 import { CreateAssignmentForm } from "./create-assignment-form";
 
 const mockMembers = [
@@ -36,10 +37,6 @@ export default function RegisteredCourseInfos({
 	}
 	const isTeacher = true;
 	const options = ["お知らせ", "課題", "メンバー"];
-
-	const handleCreateAnnouncement = () => {
-		console.log("Create announcement clicked");
-	};
 
 	return (
 		<>
@@ -100,11 +97,7 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										お知らせ
 									</h2>
-									{isTeacher && (
-										<DefaultButton onPress={handleCreateAnnouncement}>
-											お知らせを作成
-										</DefaultButton>
-									)}
+									{isTeacher && <CreateAnnouncementForm />}
 								</div>
 
 								{announcements.length > 0 ? (

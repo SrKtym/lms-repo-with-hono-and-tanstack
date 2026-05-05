@@ -1,4 +1,7 @@
+import { MessagesSquare } from "@lms-repo/ui/assets/icons/messages-square";
+import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
+import { CreateAnnouncementModal } from "@lms-repo/ui/components/modals/create-announcement-modal";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 
@@ -24,57 +27,66 @@ export function CreateAnnouncementForm() {
 	});
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				e.stopPropagation;
-				form.handleSubmit();
-			}}
-			className="form-field"
+		<CreateAnnouncementModal
+			triggerButton={
+				<DefaultButton>
+					<MessagesSquare />
+					お知らせを作成
+				</DefaultButton>
+			}
 		>
-			<form.Field name="title">
-				{(field) => (
-					<div className="space-y-2">
-						<InputForForm
-							inputProps={{
-								id: field.name,
-								name: field.name,
-								type: "text",
-								value: field.state.value,
-								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
-							}}
-							labelProps={{
-								htmlFor: field.name,
-								children: "タイトル",
-							}}
-						/>
-					</div>
-				)}
-			</form.Field>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					e.stopPropagation;
+					form.handleSubmit();
+				}}
+				className="form-field p-1"
+			>
+				<form.Field name="title">
+					{(field) => (
+						<div className="space-y-2">
+							<InputForForm
+								inputProps={{
+									id: field.name,
+									name: field.name,
+									type: "text",
+									value: field.state.value,
+									onBlur: field.handleBlur,
+									onChange: (e) => field.handleChange(e.target.value),
+								}}
+								labelProps={{
+									htmlFor: field.name,
+									children: "タイトル",
+								}}
+							/>
+						</div>
+					)}
+				</form.Field>
 
-			<form.Field name="description">
-				{(field) => (
-					<div className="space-y-2">
-						<InputForForm
-							inputProps={{
-								id: field.name,
-								name: field.name,
-								type: "text",
-								minLength: 1,
-								maxLength: 500,
-								value: field.state.value,
-								onBlur: field.handleBlur,
-								onChange: (e) => field.handleChange(e.target.value),
-							}}
-							labelProps={{
-								htmlFor: field.name,
-								children: "説明",
-							}}
-						/>
-					</div>
-				)}
-			</form.Field>
-		</form>
+				<form.Field name="description">
+					{(field) => (
+						<div className="space-y-2">
+							<InputForForm
+								inputProps={{
+									id: field.name,
+									name: field.name,
+									type: "text",
+									minLength: 1,
+									maxLength: 500,
+									value: field.state.value,
+									onBlur: field.handleBlur,
+									onChange: (e) => field.handleChange(e.target.value),
+								}}
+								labelProps={{
+									htmlFor: field.name,
+									children: "説明",
+								}}
+							/>
+						</div>
+					)}
+				</form.Field>
+			</form>
+		</CreateAnnouncementModal>
 	);
 }
