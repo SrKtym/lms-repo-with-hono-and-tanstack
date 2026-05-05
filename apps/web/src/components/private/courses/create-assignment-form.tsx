@@ -1,8 +1,8 @@
 import { assignmentFormat } from "@lms-repo/db/schema/service";
+import { FileText } from "@lms-repo/ui/assets/icons/file-text";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { CreateAssignmentModal } from "@lms-repo/ui/components/modals/create-assignment-modal";
-import { DefaultSelect } from "@lms-repo/ui/components/select";
 import {
 	getLocalTimeZone,
 	now,
@@ -49,7 +49,12 @@ export function CreateAssignmentForm() {
 
 	return (
 		<CreateAssignmentModal
-			triggerButton={<DefaultButton>課題の作成</DefaultButton>}
+			triggerButton={
+				<DefaultButton>
+					<FileText />
+					課題の作成
+				</DefaultButton>
+			}
 		>
 			<form
 				onSubmit={(e) => {
@@ -76,6 +81,11 @@ export function CreateAssignmentForm() {
 									children: "課題名",
 								}}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
 						</div>
 					)}
 				</form.Field>
@@ -97,6 +107,11 @@ export function CreateAssignmentForm() {
 									children: "課題の説明",
 								}}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
 						</div>
 					)}
 				</form.Field>
@@ -121,6 +136,11 @@ export function CreateAssignmentForm() {
 									children: "点数",
 								}}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
 						</div>
 					)}
 				</form.Field>
@@ -142,6 +162,11 @@ export function CreateAssignmentForm() {
 									children: "締切日",
 								}}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
 						</div>
 					)}
 				</form.Field>
@@ -149,17 +174,42 @@ export function CreateAssignmentForm() {
 				<form.Field name="format">
 					{(field) => (
 						<div className="space-y-2">
-							<DefaultSelect
-								value={field.state.value}
-								onValueChange={(value) => field.handleChange(value)}
-								items={[...assignmentFormat]}
-								ariaLabel="select format"
+							<InputForForm
+								selectProps={{
+									value: field.state.value,
+									onValueChange: (value) => field.handleChange(value),
+									items: [...assignmentFormat],
+									ariaLabel: "select format",
+								}}
+								labelProps={{
+									htmlFor: field.name,
+									children: "提出形式",
+								}}
 							/>
+							{field.state.meta.errors.map((error) => (
+								<p key={error?.message} className="text-red-500">
+									{error?.message}
+								</p>
+							))}
 						</div>
 					)}
 				</form.Field>
 
-				<input type="hidden" name="courseId" value={courseId} />
+				<form.Field name="courseId">
+					{(field) => (
+						<InputForForm
+							inputProps={{
+								type: "hidden",
+								value: courseId,
+							}}
+							labelProps={{
+								htmlFor: field.name,
+								children: "",
+							}}
+							isRequired={false}
+						/>
+					)}
+				</form.Field>
 
 				<div className="flex justify-end gap-2">
 					<CancelButton slot="close">キャンセル</CancelButton>
