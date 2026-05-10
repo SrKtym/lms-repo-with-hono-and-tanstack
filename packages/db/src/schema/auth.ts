@@ -115,7 +115,7 @@ export const twoFactor = betterAuth.table("two_factor", {
 });
 
 // パスキー認証
-export const passkeys = betterAuth.table("passkeys", {
+export const passkey = betterAuth.table("passkey", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),

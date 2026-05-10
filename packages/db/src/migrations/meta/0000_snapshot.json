@@ -1,5 +1,5 @@
 {
-  "id": "65606249-4577-44be-8e57-b939cf520524",
+  "id": "1db27f70-a08b-45bd-ae83-cee002756559",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -127,8 +127,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "better_auth.passkeys": {
-      "name": "passkeys",
+    "better_auth.passkey": {
+      "name": "passkey",
       "schema": "better_auth",
       "columns": {
         "id": {
@@ -201,9 +201,9 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "passkeys_user_id_user_id_fk": {
-          "name": "passkeys_user_id_user_id_fk",
-          "tableFrom": "passkeys",
+        "passkey_user_id_user_id_fk": {
+          "name": "passkey_user_id_user_id_fk",
+          "tableFrom": "passkey",
           "tableTo": "user",
           "schemaTo": "better_auth",
           "columnsFrom": [
