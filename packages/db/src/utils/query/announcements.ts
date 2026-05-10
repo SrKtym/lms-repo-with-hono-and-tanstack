@@ -12,6 +12,7 @@ export async function fetchAnnouncementsFromUserCourses(userId: string) {
 			type: announcements.type,
 			createdAt: announcements.createdAt,
 			updatedAt: announcements.updatedAt,
+			courseId: courses.id,
 			courseName: courses.name,
 		})
 		.from(announcements)
@@ -27,17 +28,17 @@ export type FetchAnnouncementsFromUserCoursesReturnType = Awaited<
 >;
 
 // IDからお知らせを取得
-export async function fetchAnnouncementById(announcementId: string) {
-	const announcement = await db
-		.select({
-			id: announcements.id,
-			title: announcements.title,
-			description: announcements.description,
-			type: announcements.type,
-			createdAt: announcements.createdAt,
-			updatedAt: announcements.updatedAt,
-		})
-		.from(announcements)
-		.where(eq(announcements.id, announcementId));
-	return announcement;
-}
+// export async function fetchAnnouncementById(announcementId: string) {
+// 	const announcement = await db
+// 		.select({
+// 			id: announcements.id,
+// 			title: announcements.title,
+// 			description: announcements.description,
+// 			type: announcements.type,
+// 			createdAt: announcements.createdAt,
+// 			updatedAt: announcements.updatedAt,
+// 		})
+// 		.from(announcements)
+// 		.where(eq(announcements.id, announcementId));
+// 	return announcement;
+// }

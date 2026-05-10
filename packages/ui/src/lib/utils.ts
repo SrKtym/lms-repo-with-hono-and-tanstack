@@ -9,22 +9,21 @@ export {
 	type ZonedDateTime,
 } from "@internationalized/date";
 
-export function getFileColor(
-	type: string,
-): "default" | "success" | "warning" | "danger" | "accent" {
+// 曜日の配列
+export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
+
+export function getFileColor(type: string) {
 	switch (type) {
 		case "pdf":
 			return "danger";
-		case "doc":
-			return "default";
-		case "xls":
-			return "success";
-		case "Project":
+		case "word":
 			return "accent";
-		case "Quiz":
-			return "warning";
-		case "Assignment":
+		case "excel":
 			return "success";
+		case "powerpoint":
+			return "warning";
+		case "text":
+			return "default";
 		default:
 			return "default";
 	}

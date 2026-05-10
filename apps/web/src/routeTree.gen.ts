@@ -19,11 +19,10 @@ import { Route as MyPageDashboardRouteImport } from './routes/_my-page/dashboard
 import { Route as AuthVerifyOtpRouteImport } from './routes/_auth/verify-otp'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthSetTwofactorRouteImport } from './routes/_auth/set-twofactor'
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAddPasskeyRouteImport } from './routes/_auth/add-passkey'
-import { Route as AuthSetTwofactorRouteRouteImport } from './routes/_auth/set-twofactor/route'
-import { Route as AuthSetTwofactorRegisterTotpSecretkeyRouteImport } from './routes/_auth/set-twofactor/register-totp-secretkey'
 import { Route as MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport } from './routes/_my-page/course-list.{-$course-id}.{-$content-id}'
 
 const MyPageRouteRoute = MyPageRouteRouteImport.update({
@@ -74,6 +73,11 @@ const AuthSignInRoute = AuthSignInRouteImport.update({
   path: '/sign-in',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthSetTwofactorRoute = AuthSetTwofactorRouteImport.update({
+  id: '/set-twofactor',
+  path: '/set-twofactor',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
 const AuthResetPasswordRoute = AuthResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -90,17 +94,6 @@ const AuthAddPasskeyRoute = AuthAddPasskeyRouteImport.update({
   path: '/add-passkey',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const AuthSetTwofactorRouteRoute = AuthSetTwofactorRouteRouteImport.update({
-  id: '/set-twofactor',
-  path: '/set-twofactor',
-  getParentRoute: () => AuthRouteRoute,
-} as any)
-const AuthSetTwofactorRegisterTotpSecretkeyRoute =
-  AuthSetTwofactorRegisterTotpSecretkeyRouteImport.update({
-    id: '/register-totp-secretkey',
-    path: '/register-totp-secretkey',
-    getParentRoute: () => AuthSetTwofactorRouteRoute,
-  } as any)
 const MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route =
   MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport.update(
     {
@@ -112,10 +105,10 @@ const MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
   '/add-passkey': typeof AuthAddPasskeyRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/set-twofactor': typeof AuthSetTwofactorRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
@@ -123,15 +116,14 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof MyPageNotificationsRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
-  '/set-twofactor/register-totp-secretkey': typeof AuthSetTwofactorRegisterTotpSecretkeyRoute
   '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
   '/add-passkey': typeof AuthAddPasskeyRoute
   '/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/reset-password': typeof AuthResetPasswordRoute
+  '/set-twofactor': typeof AuthSetTwofactorRoute
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
@@ -139,7 +131,6 @@ export interface FileRoutesByTo {
   '/notifications': typeof MyPageNotificationsRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
-  '/set-twofactor/register-totp-secretkey': typeof AuthSetTwofactorRegisterTotpSecretkeyRoute
   '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRoutesById {
@@ -147,10 +138,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_my-page': typeof MyPageRouteRouteWithChildren
-  '/_auth/set-twofactor': typeof AuthSetTwofactorRouteRouteWithChildren
   '/_auth/add-passkey': typeof AuthAddPasskeyRoute
   '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
+  '/_auth/set-twofactor': typeof AuthSetTwofactorRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
@@ -158,17 +149,16 @@ export interface FileRoutesById {
   '/_my-page/notifications': typeof MyPageNotificationsRoute
   '/_my-page/register-courses': typeof MyPageRegisterCoursesRoute
   '/_my-page/schedules': typeof MyPageSchedulesRoute
-  '/_auth/set-twofactor/register-totp-secretkey': typeof AuthSetTwofactorRegisterTotpSecretkeyRoute
   '/_my-page/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/set-twofactor'
     | '/add-passkey'
     | '/request-reset-password'
     | '/reset-password'
+    | '/set-twofactor'
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
@@ -176,15 +166,14 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/register-courses'
     | '/schedules'
-    | '/set-twofactor/register-totp-secretkey'
     | '/course-list/{-$course-id}/{-$content-id}'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/set-twofactor'
     | '/add-passkey'
     | '/request-reset-password'
     | '/reset-password'
+    | '/set-twofactor'
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
@@ -192,17 +181,16 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/register-courses'
     | '/schedules'
-    | '/set-twofactor/register-totp-secretkey'
     | '/course-list/{-$course-id}/{-$content-id}'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/_my-page'
-    | '/_auth/set-twofactor'
     | '/_auth/add-passkey'
     | '/_auth/request-reset-password'
     | '/_auth/reset-password'
+    | '/_auth/set-twofactor'
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_auth/verify-otp'
@@ -210,7 +198,6 @@ export interface FileRouteTypes {
     | '/_my-page/notifications'
     | '/_my-page/register-courses'
     | '/_my-page/schedules'
-    | '/_auth/set-twofactor/register-totp-secretkey'
     | '/_my-page/course-list/{-$course-id}/{-$content-id}'
   fileRoutesById: FileRoutesById
 }
@@ -292,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthSignInRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/set-twofactor': {
+      id: '/_auth/set-twofactor'
+      path: '/set-twofactor'
+      fullPath: '/set-twofactor'
+      preLoaderRoute: typeof AuthSetTwofactorRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
     '/_auth/reset-password': {
       id: '/_auth/reset-password'
       path: '/reset-password'
@@ -313,20 +307,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAddPasskeyRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_auth/set-twofactor': {
-      id: '/_auth/set-twofactor'
-      path: '/set-twofactor'
-      fullPath: '/set-twofactor'
-      preLoaderRoute: typeof AuthSetTwofactorRouteRouteImport
-      parentRoute: typeof AuthRouteRoute
-    }
-    '/_auth/set-twofactor/register-totp-secretkey': {
-      id: '/_auth/set-twofactor/register-totp-secretkey'
-      path: '/register-totp-secretkey'
-      fullPath: '/set-twofactor/register-totp-secretkey'
-      preLoaderRoute: typeof AuthSetTwofactorRegisterTotpSecretkeyRouteImport
-      parentRoute: typeof AuthSetTwofactorRouteRoute
-    }
     '/_my-page/course-list/{-$course-id}/{-$content-id}': {
       id: '/_my-page/course-list/{-$course-id}/{-$content-id}'
       path: '/course-list/{-$course-id}/{-$content-id}'
@@ -337,35 +317,21 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AuthSetTwofactorRouteRouteChildren {
-  AuthSetTwofactorRegisterTotpSecretkeyRoute: typeof AuthSetTwofactorRegisterTotpSecretkeyRoute
-}
-
-const AuthSetTwofactorRouteRouteChildren: AuthSetTwofactorRouteRouteChildren = {
-  AuthSetTwofactorRegisterTotpSecretkeyRoute:
-    AuthSetTwofactorRegisterTotpSecretkeyRoute,
-}
-
-const AuthSetTwofactorRouteRouteWithChildren =
-  AuthSetTwofactorRouteRoute._addFileChildren(
-    AuthSetTwofactorRouteRouteChildren,
-  )
-
 interface AuthRouteRouteChildren {
-  AuthSetTwofactorRouteRoute: typeof AuthSetTwofactorRouteRouteWithChildren
   AuthAddPasskeyRoute: typeof AuthAddPasskeyRoute
   AuthRequestResetPasswordRoute: typeof AuthRequestResetPasswordRoute
   AuthResetPasswordRoute: typeof AuthResetPasswordRoute
+  AuthSetTwofactorRoute: typeof AuthSetTwofactorRoute
   AuthSignInRoute: typeof AuthSignInRoute
   AuthSignUpRoute: typeof AuthSignUpRoute
   AuthVerifyOtpRoute: typeof AuthVerifyOtpRoute
 }
 
 const AuthRouteRouteChildren: AuthRouteRouteChildren = {
-  AuthSetTwofactorRouteRoute: AuthSetTwofactorRouteRouteWithChildren,
   AuthAddPasskeyRoute: AuthAddPasskeyRoute,
   AuthRequestResetPasswordRoute: AuthRequestResetPasswordRoute,
   AuthResetPasswordRoute: AuthResetPasswordRoute,
+  AuthSetTwofactorRoute: AuthSetTwofactorRoute,
   AuthSignInRoute: AuthSignInRoute,
   AuthSignUpRoute: AuthSignUpRoute,
   AuthVerifyOtpRoute: AuthVerifyOtpRoute,

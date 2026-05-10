@@ -16,7 +16,8 @@ export type RouterAppContext = {};
 
 export const Route = createRootRouteWithContext<RouterAppContext>()({
 	component: RootComponent,
-	errorComponent: CommonErrorComponent,
+	errorComponent: ErrorComponent,
+	notFoundComponent: NotFoundComponent,
 	head: () => ({
 		meta: [
 			{
@@ -68,8 +69,54 @@ function RootComponent() {
 	);
 }
 
-// 共通エラーコンポーネント
-function CommonErrorComponent({ error }: ErrorComponentProps) {
+// NotFoundコンポーネント
+function NotFoundComponent() {
+	return (
+		<div className="flex min-h-screen items-center justify-center px-4">
+			<div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
+				<div className="mb-4 text-center">
+					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
+						<svg
+							className="h-8 w-8 text-yellow-600 dark:text-yellow-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								strokeLinecap="round"
+								strokeLinejoin="round"
+								strokeWidth={2}
+								d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
+						</svg>
+					</div>
+					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
+						ページが見つかりません
+					</h1>
+					<p className="mb-4 text-gray-600 dark:text-gray-400">
+						申し訳ありません。指定されたページが見つかりませんでした。
+					</p>
+					<p className="mb-6 text-gray-500 text-sm dark:text-gray-400">
+						URLが正しいか、またはページが移動または削除されていないか確認してください。
+					</p>
+				</div>
+				<div className="flex flex-col gap-3">
+					<Link to="/">
+						<DefaultButton className="w-full">ホームに戻る</DefaultButton>
+					</Link>
+					<Link to=".">
+						<DefaultButton variant="outline" className="w-full">
+							前のページに戻る
+						</DefaultButton>
+					</Link>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+// エラーコンポーネント
+function ErrorComponent({ error }: ErrorComponentProps) {
 	return (
 		<div className="flex min-h-screen items-center justify-center px-4">
 			<div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">

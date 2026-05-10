@@ -10,7 +10,13 @@ export function InputOTPFor2fa({
 	onChange: (value: string) => void;
 }) {
 	return (
-		<InputOTP name={name} value={value} maxLength={6} onChange={onChange}>
+		<InputOTP
+			name={name}
+			value={value}
+			maxLength={6}
+			onChange={onChange}
+			required
+		>
 			<InputOTP.Group>
 				<InputOTP.Slot index={0} />
 				<InputOTP.Slot index={1} />

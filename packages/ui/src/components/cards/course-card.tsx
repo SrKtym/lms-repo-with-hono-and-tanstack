@@ -1,4 +1,5 @@
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import { DAYS } from "../../lib/utils";
 import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 import { Image } from "../image";
@@ -25,7 +26,7 @@ export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 						<h3 className="font-medium text-lg">{course.name}</h3>
 						<div className="flex flex-col gap-1 text-gray-600 text-sm dark:text-gray-400">
 							<p>
-								{course.weekdays}曜 {course.period}限
+								{DAYS[course.weekdays]}曜 {course.period}限
 							</p>
 							<p>{course.credits} 単位</p>
 							<p>担当教員: {course.professor}</p>

@@ -2,7 +2,7 @@ import { assignmentFormat } from "@lms-repo/db/schema/service";
 import { FileText } from "@lms-repo/ui/assets/icons/file-text";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { CreateAssignmentModal } from "@lms-repo/ui/components/modals/create-assignment-modal";
+import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import {
 	getLocalTimeZone,
 	now,
@@ -26,7 +26,7 @@ export function CreateAssignmentForm() {
 			points: 0,
 			dueDate: dateTime,
 			format: "text",
-			courseId: "",
+			courseId: courseId || "",
 		},
 		onSubmit: async ({ value }) => {
 			const { dueDate, ...rest } = value;
@@ -48,18 +48,19 @@ export function CreateAssignmentForm() {
 	});
 
 	return (
-		<CreateAssignmentModal
+		<DefaultModal
 			triggerButton={
 				<DefaultButton>
 					<FileText />
-					課題の作成
+					課題を作成
 				</DefaultButton>
 			}
+			heading="課題の作成"
 		>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
-					e.stopPropagation;
+					e.stopPropagation();
 					form.handleSubmit();
 				}}
 				className="form-field p-1"
@@ -177,7 +178,11 @@ export function CreateAssignmentForm() {
 							<InputForForm
 								selectProps={{
 									value: field.state.value,
-									onValueChange: (value) => field.handleChange(value),
+									onChange: (value) => {
+										if (typeof value === "string") {
+											field.handleChange(value);
+										}
+									},
 									items: [...assignmentFormat],
 									ariaLabel: "select format",
 								}}
@@ -197,16 +202,11 @@ export function CreateAssignmentForm() {
 
 				<form.Field name="courseId">
 					{(field) => (
-						<InputForForm
-							inputProps={{
-								type: "hidden",
-								value: courseId,
-							}}
-							labelProps={{
-								htmlFor: field.name,
-								children: "",
-							}}
-							isRequired={false}
+						<input
+							type="hidden"
+							name={field.name}
+							value={field.state.value}
+							onChange={(e) => field.handleChange(e.target.value)}
 						/>
 					)}
 				</form.Field>
@@ -225,6 +225,6 @@ export function CreateAssignmentForm() {
 					</form.Subscribe>
 				</div>
 			</form>
-		</CreateAssignmentModal>
+		</DefaultModal>
 	);
 }

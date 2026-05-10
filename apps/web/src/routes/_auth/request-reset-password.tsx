@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { ResetPasswordIcon } from "@lms-repo/ui/assets/icons/reset-password";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
@@ -58,26 +59,18 @@ function RouteComponent() {
 			{/* Header Section */}
 			<div className="text-center">
 				<div className="mb-6 flex justify-center">
-					<div className="flex h-12 w-12 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
-						<svg
-							className="h-6 w-6 text-orange-600 dark:text-orange-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-							/>
-						</svg>
+					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-orange-100 dark:bg-orange-900/30">
+						<ResetPasswordIcon
+							className="text-orange-600 dark:text-orange-400"
+							width={32}
+							height={32}
+						/>
 					</div>
 				</div>
-				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
-					パスワードのリセット
+				<h3 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
+					パスワードリセットの申請
 				</h3>
-				<p className="text-gray-600 text-sm dark:text-gray-400">
+				<p className="text-gray-600 dark:text-gray-400">
 					メールアドレスを入力することで、パスワードをリセットするためのメールが送信されます。
 				</p>
 			</div>
@@ -118,7 +111,7 @@ function RouteComponent() {
 								<p
 									id="email-error"
 									key={error?.message}
-									className="text-red-500 text-sm"
+									className="text-red-500"
 								>
 									{error?.message}
 								</p>

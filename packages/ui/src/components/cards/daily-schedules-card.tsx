@@ -49,7 +49,7 @@ function DailySchedulesCardComponent({
 				...course,
 				start: times.start,
 				end: times.end,
-				title: course.name, // Add title for display
+				title: course.name,
 			};
 		});
 

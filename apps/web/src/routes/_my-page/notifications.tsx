@@ -1,3 +1,6 @@
+import { MessagesSquareCheck } from "@lms-repo/ui/assets/icons/messages-square-check";
+import { Trash } from "@lms-repo/ui/assets/icons/trash";
+import { DangerButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
@@ -82,24 +85,18 @@ function RouteComponent() {
 					</div>
 					<div className="flex items-center space-x-2">
 						{unreadCount > 0 && (
-							<m.button
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={() => markAllAsRead.mutate}
-								className="rounded-lg bg-blue-500 px-3 py-2 font-medium text-sm text-white transition-colors hover:bg-blue-600"
-							>
+							<DefaultButton onPress={() => markAllAsRead.mutate}>
+								<MessagesSquareCheck />
 								すべて既読
-							</m.button>
+							</DefaultButton>
 						)}
 						{notifications.length > 0 && (
-							<m.button
-								whileHover={{ scale: 1.05 }}
-								whileTap={{ scale: 0.95 }}
-								onClick={() => console.log("delete all notifications")}
-								className="rounded-lg bg-red-500 px-3 py-2 font-medium text-sm text-white transition-colors hover:bg-red-600"
+							<DangerButton
+								onPress={() => console.log("delete all notifications")}
 							>
+								<Trash />
 								すべて削除
-							</m.button>
+							</DangerButton>
 						)}
 					</div>
 				</m.div>

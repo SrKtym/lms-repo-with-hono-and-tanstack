@@ -18,10 +18,19 @@ export function UpcomingAssignmentsCard({
 }) {
 	const [selectedPeriod, setSelectedPeriod] = useState("7日以内");
 
+	const periodOptions = ["3日以内", "7日以内", "すべて"];
 	const filteredAssignments = assignments.filter(
 		(assignment) =>
 			assignment.dueDate.getTime() - new Date().getTime() <=
-			(selectedPeriod === "3日以内" ? 3 : 7) * 24 * 60 * 60 * 1000,
+			(selectedPeriod === "3日以内"
+				? 3
+				: selectedPeriod === "7日以内"
+					? 7
+					: Number.POSITIVE_INFINITY) *
+				24 *
+				60 *
+				60 *
+				1000,
 	);
 
 	const getDaysUntilDue = (dueDate: Date) => {
@@ -38,15 +47,15 @@ export function UpcomingAssignmentsCard({
 	const getTypeIcon = (format: string) => {
 		switch (format) {
 			case "powerpoint":
-				return <MSPowerpoint />;
+				return <MSPowerpoint width={20} height={20} />;
 			case "pdf":
-				return <PDFFile />;
+				return <PDFFile width={20} height={20} />;
 			case "excel":
-				return <MSExcel />;
+				return <MSExcel width={20} height={20} />;
 			case "word":
-				return <MSword />;
+				return <MSword width={20} height={20} />;
 			default:
-				return <FileText />;
+				return <FileText width={20} height={20} />;
 		}
 	};
 
@@ -69,9 +78,14 @@ export function UpcomingAssignmentsCard({
 					</div>
 					<div className="flex items-center gap-2">
 						<DefaultSelect
-							items={["3日以内", "7日以内"]}
+							className="w-32"
+							items={periodOptions}
 							value={selectedPeriod}
-							onValueChange={setSelectedPeriod}
+							onChange={(value) => {
+								if (typeof value === "string") {
+									setSelectedPeriod(value);
+								}
+							}}
 						/>
 						<DefaultButton aria-label="settings" isIconOnly size="sm">
 							<Settings width={20} height={20} />
@@ -79,9 +93,9 @@ export function UpcomingAssignmentsCard({
 					</div>
 				</div>
 
-				{assignments.length > 0 ? (
+				{filteredAssignments.length > 0 ? (
 					<div className="max-h-[320px] space-y-3 overflow-y-auto">
-						{assignments.map((assignment) => (
+						{filteredAssignments.map((assignment) => (
 							<div
 								key={assignment.id}
 								className="cursor-pointer rounded-lg border bg-gradient-to-r from-white to-orange-50/50 p-3 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:from-gray-800 dark:to-orange-900/30 dark:hover:border-orange-600"

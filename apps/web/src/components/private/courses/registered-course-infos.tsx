@@ -33,10 +33,9 @@ export default function RegisteredCourseInfos({
 	assignments,
 }: RegisteredCourseInfosProps) {
 	if (!courseWithCoverImage) {
-		return <div>Course not found</div>;
+		return <div>講義が見つかりません。</div>;
 	}
 	const isTeacher = true;
-	const options = ["お知らせ", "課題", "メンバー"];
 
 	return (
 		<>
@@ -90,7 +89,6 @@ export default function RegisteredCourseInfos({
 			<div className="border-gray-200 border-b bg-white dark:border-gray-700 dark:bg-gray-800">
 				<div className="container mx-auto max-w-screen-xl space-y-3 px-3 pt-1 pb-3">
 					<TabsForCourseInfo
-						options={options}
 						announcementsTab={
 							<div>
 								<div className="mb-6 flex items-center justify-between">
@@ -101,7 +99,7 @@ export default function RegisteredCourseInfos({
 								</div>
 
 								{announcements.length > 0 ? (
-									<div className="space-y-4">
+									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 										{announcements.map((announcement) => (
 											<AnnouncementCard
 												key={announcement.id}

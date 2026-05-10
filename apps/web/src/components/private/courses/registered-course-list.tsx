@@ -17,10 +17,10 @@ export default function RegisteredCourseList({
 		coverImage?: string;
 	})[];
 }) {
-	const selectItems = ["進捗順", "講義名順", "締切順"];
+	const selectItems = ["昇順", "降順"];
 	const [searchQuery, setSearchQuery] = useState("");
 	const [isTeacher] = useState(false); // 簡略化のため常にfalse
-	const [sortOrder, setSortOrder] = useState("進捗順");
+	const [sortOrder, setSortOrder] = useState("昇順");
 
 	// 検索フィルタリング
 	const filteredCourses = coursesWithCoverImage.filter(
@@ -28,6 +28,14 @@ export default function RegisteredCourseList({
 			course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 			course.professor.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
+
+	// ソート
+	const sortedCourses = filteredCourses.sort((a, b) => {
+		if (sortOrder === "昇順") {
+			return a.name.localeCompare(b.name, "ja-JP");
+		}
+		return b.name.localeCompare(a.name, "ja-JP");
+	});
 
 	return (
 		<div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/10">
@@ -40,25 +48,30 @@ export default function RegisteredCourseList({
 						<DefaultSearchField
 							placeholder="講義名または教員名で検索"
 							value={searchQuery}
-							onChangeValue={setSearchQuery}
+							onChange={setSearchQuery}
 						/>
 						{isTeacher && <DefaultButton>講義作成</DefaultButton>}
 					</div>
 				</div>
 
-				{filteredCourses.length > 0 ? (
+				{sortedCourses.length > 0 ? (
 					<div className="mb-8">
 						<div className="mb-4 flex items-center justify-between">
 							<h2 className="font-medium text-gray-800 text-lg dark:text-gray-200">
-								すべての講義 ({filteredCourses.length}件)
+								すべての講義 ({sortedCourses.length}件)
 							</h2>
 							<div className="flex items-center gap-2 text-gray-600 text-sm dark:text-gray-400">
 								<span>並び替え:</span>
 								<DefaultSelect
 									aria-label="options"
-									value={sortOrder}
-									onValueChange={setSortOrder}
+									className="w-32"
 									items={selectItems}
+									value={sortOrder}
+									onChange={(value) => {
+										if (typeof value === "string") {
+											setSortOrder(value);
+										}
+									}}
 								/>
 							</div>
 						</div>
@@ -76,7 +89,7 @@ export default function RegisteredCourseList({
 								initial="hidden"
 								animate="visible"
 							>
-								{filteredCourses.map((currentCourseData) => (
+								{sortedCourses.map((currentCourseData) => (
 									<m.div
 										key={currentCourseData.id}
 										variants={{
@@ -102,7 +115,7 @@ export default function RegisteredCourseList({
 														}}
 													>
 														<DefaultButton size="sm">
-															講義の詳細を見る
+															詳細を見る
 															<ArrowRight />
 														</DefaultButton>
 													</Link>

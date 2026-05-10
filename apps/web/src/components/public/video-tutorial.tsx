@@ -1,5 +1,6 @@
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import { DAYS } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useState } from "react";
 
@@ -15,8 +16,6 @@ export function VideoTutorial() {
 		"機械学習入門",
 		"Webアプリケーション開発",
 	] as const;
-
-	const days = ["月", "火", "水", "木", "金", "土", "日"] as const;
 
 	const filteredCourses = courses.filter((course) =>
 		course.toLowerCase().includes(searchQuery.toLowerCase()),
@@ -175,7 +174,7 @@ export function VideoTutorial() {
 												以下の時間割に追加されます:
 											</div>
 											<div className="grid grid-cols-7 gap-1 text-xs">
-												{days.map((day) => (
+												{DAYS.map((day) => (
 													<div
 														key={day}
 														className="text-center font-medium text-gray-700 dark:text-gray-300"

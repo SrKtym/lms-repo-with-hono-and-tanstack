@@ -7,40 +7,50 @@ import {
 	fetchAnnouncementsQueryFn,
 	fetchAssignmentsQueryFn,
 	fetchRegisteredCoursesQueryFn,
+	fetchSubmissionByIdQueryFn,
 } from "@/utils/query-utils";
 
 export const Route = createFileRoute(
 	"/_my-page/course-list/{-$course-id}/{-$content-id}",
 )({
 	component: RouteComponent,
-	loader: async () => {
+	loader: async ({ params }) => {
+		const { "content-id": contentId } = params;
 		// キャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, announcements, assignments] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["registered-courses"],
-				queryFn: fetchRegisteredCoursesQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
+		const [courses, announcements, assignments, submission] = await Promise.all(
+			[
+				queryClient.ensureQueryData({
+					queryKey: ["registered-courses"],
+					queryFn: fetchRegisteredCoursesQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
 
-			queryClient.ensureQueryData({
-				queryKey: ["announcements-related-courses"],
-				queryFn: fetchAnnouncementsQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
-			queryClient.ensureQueryData({
-				queryKey: ["assignments-related-courses"],
-				queryFn: fetchAssignmentsQueryFn,
-				staleTime: 5 * 60 * 1000, // 5 minutes
-			}),
-		]);
+				queryClient.ensureQueryData({
+					queryKey: ["announcements-related-courses"],
+					queryFn: fetchAnnouncementsQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
+				queryClient.ensureQueryData({
+					queryKey: ["assignments-related-courses"],
+					queryFn: fetchAssignmentsQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
+				queryClient.ensureQueryData({
+					queryKey: ["submissions-related-courses", contentId],
+					queryFn: () => fetchSubmissionByIdQueryFn(contentId),
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
+			],
+		);
 
-		return { courses, announcements, assignments };
+		return { courses, announcements, assignments, submission };
 	},
 });
 
 function RouteComponent() {
 	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
-	const { courses, announcements, assignments } = Route.useLoaderData();
+	const { courses, announcements, assignments, submission } =
+		Route.useLoaderData();
 
 	// 各講義のカバー画像を生成し、coursesWithCoverImageに追加
 	const dataLength = courses.length;
@@ -53,21 +63,40 @@ function RouteComponent() {
 		coverImage: coverImageList[index],
 	}));
 
-	if (!courseId)
+	// 登録講義一覧ページ
+	if (!courseId) {
 		return (
 			<RegisteredCourseList coursesWithCoverImage={coursesWithCoverImage} />
 		);
+	}
+	// 講義詳細ページ
 	if (!contentId) {
 		const targetCourse = coursesWithCoverImage.find(
 			(course) => course.id === courseId,
 		);
+		const targetAnnouncements = announcements.filter(
+			(announcement) => announcement.courseId === courseId,
+		);
+		const targetAssignments = assignments.filter(
+			(assignment) => assignment.courseId === courseId,
+		);
 		return (
 			<RegisteredCourseInfos
 				courseWithCoverImage={targetCourse}
-				announcements={announcements}
-				assignments={assignments}
+				announcements={targetAnnouncements}
+				assignments={targetAssignments}
 			/>
 		);
 	}
-	return <RegisteredCourseContents />;
+	// 課題詳細ページ
+	const targetAssignment = assignments.find(
+		(assignment) => assignment.id === contentId,
+	);
+
+	return (
+		<RegisteredCourseContents
+			targetAssignment={targetAssignment}
+			submission={submission[0]}
+		/>
+	);
 }

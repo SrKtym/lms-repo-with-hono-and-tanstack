@@ -82,6 +82,7 @@ export const auth = betterAuth({
 			defaultRole: "student",
 		}),
 		twoFactor({
+			enabled: true,
 			otpOptions: {
 				async sendOTP({ user, otp }) {
 					await resend.emails.send({

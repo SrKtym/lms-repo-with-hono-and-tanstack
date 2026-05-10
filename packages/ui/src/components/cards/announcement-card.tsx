@@ -27,9 +27,9 @@ export function AnnouncementCard({
 	): "default" | "success" | "warning" | "danger" | "accent" {
 		switch (type) {
 			case "資料":
-				return "default";
-			case "アンケート":
 				return "accent";
+			case "アンケート":
+				return "success";
 			default:
 				return "default";
 		}

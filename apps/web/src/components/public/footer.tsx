@@ -214,7 +214,7 @@ export function Footer() {
 				{/* Bottom Bar */}
 				<div className="mt-8 border-gray-800 border-t pt-8">
 					<div className="flex flex-col items-center justify-center gap-4 text-center text-gray-400 text-sm md:flex-row">
-						<p>&copy; 2024 LMS. All rights reserved.</p>
+						<p>&copy; 2026 LMS. All rights reserved.</p>
 					</div>
 				</div>
 			</div>

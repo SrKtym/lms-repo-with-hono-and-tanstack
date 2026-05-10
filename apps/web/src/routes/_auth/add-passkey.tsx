@@ -241,7 +241,7 @@ function RouteComponent() {
 
 					<Link to="/dashboard">
 						<CancelButton className="w-full" isDisabled={isRegistering}>
-							今はスキップ
+							今はしない
 						</CancelButton>
 					</Link>
 				</div>

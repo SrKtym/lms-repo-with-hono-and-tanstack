@@ -3,7 +3,7 @@ import { CancelButton, DefaultButton } from "../button";
 
 interface ConfirmationModalProps {
 	triggerButton: React.ReactNode;
-	onConfirm: () => void;
+	onConfirm?: () => void;
 	title: string;
 	children: React.ReactNode;
 }

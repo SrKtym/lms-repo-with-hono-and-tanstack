@@ -1,7 +1,7 @@
 import { requirements } from "@lms-repo/db/schema/service";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { CreateCourseModal } from "@lms-repo/ui/components/modals/create-course-modal";
+import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
@@ -57,7 +57,10 @@ export function CreateCourseForm() {
 	});
 
 	return (
-		<CreateCourseModal triggerButton={<DefaultButton>作成</DefaultButton>}>
+		<DefaultModal 
+			triggerButton={<DefaultButton>講義を作成</DefaultButton>}
+			heading="講義の作成"
+		>
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -186,9 +189,7 @@ export function CreateCourseForm() {
 						<div className="space-y-2">
 							<DefaultSelect
 								value={field.state.value}
-								onValueChange={(value) =>
-									field.handleChange(value as Requirement)
-								}
+								onChange={(value) => field.handleChange(value as Requirement)}
 								items={[...requirements]}
 								ariaLabel="select requirements"
 							/>
@@ -252,6 +253,6 @@ export function CreateCourseForm() {
 					)}
 				</form.Field>
 			</form>
-		</CreateCourseModal>
+		</DefaultModal>
 	);
 }

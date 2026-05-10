@@ -1,40 +1,15 @@
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchSubmissionsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/submissions";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
-import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
+import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
-import { AssignmentStatusCard } from "@lms-repo/ui/components/cards/assignment-status-card";
 import { CommentsCard } from "@lms-repo/ui/components/cards/comments-card";
-import { EvaluatedCard } from "@lms-repo/ui/components/cards/evaluated-card";
+import { OtherAssignmentCard } from "@lms-repo/ui/components/cards/other-assignment-card";
 import { SubmissionsCard } from "@lms-repo/ui/components/cards/submissions-card";
 import { Link } from "@tanstack/react-router";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
-
-// モックデータ
-const mockCurrentAssignment = {
-	id: "assignment-1",
-	title: "マクロ経済学レポート",
-	description: "マクロ経済学の基本概念についてレポートを作成してください。",
-	points: 100,
-	dueDate: new Date("2024-12-01"),
-	format: "PDF",
-	createdAt: new Date("2024-11-01"),
-	updatedAt: new Date("2024-11-01"),
-	createdBy: "professor-1",
-	courseName: "マクロ経済学",
-	// AssignmentDetailCard 用
-	attachmentMetaData: [
-		{ id: "file-1", name: "assignment-guide.pdf", type: "application/pdf" },
-		{
-			id: "file-2",
-			name: "sample-report.docx",
-			type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-		},
-	],
-	type: "assignment",
-	// AssignmentStatusCard 用
-	assignmentStatus: { status: "submitted" },
-};
 
 const mockDateOptionforAnnouncement: Intl.DateTimeFormatOptions = {
 	year: "numeric",
@@ -46,23 +21,6 @@ const mockDateOptionforAnnouncement: Intl.DateTimeFormatOptions = {
 
 const mockAttachments = [
 	{ id: "file-1", name: "report.pdf", size: "2.5MB", type: "application/pdf" },
-];
-
-const mockSubmissionData = [
-	{
-		id: "submission-1",
-		title: "マクロ経済学レポート",
-		status: "graded",
-		grade: 85,
-		submittedAt: new Date("2024-11-25"),
-		gradedAt: new Date("2024-11-28"),
-	},
-	{
-		id: "submission-2",
-		title: "ミクロ経済学課題",
-		status: "submitted",
-		submittedAt: new Date("2024-11-26"),
-	},
 ];
 
 const mockComments = [
@@ -88,22 +46,18 @@ const mockUserData = {
 	name: "学生B",
 };
 
-const mockOtherAssignments = [
-	{
-		id: "assignment-2",
-		title: "ミクロ経済学課題",
-		dueDate: new Date("2024-12-05"),
-		points: 50,
-	},
-	{
-		id: "assignment-3",
-		title: "統計学レポート",
-		dueDate: new Date("2024-12-10"),
-		points: 75,
-	},
-];
+interface RegisteredCourseContentsProps {
+	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
+	submission?: FetchSubmissionsFromUserCoursesReturnType[number];
+}
 
-export default function RegisteredCourseContents() {
+export default function RegisteredCourseContents({
+	targetAssignment,
+	submission,
+}: RegisteredCourseContentsProps) {
+	if (!targetAssignment) {
+		return <div>課題が見つかりません。</div>;
+	}
 	const isTeacher = false;
 	const [selectedTab, setSelectedTab] = useState<"text" | "file">("text");
 	const [submitState, setSubmitState] = useState<
@@ -120,12 +74,9 @@ export default function RegisteredCourseContents() {
 		transition: { duration: 0.3 },
 	};
 
-	const currentAssignment = mockCurrentAssignment;
 	const dateOptionforAnnouncement = mockDateOptionforAnnouncement;
-	const submissionData = mockSubmissionData;
 	const filteredComments = comments;
 	const userData = mockUserData;
-	const OtherAssignmentList = mockOtherAssignments;
 
 	const onTabChange = (tab: "text" | "file") => {
 		setSelectedTab(tab);
@@ -186,9 +137,9 @@ export default function RegisteredCourseContents() {
 								戻る
 							</CancelButton>
 						</Link>
-						{currentAssignment && (
+						{targetAssignment && (
 							<div className="text-sm text-white opacity-80">
-								{currentAssignment.courseName} / 課題の詳細
+								{targetAssignment.courseName} / 課題の詳細
 							</div>
 						)}
 					</div>
@@ -199,51 +150,28 @@ export default function RegisteredCourseContents() {
 				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 					<LazyMotion features={domAnimation}>
 						{/* 課題の詳細 */}
-						{currentAssignment && (
-							<div className="space-y-6 lg:col-span-2">
-								<m.div {...propaties}>
-									<AssignmentDetailCard
-										currentAssignment={currentAssignment}
-										isTeacher={isTeacher}
-										dateOptionforAnnouncement={dateOptionforAnnouncement}
-									/>
-								</m.div>
-							</div>
-						)}
+						<m.div {...propaties} className="lg:col-span-2">
+							<AssignmentDetailCard targetAssignment={targetAssignment} />
+						</m.div>
 
 						{/* 提出（学生用） */}
-						{!isTeacher && currentAssignment && (
-							<m.div
-								initial={{ opacity: 0, y: 10 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.3, delay: 0.1 }}
-							>
-								<SubmissionsCard
-									currentAssignment={currentAssignment}
-									attachments={attachments}
-									selectedTab={selectedTab}
-									submitState={submitState}
-									isPending={isPending}
-									onTabChange={onTabChange}
-									onFileRemove={onFileRemove}
-									formAction={formAction}
-								/>
-							</m.div>
-						)}
-
-						{/* 評定（教員用） */}
-						{isTeacher && submissionData && (
-							<m.div
-								{...propaties}
-								transition={{ ...propaties.transition, delay: 0.1 }}
-							>
-								<EvaluatedCard
-									submissions={submissionData}
-									isTeacher={isTeacher}
-									dateOptionforAnnouncement={dateOptionforAnnouncement}
-								/>
-							</m.div>
-						)}
+						<m.div
+							initial={{ opacity: 0, y: 10 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3, delay: 0.1 }}
+						>
+							<SubmissionsCard
+								targetAssignment={targetAssignment}
+								targetSubmission={submission}
+								// attachments={attachments}
+								// selectedTab={selectedTab}
+								submitState={submitState}
+								isPending={isPending}
+								// onTabChange={onTabChange}
+								onFileRemove={onFileRemove}
+								formAction={formAction}
+							/>
+						</m.div>
 
 						{/* コメント */}
 						<m.div
@@ -258,49 +186,6 @@ export default function RegisteredCourseContents() {
 								isTeacher={isTeacher}
 								dateOptionforAnnouncement={dateOptionforAnnouncement}
 							/>
-						</m.div>
-
-						{/* 課題の提出状況 */}
-						<m.div
-							{...propaties}
-							transition={{ ...propaties.transition, delay: 0.3 }}
-						>
-							<AssignmentStatusCard
-								currentAssignment={currentAssignment}
-								isTeacher={isTeacher}
-								dateOptionforAnnouncement={dateOptionforAnnouncement}
-								getAssignmentStatusColor={getAssignmentStatusColor}
-							/>
-						</m.div>
-
-						{/* その他の課題 */}
-						<m.div
-							{...propaties}
-							transition={{ ...propaties.transition, delay: 0.2 }}
-						>
-							{/* 改良: その他の課題を表示（モック） */}
-							<div className="rounded-lg border bg-card p-6 shadow-sm">
-								<h3 className="mb-4 font-semibold text-lg">その他の課題</h3>
-								<div className="space-y-2">
-									{OtherAssignmentList.map((assignment) => (
-										<div
-											key={assignment.id}
-											className="flex items-center justify-between rounded border p-3"
-										>
-											<div>
-												<p className="font-medium">{assignment.title}</p>
-												<p className="text-muted-foreground text-sm">
-													期限: {assignment.dueDate.toLocaleDateString()} |{" "}
-													{assignment.points}点
-												</p>
-											</div>
-											<DefaultButton size="sm" variant="outline">
-												詳細
-											</DefaultButton>
-										</div>
-									))}
-								</div>
-							</div>
 						</m.div>
 					</LazyMotion>
 				</div>

@@ -1,4 +1,5 @@
 import type { UserData } from "@lms-repo/auth/web";
+import { authClient } from "@lms-repo/auth/web";
 import { Books } from "@lms-repo/ui/assets/icons/books";
 import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
 import { DropdownMenuForAccount } from "@lms-repo/ui/components/dropdown-menus/account-dropdown";
@@ -9,10 +10,25 @@ import {
 import { DefaultSeparator } from "@lms-repo/ui/components/separator";
 import { ThemeSwitch } from "@lms-repo/ui/components/switch";
 import { cn } from "@lms-repo/ui/lib/utils";
-import { Link, useLocation } from "@tanstack/react-router";
+import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
 export function Header({ email, name, image }: UserData) {
 	const location = useLocation();
+	const navigate = useNavigate();
+
+	// TODO: ログアウト処理
+	const handleLogout = async () => {
+		await authClient.signOut({
+			fetchOptions: {
+				onSuccess: () => {
+					navigate({ to: "/" });
+				},
+				onError: (error) => {
+					console.error("Logout failed:", error);
+				},
+			},
+		});
+	};
 
 	return (
 		<>
@@ -42,7 +58,7 @@ export function Header({ email, name, image }: UserData) {
 				</nav>
 				<div className="flex items-center gap-2">
 					<ThemeSwitch />
-					<DropdownMenuForAccount>
+					<DropdownMenuForAccount onLogout={handleLogout}>
 						<DefaultAvatar src={image} userName={name} />
 						<div className="flex flex-col text-start text-foreground max-sm:hidden">
 							<h3>{name}</h3>

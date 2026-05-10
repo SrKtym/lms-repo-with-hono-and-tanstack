@@ -45,7 +45,7 @@ export const useRegisterCourse = (
 	return useMutation({
 		mutationFn: async (courseId: string) => {
 			const res = await client.api.courses.registered.$post({
-				json: courseId,
+				json: { courseId },
 			});
 			const data = await res.json();
 			return data;
@@ -91,7 +91,7 @@ export const useUnregisterCourse = () => {
 	return useMutation({
 		mutationFn: async (courseId: string) => {
 			const res = await client.api.courses.registered.$delete({
-				json: courseId,
+				json: { courseId },
 			});
 			const data = await res.json();
 			return data;

@@ -1,70 +1,61 @@
-import { Tab, Tabs, TextArea } from "@heroui/react";
-import type {
-	AssignmentTabKey,
-	AttachmentData,
-} from "@lms-repo/types/main/regisered-course";
-import { DefaultButton } from "../button";
+import { TextArea } from "@heroui/react";
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchSubmissionByIdReturnType } from "@lms-repo/db/utils/query/submissions";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 import { TabsForSubmissions } from "../tabs";
 import { FileUploaderCard } from "./file-uploader-card";
 
-interface Assignment {
-	id: string;
-	assignmentStatus?: {
-		status: string;
-	};
-}
-
 interface SubmissionsCardProps {
-	currentAssignment: Assignment;
-	attachments: AttachmentData[];
-	selectedTab: AssignmentTabKey;
+	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
+	targetSubmission?: FetchSubmissionByIdReturnType[number];
+	// attachments: AttachmentData[];
+	// selectedTab: AssignmentTabKey;
 	submitState: any;
 	isPending: boolean;
-	onTabChange: (key: AssignmentTabKey) => void;
+	// onTabChange: (key: AssignmentTabKey) => void;
 	onFileRemove: (fileId: string, relatedTo: any) => void;
 	formAction: any;
 }
 
 export function SubmissionsCard({
-	currentAssignment,
-	attachments,
-	selectedTab,
+	targetAssignment,
+	targetSubmission,
+	// attachments,
+	// selectedTab,
 	submitState,
 	isPending,
-	onTabChange,
+	// onTabChange,
 	onFileRemove,
 }: SubmissionsCardProps) {
-	const options = ["テキストで提出", "ファイルで提出"];
-
 	return (
 		<BaseCard className="border border-divider">
 			<div className="p-6">
 				<div className="flex items-center justify-between">
-					<h2 className="font-medium text-lg">{currentAssignment.id}</h2>
+					<h2 className="font-medium text-lg">{targetAssignment.title}</h2>
 					<DefaultChip
 						color={
-							currentAssignment.assignmentStatus?.status === "Evaluated"
+							targetSubmission?.status === "Evaluated"
 								? "success"
-								: currentAssignment.assignmentStatus?.status === "Submitted"
+								: targetSubmission?.status === "Submitted"
 									? "accent"
 									: "warning"
 						}
 					>
-						{currentAssignment.assignmentStatus?.status}
+						未提出
 					</DefaultChip>
 				</div>
 
 				<div className="mt-4">
 					<div className="space-y-2">
 						<TabsForSubmissions
-							options={options}
 							textTab={
 								<form className="form-container max-w-3xl">
 									<TextArea
 										name="content"
 										fullWidth
+										maxLength={2000}
+										rows={10}
 										placeholder="最大2000文字まで入力できます。"
 										aria-describedby="content-error"
 									/>

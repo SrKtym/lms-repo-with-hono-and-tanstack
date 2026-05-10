@@ -1,24 +1,16 @@
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileText } from "../../assets/icons/file-text";
 import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 
-// Type definitions
-interface Assignment {
-	id: string;
-	title: string;
-	dueDate: Date;
-}
-
 interface OtherAssignmentCardProps {
-	assignments: Assignment[];
-	onAssignmentClick: (id: string) => void;
+	assignments: FetchAssignmentsFromUserCoursesReturnType;
 	dateOptionforAnnouncement?: Intl.DateTimeFormatOptions;
 }
 
 // OtherAssignmentCard component
 export function OtherAssignmentCard({
 	assignments,
-	onAssignmentClick,
 	dateOptionforAnnouncement = {
 		year: "numeric",
 		month: "short",
@@ -28,9 +20,7 @@ export function OtherAssignmentCard({
 	return (
 		<BaseCard className="border border-divider">
 			<div className="p-4">
-				<h3 className="mb-3 font-medium text-medium">
-					Other assignments in this course
-				</h3>
+				<h3 className="mb-3 font-medium text-medium">この講義の他の課題</h3>
 				<div className="space-y-3">
 					{assignments.map((assignment) => (
 						<DefaultButton

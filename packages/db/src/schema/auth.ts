@@ -102,12 +102,13 @@ export const verification = betterAuth.table(
 );
 
 // 2要素認証
-export const twoFactors = betterAuth.table("two_factors", {
+export const twoFactor = betterAuth.table("two_factor", {
 	id: text("id")
 		.primaryKey()
 		.$defaultFn(() => crypto.randomUUID()),
 	secret: text("secret").notNull(),
 	backupCodes: text("backup_codes").notNull(),
+	verified: boolean("verified").notNull(),
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),

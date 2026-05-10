@@ -1,20 +1,32 @@
+import type { Key } from "@heroui/react";
 import { Select } from "@heroui/react";
 import { MultiSelectListBox, SingleSelectListBox } from "./listbox";
+
+interface DefaultSelectProps {
+	value: string;
+	onChange: (value: Key | null) => void;
+	ariaLabel?: string;
+	className?: string;
+	items: string[];
+}
 
 // 汎用セレクト
 export function DefaultSelect({
 	value,
-	onValueChange,
-	items,
+	onChange,
+	className = "w-auto",
 	ariaLabel = "Select option",
-}: {
-	value: string;
-	onValueChange: (value: string) => void;
-	items: string[];
-	ariaLabel?: string;
-}) {
+	items,
+}: DefaultSelectProps) {
 	return (
-		<Select aria-label={ariaLabel}>
+		<Select
+			className={className}
+			aria-label={ariaLabel}
+			defaultValue={value}
+			onChange={(value) => {
+				onChange(value);
+			}}
+		>
 			<Select.Trigger>
 				<Select.Value />
 				<Select.Indicator />
@@ -26,15 +38,17 @@ export function DefaultSelect({
 	);
 }
 
+interface SelectForDataTableProps {
+	placeholder: string;
+	ariaLabel: string;
+}
+
 export function SelectForDataTable({
 	placeholder,
-	items,
 	ariaLabel,
-}: {
-	placeholder: string;
-	items: string[];
-	ariaLabel: string;
-}) {
+}: SelectForDataTableProps) {
+	const selectItems = ["進捗順", "講義名順", "締切順"];
+
 	return (
 		<Select placeholder={placeholder} aria-label={ariaLabel}>
 			<Select.Trigger>
@@ -42,7 +56,7 @@ export function SelectForDataTable({
 				<Select.Indicator />
 			</Select.Trigger>
 			<Select.Popover>
-				<MultiSelectListBox items={items} />
+				<MultiSelectListBox items={selectItems} />
 			</Select.Popover>
 		</Select>
 	);

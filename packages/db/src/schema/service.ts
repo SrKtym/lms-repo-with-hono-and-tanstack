@@ -22,7 +22,7 @@ export const assignmentFormat = [
 	"word",
 	"powerpoint",
 ] as const;
-const announcementType = ["資料", "アンケート", "その他"] as const;
+export const announcementType = ["資料", "アンケート", "その他"] as const;
 const statusList = ["未提出", "提出済み", "評定済み"] as const;
 
 // 学生テーブル

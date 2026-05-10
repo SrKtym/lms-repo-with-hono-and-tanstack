@@ -1,10 +1,7 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import { createAssignments } from "@lms-repo/db/utils/mutation/assignments";
-import {
-	fetchAssignmentById,
-	fetchAssignmentsFromUserCourses,
-} from "@lms-repo/db/utils/query/assignments";
+import { fetchAssignmentsFromUserCourses } from "@lms-repo/db/utils/query/assignments";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -19,7 +16,7 @@ const formSchema = z.object({
 	dueDate: z.coerce
 		.date()
 		.min(new Date(), "締切日は未来の日付を入力してください"),
-	format: z.string().min(1, "提出形式を選択してください."),
+	format: z.string().min(1, "提出形式を選択してください"),
 	courseId: z.string().min(1),
 });
 
@@ -41,10 +38,4 @@ export const assignmentsRoute = new Hono<{
 		const { userId } = c.get("session");
 		const assignments = await fetchAssignmentsFromUserCourses(userId);
 		return c.json(assignments, 200);
-	})
-	// 課題個別取得
-	.get("/:id", zValidator("param", z.string()), async (c) => {
-		const assignmentId = c.req.valid("param");
-		const assignment = await fetchAssignmentById(assignmentId);
-		return c.json(assignment, 200);
 	});

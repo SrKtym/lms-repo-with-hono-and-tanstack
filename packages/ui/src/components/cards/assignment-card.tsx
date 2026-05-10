@@ -1,4 +1,4 @@
-import type { FetchAssignmentsReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileText } from "../../assets/icons/file-text";
 import { getFileColor } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
@@ -8,7 +8,7 @@ import { DefaultChip } from "../chip";
 export function AssignmentCard({
 	assignment,
 }: {
-	assignment: FetchAssignmentsReturnType[number];
+	assignment: FetchAssignmentsFromUserCoursesReturnType[number];
 }) {
 	const dateOptions: Intl.DateTimeFormatOptions = {
 		year: "numeric",
@@ -53,9 +53,7 @@ export function AssignmentCard({
 								)}
 								{!isOverdue && daysUntilDue <= 3 && (
 									<span className="font-medium text-warning">
-										{daysUntilDue === 0
-											? "Due today"
-											: `${daysUntilDue} days left`}
+										{daysUntilDue === 0 ? "今日まで" : `残り${daysUntilDue}日`}
 									</span>
 								)}
 							</div>
@@ -74,13 +72,13 @@ export function AssignmentCard({
 						</div>
 					)}
 
-					{assignment.points && (
+					{assignment.points >= 0 && (
 						<div className="mt-2 flex items-center gap-2">
 							<span className="text-gray-500 text-sm dark:text-gray-400">
-								Points:
+								得点:
 							</span>
 							<span className="font-medium text-gray-900 dark:text-gray-100">
-								{assignment.points} points
+								{assignment.points}点
 							</span>
 						</div>
 					)}

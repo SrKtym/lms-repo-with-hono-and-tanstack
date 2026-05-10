@@ -1,14 +1,16 @@
 import { Modal } from "@heroui/react";
 
-interface CreateAnnouncementModalProps {
+interface DefaultModalProps {
 	triggerButton: React.ReactNode;
+	heading: string;
 	children: React.ReactNode;
 }
 
-export function CreateAnnouncementModal({
+export function DefaultModal({
 	triggerButton,
+	heading,
 	children,
-}: CreateAnnouncementModalProps) {
+}: DefaultModalProps) {
 	return (
 		<Modal>
 			{triggerButton}
@@ -17,9 +19,7 @@ export function CreateAnnouncementModal({
 					<Modal.Dialog>
 						<Modal.CloseTrigger />
 						<Modal.Header>
-							<Modal.Heading className="text-gray-900 dark:text-white">
-								お知らせの作成
-							</Modal.Heading>
+							<Modal.Heading>{heading}</Modal.Heading>
 						</Modal.Header>
 						<Modal.Body>{children}</Modal.Body>
 					</Modal.Dialog>

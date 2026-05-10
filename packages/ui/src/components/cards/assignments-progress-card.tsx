@@ -1,22 +1,22 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
+import type { FetchSubmissionsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/submissions";
 import { TrendingUp } from "@lms-repo/ui/assets/icons/trending-up";
 import { BaseCard } from "../cards/base-card";
 import { DefaultProgressBar } from "../progress-bar";
 
 export function AssignmentsProgressCard({
-	assignments,
+	submissions,
+	overdueAssignments,
 }: {
-	assignments: FetchAssignmentsFromUserCoursesReturnType;
+	submissions: FetchSubmissionsFromUserCoursesReturnType;
+	overdueAssignments: FetchAssignmentsFromUserCoursesReturnType;
 }) {
-	const totalAssignments = assignments.length;
-	const submittedAssignments = assignments.filter(
-		(assignment) => assignment.status === "提出済み",
+	const totalAssignments = submissions.length;
+	const submittedAssignments = submissions.filter(
+		(submission) => submission.status === "提出済み",
 	);
-	const evaluatedAssignments = assignments.filter(
-		(assignment) => assignment.status === "評定済み",
-	);
-	const overdueAssignments = assignments.filter(
-		(assignment) => assignment.dueDate < new Date(),
+	const evaluatedAssignments = submissions.filter(
+		(submission) => submission.status === "評定済み",
 	);
 
 	const submittedCount = submittedAssignments.length;
@@ -121,7 +121,7 @@ export function AssignmentsProgressCard({
 						<div className="font-medium text-gray-900 text-xs dark:text-gray-100">
 							{submittedAssignments.length > 0
 								? submittedAssignments[submittedAssignments.length - 1]
-										?.title || "タイトルなし"
+										?.assignmentTitle || "タイトルなし"
 								: "提出済みの課題はありません"}
 						</div>
 					</div>

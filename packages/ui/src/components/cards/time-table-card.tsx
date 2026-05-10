@@ -7,6 +7,7 @@ import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import { DAYS } from "../../lib/utils";
 import { OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
 import { BaseCard } from "./base-card";
@@ -28,8 +29,6 @@ export function TimeTableCard({
 	isPending = false,
 	availableCourses,
 }: TimeTableCardProps) {
-	const days = ["日", "月", "火", "水", "木", "金", "土"] as const;
-
 	// Generate timeSlots and extract unique values
 	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) =>
 		Array.from({ length: 5 }, (_, periodIndex) => {
@@ -61,7 +60,7 @@ export function TimeTableCard({
 									transition={{ duration: 0.2, delay: 0.1 + day * 0.05 }}
 									className="min-w-[120px] border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800"
 								>
-									{` ${days[day]} `}
+									{` ${DAYS[day]} `}
 								</m.th>
 							))}
 						</tr>
@@ -173,44 +172,44 @@ export function TimeTableCard({
 						))}
 					</tbody>
 				</table>
-
-				<m.div
-					initial={{ opacity: 0 }}
-					animate={{ opacity: 1 }}
-					transition={{ duration: 0.3, delay: 0.4 }}
-					className="mt-6 space-y-3"
-				>
-					<h3 className="font-semibold text-sm">登録済み講義一覧</h3>
-					<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-						<AnimatePresence>
-							{courses.map((course, index) => (
-								<m.div
-									key={course.name}
-									initial={{ opacity: 0, x: -20 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: 20 }}
-									transition={{ duration: 0.2, delay: 0.5 + index * 0.1 }}
-									className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
-								>
-									<div className="flex-1">
-										<div className="font-medium text-sm">{course.name}</div>
-										<div className="mt-1 text-gray-600 text-xs dark:text-gray-400">
-											{course.professor} • {course.classRoom} • {course.credits}
-											単位
-										</div>
-									</div>
-									<m.div
-										initial={{ scale: 0 }}
-										animate={{ scale: 1 }}
-										transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
-										className="h-4 w-4 rounded-full bg-blue-500"
-									/>
-								</m.div>
-							))}
-						</AnimatePresence>
-					</div>
-				</m.div>
 			</div>
+
+			<m.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ duration: 0.3, delay: 0.4 }}
+				className="mt-6 space-y-3"
+			>
+				<h3 className="font-semibold text-sm">登録済み講義一覧</h3>
+				<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+					<AnimatePresence>
+						{courses.map((course, index) => (
+							<m.div
+								key={course.name}
+								initial={{ opacity: 0, x: -20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: 20 }}
+								transition={{ duration: 0.2, delay: 0.5 + index * 0.1 }}
+								className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
+							>
+								<div className="flex-1">
+									<div className="font-medium text-sm">{course.name}</div>
+									<div className="mt-1 text-gray-600 text-xs dark:text-gray-400">
+										{course.professor} • {course.classRoom} • {course.credits}
+										単位
+									</div>
+								</div>
+								<m.div
+									initial={{ scale: 0 }}
+									animate={{ scale: 1 }}
+									transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
+									className="h-4 w-4 rounded-full bg-blue-500"
+								/>
+							</m.div>
+						))}
+					</AnimatePresence>
+				</div>
+			</m.div>
 		</BaseCard>
 	);
 }

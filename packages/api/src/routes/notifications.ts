@@ -26,7 +26,7 @@ export const notificationsRoute = new Hono<{
 	})
 	// 通知既読
 	.patch("/:id/mark_as_read", async (c) => {
-		const { id } = c.req.param();
+		const id = c.req.param("id");
 		const result = await markNotificationAsRead(id);
 		return c.json(result);
 	})
@@ -37,7 +37,7 @@ export const notificationsRoute = new Hono<{
 	})
 	// 通知削除
 	.delete("/:id", async (c) => {
-		const { id } = c.req.param();
+		const id = c.req.param("id");
 		const result = await deleteNotification(id);
 		return c.json(result);
 	});

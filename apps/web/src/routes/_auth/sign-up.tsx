@@ -7,6 +7,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { SocialLoginField } from "@/components/public/social-login-field";
+import { Check } from "@lms-repo/ui/assets/icons/check";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: RouteComponent,
@@ -189,20 +190,8 @@ function RouteComponent() {
 				{/* Success Message */}
 				{success.isSuccess && (
 					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
-						<div className="flex items-center">
-							<svg
-								className="mr-3 h-5 w-5 text-green-600 dark:text-green-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
+						<div className="flex items-center gap-2">
+							<Check width={32} height={32}/>
 							<p className="text-green-600 text-sm dark:text-green-400">
 								{success.email}{" "}
 								への確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。

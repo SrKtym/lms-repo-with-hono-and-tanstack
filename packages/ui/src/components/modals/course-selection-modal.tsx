@@ -1,5 +1,6 @@
-import { Modal, useOverlayState } from "@heroui/react";
+import { Modal } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import { DAYS } from "../../lib/utils";
 import { CancelButton } from "../button";
 import { Loader } from "../loader";
 
@@ -19,11 +20,8 @@ export function CourseSelectionModal({
 	availableCourses,
 	isPending = false,
 }: CourseSelectionModalProps) {
-	const days = ["月", "火", "水", "木", "金", "土", "日"];
-	const state = useOverlayState();
-
 	return (
-		<Modal key={`${selectedCell.day}-${selectedCell.period}`} state={state}>
+		<Modal key={`${selectedCell.day}-${selectedCell.period}`}>
 			{triggerButton}
 			<Modal.Backdrop variant="transparent">
 				<Modal.Container size="lg">
@@ -31,7 +29,7 @@ export function CourseSelectionModal({
 						<Modal.CloseTrigger />
 						<Modal.Header>
 							<Modal.Heading className="text-gray-900 dark:text-white">
-								{`${days[Number.parseInt(selectedCell.day) - 1]}曜日 ${selectedCell.period}限 の講義を選択`}
+								{`${DAYS[Number.parseInt(selectedCell.day)]}曜 ${selectedCell.period}限 の講義を選択`}
 							</Modal.Heading>
 						</Modal.Header>
 						<Modal.Body>
@@ -50,7 +48,7 @@ export function CourseSelectionModal({
 											</div>
 											<div className="text-gray-600 text-sm dark:text-gray-400">
 												<p>
-													{days[Number.parseInt(selectedCell.day) - 1]}・
+													{DAYS[Number.parseInt(selectedCell.day)]}・
 													{selectedCell.period}
 												</p>
 											</div>

@@ -38,12 +38,16 @@ export const coursesRoute = new Hono<{
 	)
 	.basePath("/registered")
 	// 講義登録
-	.post("/", zValidator("json", z.string()), async (c) => {
-		const { userId } = c.get("session");
-		const courseId = c.req.valid("json");
-		const result = await registerCourses(courseId, userId);
-		return c.json(result);
-	})
+	.post(
+		"/",
+		zValidator("json", z.object({ courseId: z.string() })),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { courseId } = c.req.valid("json");
+			const result = await registerCourses(courseId, userId);
+			return c.json(result);
+		},
+	)
 	// 登録講義取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
@@ -51,9 +55,13 @@ export const coursesRoute = new Hono<{
 		return c.json(result, 200);
 	})
 	// 登録講義削除
-	.delete("/", zValidator("json", z.string()), async (c) => {
-		const { userId } = c.get("session");
-		const courseId = c.req.valid("json");
-		const result = await unregisterCourse(courseId, userId);
-		return c.json(result);
-	});
+	.delete(
+		"/",
+		zValidator("json", z.object({ courseId: z.string() })),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { courseId } = c.req.valid("json");
+			const result = await unregisterCourse(courseId, userId);
+			return c.json(result);
+		},
+	);

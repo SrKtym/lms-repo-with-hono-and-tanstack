@@ -25,10 +25,10 @@ function RouteComponent() {
 							<DangerIcon width={32} height={32} />
 						</div>
 					</div>
-					<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
+					<h3 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
 						リンクが無効です。
 					</h3>
-					<p className="text-gray-600 text-sm dark:text-gray-400">
+					<p className="text-gray-600 dark:text-gray-400">
 						パスワードリセットリンクが無効か、有効期限が切れています。新しいリセットリンクをリクエストしてください。
 					</p>
 				</div>
@@ -39,14 +39,14 @@ function RouteComponent() {
 						<h4 className="mb-2 font-medium text-red-800 dark:text-red-200">
 							考えられる原因:
 						</h4>
-						<ul className="space-y-1 text-red-600 text-sm dark:text-red-400">
+						<ul className="space-y-1 text-red-600 dark:text-red-400">
 							<li>・リセットリンクの有効期限が切れています</li>
 							<li>・リンクが既に使用されています</li>
 							<li>・リンクが正しくコピーされていません</li>
 						</ul>
 					</div>
 
-					<div className="text-red-600 text-sm dark:text-red-400">
+					<div className="text-red-600 dark:text-red-400">
 						<strong>解決策:</strong>{" "}
 						メールアドレスを使用して新しいパスワードリセットリンクをリクエストしてください。
 					</div>
@@ -71,7 +71,7 @@ function RouteComponent() {
 
 				{/* Help Text */}
 				<div className="text-center">
-					<p className="text-gray-500 text-xs dark:text-gray-400">
+					<p className="text-gray-500 dark:text-gray-400">
 						問題が解決しない場合は、サポートにお問い合わせください。
 					</p>
 				</div>

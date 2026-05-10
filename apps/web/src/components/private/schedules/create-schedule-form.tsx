@@ -3,7 +3,7 @@ import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { ColorSwatchPicker } from "@lms-repo/ui/components/color-swatch-picker";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { CreateScheduleModal } from "@lms-repo/ui/components/modals/create-schedule-modal";
+import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import {
 	getLocalTimeZone,
 	now,
@@ -48,13 +48,14 @@ export function CreateScheduleForm() {
 	});
 
 	return (
-		<CreateScheduleModal
+		<DefaultModal
 			triggerButton={
 				<DefaultButton>
 					<CalendarClock />
-					スケジュール追加
+					スケジュールを追加
 				</DefaultButton>
 			}
+			heading="スケジュールの追加"
 		>
 			<form
 				onSubmit={(e) => {
@@ -182,6 +183,6 @@ export function CreateScheduleForm() {
 					</form.Subscribe>
 				</div>
 			</form>
-		</CreateScheduleModal>
+		</DefaultModal>
 	);
 }

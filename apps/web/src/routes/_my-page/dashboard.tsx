@@ -16,13 +16,14 @@ import {
 	fetchNotificationsQueryFn,
 	fetchRegisteredCoursesQueryFn,
 	fetchSchedulesQueryFn,
+	fetchSubmissionsQueryFn,
 } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules, assignments, initialNotifications] =
+		const [courses, schedules, assignments, initialNotifications, submissions] =
 			await Promise.all([
 				queryClient.ensureQueryData({
 					queryKey: ["registered-courses"],
@@ -47,13 +48,25 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 					queryFn: fetchNotificationsQueryFn,
 					staleTime: 5 * 60 * 1000, // 5 minutes
 				}),
+				queryClient.ensureQueryData({
+					queryKey: ["submissions"],
+					queryFn: fetchSubmissionsQueryFn,
+					staleTime: 5 * 60 * 1000, // 5 minutes
+				}),
 			]);
-		return { courses, schedules, assignments, initialNotifications };
+
+		return {
+			courses,
+			schedules,
+			assignments,
+			initialNotifications,
+			submissions,
+		};
 	},
 });
 
 function RouteComponent() {
-	const { courses, schedules, assignments, initialNotifications } =
+	const { courses, schedules, assignments, initialNotifications, submissions } =
 		Route.useLoaderData();
 
 	const { data: notifications = [] } = useNotifications(initialNotifications);
@@ -61,13 +74,18 @@ function RouteComponent() {
 	const markAllAsRead = useMarkAllNotificationsAsRead();
 	const deleteNotification = useDeleteNotification();
 
-	// Memoize DailySchedulesCard props to prevent animation re-triggers
+	// アニメーションの再トリガーを防ぐため、DailySchedulesCardのpropsをメモ化
 	const memoizedDailySchedulesProps = useMemo(
 		() => ({
 			courses,
 			schedules,
 		}),
 		[courses, schedules],
+	);
+
+	// 期限切れの課題
+	const overdueAssignments = assignments.filter(
+		(assignment) => assignment.dueDate < new Date(),
 	);
 
 	return (
@@ -103,7 +121,10 @@ function RouteComponent() {
 						markAllAsRead={markAllAsRead.mutate}
 						deleteNotification={deleteNotification.mutate}
 					/>
-					<AssignmentsProgressCard assignments={assignments} />
+					<AssignmentsProgressCard
+						submissions={submissions}
+						overdueAssignments={overdueAssignments}
+					/>
 				</div>
 
 				{/* Mobile Layout - Custom Order */}
@@ -116,7 +137,10 @@ function RouteComponent() {
 						deleteNotification={deleteNotification.mutate}
 					/>
 					<UpcomingAssignmentsCard assignments={assignments} />
-					<AssignmentsProgressCard assignments={assignments} />
+					<AssignmentsProgressCard
+						submissions={submissions}
+						overdueAssignments={overdueAssignments}
+					/>
 				</div>
 			</div>
 		</div>

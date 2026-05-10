@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { ResetPasswordIcon } from "@lms-repo/ui/assets/icons/reset-password";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
@@ -64,31 +65,22 @@ export default function ResetPassword({ token }: { token: string }) {
 			{/* Header Section */}
 			<div className="text-center">
 				<div className="mb-6 flex justify-center">
-					<div className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
-						<svg
-							className="h-6 w-6 text-purple-600 dark:text-purple-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M15 7a2 2 0 012 2m-6 0v12a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2H7a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2z"
-							/>
-						</svg>
+					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 dark:bg-purple-900/30">
+						<ResetPasswordIcon
+							className="text-purple-600 dark:text-purple-400"
+							width={32}
+							height={32}
+						/>
 					</div>
 				</div>
-				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
+				<h3 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
 					パスワードをリセット
 				</h3>
-				<p className="text-gray-600 text-sm dark:text-gray-400">
+				<p className="text-gray-600 dark:text-gray-400">
 					新しいパスワードを入力し、確認してリセットを完了してください
 				</p>
 			</div>
 
-			{/* Form */}
 			<form
 				onSubmit={(e) => {
 					e.preventDefault();
@@ -126,7 +118,7 @@ export default function ResetPassword({ token }: { token: string }) {
 								<p
 									id="password-error"
 									key={error?.message}
-									className="text-red-500 text-sm"
+									className="text-red-500"
 								>
 									{error?.message}
 								</p>
@@ -163,7 +155,7 @@ export default function ResetPassword({ token }: { token: string }) {
 								<p
 									id="confirm-password-error"
 									key={error?.message}
-									className="text-red-500 text-sm"
+									className="text-red-500"
 								>
 									{error?.message}
 								</p>
@@ -177,7 +169,7 @@ export default function ResetPassword({ token }: { token: string }) {
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
 						<p
 							id="reset-password-error"
-							className="text-red-600 text-sm dark:text-red-400"
+							className="text-red-600 dark:text-red-400"
 						>
 							{error}
 						</p>
@@ -205,7 +197,7 @@ export default function ResetPassword({ token }: { token: string }) {
 								<h4 className="font-medium text-green-800 dark:text-green-200">
 									パスワードのリセットに成功しました。
 								</h4>
-								<p className="text-green-600 text-sm dark:text-green-400">
+								<p className="text-green-600 dark:text-green-400">
 									パスワードが正常にリセットされました。新しいパスワードでサインインできます。
 								</p>
 							</div>
@@ -255,7 +247,7 @@ export default function ResetPassword({ token }: { token: string }) {
 			{/* Success State - Additional Info */}
 			{isSuccess && (
 				<div className="text-center">
-					<p className="text-gray-500 text-sm dark:text-gray-400">
+					<p className="text-gray-500 dark:text-gray-400">
 						サインインページにリダイレクトされます。
 					</p>
 				</div>
@@ -265,7 +257,7 @@ export default function ResetPassword({ token }: { token: string }) {
 			<div className="text-center">
 				<Link
 					to="/sign-in"
-					className="text-blue-600 text-sm hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+					className="text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
 				>
 					サインインに戻る
 				</Link>
