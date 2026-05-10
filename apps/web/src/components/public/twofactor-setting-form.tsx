@@ -35,17 +35,13 @@ export function TwoFactorSettingForm({
 
 	// 2要素認証の有効化
 	const handleValidTwofactor = async (password: string) => {
-		const { data, error } = await authClient.twoFactor.enable(
-			{ password },
-			{
-				onSuccess: () => {
-					if (data) setTotpURI(data.totpURI);
-				},
-				onError: () => {
-					console.error(error?.message || error?.statusText);
-				},
-			},
-		);
+		const { data, error } = await authClient.twoFactor.enable({ password });
+		if (data) {
+			console.log(data.totpURI);
+			setTotpURI(data.totpURI);
+		} else {
+			console.error(error);
+		}
 	};
 
 	// 2要素認証の無効化
@@ -65,7 +61,6 @@ export function TwoFactorSettingForm({
 	};
 
 	const handleSetTwofactor = (password: string) => {
-		console.log("handleSetTwofactor", password);
 		if (selected === "valid") handleValidTwofactor(password);
 		else if (selected === "invalid") handleInvalidTwofactor(password);
 		else return;
