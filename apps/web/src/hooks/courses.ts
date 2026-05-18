@@ -1,4 +1,7 @@
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import type {
+	FetchCoursesReturnType,
+	FetchRegisteredCoursesReturnType,
+} from "@lms-repo/db/utils/query/courses";
 import { toast } from "@lms-repo/ui/components/toast";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
@@ -55,7 +58,7 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 
 // 講義を登録するカスタムフック
 export const useRegisterCourse = (
-	searchCourses?: FetchRegisteredCoursesReturnType,
+	searchCourses?: FetchCoursesReturnType,
 ) => {
 	return useMutation({
 		mutationFn: async (courseId: string) => {
@@ -82,47 +85,6 @@ export const useRegisterCourse = (
 					(old: FetchRegisteredCoursesReturnType) => [...old, courseToRegister],
 				);
 			}
-
-			return { previousCourses };
-		},
-		onSuccess: (data) => showToast(data),
-		onError: (_err, _courseId, context) => {
-			// ミューテーションが失敗した場合, ロールバック用データをコンテキストから受け取る
-			if (context?.previousCourses) {
-				queryClient.setQueryData(
-					["registered-courses"],
-					context.previousCourses,
-				);
-			}
-		},
-		onSettled: () => {
-			// ミューテーションの成功時も失敗時も再フェッチする
-			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
-		},
-	});
-};
-
-// 登録講義を確定するカスタムフック
-export const useCheckCourse = () => {
-	return useMutation({
-		mutationFn: async () => {
-			const res = await client.api.courses.registered.$patch();
-			const data = await res.json();
-			return data;
-		},
-		onMutate: async () => {
-			// 古いデータの再取得をキャンセルする
-			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
-
-			// キャッシュされているデータを同期的に取得する
-			const previousCourses = queryClient.getQueryData(["registered-courses"]);
-
-			// 楽観的更新
-			queryClient.setQueryData(
-				["registered-courses"],
-				(old: FetchRegisteredCoursesReturnType) =>
-					old.map((course) => ({ ...course, isChecked: true })),
-			);
 
 			return { previousCourses };
 		},
@@ -179,6 +141,22 @@ export const useUnregisterCourse = () => {
 				);
 			}
 		},
+		onSettled: () => {
+			// ミューテーションの成功時も失敗時も再フェッチする
+			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });
+		},
+	});
+};
+
+// 登録講義を確定するカスタムフック
+export const useCheckCourse = () => {
+	return useMutation({
+		mutationFn: async () => {
+			const res = await client.api.courses.registered.$patch();
+			const data = await res.json();
+			return data;
+		},
+		onSuccess: (data) => showToast(data),
 		onSettled: () => {
 			// ミューテーションの成功時も失敗時も再フェッチする
 			queryClient.invalidateQueries({ queryKey: ["registered-courses"] });

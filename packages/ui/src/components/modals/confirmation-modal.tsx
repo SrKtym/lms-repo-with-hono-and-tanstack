@@ -3,7 +3,7 @@ import { CancelButton, DefaultButton } from "../button";
 
 interface ConfirmationModalProps {
 	triggerButton: React.ReactNode;
-	onConfirm?: () => void;
+	onConfirm: () => void;
 	title: string;
 	children: React.ReactNode;
 }
@@ -29,7 +29,9 @@ export function ConfirmationModal({
 						<Modal.Footer>
 							<div className="flex justify-end gap-2">
 								<CancelButton slot="close">キャンセル</CancelButton>
-								<DefaultButton onPress={onConfirm}>確定</DefaultButton>
+								<DefaultButton slot="close" onPress={onConfirm}>
+									確定
+								</DefaultButton>
 							</div>
 						</Modal.Footer>
 					</Modal.Dialog>

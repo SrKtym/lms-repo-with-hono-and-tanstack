@@ -19,6 +19,7 @@ import {
 } from "@/hooks/courses";
 import { queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
+import { DefaultChip } from "@lms-repo/ui/components/chip";
 
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
@@ -67,6 +68,7 @@ function RouteComponent() {
 	};
 
 	const totalCredits = courses.reduce((acc, course) => acc + course.credits, 0);
+	const everyCourseIsChecked = courses.every((course) => course.isChecked);
 
 	return (
 		<div className="space-y-6 p-3">
@@ -126,7 +128,7 @@ function RouteComponent() {
 													<p className="max-sm:hidden">登録を確定する</p>
 												</DefaultButton>
 											}
-											onConfirm={() => handleCheckCourse.mutate}
+											onConfirm={handleCheckCourse.mutate}
 											title="登録講義の確認"
 										>
 											<div className="space-y-4">
@@ -176,6 +178,12 @@ function RouteComponent() {
 												</div>
 											</div>
 										</ConfirmationModal>
+									)}
+									{everyCourseIsChecked && (
+										<DefaultChip color="success">
+											<Check />
+											登録完了
+										</DefaultChip>
 									)}
 								</m.div>
 							</m.div>

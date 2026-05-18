@@ -81,6 +81,7 @@ export async function fetchRegisteredCourses(userId: string) {
 			requirements: courses.requirements,
 			classRoom: courses.classRoom,
 			professor: user.name,
+			isChecked: registration.isChecked,
 		})
 		.from(courses)
 		.innerJoin(registration, eq(courses.id, registration.courseId))
