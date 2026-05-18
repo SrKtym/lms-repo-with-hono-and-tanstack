@@ -1,9 +1,21 @@
 // マイページレイアウト
-
 import { authClient } from "@lms-repo/auth/web";
+import { StudentsModal } from "@lms-repo/ui/components/modals/students-modal";
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "@/components/header";
+import { CreateStudentDataForm } from "@/components/private/students/create-student-data-form";
 import { queryClient } from "@/lib/query-client";
+import { fetchStudentDataQueryFn } from "@/utils/query-utils";
+
+// Queryキャッシュの永続化（ブラウザのlocalStorageに保存）設定
+const asyncStoragePersister = createAsyncStoragePersister({
+	storage: localStorage,
+	key: "react-query-cache", // キャッシュのキーを明示的に指定
+	serialize: (data) => JSON.stringify(data), // シリアライズ方法を明示
+	deserialize: (data) => JSON.parse(data), // デシリアライズ方法を明示
+});
 
 export const Route = createFileRoute("/_my-page")({
 	component: MyPageLayoutComponent,
@@ -28,27 +40,57 @@ export const Route = createFileRoute("/_my-page")({
 
 		return { session };
 	},
-	loader: ({ context }) => {
+	loader: async ({ context }) => {
 		if (!context.session.data?.user) {
 			throw new Error("User not found");
 		}
-		const { email, name, image } = context.session.data.user;
-		return { email, name, image };
+		const { email, name, image, role } = context.session.data.user;
+
+		const studentData = await queryClient.ensureQueryData({
+			queryKey: ["studentData"],
+			queryFn: async () => {
+				const data = await fetchStudentDataQueryFn();
+				return data;
+			},
+			staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+			gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+		});
+		return { email, name, image, role, studentData };
 	},
 });
 
 function MyPageLayoutComponent() {
-	const userData = Route.useLoaderData();
+	const { studentData, role, ...userData } = Route.useLoaderData();
 
 	return (
 		<div className="relative min-h-screen">
 			{/* Background - inherited from __root.tsx */}
 			{/* Content */}
 			<div className="relative z-10 flex flex-col">
-				<Header {...userData} />
-				<main className="flex-1">
-					<Outlet />
-				</main>
+				<PersistQueryClientProvider
+					client={queryClient}
+					persistOptions={{
+						persister: asyncStoragePersister,
+						dehydrateOptions: {
+							// 成功したクエリのみを永続化
+							shouldDehydrateQuery: (query) => query.state.status === "success",
+							// ミューテーションは永続化しない
+							shouldDehydrateMutation: () => false,
+						},
+						// 24時間キャッシュを保持
+						maxAge: 1000 * 60 * 60 * 24,
+					}}
+				>
+					<Header {...userData} />
+					{role === "student" && studentData.length === 0 ? (
+						<StudentsModal isOpen={true}>
+							<CreateStudentDataForm />
+						</StudentsModal>
+					) : null}
+					<main className="flex-1">
+						<Outlet />
+					</main>
+				</PersistQueryClientProvider>
 			</div>
 		</div>
 	);
