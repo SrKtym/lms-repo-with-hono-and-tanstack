@@ -1,12 +1,19 @@
 import { client } from "../lib/hono-client";
 
-// 登録済みコース取得用のqueryFn
+// 登録済み講義取得用のqueryFn
 export const fetchRegisteredCoursesQueryFn = async () => {
 	const res = await client.api.courses.registered.$get();
 	const data = await res.json();
 	if ("message" in data) {
 		return [];
 	}
+	return data;
+};
+
+// 修了済み講義の総単位数取得用のqueryFn
+export const fetchCompletedCoursesQueryFn = async () => {
+	const res = await client.api.courses.completed.$get();
+	const data = await res.json();
 	return data;
 };
 
@@ -73,4 +80,11 @@ export const fetchNotificationsQueryFn = async () => {
 		createdAt: new Date(notification.createdAt),
 	}));
 	return parsedData;
+};
+
+// 学生データ取得用のqueryFn
+export const fetchStudentDataQueryFn = async () => {
+	const res = await client.api.students.$get();
+	const data = await res.json();
+	return data;
 };

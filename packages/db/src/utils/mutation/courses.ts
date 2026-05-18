@@ -1,8 +1,15 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, lte, or } from "drizzle-orm";
 import { db } from "../../index";
-import { courses, registration } from "../../schema";
+import {
+	courses,
+	departments,
+	faculties,
+	registration,
+	students,
+} from "../../schema";
 import type { Courses } from "../../types";
 
+// 講義を作成する
 export async function createCourses(coursesData: Courses) {
 	try {
 		await db.insert(courses).values(coursesData).onConflictDoNothing();
@@ -12,9 +19,10 @@ export async function createCourses(coursesData: Courses) {
 	}
 }
 
+// 講義を登録する
 export async function registerCourses(courseId: string, userId: string) {
 	try {
-		return await db.transaction(async (tx) => {
+		const result = await db.transaction(async (tx) => {
 			// 登録しようとする講義の曜日・時限を取得
 			const targetCourse = await tx
 				.select({
@@ -25,22 +33,83 @@ export async function registerCourses(courseId: string, userId: string) {
 				.where(eq(courses.id, courseId))
 				.limit(1);
 
-			if (targetCourse.length === 0) {
+			if (targetCourse.length === 0 || !targetCourse[0]) {
 				return { message: "指定された講義が見つかりません。", status: 404 };
 			}
 
-			const courseData = targetCourse[0];
-			if (!courseData) {
-				return { message: "指定された講義が見つかりません。", status: 404 };
+			const { weekdays, period } = targetCourse[0];
+
+			// 同じ曜日・時限に必修の講義があるか確認する
+			const requiredCourses = await tx
+				.select({
+					courseId: courses.id,
+					courseName: courses.name,
+					targetGrade: courses.targetGrade,
+				})
+				.from(courses)
+				.innerJoin(departments, eq(courses.departmentId, departments.id))
+				.innerJoin(faculties, eq(departments.facultyId, faculties.id))
+				.innerJoin(students, lte(courses.targetGrade, students.grade))
+				.where(
+					and(
+						eq(courses.weekdays, weekdays),
+						eq(courses.period, period),
+						eq(courses.requirements, "必修"),
+						or(
+							eq(departments.id, students.departmentId),
+							eq(departments.name, "全学科"),
+						),
+					),
+				);
+
+			// 同じ曜日・時限に必修の講義が1件だけ存在する場合
+			if (requiredCourses.length === 1) {
+				const requiredCourseName = requiredCourses[0]?.courseName;
+				const selectedIsNotRequied = requiredCourses.some(
+					(course) => course.courseId !== courseId,
+				);
+				if (requiredCourseName && selectedIsNotRequied) {
+					return {
+						message: `同じ曜日・時限に必修の講義「${requiredCourseName}」が存在するため、登録できません。`,
+						status: 400,
+					};
+				}
 			}
-			const { weekdays, period } = courseData;
+
+			// 同じ曜日・時限に必修の講義が2件以上存在する場合、最も対象学年が低い講義を優先して登録する
+			if (requiredCourses.length > 1) {
+				const minGrade = Math.min(...requiredCourses.map((c) => c.targetGrade));
+				const lowestGradeCourses = requiredCourses.filter(
+					(course) => course.targetGrade === minGrade,
+				);
+				const selectedIsRequired = requiredCourses.some(
+					(course) => course.courseId === courseId,
+				);
+				const selectedIsLowest = lowestGradeCourses.some(
+					(course) => course.courseId === courseId,
+				);
+
+				if (!selectedIsRequired) {
+					return {
+						message:
+							"同じ曜日・時限に複数の必修の講義が存在するため、登録できません。",
+						status: 400,
+					};
+				}
+				if (selectedIsRequired && !selectedIsLowest) {
+					return {
+						message:
+							"必修講義が複数存在する場合は、対象学年がより低い方を優先して登録してください。",
+						status: 400,
+					};
+				}
+			}
 
 			// ユーザーが既に同じ曜日・時限の講義を登録していないかチェック
 			// 1つのクエリで重複チェックと講義名取得を同時に行う
 			const conflictingCourse = await tx
 				.select({
 					courseId: courses.id,
-					courseName: courses.name,
 				})
 				.from(registration)
 				.innerJoin(courses, eq(registration.courseId, courses.id))
@@ -53,12 +122,31 @@ export async function registerCourses(courseId: string, userId: string) {
 				)
 				.limit(1);
 
+			// 重複がある場合、登録講義を更新する
 			if (conflictingCourse.length > 0) {
 				const existingCourse = conflictingCourse[0];
-				if (existingCourse) {
+				if (existingCourse?.courseId === courseId) {
 					return {
-						message: `この曜日・時限には既に「${existingCourse.courseName}」を登録しています。重複登録はできません。`,
-						status: 409,
+						message: "既に同じ講義を登録しています。",
+						status: 400,
+					};
+				}
+				if (existingCourse) {
+					await tx
+						.update(registration)
+						.set({
+							courseId,
+						})
+						.where(
+							and(
+								eq(registration.courseId, existingCourse.courseId),
+								eq(registration.userId, userId),
+							),
+						);
+
+					return {
+						message: "登録講義の更新に成功しました。",
+						status: 200,
 					};
 				}
 			}
@@ -74,12 +162,29 @@ export async function registerCourses(courseId: string, userId: string) {
 
 			return { message: "講義の登録に成功しました。", status: 201 };
 		});
+
+		return result;
 	} catch (error) {
-		console.error("講義登録エラー:", error);
 		return { message: "講義の登録に失敗しました。", status: 500 };
 	}
 }
 
+// 登録講義を確定する
+export async function checkCourse(userId: string) {
+	try {
+		await db
+			.update(registration)
+			.set({
+				isChecked: true,
+			})
+			.where(eq(registration.userId, userId));
+		return { message: "登録講義の確定に成功しました。", status: 200 };
+	} catch (error) {
+		return { message: "登録講義の確定に失敗しました。", status: 500 };
+	}
+}
+
+// 講義を登録解除する
 export async function unregisterCourse(courseId: string, userId: string) {
 	try {
 		await db

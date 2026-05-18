@@ -2,11 +2,13 @@ import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import type { Courses } from "@lms-repo/db/types";
 import {
+	checkCourse,
 	createCourses,
 	registerCourses,
 	unregisterCourse,
 } from "@lms-repo/db/utils/mutation/courses";
 import {
+	fetchCompletedCourses,
 	fetchCourses,
 	fetchRegisteredCourses,
 } from "@lms-repo/db/utils/query/courses";
@@ -31,11 +33,18 @@ export const coursesRoute = new Hono<{
 		"/:weekdays/:period",
 		zValidator("param", z.custom<Pick<Courses, "weekdays" | "period">>()),
 		async (c) => {
+			const { userId } = c.get("session");
 			const { weekdays, period } = c.req.valid("param");
-			const result = await fetchCourses(weekdays, period);
+			const result = await fetchCourses(weekdays, period, userId);
 			return c.json(result, 200);
 		},
 	)
+	// 修了した講義の単位数の合計を取得
+	.get("/completed", async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchCompletedCourses(userId);
+		return c.json(result, 200);
+	})
 	.basePath("/registered")
 	// 講義登録
 	.post(
@@ -53,6 +62,12 @@ export const coursesRoute = new Hono<{
 		const { userId } = c.get("session");
 		const result = await fetchRegisteredCourses(userId);
 		return c.json(result, 200);
+	})
+	// 登録講義の確定
+	.patch("/", async (c) => {
+		const { userId } = c.get("session");
+		const result = await checkCourse(userId);
+		return c.json(result);
 	})
 	// 登録講義削除
 	.delete(
