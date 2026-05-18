@@ -6,10 +6,12 @@ import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { CourseDrawer } from "@lms-repo/ui/components/drawer";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { ConfirmationModal } from "@lms-repo/ui/components/modals/confirmation-modal";
+import { Toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { z } from "zod";
 import {
+	useCheckCourse,
 	useRegisterCourse,
 	useRegisteredCourses,
 	useSearchCourses,
@@ -23,7 +25,7 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 	validateSearch:
 		z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
 	loader: async () => {
-		// キャッシュからデータ取得（既にプリフェッチ済み）
+		// キャッシュがあればキャッシュからデータ取得
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: fetchRegisteredCoursesQueryFn,
@@ -50,6 +52,9 @@ function RouteComponent() {
 	// 講義の登録
 	const handleRegisterCourses = useRegisterCourse(searchCourses);
 
+	// 登録講義の確定
+	const handleCheckCourse = useCheckCourse();
+
 	// 講義の削除
 	const handleDeleteCourse = useUnregisterCourse();
 
@@ -65,6 +70,7 @@ function RouteComponent() {
 
 	return (
 		<div className="space-y-6 p-3">
+			<Toast.Provider placement="top" />
 			<LazyMotionProvider>
 				<m.div
 					initial={{ opacity: 0, y: -20 }}
@@ -120,7 +126,7 @@ function RouteComponent() {
 													<p className="max-sm:hidden">登録を確定する</p>
 												</DefaultButton>
 											}
-											onConfirm={() => {}}
+											onConfirm={() => handleCheckCourse.mutate}
 											title="登録講義の確認"
 										>
 											<div className="space-y-4">
