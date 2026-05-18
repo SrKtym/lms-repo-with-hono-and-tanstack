@@ -25,7 +25,7 @@ export const assignmentFormat = [
 export const announcementType = ["資料", "アンケート", "その他"] as const;
 const statusList = ["未提出", "提出済み", "評定済み"] as const;
 
-// 学生テーブル
+// 学生テーブル(check制約を記述するため非正規化)
 export const students = pgTable(
 	"students",
 	{
@@ -36,10 +36,22 @@ export const students = pgTable(
 		departmentId: text("department_id")
 			.notNull()
 			.references(() => departments.id, { onDelete: "cascade" }),
+		departmentName: text("department_name").notNull(),
+		requiredCredits: integer("required_credits").notNull(),
 	},
 	(t) => [
 		index("students_department_id_idx").on(t.departmentId),
 		check("grade_range", sql`${t.grade} >= 1 AND ${t.grade} <= 4`),
+		check(
+			"required_credits_by_department",
+			sql`
+				CASE
+					WHEN ${t.departmentName} = '医学科' THEN ${t.requiredCredits} = 200
+					WHEN ${t.departmentName} IN ('看護学科', '保健学科') THEN ${t.requiredCredits} = 140
+					ELSE ${t.requiredCredits} = 130
+				END
+			`,
+		),
 	],
 );
 
@@ -116,25 +128,19 @@ export const courses = pgTable(
 );
 
 // 履修登録テーブル
-export const registration = pgTable(
-	"registration",
-	{
-		userId: text("user_id").notNull(),
-		courseId: text("course_id").notNull(),
-	},
-	(t) => [
-		index("registration_course_id_idx").on(t.courseId),
-		primaryKey({ columns: [t.userId, t.courseId] }),
-		foreignKey({
-			columns: [t.courseId],
-			foreignColumns: [courses.id],
-		}).onDelete("cascade"),
-		foreignKey({
-			columns: [t.userId],
-			foreignColumns: [user.id],
-		}).onDelete("cascade"),
-	],
-);
+export const registration = pgTable("registration", {
+	id: text("id")
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	userId: text("user_id")
+		.notNull()
+		.references(() => user.id, { onDelete: "cascade" }),
+	courseId: text("course_id")
+		.notNull()
+		.references(() => courses.id, { onDelete: "cascade" }),
+	isChecked: boolean("is_checked").notNull().default(false),
+	isCompleted: boolean("is_completed").notNull().default(false),
+});
 
 // お知らせテーブル
 export const announcements = pgTable(

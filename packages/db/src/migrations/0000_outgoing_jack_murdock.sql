@@ -162,9 +162,11 @@ CREATE TABLE "professors" (
 );
 --> statement-breakpoint
 CREATE TABLE "registration" (
+	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"course_id" text NOT NULL,
-	CONSTRAINT "registration_user_id_course_id_pk" PRIMARY KEY("user_id","course_id")
+	"is_checked" boolean DEFAULT false NOT NULL,
+	"is_completed" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "schedules" (
@@ -183,7 +185,16 @@ CREATE TABLE "students" (
 	"id" text PRIMARY KEY NOT NULL,
 	"grade" integer NOT NULL,
 	"department_id" text NOT NULL,
-	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4)
+	"department_name" text NOT NULL,
+	"required_credits" integer DEFAULT 130 NOT NULL,
+	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4),
+	CONSTRAINT "required_credits_by_department" CHECK (
+				CASE
+					WHEN "students"."department_name" = '医学科' THEN "students"."required_credits" = 200
+					WHEN "students"."department_name" IN ('看護学科', '保健学科') THEN "students"."required_credits" = 140
+					ELSE "students"."required_credits" = 130
+				END
+			)
 );
 --> statement-breakpoint
 CREATE TABLE "submission_status" (
@@ -222,8 +233,8 @@ ALTER TABLE "courses" ADD CONSTRAINT "courses_professor_id_professors_id_fk" FOR
 ALTER TABLE "departments" ADD CONSTRAINT "departments_faculty_id_faculties_id_fk" FOREIGN KEY ("faculty_id") REFERENCES "public"."faculties"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "professors" ADD CONSTRAINT "professors_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "professors" ADD CONSTRAINT "professors_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "registration" ADD CONSTRAINT "registration_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "registration" ADD CONSTRAINT "registration_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schedules" ADD CONSTRAINT "schedules_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "students" ADD CONSTRAINT "students_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "students" ADD CONSTRAINT "students_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -242,7 +253,6 @@ CREATE INDEX "courses_weekdays_period_idx" ON "courses" USING btree ("weekdays",
 CREATE INDEX "departments_faculty_id_idx" ON "departments" USING btree ("faculty_id");--> statement-breakpoint
 CREATE INDEX "notifications_receiver_is_read_idx" ON "notifications" USING btree ("receiver","is_read");--> statement-breakpoint
 CREATE INDEX "professors_department_id_idx" ON "professors" USING btree ("department_id");--> statement-breakpoint
-CREATE INDEX "registration_course_id_idx" ON "registration" USING btree ("course_id");--> statement-breakpoint
 CREATE INDEX "schedules_created_by_idx" ON "schedules" USING btree ("created_by");--> statement-breakpoint
 CREATE INDEX "students_department_id_idx" ON "students" USING btree ("department_id");--> statement-breakpoint
 CREATE INDEX "text_submissions_created_by_idx" ON "text_submissions" USING btree ("created_by");
