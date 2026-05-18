@@ -63,6 +63,71 @@ export function TabsForCourseInfo({
 	);
 }
 
+export function TabsForProfile({
+	profileTab,
+	accountSettingsTab,
+	notificationSettingsTab,
+}: {
+	profileTab: React.ReactNode;
+	accountSettingsTab: React.ReactNode;
+	notificationSettingsTab: React.ReactNode;
+}) {
+	return (
+		<>
+			<div className="md:hidden">
+				<Tabs variant="secondary">
+					<Tabs.ListContainer>
+						<Tabs.List aria-label="Options">
+							<Tabs.Tab id="profile">
+								プロフィール
+								<Tabs.Indicator />
+							</Tabs.Tab>
+							<Tabs.Tab id="account-settings">
+								アカウント設定
+								<Tabs.Indicator />
+							</Tabs.Tab>
+							<Tabs.Tab id="notification-settings">
+								通知設定
+								<Tabs.Indicator />
+							</Tabs.Tab>
+						</Tabs.List>
+					</Tabs.ListContainer>
+					<Tabs.Panel id="profile">{profileTab}</Tabs.Panel>
+					<Tabs.Panel id="account-settings">{accountSettingsTab}</Tabs.Panel>
+					<Tabs.Panel id="notification-settings">
+						{notificationSettingsTab}
+					</Tabs.Panel>
+				</Tabs>
+			</div>
+			<div className="hidden md:block">
+				<Tabs variant="secondary" orientation="vertical">
+					<Tabs.ListContainer>
+						<Tabs.List aria-label="Options" className="gap-6">
+							<Tabs.Tab id="profile">
+								プロフィール
+								<Tabs.Indicator />
+							</Tabs.Tab>
+							<Tabs.Tab id="account-settings">
+								アカウント設定
+								<Tabs.Indicator />
+							</Tabs.Tab>
+							<Tabs.Tab id="notification-settings">
+								通知設定
+								<Tabs.Indicator />
+							</Tabs.Tab>
+						</Tabs.List>
+					</Tabs.ListContainer>
+					<Tabs.Panel id="profile">{profileTab}</Tabs.Panel>
+					<Tabs.Panel id="account-settings">{accountSettingsTab}</Tabs.Panel>
+					<Tabs.Panel id="notification-settings">
+						{notificationSettingsTab}
+					</Tabs.Panel>
+				</Tabs>
+			</div>
+		</>
+	);
+}
+
 // 2FA用タブ
 export function TabsFor2fa({
 	otpForm,
