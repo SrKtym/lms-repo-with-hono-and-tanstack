@@ -1,7 +1,7 @@
 import { Modal } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { DAYS } from "../../lib/utils";
-import { CancelButton } from "../button";
+import { CancelButton, OutlineButton } from "../button";
 import { Loader } from "../loader";
 
 interface CourseSelectionModalProps {
@@ -35,24 +35,21 @@ export function CourseSelectionModal({
 						<Modal.Body>
 							<div className="max-h-64 space-y-2 overflow-auto p-2">
 								{isPending ? (
-									<Loader className="min-h-auto" />
+									<Loader />
 								) : (
 									availableCourses.map((course) => (
-										<div
+										<OutlineButton
 											key={course.id}
-											onClick={() => onCourseSelect(course)}
-											className="cursor-pointer rounded-lg border border-gray-200 p-3 hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-700"
+											size="lg"
+											onPress={() => onCourseSelect(course)}
 										>
-											<div className="font-medium text-gray-900 dark:text-white">
+											<p className="font-medium text-gray-900 dark:text-white">
 												{course.name}
-											</div>
-											<div className="text-gray-600 text-sm dark:text-gray-400">
-												<p>
-													{DAYS[Number.parseInt(selectedCell.day)]}・
-													{selectedCell.period}
-												</p>
-											</div>
-										</div>
+											</p>
+											<p className="text-gray-600 text-sm dark:text-gray-400">
+												{course.targetGrade}年・{course.requirements}
+											</p>
+										</OutlineButton>
 									))
 								)}
 								{!isPending && availableCourses.length === 0 && (

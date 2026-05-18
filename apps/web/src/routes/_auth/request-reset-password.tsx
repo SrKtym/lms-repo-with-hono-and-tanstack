@@ -30,12 +30,8 @@ function RouteComponent() {
 						redirectTo: "/reset-password",
 					},
 					{
-						onError: (error) => {
-							const errorMessage =
-								error.error.message ||
-								error.error.statusText ||
-								"リセットメールの送信に失敗しました";
-							setError(errorMessage);
+						onError: () => {
+							setError("リセットメールの送信に失敗しました");
 						},
 					},
 				);

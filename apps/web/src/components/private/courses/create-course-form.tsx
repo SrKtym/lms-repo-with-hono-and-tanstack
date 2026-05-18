@@ -57,7 +57,7 @@ export function CreateCourseForm() {
 	});
 
 	return (
-		<DefaultModal 
+		<DefaultModal
 			triggerButton={<DefaultButton>講義を作成</DefaultButton>}
 			heading="講義の作成"
 		>

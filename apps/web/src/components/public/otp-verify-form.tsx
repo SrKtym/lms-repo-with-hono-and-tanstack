@@ -1,19 +1,15 @@
 import { authClient } from "@lms-repo/auth/web";
-import { DefaultButton } from "@lms-repo/ui/components/button";
+import { DefaultButton, OutlineButton } from "@lms-repo/ui/components/button";
 import { InputOTPFor2fa } from "@lms-repo/ui/components/input-otp";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import z from "zod";
 
-interface OtpVerifyFormProps {
-	onSuccess?: () => void;
-	isActive?: boolean;
-}
-
 export default function OtpVerifyForm({
 	onSuccess,
-	isActive = true,
-}: OtpVerifyFormProps) {
+}: {
+	onSuccess: () => void;
+}) {
 	const [error, setError] = useState<string>("");
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [otpSent, setOtpSent] = useState(false);
@@ -28,15 +24,26 @@ export default function OtpVerifyForm({
 				setError("");
 				setIsSuccess(false);
 
-				await authClient.twoFactor.verifyOtp({
-					code: value.otp,
-				});
-
-				setIsSuccess(true);
-				onSuccess?.();
+				await authClient.twoFactor.verifyOtp(
+					{
+						code: value.otp,
+					},
+					{
+						onSuccess: () => {
+							setIsSuccess(true);
+							onSuccess();
+						},
+						onError: () => {
+							setError(
+								"認証コードが正しくありません。もう一度お試しください。",
+							);
+						},
+					},
+				);
 			} catch (err) {
-				setError("認証コードが正しくありません。もう一度お試しください。");
-				console.error("OTP verification error:", err);
+				setError(
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				);
 			}
 		},
 		validators: {
@@ -50,16 +57,26 @@ export default function OtpVerifyForm({
 		onSubmit: async () => {
 			try {
 				setError("");
-				await authClient.twoFactor.sendOtp();
-				setOtpSent(true);
-				startResendTimer();
+				await authClient.twoFactor.sendOtp({
+					fetchOptions: {
+						onSuccess: () => {
+							setOtpSent(true);
+							startResendTimer();
+						},
+						onError: () => {
+							setError("メールの送信に失敗しました。もう一度お試しください。");
+						},
+					},
+				});
 			} catch (err) {
-				setError("コードの送信に失敗しました。もう一度お試しください。");
-				console.error("OTP send error:", err);
+				setError(
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				);
 			}
 		},
 	});
 
+	// メール再送信までのカウントダウン
 	const startResendTimer = () => {
 		setResendTimer(60);
 		const timer = setInterval(() => {
@@ -73,6 +90,7 @@ export default function OtpVerifyForm({
 		}, 1000);
 	};
 
+	// メール再送信
 	const handleResendOtp = () => {
 		if (resendTimer === 0) {
 			sendOtpForm.handleSubmit();
@@ -80,7 +98,7 @@ export default function OtpVerifyForm({
 	};
 
 	return (
-		<div className="w-full space-y-6">
+		<div className="flex w-full flex-col items-center space-y-6">
 			{/* ヘッダー情報 */}
 			<div className="text-center">
 				<div className="mb-4 flex justify-center">
@@ -113,11 +131,9 @@ export default function OtpVerifyForm({
 				<div className="space-y-4">
 					<sendOtpForm.Subscribe>
 						{({ canSubmit, isSubmitting }) => (
-							<DefaultButton
-								type="button"
-								onClick={() => sendOtpForm.handleSubmit()}
-								className="w-full"
-								isDisabled={!canSubmit || isSubmitting || !isActive}
+							<OutlineButton
+								onPress={() => sendOtpForm.handleSubmit()}
+								isDisabled={!canSubmit || isSubmitting}
 							>
 								{isSubmitting ? (
 									<>
@@ -145,7 +161,7 @@ export default function OtpVerifyForm({
 								) : (
 									"認証コードを送信"
 								)}
-							</DefaultButton>
+							</OutlineButton>
 						)}
 					</sendOtpForm.Subscribe>
 				</div>
@@ -200,7 +216,7 @@ export default function OtpVerifyForm({
 							<DefaultButton
 								type="submit"
 								className="w-full"
-								isDisabled={!canSubmit || isSubmitting || !isActive}
+								isDisabled={!canSubmit || isSubmitting}
 							>
 								{isSubmitting ? (
 									<>
@@ -234,16 +250,14 @@ export default function OtpVerifyForm({
 
 					{/* 再送信ボタン */}
 					<div className="text-center">
-						<button
-							type="button"
-							onClick={handleResendOtp}
-							disabled={resendTimer > 0 || !isActive}
-							className="text-blue-600 text-sm hover:text-blue-500 disabled:cursor-not-allowed disabled:text-gray-400 dark:text-blue-400 dark:hover:text-blue-300"
+						<OutlineButton
+							onPress={handleResendOtp}
+							isDisabled={resendTimer > 0}
 						>
 							{resendTimer > 0
 								? `再送信可能まで ${resendTimer} 秒`
 								: "認証コードを再送信"}
-						</button>
+						</OutlineButton>
 					</div>
 				</form>
 			)}

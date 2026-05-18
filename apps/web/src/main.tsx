@@ -7,7 +7,7 @@ import { routeTree } from "./routeTree.gen";
 const router = createRouter({
 	routeTree,
 	defaultPreload: "intent",
-	defaultPendingComponent: () => <Loader />,
+	defaultPendingComponent: () => <Loader className="min-h-screen" />,
 });
 
 declare module "@tanstack/react-router" {

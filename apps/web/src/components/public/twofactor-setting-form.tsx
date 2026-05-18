@@ -4,6 +4,7 @@ import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
+import { useState } from "react";
 
 export function TwoFactorSettingForm({
 	selected,
@@ -33,11 +34,12 @@ export function TwoFactorSettingForm({
 		},
 	});
 
+	const [error, setError] = useState<string>("");
+
 	// 2要素認証の有効化
 	const handleValidTwofactor = async (password: string) => {
 		const { data, error } = await authClient.twoFactor.enable({ password });
 		if (data) {
-			console.log(data.totpURI);
 			setTotpURI(data.totpURI);
 		} else {
 			console.error(error);
@@ -53,8 +55,8 @@ export function TwoFactorSettingForm({
 					navigate({
 						to: "/add-passkey",
 					}),
-				onError: ({ error }) => {
-					console.error(error.message || error.statusText);
+				onError: () => {
+					setError("2要素認証の無効化に失敗しました");
 				},
 			},
 		);
@@ -108,6 +110,16 @@ export function TwoFactorSettingForm({
 				)}
 			</form.Field>
 
+			{/* Error Message */}
+			{error && (
+				<div
+					id="2fa-setting-error"
+					className="rounded-md bg-red-50 p-3 dark:bg-red-900/20"
+				>
+					<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+				</div>
+			)}
+
 			<div className="flex justify-end gap-2">
 				<CancelButton slot="close">キャンセル</CancelButton>
 				<form.Subscribe>
@@ -116,7 +128,7 @@ export function TwoFactorSettingForm({
 							type="submit"
 							isDisabled={!canSubmit || isSubmitting}
 						>
-							{isSubmitting ? "処理中..." : "作成"}
+							{isSubmitting ? "処理中..." : "確認"}
 						</DefaultButton>
 					)}
 				</form.Subscribe>

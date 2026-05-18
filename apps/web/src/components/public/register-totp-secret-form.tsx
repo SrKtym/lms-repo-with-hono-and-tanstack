@@ -7,9 +7,9 @@ import { useNavigate } from "@tanstack/react-router";
 import { z } from "zod";
 
 export function RegisterTotpSecretForm({ totpURI }: { totpURI: string }) {
-    const navigate = useNavigate({
-        from: "/",
-    });
+	const navigate = useNavigate({
+		from: "/",
+	});
 	const form = useForm({
 		defaultValues: {
 			totpCode: "",
@@ -30,19 +30,25 @@ export function RegisterTotpSecretForm({ totpURI }: { totpURI: string }) {
 
 	// TOTPシークレットキーの登録
 	const handleRegisterTotpSecret = async (code: string) => {
-		await authClient.twoFactor.verifyTotp({ code }, {
-            onSuccess: () =>
-                navigate({
-                    to: "/add-passkey",
-                }),
-            onError: (error) => {
-                console.error(error.error.message || error.error.statusText);
-            },
-        });
+		await authClient.twoFactor.verifyTotp(
+			{ code },
+			{
+				onSuccess: () =>
+					navigate({
+						to: "/add-passkey",
+					}),
+				onError: ({ error }) => {
+					console.error(error.message || error.statusText);
+				},
+			},
+		);
 	};
 
 	return (
 		<div className="flex flex-col items-center gap-4">
+			<p>
+				以下のQRコードを認証アプリで読み取り、表示されているセキュリティコードを入力してください。
+			</p>
 			<QRCodeComponent value={totpURI} />
 			<form
 				onSubmit={(e) => {

@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { Check } from "@lms-repo/ui/assets/icons/check";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { Loader } from "@lms-repo/ui/components/loader";
@@ -7,7 +8,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
 import { SocialLoginField } from "@/components/public/social-login-field";
-import { Check } from "@lms-repo/ui/assets/icons/check";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: RouteComponent,
@@ -42,8 +42,8 @@ function RouteComponent() {
 								email: value.email,
 							});
 						},
-						onError: (error) => {
-							setError(error.error.message);
+						onError: () => {
+							setError("メールアドレスまたはパスワードが正しくありません");
 						},
 					},
 				);
@@ -65,7 +65,7 @@ function RouteComponent() {
 	});
 
 	if (isPending) {
-		return <Loader />;
+		return <Loader className="min-h-screen" />;
 	}
 
 	return (
@@ -191,7 +191,11 @@ function RouteComponent() {
 				{success.isSuccess && (
 					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
 						<div className="flex items-center gap-2">
-							<Check width={32} height={32}/>
+							<Check
+								width={32}
+								height={32}
+								className="text-green-600 dark:text-green-400"
+							/>
 							<p className="text-green-600 text-sm dark:text-green-400">
 								{success.email}{" "}
 								への確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。

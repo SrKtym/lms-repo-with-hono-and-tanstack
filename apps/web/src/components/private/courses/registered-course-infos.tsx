@@ -2,8 +2,7 @@ import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/u
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
-import { Settings } from "@lms-repo/ui/assets/icons/settings";
-import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
+import { CancelButton } from "@lms-repo/ui/components/button";
 import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-card";
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
@@ -64,23 +63,14 @@ export default function RegisteredCourseInfos({
 					</Link>
 				</div>
 				<div className="container relative z-10 mx-auto max-w-screen-xl p-6">
-					<div className="flex flex-col items-start justify-between md:flex-row md:items-end">
-						<div className="text-white">
-							<h1 className="font-medium text-2xl md:text-3xl">
-								{courseWithCoverImage.name}
-							</h1>
-							<p className="mt-1 text-white/80">
-								{courseWithCoverImage.classRoom}
-							</p>
-							<p className="text-white/80">{courseWithCoverImage.professor}</p>
-						</div>
-
-						<div className="mt-4 md:mt-0">
-							<DefaultButton className="border-white/20 bg-white/10 text-white backdrop-blur-sm hover:bg-white/20">
-								<Settings width={16} height={16} />
-								設定
-							</DefaultButton>
-						</div>
+					<div className="text-white">
+						<h1 className="font-medium text-2xl md:text-3xl">
+							{courseWithCoverImage.name}
+						</h1>
+						<p className="mt-1 text-white/80">
+							{courseWithCoverImage.classRoom}
+						</p>
+						<p className="text-white/80">{courseWithCoverImage.professor}</p>
 					</div>
 				</div>
 			</div>

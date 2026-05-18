@@ -5,15 +5,11 @@ import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import z from "zod";
 
-interface TotpVerifyFormProps {
-	onSuccess?: () => void;
-	isActive?: boolean;
-}
-
 export default function TotpVerifyForm({
 	onSuccess,
-	isActive = true,
-}: TotpVerifyFormProps) {
+}: {
+	onSuccess: () => void;
+}) {
 	const [error, setError] = useState<string>("");
 	const [isSuccess, setIsSuccess] = useState(false);
 
@@ -26,15 +22,25 @@ export default function TotpVerifyForm({
 				setError("");
 				setIsSuccess(false);
 
-				await authClient.twoFactor.verifyTotp({
-					code: value.totp,
-				});
-
-				setIsSuccess(true);
-				onSuccess?.();
+				await authClient.twoFactor.verifyTotp(
+					{
+						code: value.totp,
+					},
+					{
+						onSuccess: () => {
+							setIsSuccess(true);
+							onSuccess();
+						},
+						onError: () => {
+							setError(
+								"認証コードが正しくありません。もう一度お試しください。",
+							);
+						},
+					},
+				);
 			} catch (err) {
 				setError(
-					"認証コードが正しくありません。お手数ですが再度試行してください。",
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 				);
 			}
 		},
@@ -45,18 +51,8 @@ export default function TotpVerifyForm({
 		},
 	});
 
-	const handleResendCode = async () => {
-		try {
-			// TOTPの場合は再送信の概念がないが、ユーザーにフィードバックを提供
-			setError("");
-			setIsSuccess(false);
-		} catch (err) {
-			console.error("Resend error:", err);
-		}
-	};
-
 	return (
-		<div className="w-full space-y-6">
+		<div className="flex w-full flex-col items-center space-y-6">
 			{/* ヘッダー情報 */}
 			<div className="text-center">
 				<div className="mb-4 flex justify-center">
@@ -135,7 +131,7 @@ export default function TotpVerifyForm({
 						<DefaultButton
 							type="submit"
 							className="w-full"
-							isDisabled={!canSubmit || isSubmitting || !isActive}
+							isDisabled={!canSubmit || isSubmitting}
 						>
 							{isSubmitting ? (
 								<>

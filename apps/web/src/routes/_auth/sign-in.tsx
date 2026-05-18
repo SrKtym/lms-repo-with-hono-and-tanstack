@@ -50,13 +50,19 @@ function RouteComponent() {
 						password: value.password,
 					},
 					{
-						onSuccess: () => {
+						onSuccess: async (ctx) => {
+							if (ctx.data.twoFactorRedirect) {
+								navigate({
+									to: "/verify-otp",
+								});
+								return;
+							}
 							navigate({
 								to: "/dashboard",
 							});
 						},
-						onError: (error) => {
-							console.error(error.error.message || error.error.statusText);
+						onError: () => {
+							setError("メールアドレスまたはパスワードが正しくありません");
 						},
 					},
 				);
@@ -75,7 +81,7 @@ function RouteComponent() {
 	});
 
 	if (isPending) {
-		return <Loader />;
+		return <Loader className="min-h-screen" />;
 	}
 
 	return (

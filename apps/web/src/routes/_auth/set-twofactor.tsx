@@ -16,11 +16,11 @@ export const Route = createFileRoute("/_auth/set-twofactor")({
 			queryKey: ["session"],
 			queryFn: async () => {
 				const res = await authClient.getSession();
-				return res
+				return res;
 			},
 			staleTime: 5 * 60 * 1000, // 5 minutes
 			gcTime: 10 * 60 * 1000, // 10 minutes
-		})
+		});
 
 		return { session };
 	},
@@ -51,7 +51,11 @@ function RouteComponent() {
 				</Link>
 				<DefaultModal
 					triggerButton={<DefaultButton>続行</DefaultButton>}
-					heading={totpURI ? "TOTPシークレットキーの登録" : "本人確認のためパスワードを入力してください"}
+					heading={
+						totpURI
+							? "TOTPシークレットキーの登録"
+							: "本人確認のためパスワードを入力してください"
+					}
 				>
 					{totpURI ? (
 						<RegisterTotpSecretForm totpURI={totpURI} />
@@ -64,5 +68,5 @@ function RouteComponent() {
 				</DefaultModal>
 			</div>
 		</div>
-	)
+	);
 }
