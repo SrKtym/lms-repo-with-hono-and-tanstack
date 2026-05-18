@@ -1,6 +1,5 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
-import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import {
 	AnimatePresence,
@@ -81,16 +80,11 @@ export function NotificationsListCard({
 											</span>
 										)}
 									</div>
-									<div className="flex items-center gap-2">
-										{unreadCount > 0 && (
-											<DefaultButton size="sm" onPress={markAllAsRead}>
-												すべて既読
-											</DefaultButton>
-										)}
-										<DefaultButton aria-label="settings" isIconOnly>
-											<Settings width={24} height={24} />
+									{unreadCount > 0 && (
+										<DefaultButton size="sm" onPress={markAllAsRead}>
+											すべて既読
 										</DefaultButton>
-									</div>
+									)}
 								</div>
 							</div>
 

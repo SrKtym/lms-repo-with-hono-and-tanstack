@@ -1,6 +1,5 @@
 import { TabsFor2fa } from "@lms-repo/ui/components/tabs";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
 import OtpVerifyForm from "@/components/public/otp-verify-form";
 import TotpVerifyForm from "@/components/public/totp-verify-form";
 
@@ -10,15 +9,10 @@ export const Route = createFileRoute("/_auth/verify-otp")({
 
 function RouteComponent() {
 	const navigate = useNavigate();
-	const [activeTab, setActiveTab] = useState<"totp" | "otp">("totp");
 
 	const handleVerificationSuccess = () => {
 		// 2FA authentication success, redirect to dashboard
 		navigate({ to: "/dashboard" });
-	};
-
-	const handleTabChange = (tab: "totp" | "otp") => {
-		setActiveTab(tab);
 	};
 
 	return (
@@ -33,19 +27,8 @@ function RouteComponent() {
 			</div>
 
 			<TabsFor2fa
-				totpForm={
-					<TotpVerifyForm
-						onSuccess={handleVerificationSuccess}
-						isActive={activeTab === "totp"}
-					/>
-				}
-				otpForm={
-					<OtpVerifyForm
-						onSuccess={handleVerificationSuccess}
-						isActive={activeTab === "otp"}
-					/>
-				}
-				// onTabChange={handleTabChange}
+				totpForm={<TotpVerifyForm onSuccess={handleVerificationSuccess} />}
+				otpForm={<OtpVerifyForm onSuccess={handleVerificationSuccess} />}
 			/>
 		</div>
 	);

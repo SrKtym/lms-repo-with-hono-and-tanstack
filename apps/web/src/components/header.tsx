@@ -58,7 +58,7 @@ export function Header({ email, name, image }: UserData) {
 				</nav>
 				<div className="flex items-center gap-2">
 					<ThemeSwitch />
-					<DropdownMenuForAccount onLogout={handleLogout}>
+					<DropdownMenuForAccount LinkComponent={Link} onLogout={handleLogout}>
 						<DefaultAvatar src={image} userName={name} />
 						<div className="flex flex-col text-start text-foreground max-sm:hidden">
 							<h3>{name}</h3>

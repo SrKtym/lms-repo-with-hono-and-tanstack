@@ -14,9 +14,9 @@ export function RadioGroupFor2fa({
 		"inline-flex m-0 items-center justify-between flex-row-reverse cursor-pointer rounded-lg gap-4 p-4 border-2 data-[selected=true]:border-accent";
 
 	return (
-		<RadioGroup className="gap-4" isRequired value={value} onChange={onChange}>
-			<Label className="font-bold text-xl">2要素認証の設定</Label>
-			<Description className="flex items-center gap-1">
+		<RadioGroup className="gap-4" value={value} onChange={onChange}>
+			<Label className="text-center font-bold text-2xl">2要素認証の設定</Label>
+			<Description className="flex items-center gap-1 text-lg">
 				現在の状態:{" "}
 				{isValid ? (
 					<p className="text-success">有効</p>

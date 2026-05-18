@@ -5,6 +5,7 @@ import { List } from "@lms-repo/ui/assets/icons/list";
 import { Menu } from "@lms-repo/ui/assets/icons/menu";
 import { MessagesSquare } from "@lms-repo/ui/assets/icons/messages-square";
 import { SquarePlus } from "@lms-repo/ui/assets/icons/square-plus";
+import type { LinkComponentProps } from "../../lib/utils";
 import { DropdownButton } from "../button";
 
 export const links = [
@@ -39,10 +40,7 @@ export const links = [
 export function DropdownMenuForNavLink({
 	LinkComponent,
 }: {
-	LinkComponent: React.ComponentType<{
-		to: string;
-		children: React.ReactNode;
-	}>;
+	LinkComponent: React.ComponentType<LinkComponentProps>;
 }) {
 	return (
 		<Dropdown>

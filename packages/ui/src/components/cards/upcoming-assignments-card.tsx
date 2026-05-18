@@ -5,9 +5,7 @@ import { MSExcel } from "@lms-repo/ui/assets/icons/ms-excel";
 import { MSPowerpoint } from "@lms-repo/ui/assets/icons/ms-powerpoint";
 import { MSword } from "@lms-repo/ui/assets/icons/ms-word";
 import { PDFFile } from "@lms-repo/ui/assets/icons/pdf-file";
-import { Settings } from "@lms-repo/ui/assets/icons/settings";
 import { useState } from "react";
-import { DefaultButton } from "../button";
 import { DefaultSelect } from "../select";
 import { BaseCard } from "./base-card";
 
@@ -76,21 +74,16 @@ export function UpcomingAssignmentsCard({
 							</span>
 						)}
 					</div>
-					<div className="flex items-center gap-2">
-						<DefaultSelect
-							className="w-32"
-							items={periodOptions}
-							value={selectedPeriod}
-							onChange={(value) => {
-								if (typeof value === "string") {
-									setSelectedPeriod(value);
-								}
-							}}
-						/>
-						<DefaultButton aria-label="settings" isIconOnly size="sm">
-							<Settings width={20} height={20} />
-						</DefaultButton>
-					</div>
+					<DefaultSelect
+						className="w-32"
+						items={periodOptions}
+						value={selectedPeriod}
+						onChange={(value) => {
+							if (typeof value === "string") {
+								setSelectedPeriod(value);
+							}
+						}}
+					/>
 				</div>
 
 				{filteredAssignments.length > 0 ? (
