@@ -14,6 +14,7 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MyPageSchedulesRouteImport } from './routes/_my-page/schedules'
 import { Route as MyPageRegisterCoursesRouteImport } from './routes/_my-page/register-courses'
+import { Route as MyPageProfileRouteImport } from './routes/_my-page/profile'
 import { Route as MyPageNotificationsRouteImport } from './routes/_my-page/notifications'
 import { Route as MyPageDashboardRouteImport } from './routes/_my-page/dashboard'
 import { Route as AuthVerifyOtpRouteImport } from './routes/_auth/verify-otp'
@@ -46,6 +47,11 @@ const MyPageSchedulesRoute = MyPageSchedulesRouteImport.update({
 const MyPageRegisterCoursesRoute = MyPageRegisterCoursesRouteImport.update({
   id: '/register-courses',
   path: '/register-courses',
+  getParentRoute: () => MyPageRouteRoute,
+} as any)
+const MyPageProfileRoute = MyPageProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => MyPageRouteRoute,
 } as any)
 const MyPageNotificationsRoute = MyPageNotificationsRouteImport.update({
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/dashboard': typeof MyPageDashboardRoute
   '/notifications': typeof MyPageNotificationsRoute
+  '/profile': typeof MyPageProfileRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
   '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/verify-otp': typeof AuthVerifyOtpRoute
   '/dashboard': typeof MyPageDashboardRoute
   '/notifications': typeof MyPageNotificationsRoute
+  '/profile': typeof MyPageProfileRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
   '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
   '/_my-page/dashboard': typeof MyPageDashboardRoute
   '/_my-page/notifications': typeof MyPageNotificationsRoute
+  '/_my-page/profile': typeof MyPageProfileRoute
   '/_my-page/register-courses': typeof MyPageRegisterCoursesRoute
   '/_my-page/schedules': typeof MyPageSchedulesRoute
   '/_my-page/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/dashboard'
     | '/notifications'
+    | '/profile'
     | '/register-courses'
     | '/schedules'
     | '/course-list/{-$course-id}/{-$content-id}'
@@ -179,6 +189,7 @@ export interface FileRouteTypes {
     | '/verify-otp'
     | '/dashboard'
     | '/notifications'
+    | '/profile'
     | '/register-courses'
     | '/schedules'
     | '/course-list/{-$course-id}/{-$content-id}'
@@ -196,6 +207,7 @@ export interface FileRouteTypes {
     | '/_auth/verify-otp'
     | '/_my-page/dashboard'
     | '/_my-page/notifications'
+    | '/_my-page/profile'
     | '/_my-page/register-courses'
     | '/_my-page/schedules'
     | '/_my-page/course-list/{-$course-id}/{-$content-id}'
@@ -242,6 +254,13 @@ declare module '@tanstack/react-router' {
       path: '/register-courses'
       fullPath: '/register-courses'
       preLoaderRoute: typeof MyPageRegisterCoursesRouteImport
+      parentRoute: typeof MyPageRouteRoute
+    }
+    '/_my-page/profile': {
+      id: '/_my-page/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof MyPageProfileRouteImport
       parentRoute: typeof MyPageRouteRoute
     }
     '/_my-page/notifications': {
@@ -344,6 +363,7 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 interface MyPageRouteRouteChildren {
   MyPageDashboardRoute: typeof MyPageDashboardRoute
   MyPageNotificationsRoute: typeof MyPageNotificationsRoute
+  MyPageProfileRoute: typeof MyPageProfileRoute
   MyPageRegisterCoursesRoute: typeof MyPageRegisterCoursesRoute
   MyPageSchedulesRoute: typeof MyPageSchedulesRoute
   MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route: typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
@@ -352,6 +372,7 @@ interface MyPageRouteRouteChildren {
 const MyPageRouteRouteChildren: MyPageRouteRouteChildren = {
   MyPageDashboardRoute: MyPageDashboardRoute,
   MyPageNotificationsRoute: MyPageNotificationsRoute,
+  MyPageProfileRoute: MyPageProfileRoute,
   MyPageRegisterCoursesRoute: MyPageRegisterCoursesRoute,
   MyPageSchedulesRoute: MyPageSchedulesRoute,
   MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route:
