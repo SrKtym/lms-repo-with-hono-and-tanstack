@@ -9,9 +9,16 @@ export {
 	type ZonedDateTime,
 } from "@internationalized/date";
 
+// Linkコンポーネントのprops型
+export interface LinkComponentProps {
+	to: string;
+	children: React.ReactNode;
+}
+
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
+// ファイルの形式に基づく配色
 export function getFileColor(type: string) {
 	switch (type) {
 		case "pdf":
@@ -22,14 +29,25 @@ export function getFileColor(type: string) {
 			return "success";
 		case "powerpoint":
 			return "warning";
-		case "text":
-			return "default";
 		default:
 			return "default";
 	}
 }
 
-export function formatTimestamp(date: Date): string {
+// 講義の履修要件に基づく配色
+export function getColorbyRequirements(requirements: string) {
+	switch (requirements) {
+		case "必修":
+			return "bg-danger/30";
+		case "選択必修":
+			return "bg-warning/30";
+		default:
+			return "bg-blue-500/30";
+	}
+}
+
+// 通知受信からの経過時間
+export function formatTimestamp(date: Date) {
 	const now = new Date();
 	const diff = now.getTime() - date.getTime();
 	const minutes = Math.floor(diff / (1000 * 60));

@@ -7,7 +7,8 @@ import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { DAYS } from "../../lib/utils";
+import { useEffect, useState } from "react";
+import { DAYS, getColorbyRequirements } from "../../lib/utils";
 import { OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
 import { BaseCard } from "./base-card";
@@ -42,6 +43,17 @@ export function TimeTableCard({
 
 	const uniqueDays = [...new Set(timeSlots.map((slot) => slot.day))];
 	const uniquePeriods = [...new Set(timeSlots.map((slot) => slot.period))];
+
+	const [hasHover, setHasHover] = useState<boolean>(false);
+	const [openPopover, setOpenPopover] = useState<Record<string, boolean>>({
+		"": false,
+	});
+
+	// メディアクエリで hover の可否を判定
+	useEffect(() => {
+		const mql = window.matchMedia("(hover: hover)");
+		setHasHover(mql.matches);
+	}, []);
 
 	return (
 		<BaseCard className="p-6">
@@ -96,7 +108,13 @@ export function TimeTableCard({
 														animate={{ opacity: 1, scale: 1 }}
 														exit={{ opacity: 0, scale: 0.8 }}
 														transition={{ duration: 0.2 }}
-														className="group relative h-full rounded border p-2 text-xs hover:shadow-md"
+														className={`${getColorbyRequirements(targetSlot.course.requirements)} group relative h-full rounded border p-2 text-xs hover:shadow-md`}
+														onClick={() =>
+															setOpenPopover((prev) => ({
+																[targetSlot?.course?.id || ""]:
+																	!prev[targetSlot?.course?.id || ""],
+															}))
+														}
 													>
 														<div className="truncate font-semibold text-xs">
 															{targetSlot.course.name}
@@ -108,40 +126,90 @@ export function TimeTableCard({
 															{targetSlot.course.credits}単位
 														</div>
 														{/* Action buttons */}
-														<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
-															<div className="flex gap-1">
-																<CourseSelectionModal
-																	triggerButton={
-																		<OutlineButton
-																			className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
-																			size="sm"
-																			onPress={() => onCellClick?.(day, period)}
-																		>
-																			<Edit width={10} height={10} />
-																		</OutlineButton>
-																	}
-																	onCourseSelect={(course) =>
-																		onCourseSelect(course.id)
-																	}
-																	selectedCell={{
-																		day: day.toString(),
-																		period: period.toString(),
-																	}}
-																	availableCourses={availableCourses}
-																	isPending={isPending}
-																/>
-																<OutlineButton
-																	className="rounded-full bg-red-500 text-white hover:bg-red-600"
-																	size="sm"
-																	onPress={() =>
-																		targetSlot.course &&
-																		onDeleteCourse(targetSlot.course.id)
-																	}
-																>
-																	<Trash width={12} height={12} />
-																</OutlineButton>
+														{/* タッチデバイスでない場合は表示しない */}
+														{hasHover && (
+															<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
+																<div className="flex gap-1">
+																	<CourseSelectionModal
+																		triggerButton={
+																			<OutlineButton
+																				className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
+																				size="sm"
+																				onPress={() =>
+																					onCellClick?.(day, period)
+																				}
+																			>
+																				<Edit width={10} height={10} />
+																			</OutlineButton>
+																		}
+																		onCourseSelect={(course) =>
+																			onCourseSelect(course.id)
+																		}
+																		selectedCell={{
+																			day: day.toString(),
+																			period: period.toString(),
+																		}}
+																		availableCourses={availableCourses}
+																		isPending={isPending}
+																	/>
+																	<OutlineButton
+																		className="rounded-full bg-red-500 text-white hover:bg-red-600"
+																		size="sm"
+																		onPress={() =>
+																			targetSlot.course &&
+																			onDeleteCourse(targetSlot.course.id)
+																		}
+																	>
+																		<Trash width={12} height={12} />
+																	</OutlineButton>
+																</div>
 															</div>
-														</div>
+														)}
+														{/* タッチデバイスの場合に表示 */}
+														{!hasHover &&
+															targetSlot.course.id in openPopover && (
+																<m.div
+																	initial={{ opacity: 0 }}
+																	animate={{ opacity: 1 }}
+																	transition={{ duration: 0.2 }}
+																	className="absolute top-1 right-1"
+																>
+																	<div className="flex gap-1">
+																		<CourseSelectionModal
+																			triggerButton={
+																				<OutlineButton
+																					className="rounded-full bg-blue-500 text-white"
+																					size="sm"
+																					onPress={() =>
+																						onCellClick?.(day, period)
+																					}
+																				>
+																					<Edit width={10} height={10} />
+																				</OutlineButton>
+																			}
+																			onCourseSelect={(course) =>
+																				onCourseSelect(course.id)
+																			}
+																			selectedCell={{
+																				day: day.toString(),
+																				period: period.toString(),
+																			}}
+																			availableCourses={availableCourses}
+																			isPending={isPending}
+																		/>
+																		<OutlineButton
+																			className="rounded-full bg-red-500 text-white"
+																			size="sm"
+																			onPress={() =>
+																				targetSlot.course &&
+																				onDeleteCourse(targetSlot.course.id)
+																			}
+																		>
+																			<Trash width={12} height={12} />
+																		</OutlineButton>
+																	</div>
+																</m.div>
+															)}
 													</m.div>
 												) : (
 													<CourseSelectionModal
@@ -203,7 +271,7 @@ export function TimeTableCard({
 									initial={{ scale: 0 }}
 									animate={{ scale: 1 }}
 									transition={{ duration: 0.3, delay: 0.6 + index * 0.1 }}
-									className="h-4 w-4 rounded-full bg-blue-500"
+									className={`h-4 w-4 rounded-full ${getColorbyRequirements(course.requirements)}`}
 								/>
 							</m.div>
 						))}
