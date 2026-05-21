@@ -2,6 +2,7 @@ import type { Session } from "@lms-repo/auth/server";
 import { auth } from "@lms-repo/auth/server";
 import { createMiddleware } from "hono/factory";
 
+// 認証ミドルウェア
 export const authMiddleware = createMiddleware<{
 	Variables: {
 		user: Session["user"];
