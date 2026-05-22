@@ -12,7 +12,7 @@
 		}
 	},
 	"scripts": {
-		"email:dev": "email dev --dir ./src/components/private/emails --port 4000"
+		"email:dev": "email dev --dir ./src/components --port 4000"
 	},
 	"dependencies": {
 		"@lms-repo/env": "workspace:*",

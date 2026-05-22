@@ -38,7 +38,7 @@
 		"docker:down": "docker-compose -f docker/docker-compose.dev.yml down",
 		"docker:restart": "docker-compose -f docker/docker-compose.dev.yml restart",
 		"docker:exec": "docker-compose -f docker/docker-compose.dev.yml exec web /bin/bash",
-		"email:dev": "turbo -F web email:dev",
+		"email:dev": "turbo -F @lms-repo/emails email:dev",
 		"check": "biome check --write ."
 	},
 	"dependencies": {
