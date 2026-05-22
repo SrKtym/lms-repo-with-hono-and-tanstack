@@ -60,6 +60,7 @@ export function CreateStudentDataForm() {
 								max: 4,
 								step: 1,
 								value: field.state.value,
+								"aria-describedby": "grade-error",
 								onBlur: field.handleBlur,
 								onChange: (e) => field.handleChange(Number(e.target.value)),
 							}}
@@ -68,6 +69,11 @@ export function CreateStudentDataForm() {
 								children: "学年",
 							}}
 						/>
+						{field.state.meta.errors.map((error) => (
+							<p id="grade-error" key={error?.message} className="text-red-500">
+								{error?.message}
+							</p>
+						))}
 					</div>
 				)}
 			</form.Field>
@@ -83,12 +89,18 @@ export function CreateStudentDataForm() {
 									}
 								},
 								items: departments,
+								ariaLabel: "select department",
 							}}
 							labelProps={{
 								htmlFor: field.name,
 								children: "学科",
 							}}
 						/>
+						{field.state.meta.errors.map((error) => (
+							<p key={error?.message} className="text-red-500">
+								{error?.message}
+							</p>
+						))}
 					</div>
 				)}
 			</form.Field>

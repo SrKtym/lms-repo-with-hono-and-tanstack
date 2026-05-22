@@ -74,6 +74,7 @@ export function CreateAssignmentForm() {
 									name: field.name,
 									type: "text",
 									value: field.state.value,
+									"aria-describedby": "title-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -83,7 +84,11 @@ export function CreateAssignmentForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p
+									id="title-error"
+									key={error?.message}
+									className="text-red-500"
+								>
 									{error?.message}
 								</p>
 							))}
@@ -100,6 +105,7 @@ export function CreateAssignmentForm() {
 									name: field.name,
 									type: "text",
 									value: field.state.value,
+									"aria-describedby": "description-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -109,7 +115,11 @@ export function CreateAssignmentForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p
+									id="description-error"
+									key={error?.message}
+									className="text-red-500"
+								>
 									{error?.message}
 								</p>
 							))}
@@ -129,6 +139,7 @@ export function CreateAssignmentForm() {
 									max: 100,
 									step: 1,
 									value: field.state.value,
+									"aria-describedby": "points-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(Number(e.target.value)),
 								}}
@@ -138,7 +149,11 @@ export function CreateAssignmentForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p
+									id="points-error"
+									key={error?.message}
+									className="text-red-500"
+								>
 									{error?.message}
 								</p>
 							))}

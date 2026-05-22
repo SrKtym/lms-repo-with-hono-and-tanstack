@@ -25,11 +25,8 @@ export function CreateAnnouncementForm() {
 		},
 		validators: {
 			onSubmit: z.object({
-				title: z.string().min(1, "タイトルは必須です"),
-				description: z
-					.string()
-					.min(1, "説明は必須です")
-					.max(500, "説明は500文字以内で入力してください"),
+				title: z.string().min(1),
+				description: z.string().min(1).max(500),
 				type: z.enum(announcementType),
 				courseId: z.string().min(1),
 			}),
@@ -63,6 +60,7 @@ export function CreateAnnouncementForm() {
 									name: field.name,
 									type: "text",
 									value: field.state.value,
+									"aria-describedby": "title-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -72,7 +70,11 @@ export function CreateAnnouncementForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p
+									id="title-error"
+									key={error?.message}
+									className="text-red-500"
+								>
 									{error?.message}
 								</p>
 							))}
@@ -91,6 +93,7 @@ export function CreateAnnouncementForm() {
 									minLength: 1,
 									maxLength: 500,
 									value: field.state.value,
+									"aria-describedby": "description-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
 								}}
@@ -100,7 +103,11 @@ export function CreateAnnouncementForm() {
 								}}
 							/>
 							{field.state.meta.errors.map((error) => (
-								<p key={error?.message} className="text-red-500">
+								<p
+									id="description-error"
+									key={error?.message}
+									className="text-red-500"
+								>
 									{error?.message}
 								</p>
 							))}

@@ -175,6 +175,7 @@ export function CreateScheduleForm() {
 						{({ canSubmit, isSubmitting }) => (
 							<DefaultButton
 								type="submit"
+								slot="close"
 								isDisabled={!canSubmit || isSubmitting}
 							>
 								{isSubmitting ? "処理中..." : "作成"}
