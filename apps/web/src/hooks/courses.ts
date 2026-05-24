@@ -43,16 +43,15 @@ export const useRegisteredCourses = (
 export const useSearchCourses = (
 	weekdays?: number,
 	period?: number,
-	offset?: number,
 ) => {
 	return useInfiniteQuery({
 		queryKey: ["search-courses", weekdays, period],
-		queryFn: async () => {
+		queryFn: async ({ pageParam }) => {
 			return fetchCoursesByWeekdayAndPeriodQueryFn(
 				weekdays,
 				period,
 				10, // limit
-				(offset || 0) * 10, // offset
+				pageParam * 10, // offset
 			);
 		},
 		initialPageParam: 0,
