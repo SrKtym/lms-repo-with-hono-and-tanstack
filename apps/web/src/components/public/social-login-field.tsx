@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { env } from "@lms-repo/env/web";
 import { GithubLogo } from "@lms-repo/ui/assets/icons/github-logo";
 import { GoogleLogo } from "@lms-repo/ui/assets/icons/google-logo";
 import { PasskeyLogo } from "@lms-repo/ui/assets/icons/passkey-logo";
@@ -12,11 +13,13 @@ export function SocialLoginField({
 	onPasskeySignIn?: () => void;
 }) {
 	const location = useLocation();
-	const providers = ["google", "github", "X"] as const;
+	const providers = ["google", "github", "twitter"] as const;
+
+	// ソーシャルログイン
 	const handleSocialSignIn = async (provider: (typeof providers)[number]) => {
 		await authClient.signIn.social({
 			provider: provider,
-			callbackURL: "/dashboard",
+			callbackURL: `${env.VITE_CLIENT_URL}/dashboard`,
 			errorCallbackURL: "/sign-in",
 		});
 	};
@@ -37,7 +40,7 @@ export function SocialLoginField({
 					>
 						{provider === "google" && <GoogleLogo />}
 						{provider === "github" && <GithubLogo />}
-						{provider === "X" && <XLogo />}
+						{provider === "twitter" && <XLogo />}
 						<p>
 							{provider.charAt(0).toUpperCase() + provider.slice(1)}でログイン
 						</p>
