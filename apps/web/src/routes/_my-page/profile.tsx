@@ -1,11 +1,14 @@
+import { authClient } from "@lms-repo/auth/web";
 import { AccountSettings } from "@lms-repo/ui/components/surfaces/account-settings";
 import { NotificationSettings } from "@lms-repo/ui/components/surfaces/notification-settings";
 import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-info";
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useUpdateEmailNotificationSettings } from "@/hooks/settings";
 import { queryClient } from "@/lib/query-client";
 import {
 	fetchCompletedCoursesQueryFn,
+	fetchEmailNotificationSettingsQueryFn,
 	fetchStudentDataQueryFn,
 } from "@/utils/query-utils";
 
@@ -17,26 +20,27 @@ export const Route = createFileRoute("/_my-page/profile")({
 		}
 		const { email, name, image, role } = context.session.data.user;
 
-		const [studentData, completedCourses] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["studentData"],
-				queryFn: async () => {
-					const data = await fetchStudentDataQueryFn();
-					return data;
-				},
-				staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-				gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
-			}),
-			queryClient.ensureQueryData({
-				queryKey: ["totalCredits"],
-				queryFn: async () => {
-					const data = await fetchCompletedCoursesQueryFn();
-					return data;
-				},
-				staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-				gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
-			}),
-		]);
+		const [studentData, completedCourses, emailNotificationSettings] =
+			await Promise.all([
+				queryClient.ensureQueryData({
+					queryKey: ["studentData"],
+					queryFn: fetchStudentDataQueryFn,
+					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+				}),
+				queryClient.ensureQueryData({
+					queryKey: ["totalCredits"],
+					queryFn: fetchCompletedCoursesQueryFn,
+					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+				}),
+				queryClient.ensureQueryData({
+					queryKey: ["email-notification-settings"],
+					queryFn: fetchEmailNotificationSettingsQueryFn,
+					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+				}),
+			]);
 
 		return {
 			email,
@@ -45,18 +49,30 @@ export const Route = createFileRoute("/_my-page/profile")({
 			role,
 			studentData,
 			completedCourses,
+			emailNotificationSettings,
 		};
 	},
 });
 
 function RouteComponent() {
-	const { studentData, completedCourses, ...userData } = Route.useLoaderData();
+	const {
+		studentData,
+		completedCourses,
+		emailNotificationSettings,
+		...userData
+	} = Route.useLoaderData();
 	const user = { ...userData, ...completedCourses[0], ...studentData[0] };
 
-	const handleNotificationSettingsChange = (settings: any) => {
-		// 通知設定を保存
-		console.log("通知設定更新:", settings);
+	// アカウント削除処理
+	const handleDeleteAccount = async () => {
+		await authClient.deleteUser({
+			callbackURL: "/",
+		});
 	};
+
+	// メール通知設定変更時の処理
+	const { mutate: updateEmailNotificationSettings } =
+		useUpdateEmailNotificationSettings();
 
 	return (
 		<div className="container mx-auto max-w-6xl px-4 py-8">
@@ -73,10 +89,16 @@ function RouteComponent() {
 			{/* タブコンテンツ */}
 			<TabsForProfile
 				profileTab={<UserProfileInfo user={user} />}
-				accountSettingsTab={<AccountSettings LinkComponent={Link} />}
+				accountSettingsTab={
+					<AccountSettings
+						LinkComponent={Link}
+						onDeleteAccount={handleDeleteAccount}
+					/>
+				}
 				notificationSettingsTab={
 					<NotificationSettings
-						onSettingsChange={handleNotificationSettingsChange}
+						initialSettings={emailNotificationSettings}
+						onSettingsChange={updateEmailNotificationSettings}
 					/>
 				}
 			/>
