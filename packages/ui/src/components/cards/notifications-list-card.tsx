@@ -1,5 +1,6 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
+import { Close } from "@lms-repo/ui/assets/icons/close";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import {
 	AnimatePresence,
@@ -9,7 +10,7 @@ import {
 } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { CancelButton, DefaultButton } from "../button";
+import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 import { NotificationsModal } from "../modals/notifications-modal";
 
@@ -88,15 +89,14 @@ export function NotificationsListCard({
 								</div>
 							</div>
 
-							<div className="h-[380px] overflow-y-auto">
-								{notifications.length === 0 && (
+							<div className="max-h-[480px] overflow-y-auto">
+								{notifications.length === 0 ? (
 									<m.div
 										initial={{ opacity: 0 }}
 										animate={{ opacity: 1 }}
 										transition={{ duration: 0.3 }}
-										className="relative flex h-full flex-col items-center justify-center text-gray-500 dark:text-gray-400"
+										className="relative flex h-full flex-col items-center justify-center p-12 text-gray-500 dark:text-gray-400"
 									>
-										<div className="absolute inset-0" />
 										<div className="relative z-10">
 											<p className="font-medium">通知はありません</p>
 											<p className="mt-1 text-sm">
@@ -104,74 +104,73 @@ export function NotificationsListCard({
 											</p>
 										</div>
 									</m.div>
-								)}
-
-								<m.div
-									className="space-y-3 p-4"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ duration: 0.3 }}
-								>
-									<AnimatePresence initial={false} mode="popLayout">
-										{notifications.map((notification) => (
-											<m.div
-												key={notification.id}
-												layoutId={notification.id.toString()}
-												layout
-												initial={{ opacity: 0, y: 50, scale: 0.3 }}
-												animate={{ opacity: 1, y: 0, scale: 1 }}
-												transition={{ duration: 0.3 }}
-												exit={{
-													opacity: 0,
-													scale: 0.5,
-												}}
-												whileHover={{ scale: 1.02 }}
-												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
-													!notification.isRead ? "font-semibold" : ""
-												} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
-												onClick={() => {
-													markAsRead(notification.id);
-													setSelectedNotification(notification.id);
-												}}
-											>
-												<div className="flex items-start gap-3">
-													{/* <span className="mt-1 flex-shrink-0 text-base">
-														{getNotificationIcon(notification.type)}
-													</span> */}
-													<div className="min-w-0 flex-1">
-														<div className="mb-1 flex items-center justify-between gap-2">
-															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
-																{notification.title}
-															</h3>
-															<span className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
-																{formatTimestamp(notification.createdAt)}
-															</span>
-														</div>
-														<p className="line-clamp-2 text-gray-600 text-xs dark:text-gray-400">
-															{notification.description}
-														</p>
-													</div>
-												</div>
-
-												{!notification.isRead && (
-													<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
-												)}
-
-												<CancelButton
-													aria-label="delete notification"
-													className="absolute right-1 bottom-1 rounded-full opacity-0 transition-opacity hover:opacity-100"
-													size="sm"
-													isIconOnly
-													onPress={() => {
-														deleteNotification(notification.id);
+								) : (
+									<m.div
+										className="space-y-3 p-4"
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										transition={{ duration: 0.3 }}
+									>
+										<AnimatePresence initial={false} mode="popLayout">
+											{notifications.map((notification) => (
+												<m.div
+													key={notification.id}
+													layoutId={notification.id.toString()}
+													layout
+													initial={{ opacity: 0, y: 50, scale: 0.3 }}
+													animate={{ opacity: 1, y: 0, scale: 1 }}
+													transition={{ duration: 0.3 }}
+													exit={{
+														opacity: 0,
+														scale: 0.5,
+													}}
+													whileHover={{ scale: 1.02 }}
+													className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
+														!notification.isRead ? "font-semibold" : ""
+													} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
+													onClick={() => {
+														markAsRead(notification.id);
+														setSelectedNotification(notification.id);
 													}}
 												>
-													<span className="text-lg">×</span>
-												</CancelButton>
-											</m.div>
-										))}
-									</AnimatePresence>
-								</m.div>
+													<div className="flex items-start gap-3">
+														{/* <span className="mt-1 flex-shrink-0 text-base">
+															{getNotificationIcon(notification.type)}
+														</span> */}
+														<div className="min-w-0 flex-1">
+															<div className="mb-1 flex items-center justify-between gap-2">
+																<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
+																	{notification.title}
+																</h3>
+																<span className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
+																	{formatTimestamp(notification.createdAt)}
+																</span>
+															</div>
+															<p className="line-clamp-2 whitespace-pre-wrap text-gray-600 text-xs dark:text-gray-400">
+																{notification.description}
+															</p>
+														</div>
+													</div>
+
+													{!notification.isRead && (
+														<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
+													)}
+													<m.button
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.9 }}
+														onClick={(e) => {
+															e.stopPropagation();
+															deleteNotification(notification.id);
+														}}
+														className="absolute right-1 bottom-1 rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+													>
+														<Close width={18} height={18} />
+													</m.button>
+												</m.div>
+											))}
+										</AnimatePresence>
+									</m.div>
+								)}
 							</div>
 						</div>
 					</BaseCard>
