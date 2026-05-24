@@ -1,6 +1,12 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../index";
-import { departments, faculties, students } from "../../schema";
+import {
+	departments,
+	faculties,
+	registration,
+	students,
+	user,
+} from "../../schema";
 
 // 学籍情報の取得
 export async function fetchStudentData(userId: string) {
@@ -22,4 +28,25 @@ export async function fetchStudentData(userId: string) {
 
 export type FetchStudentDataReturnType = Awaited<
 	ReturnType<typeof fetchStudentData>
+>;
+
+// 講義を登録しているメンバーの取得
+export async function fetchMembersByCourseId(courseId: string) {
+	const members = await db
+		.select({
+			id: students.id,
+			name: user.name,
+			grade: students.grade,
+			avatar: user.image,
+		})
+		.from(students)
+		.innerJoin(user, eq(students.id, user.id))
+		.innerJoin(registration, eq(students.id, registration.userId))
+		.where(eq(registration.courseId, courseId));
+
+	return members;
+}
+
+export type FetchMembersFromUserCoursesReturnType = Awaited<
+	ReturnType<typeof fetchMembersByCourseId>
 >;

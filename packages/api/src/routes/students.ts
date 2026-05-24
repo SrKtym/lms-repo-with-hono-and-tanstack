@@ -1,7 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import { registerStudentData } from "@lms-repo/db/utils/mutation/students";
-import { fetchStudentData } from "@lms-repo/db/utils/query/students";
+import {
+	fetchMembersByCourseId,
+	fetchStudentData,
+} from "@lms-repo/db/utils/query/students";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -34,8 +37,14 @@ export const studentsRoute = new Hono<{
 		},
 	)
 	// 学生のデータ取得
-	.get("/", async (c) => {
+	.get("/data", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchStudentData(userId);
+		return c.json(result);
+	})
+	// 講義を登録しているメンバーの取得
+	.get("/:courseId", async (c) => {
+		const { courseId } = c.req.param();
+		const result = await fetchMembersByCourseId(courseId);
 		return c.json(result);
 	});

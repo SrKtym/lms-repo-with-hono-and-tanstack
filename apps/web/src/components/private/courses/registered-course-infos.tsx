@@ -2,21 +2,17 @@ import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/u
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
+import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
 import { CancelButton } from "@lms-repo/ui/components/button";
 import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-card";
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
+import { Loader } from "@lms-repo/ui/components/loader";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
+import { useMembersByCourseId } from "@/hooks/students";
 import { CreateAnnouncementForm } from "./create-announcement-form";
 import { CreateAssignmentForm } from "./create-assignment-form";
-
-const mockMembers = [
-	{ id: 1, name: "Alice Johnson", role: "Student", avatar: "AJ" },
-	{ id: 2, name: "Bob Smith", role: "Student", avatar: "BS" },
-	{ id: 3, name: "Carol Davis", role: "Teaching Assistant", avatar: "CD" },
-	{ id: 4, name: "Dr. Smith", role: "Instructor", avatar: "DS" },
-];
 
 interface RegisteredCourseInfosProps {
 	courseWithCoverImage?: FetchRegisteredCoursesReturnType[number] & {
@@ -24,17 +20,20 @@ interface RegisteredCourseInfosProps {
 	};
 	announcements: FetchAnnouncementsFromUserCoursesReturnType;
 	assignments: FetchAssignmentsFromUserCoursesReturnType;
+	courseId: string;
 }
 
 export default function RegisteredCourseInfos({
 	courseWithCoverImage,
 	announcements,
 	assignments,
+	courseId,
 }: RegisteredCourseInfosProps) {
 	if (!courseWithCoverImage) {
 		return <div>講義が見つかりません。</div>;
 	}
-	const isTeacher = true;
+
+	const { data: members = [], isPending } = useMembersByCourseId(courseId);
 
 	return (
 		<>
@@ -85,7 +84,7 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										お知らせ
 									</h2>
-									{isTeacher && <CreateAnnouncementForm />}
+									<CreateAnnouncementForm />
 								</div>
 
 								{announcements.length > 0 ? (
@@ -112,7 +111,7 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										課題
 									</h2>
-									{isTeacher && <CreateAssignmentForm />}
+									<CreateAssignmentForm />
 								</div>
 
 								{assignments.length > 0 ? (
@@ -149,27 +148,25 @@ export default function RegisteredCourseInfos({
 									コースメンバー
 								</h2>
 
-								{mockMembers.length > 0 ? (
+								{isPending ? (
+									<Loader />
+								) : members.length > 0 ? (
 									<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-										{mockMembers.map((member) => (
+										{members.map((member) => (
 											<div
 												key={member.id}
 												className="rounded-lg border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800"
 											>
 												<div className="flex items-center space-x-3">
 													<div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-														<span className="font-medium text-blue-600 dark:text-blue-400">
-															{member.avatar}
-														</span>
+														<DefaultAvatar
+															src={member.avatar}
+															userName={member.name}
+														/>
 													</div>
-													<div>
-														<h3 className="font-medium text-gray-900 dark:text-gray-100">
-															{member.name}
-														</h3>
-														<p className="text-gray-500 text-sm dark:text-gray-400">
-															{member.role}
-														</p>
-													</div>
+													<h3 className="font-medium text-gray-900 dark:text-gray-100">
+														{member.name}
+													</h3>
 												</div>
 											</div>
 										))}
