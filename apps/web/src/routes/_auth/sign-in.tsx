@@ -28,8 +28,8 @@ function RouteComponent() {
 						to: "/dashboard",
 					});
 				},
-				onError: (ctx) => {
-					console.error(ctx.error.error.message || ctx.error.error.statusText);
+				onError: () => {
+					setError("パスキー認証に失敗しました");
 				},
 			},
 		});
@@ -160,7 +160,7 @@ function RouteComponent() {
 					)}
 				</form.Field>
 
-				{/* Error Message */}
+				{/* エラーメッセージ */}
 				{error && (
 					<div
 						id="sign-in-error"

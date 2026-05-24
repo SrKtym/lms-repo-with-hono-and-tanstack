@@ -28,7 +28,8 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 				queryClient.ensureQueryData({
 					queryKey: ["registered-courses"],
 					queryFn: fetchRegisteredCoursesQueryFn,
-					staleTime: 5 * 60 * 1000,
+					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
 				}),
 
 				queryClient.ensureQueryData({
@@ -70,9 +71,9 @@ function RouteComponent() {
 		Route.useLoaderData();
 
 	const { data: notifications = [] } = useNotifications(initialNotifications);
-	const markAsRead = useMarkNotificationAsRead();
-	const markAllAsRead = useMarkAllNotificationsAsRead();
-	const deleteNotification = useDeleteNotification();
+	const { mutate: markAsRead } = useMarkNotificationAsRead();
+	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
+	const { mutate: deleteNotification } = useDeleteNotification();
 
 	// アニメーションの再トリガーを防ぐため、DailySchedulesCardのpropsをメモ化
 	const memoizedDailySchedulesProps = useMemo(
@@ -117,9 +118,9 @@ function RouteComponent() {
 				<div className="hidden lg:block lg:space-y-6">
 					<NotificationsListCard
 						notifications={notifications}
-						markAsRead={markAsRead.mutate}
-						markAllAsRead={markAllAsRead.mutate}
-						deleteNotification={deleteNotification.mutate}
+						markAsRead={markAsRead}
+						markAllAsRead={markAllAsRead}
+						deleteNotification={deleteNotification}
 					/>
 					<AssignmentsProgressCard
 						submissions={submissions}
@@ -132,9 +133,9 @@ function RouteComponent() {
 					<DailySchedulesCard {...memoizedDailySchedulesProps} />
 					<NotificationsListCard
 						notifications={notifications}
-						markAsRead={markAsRead.mutate}
-						markAllAsRead={markAllAsRead.mutate}
-						deleteNotification={deleteNotification.mutate}
+						markAsRead={markAsRead}
+						markAllAsRead={markAllAsRead}
+						deleteNotification={deleteNotification}
 					/>
 					<UpcomingAssignmentsCard assignments={assignments} />
 					<AssignmentsProgressCard

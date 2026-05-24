@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { Check } from "@lms-repo/ui/assets/icons/check";
 import { ResetPasswordIcon } from "@lms-repo/ui/assets/icons/reset-password";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
@@ -79,7 +80,7 @@ function RouteComponent() {
 					form.handleSubmit();
 				}}
 				className="space-y-6"
-				aria-describedby="request-reset-password-error"
+				aria-describedby="request-reset-password-messages"
 			>
 				<form.Field name="email">
 					{(field) => (
@@ -116,11 +117,11 @@ function RouteComponent() {
 					)}
 				</form.Field>
 
-				{/* Error Message */}
+				{/* エラーメッセージ */}
 				{error && (
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
 						<p
-							id="request-reset-password-error"
+							id="request-reset-password-messages"
 							className="text-red-600 text-sm dark:text-red-400"
 						>
 							{error}
@@ -128,24 +129,12 @@ function RouteComponent() {
 					</div>
 				)}
 
-				{/* Success Message */}
+				{/* 成功メッセージ */}
 				{isSuccess && (
 					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
-						<div className="flex items-center">
-							<svg
-								className="mr-3 h-5 w-5 text-green-600 dark:text-green-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-							<div>
+						<div className="flex items-center gap-3">
+							<Check className="text-green-600 dark:text-green-400" />
+							<div id="request-reset-password-messages">
 								<h4 className="font-medium text-green-800 dark:text-green-200">
 									リセットメールを送信しました
 								</h4>
@@ -170,32 +159,7 @@ function RouteComponent() {
 							className="w-full"
 							isDisabled={!canSubmit || isSubmitting || isSuccess}
 						>
-							{isSubmitting ? (
-								<>
-									<svg
-										className="mr-2 h-4 w-4 animate-spin"
-										fill="none"
-										viewBox="0 0 24 24"
-									>
-										<circle
-											className="opacity-25"
-											cx="12"
-											cy="12"
-											r="10"
-											stroke="currentColor"
-											strokeWidth="4"
-										/>
-										<path
-											className="opacity-75"
-											fill="currentColor"
-											d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-										/>
-									</svg>
-									リセットリンクを送信中...
-								</>
-							) : (
-								"リセットリンクを送信"
-							)}
+							{isSubmitting ? "送信中..." : "リセットリンクを送信"}
 						</DefaultButton>
 					)}
 				</form.Subscribe>
@@ -212,10 +176,7 @@ function RouteComponent() {
 
 			{/* Back to Sign In */}
 			<div className="text-center">
-				<Link
-					to="/sign-in"
-					className="text-blue-600 text-sm hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-				>
+				<Link to="/sign-in" className="default-link">
 					サインインに戻る
 				</Link>
 			</div>

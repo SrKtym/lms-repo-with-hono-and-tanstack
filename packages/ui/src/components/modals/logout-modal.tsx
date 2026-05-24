@@ -24,7 +24,7 @@ export function LogoutModal({
 						<Modal.Heading>ログアウトの確認</Modal.Heading>
 					</Modal.Header>
 					<Modal.Body>
-						<p>ログアウトしますか？</p>
+						<p className="text-foreground">ログアウトしますか？</p>
 					</Modal.Body>
 					<Modal.Footer>
 						<CancelButton slot="close">キャンセル</CancelButton>

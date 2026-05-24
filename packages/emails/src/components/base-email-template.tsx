@@ -36,10 +36,11 @@ export function BaseEmailTemplate({
 						<div className="space-y-4">{children}</div>
 						<Hr className="w-auto border border-gray-200 border-solid" />
 						<Text className="text-center text-gray-500 text-sm">
-							this email was sent to{" "}
-							<span className="font-medium text-blue-600">{email}</span>
+							このメールは{" "}
+							<span className="font-medium text-blue-600">{email}</span>{" "}
+							宛に送信されました。
 							<br />
-							if you didn't expect this email, please ignore it.
+							もし意図しないメールである場合は、このメールを無視してください。
 						</Text>
 						<Text className="text-center text-gray-400 text-xs">
 							© {new Date().getFullYear()} LMS. All rights reserved.

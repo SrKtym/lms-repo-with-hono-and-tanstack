@@ -19,7 +19,6 @@ export default function RegisteredCourseList({
 }) {
 	const selectItems = ["昇順", "降順"];
 	const [searchQuery, setSearchQuery] = useState("");
-	const [isTeacher] = useState(false); // 簡略化のため常にfalse
 	const [sortOrder, setSortOrder] = useState("昇順");
 
 	// 検索フィルタリング
@@ -38,119 +37,116 @@ export default function RegisteredCourseList({
 	});
 
 	return (
-		<div className="relative min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/20 dark:from-gray-900 dark:via-blue-900/20 dark:to-purple-900/10">
-			<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-6">
-				<div className="mb-6 items-center justify-between space-y-3 sm:flex">
-					<h1 className="font-medium text-2xl text-gray-900 dark:text-gray-100">
-						登録済みの講義
-					</h1>
-					<div className="flex items-center gap-4">
-						<DefaultSearchField
-							placeholder="講義名または教員名で検索"
-							value={searchQuery}
-							onChange={setSearchQuery}
-						/>
-						{isTeacher && <DefaultButton>講義作成</DefaultButton>}
-					</div>
+		<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-6">
+			<div className="mb-6 items-center justify-between space-y-3 sm:flex">
+				<h1 className="font-medium text-2xl text-gray-900 dark:text-gray-100">
+					登録済みの講義
+				</h1>
+				<div className="flex items-center gap-4">
+					<DefaultSearchField
+						placeholder="講義名または教員名で検索"
+						value={searchQuery}
+						onChange={setSearchQuery}
+					/>
 				</div>
-
-				{sortedCourses.length > 0 ? (
-					<div className="mb-8">
-						<div className="mb-4 flex items-center justify-between">
-							<h2 className="font-medium text-gray-800 text-lg dark:text-gray-200">
-								すべての講義 ({sortedCourses.length}件)
-							</h2>
-							<div className="flex items-center gap-2 text-gray-600 text-sm dark:text-gray-400">
-								<span>並び替え:</span>
-								<DefaultSelect
-									aria-label="options"
-									className="w-32"
-									items={selectItems}
-									value={sortOrder}
-									onChange={(value) => {
-										if (typeof value === "string") {
-											setSortOrder(value);
-										}
-									}}
-								/>
-							</div>
-						</div>
-
-						<LazyMotionProvider>
-							<m.div
-								className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-								variants={{
-									hidden: { opacity: 0 },
-									visible: { opacity: 1 },
-								}}
-								transition={{
-									staggerChildren: 0.1,
-								}}
-								initial="hidden"
-								animate="visible"
-							>
-								{sortedCourses.map((currentCourseData) => (
-									<m.div
-										key={currentCourseData.id}
-										variants={{
-											hidden: { opacity: 0, y: 20 },
-											visible: {
-												opacity: 1,
-												y: 0,
-											},
-										}}
-										transition={{ duration: 0.3 }}
-									>
-										<m.div
-											whileHover={{ y: -4 }}
-											transition={{ duration: 0.2 }}
-										>
-											<CourseCard
-												course={currentCourseData}
-												LinkComponent={
-													<Link
-														to="/course-list/{-$course-id}/{-$content-id}"
-														params={{
-															"course-id": currentCourseData.id,
-														}}
-													>
-														<DefaultButton size="sm">
-															詳細を見る
-															<ArrowRight />
-														</DefaultButton>
-													</Link>
-												}
-											/>
-										</m.div>
-									</m.div>
-								))}
-							</m.div>
-						</LazyMotionProvider>
-					</div>
-				) : (
-					<div className="flex flex-col items-center justify-center py-16">
-						<div className="relative mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20">
-							<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/10 to-purple-400/10 blur-2xl" />
-							<BookOpen width={48} height={48} />
-						</div>
-						<h2 className="mb-2 font-medium text-gray-900 text-xl dark:text-gray-100">
-							{searchQuery
-								? "該当する講義がありません"
-								: "履修する講義がありません"}
-						</h2>
-						<p className="mb-6 max-w-md text-center text-gray-600 dark:text-gray-400">
-							{searchQuery
-								? "別のキーワードで検索してみてください"
-								: "まずは履修する講義を登録してください"}
-						</p>
-						{!searchQuery && (
-							<Link to="/register-courses">
-								<DefaultButton>履修登録のページへ</DefaultButton>
-							</Link>
-						)}
-					</div>
-				)}
 			</div>
+
+			{sortedCourses.length > 0 ? (
+				<div className="mb-8">
+					<div className="mb-4 flex items-center justify-between">
+						<h2 className="font-medium text-gray-800 text-lg dark:text-gray-200">
+							すべての講義 ({sortedCourses.length}件)
+						</h2>
+						<div className="flex items-center gap-2 text-gray-600 text-sm dark:text-gray-400">
+							<span>並び替え:</span>
+							<DefaultSelect
+								aria-label="options"
+								className="w-32"
+								items={selectItems}
+								value={sortOrder}
+								onChange={(value) => {
+									if (typeof value === "string") {
+										setSortOrder(value);
+									}
+								}}
+							/>
+						</div>
+					</div>
+
+					<LazyMotionProvider>
+						<m.div
+							className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+							variants={{
+								hidden: { opacity: 0 },
+								visible: { opacity: 1 },
+							}}
+							transition={{
+								staggerChildren: 0.1,
+							}}
+							initial="hidden"
+							animate="visible"
+						>
+							{sortedCourses.map((currentCourseData) => (
+								<m.div
+									key={currentCourseData.id}
+									variants={{
+										hidden: { opacity: 0, y: 20 },
+										visible: {
+											opacity: 1,
+											y: 0,
+										},
+									}}
+									transition={{ duration: 0.3 }}
+								>
+									<m.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+										<CourseCard
+											course={currentCourseData}
+											LinkComponent={
+												<Link
+													to="/course-list/{-$course-id}/{-$content-id}"
+													params={{
+														"course-id": currentCourseData.id,
+													}}
+												>
+													<DefaultButton size="sm">
+														詳細を見る
+														<ArrowRight />
+													</DefaultButton>
+												</Link>
+											}
+										/>
+									</m.div>
+								</m.div>
+							))}
+						</m.div>
+					</LazyMotionProvider>
+				</div>
+			) : (
+				<div className="flex flex-col items-center justify-center py-16">
+					<div className="relative mb-6 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/20 dark:to-purple-900/20">
+						<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/10 to-purple-400/10 blur-2xl" />
+						<BookOpen width={48} height={48} />
+					</div>
+					<h2 className="mb-2 font-medium text-gray-900 text-xl dark:text-gray-100">
+						{searchQuery
+							? "該当する講義がありません"
+							: "履修する講義がありません"}
+					</h2>
+					<p className="mb-6 max-w-md text-center text-gray-600 dark:text-gray-400">
+						{searchQuery
+							? "別のキーワードで検索してみてください"
+							: "まずは履修する講義を登録してください"}
+					</p>
+					{!searchQuery && (
+						<Link to="/register-courses">
+							<DefaultButton>
+								履修登録のページへ
+								<ArrowRight />
+							</DefaultButton>
+						</Link>
+					)}
+				</div>
+			)}
 		</div>
 	);
 }

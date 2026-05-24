@@ -9,7 +9,8 @@ import { memo } from "react";
 import { BaseCard } from "../cards/base-card";
 
 // 小数時間
-const decimalHours = (date: Date) => {
+const decimalHours = (date: Date | undefined | null) => {
+	if (!date) return 0;
 	const hours = date.getHours();
 	const minutes = date.getMinutes();
 	return hours + minutes / 60;
@@ -305,7 +306,7 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-blue-500" />
 										講義
 									</h2>
-									<div className="space-y-3">
+									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
 										{courseGroups.map((group, index) => (
 											<CourseScheduleCard
 												key={group[0].id}
@@ -332,7 +333,7 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-green-500" />
 										個人スケジュール
 									</h2>
-									<div className="space-y-3">
+									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
 										{scheduleGroups.map((group, index) => (
 											<ScheduleCard
 												key={group[0].id}

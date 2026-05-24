@@ -3,8 +3,8 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
 import { useNavigate } from "@tanstack/react-router";
-import { z } from "zod";
 import { useState } from "react";
+import { z } from "zod";
 
 export function TwoFactorSettingForm({
 	selected,
@@ -38,28 +38,24 @@ export function TwoFactorSettingForm({
 
 	// 2要素認証の有効化
 	const handleValidTwofactor = async (password: string) => {
-		const { data, error } = await authClient.twoFactor.enable({ password });
+		const { data } = await authClient.twoFactor.enable({ password });
 		if (data) {
 			setTotpURI(data.totpURI);
 		} else {
-			console.error(error);
+			setError("2要素認証の有効化に失敗しました");
 		}
 	};
 
 	// 2要素認証の無効化
 	const handleInvalidTwofactor = async (password: string) => {
-		await authClient.twoFactor.disable(
-			{ password },
-			{
-				onSuccess: () =>
-					navigate({
-						to: "/add-passkey",
-					}),
-				onError: () => {
-					setError("2要素認証の無効化に失敗しました");
-				},
-			},
-		);
+		const { error } = await authClient.twoFactor.disable({ password });
+		if (error) {
+			setError("2要素認証の無効化に失敗しました");
+		} else {
+			navigate({
+				to: "/add-passkey",
+			});
+		}
 	};
 
 	const handleSetTwofactor = (password: string) => {
@@ -110,7 +106,7 @@ export function TwoFactorSettingForm({
 				)}
 			</form.Field>
 
-			{/* Error Message */}
+			{/* エラーメッセージ */}
 			{error && (
 				<div
 					id="2fa-setting-error"

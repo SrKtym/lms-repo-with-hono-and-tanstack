@@ -29,8 +29,8 @@ export function SubmissionsCard({
 	onFileRemove,
 }: SubmissionsCardProps) {
 	return (
-		<BaseCard className="border border-divider">
-			<div className="p-6">
+		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
+			<div className="p-2">
 				<div className="flex items-center justify-between">
 					<h2 className="font-medium text-lg">{targetAssignment.title}</h2>
 					<DefaultChip
@@ -55,7 +55,7 @@ export function SubmissionsCard({
 										name="content"
 										fullWidth
 										maxLength={2000}
-										rows={10}
+										rows={16}
 										placeholder="最大2000文字まで入力できます。"
 										aria-describedby="content-error"
 									/>

@@ -1,7 +1,7 @@
 import { Text } from "@react-email/components";
 import { BaseEmailTemplate } from "./base-email-template";
 
-export function ResetPasswordEmail({
+export default function ResetPasswordEmail({
 	email,
 	url,
 }: {
@@ -10,23 +10,23 @@ export function ResetPasswordEmail({
 }) {
 	return (
 		<BaseEmailTemplate
-			preview="Reset your password"
-			title="Password Reset"
+			preview="パスワードリセットの確認"
+			title="パスワードのリセット"
 			email={email}
 		>
 			<Text className="text-base text-gray-700 leading-relaxed">
-				We received a request to reset your password. Click the link below to
-				create a new password:
+				パスワードリセットのリクエストを受け取りました。下のリンクをクリックして
+				新しいパスワードを作成してください。
 			</Text>
 			<Text className="break-all font-medium text-base text-blue-600">
 				{url}
 			</Text>
 			<Text className="mt-4 text-gray-600 text-sm">
-				This link will expire in 30 minutes for security reasons.
+				このリンクは1時間で有効期限が切れます。
 			</Text>
 			<Text className="mt-4 text-amber-600 text-sm">
-				🔐 If you didn't request this reset, please ignore this email and your
-				password will remain unchanged.
+				🔐
+				このリセットをリクエストしていない場合は、このメールを無視してください。
 			</Text>
 		</BaseEmailTemplate>
 	);

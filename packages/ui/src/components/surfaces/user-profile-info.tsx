@@ -22,6 +22,7 @@ interface UserProfileInfoProps {
 export function UserProfileInfo({ user }: UserProfileInfoProps) {
 	const isStudent = user.role === "student";
 	const isProfessor = user.role === "professor";
+	const style = "flex items-center gap-2";
 
 	return (
 		<Surface className="mx-auto w-full max-w-2xl rounded-2xl p-6 shadow-surface">
@@ -37,13 +38,13 @@ export function UserProfileInfo({ user }: UserProfileInfoProps) {
 						{user.name}
 					</h1>
 					<div className="space-y-2 text-foreground-600">
-						<div className="flex items-center gap-2">
+						<div className={style}>
 							<span className="font-medium">メールアドレス:</span>
 							<span>{user.email}</span>
 						</div>
 
 						{/* 属性表示 */}
-						<div className="flex items-center gap-2">
+						<div className={style}>
 							<span className="font-medium">属性:</span>
 							<span className="capitalize">
 								{isStudent ? "学生" : isProfessor ? "教授" : "一般ユーザー"}
@@ -55,25 +56,25 @@ export function UserProfileInfo({ user }: UserProfileInfoProps) {
 							<div className="mt-3 space-y-1 border-divider border-t pt-3">
 								<h3 className="font-medium text-foreground">学籍情報</h3>
 								<div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
-									<div>
+									<div className={style}>
 										<p className="font-medium">学年:</p>
-										<p className="ml-1">{user.grade}年</p>
+										<p>{user.grade}年</p>
 									</div>
-									<div>
+									<div className={style}>
 										<p className="font-medium">学部:</p>
-										<p className="ml-1">{user.faculty}</p>
+										<p>{user.faculty}</p>
 									</div>
-									<div>
+									<div className={style}>
 										<p className="font-medium">学科:</p>
-										<p className="ml-1">{user.department}</p>
+										<p>{user.department}</p>
 									</div>
-									<div>
+									<div className={style}>
 										<p className="font-medium">卒業必要単位数:</p>
-										<p className="ml-1">{user.requiredCredit}単位</p>
+										<p>{user.requiredCredit}単位</p>
 									</div>
-									<div>
+									<div className={`${style} col-span-2`}>
 										<p className="font-medium">修了済み講義の単位数:</p>
-										<p className="ml-1">{user.totalCredits || 0}単位</p>
+										<p>{user.totalCredits || 0}単位</p>
 									</div>
 								</div>
 							</div>
@@ -84,13 +85,13 @@ export function UserProfileInfo({ user }: UserProfileInfoProps) {
 							<div className="mt-3 space-y-1 border-divider border-t pt-3">
 								<h3 className="font-medium text-foreground">所属情報</h3>
 								<div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
-									<div>
+									<div className={style}>
 										<span className="font-medium">学部:</span>
-										<span className="ml-1">{user.faculty}</span>
+										<span>{user.faculty}</span>
 									</div>
-									<div>
+									<div className={style}>
 										<span className="font-medium">学科:</span>
-										<span className="ml-1">{user.department}</span>
+										<span>{user.department}</span>
 									</div>
 								</div>
 							</div>

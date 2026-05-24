@@ -11,7 +11,6 @@ function RouteComponent() {
 	const navigate = useNavigate();
 
 	const handleVerificationSuccess = () => {
-		// 2FA authentication success, redirect to dashboard
 		navigate({ to: "/dashboard" });
 	};
 

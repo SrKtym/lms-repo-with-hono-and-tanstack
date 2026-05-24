@@ -22,7 +22,8 @@ export const Route = createFileRoute("/_my-page/schedules")({
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
 				queryFn: fetchRegisteredCoursesQueryFn,
-				staleTime: 5 * 60 * 1000,
+				staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+				gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["schedules"],

@@ -79,7 +79,7 @@ function RouteComponent() {
 					form.handleSubmit();
 				}}
 				className="form-field"
-				aria-describedby="sign-up-error"
+				aria-describedby="sign-up-messages"
 			>
 				<form.Field name="name">
 					{(field) => (
@@ -177,17 +177,19 @@ function RouteComponent() {
 					)}
 				</form.Field>
 
-				{/* Error Message */}
+				{/* エラーメッセージ */}
 				{error && (
-					<div
-						id="sign-up-error"
-						className="rounded-md bg-red-50 p-3 dark:bg-red-900/20"
-					>
-						<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
+						<p
+							id="sign-up-messages"
+							className="text-red-600 text-sm dark:text-red-400"
+						>
+							{error}
+						</p>
 					</div>
 				)}
 
-				{/* Success Message */}
+				{/* 成功メッセージ */}
 				{success.isSuccess && (
 					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
 						<div className="flex items-center gap-2">
@@ -196,9 +198,12 @@ function RouteComponent() {
 								height={32}
 								className="text-green-600 dark:text-green-400"
 							/>
-							<p className="text-green-600 text-sm dark:text-green-400">
-								{success.email}{" "}
-								への確認メールを送信しました。メール内のリンクをクリックしてアカウントを有効化してください。
+							<p
+								id="sign-up-messages"
+								className="text-green-600 text-sm dark:text-green-400"
+							>
+								登録を受け付けました。アカウント作成可能な場合は
+								{success.email} へ確認メールを送信します。
 							</p>
 						</div>
 					</div>

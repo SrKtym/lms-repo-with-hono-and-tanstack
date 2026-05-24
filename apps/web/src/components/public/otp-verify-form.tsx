@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { Email } from "@lms-repo/ui/assets/icons/email";
 import { DefaultButton, OutlineButton } from "@lms-repo/ui/components/button";
 import { InputOTPFor2fa } from "@lms-repo/ui/components/input-otp";
 import { useForm } from "@tanstack/react-form";
@@ -11,26 +12,23 @@ export default function OtpVerifyForm({
 	onSuccess: () => void;
 }) {
 	const [error, setError] = useState<string>("");
-	const [isSuccess, setIsSuccess] = useState(false);
 	const [otpSent, setOtpSent] = useState(false);
 	const [resendTimer, setResendTimer] = useState(0);
 
 	const verifyForm = useForm({
 		defaultValues: {
-			otp: "",
+			otpCode: "",
 		},
 		onSubmit: async ({ value }) => {
 			try {
 				setError("");
-				setIsSuccess(false);
 
 				await authClient.twoFactor.verifyOtp(
 					{
-						code: value.otp,
+						code: value.otpCode,
 					},
 					{
 						onSuccess: () => {
-							setIsSuccess(true);
 							onSuccess();
 						},
 						onError: () => {
@@ -40,7 +38,7 @@ export default function OtpVerifyForm({
 						},
 					},
 				);
-			} catch (err) {
+			} catch {
 				setError(
 					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 				);
@@ -48,7 +46,7 @@ export default function OtpVerifyForm({
 		},
 		validators: {
 			onSubmit: z.object({
-				otp: z.string().length(6, "認証コードは6桁で入力してください"),
+				otpCode: z.string().length(6, "認証コードは6桁で入力してください"),
 			}),
 		},
 	});
@@ -63,8 +61,18 @@ export default function OtpVerifyForm({
 							setOtpSent(true);
 							startResendTimer();
 						},
-						onError: () => {
-							setError("メールの送信に失敗しました。もう一度お試しください。");
+						onError: (ctx) => {
+							switch (ctx.error.status) {
+								case 401:
+									setError(
+										"メールの送信に失敗しました。お手数ですがサインインページへ戻って再試行してください。",
+									);
+									break;
+								default:
+									setError(
+										"メールの送信に失敗しました。もう一度お試しください。",
+									);
+							}
 						},
 					},
 				});
@@ -103,19 +111,7 @@ export default function OtpVerifyForm({
 			<div className="text-center">
 				<div className="mb-4 flex justify-center">
 					<div className="flex h-12 w-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
-						<svg
-							className="h-6 w-6 text-green-600 dark:text-green-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-							/>
-						</svg>
+						<Email className="text-green-600 dark:text-green-400" />
 					</div>
 				</div>
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
@@ -128,43 +124,38 @@ export default function OtpVerifyForm({
 
 			{/* OTP送信フォーム */}
 			{!otpSent ? (
-				<div className="space-y-4">
+				<form
+					onSubmit={(e) => {
+						e.preventDefault();
+						e.stopPropagation();
+						sendOtpForm.handleSubmit();
+					}}
+					className="form-field"
+					aria-describedby="sendOtp-error"
+				>
+					{/* エラーメッセージ */}
+					{error && (
+						<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
+							<p
+								id="sendOtp-error"
+								className="text-red-600 text-sm dark:text-red-400"
+							>
+								{error}
+							</p>
+						</div>
+					)}
+
 					<sendOtpForm.Subscribe>
 						{({ canSubmit, isSubmitting }) => (
 							<OutlineButton
-								onPress={() => sendOtpForm.handleSubmit()}
+								type="submit"
 								isDisabled={!canSubmit || isSubmitting}
 							>
-								{isSubmitting ? (
-									<>
-										<svg
-											className="mr-2 h-4 w-4 animate-spin"
-											fill="none"
-											viewBox="0 0 24 24"
-										>
-											<circle
-												className="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="4"
-											/>
-											<path
-												className="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-											/>
-										</svg>
-										送信中...
-									</>
-								) : (
-									"認証コードを送信"
-								)}
+								{isSubmitting ? "送信中..." : "認証コードを送信"}
 							</OutlineButton>
 						)}
 					</sendOtpForm.Subscribe>
-				</div>
+				</form>
 			) : (
 				/* OTP検証フォーム */
 				<form
@@ -173,9 +164,10 @@ export default function OtpVerifyForm({
 						e.stopPropagation();
 						verifyForm.handleSubmit();
 					}}
-					className="space-y-4"
+					className="form-field flex flex-col items-center"
+					aria-describedby="otp-verify-error"
 				>
-					<verifyForm.Field name="otp">
+					<verifyForm.Field name="otpCode">
 						{(field) => (
 							<div className="space-y-3">
 								<InputOTPFor2fa
@@ -185,9 +177,14 @@ export default function OtpVerifyForm({
 										field.handleChange(value);
 										setError(""); // 入力時にエラーをクリア
 									}}
+									ariaDescribedby="otpCode-error"
 								/>
 								{field.state.meta.errors.map((error) => (
-									<p key={error?.message} className="text-red-500 text-sm">
+									<p
+										id="otpCode-error"
+										key={error?.message}
+										className="text-red-500 text-sm"
+									>
 										{error?.message}
 									</p>
 								))}
@@ -198,15 +195,11 @@ export default function OtpVerifyForm({
 					{/* エラーメッセージ */}
 					{error && (
 						<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-							<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
-						</div>
-					)}
-
-					{/* 成功メッセージ */}
-					{isSuccess && (
-						<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
-							<p className="text-green-600 text-sm dark:text-green-400">
-								認証に成功しました！
+							<p
+								id="otp-verify-error"
+								className="text-red-600 text-sm dark:text-red-400"
+							>
+								{error}
 							</p>
 						</div>
 					)}
@@ -218,32 +211,7 @@ export default function OtpVerifyForm({
 								className="w-full"
 								isDisabled={!canSubmit || isSubmitting}
 							>
-								{isSubmitting ? (
-									<>
-										<svg
-											className="mr-2 h-4 w-4 animate-spin"
-											fill="none"
-											viewBox="0 0 24 24"
-										>
-											<circle
-												className="opacity-25"
-												cx="12"
-												cy="12"
-												r="10"
-												stroke="currentColor"
-												strokeWidth="4"
-											/>
-											<path
-												className="opacity-75"
-												fill="currentColor"
-												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-											/>
-										</svg>
-										認証中...
-									</>
-								) : (
-									"認証コードを確認"
-								)}
+								{isSubmitting ? "認証中..." : "認証コードを確認"}
 							</DefaultButton>
 						)}
 					</verifyForm.Subscribe>

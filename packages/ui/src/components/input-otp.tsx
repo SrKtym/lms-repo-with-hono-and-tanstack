@@ -1,14 +1,18 @@
 import { InputOTP } from "@heroui/react";
 
+interface InputOTPFor2faProps {
+	name: string;
+	value: string;
+	onChange: (value: string) => void;
+	ariaDescribedby?: string;
+}
+
 export function InputOTPFor2fa({
 	name,
 	value,
 	onChange,
-}: {
-	name: string;
-	value: string;
-	onChange: (value: string) => void;
-}) {
+	ariaDescribedby,
+}: InputOTPFor2faProps) {
 	return (
 		<InputOTP
 			name={name}
@@ -16,6 +20,7 @@ export function InputOTPFor2fa({
 			maxLength={6}
 			onChange={onChange}
 			required
+			aria-describedby={ariaDescribedby}
 		>
 			<InputOTP.Group>
 				<InputOTP.Slot index={0} />

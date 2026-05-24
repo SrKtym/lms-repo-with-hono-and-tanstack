@@ -1,4 +1,7 @@
+import { Check } from "@lms-repo/ui/assets/icons/check";
+import { Close } from "@lms-repo/ui/assets/icons/close";
 import { MessagesSquareCheck } from "@lms-repo/ui/assets/icons/messages-square-check";
+import { MessagesSquareOff } from "@lms-repo/ui/assets/icons/messages-square-off";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import { DangerButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
@@ -32,7 +35,10 @@ export const Route = createFileRoute("/_my-page/notifications")({
 function RouteComponent() {
 	const { initialNotifications } = Route.useLoaderData();
 	const { data: notifications = [] } = useNotifications(initialNotifications);
-	const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
+
+	const options = ["all", "unread", "read"] as const;
+	const [filter, setFilter] = useState<(typeof options)[number]>("all");
+
 	const [expandedNotifications, setExpandedNotifications] = useState<
 		Set<string>
 	>(new Set());
@@ -59,11 +65,11 @@ function RouteComponent() {
 	};
 
 	// 通知を既読にする
-	const markAsRead = useMarkNotificationAsRead();
-	const markAllAsRead = useMarkAllNotificationsAsRead();
+	const { mutate: markAsRead } = useMarkNotificationAsRead();
+	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
 
 	// 通知を削除
-	const deleteNotification = useDeleteNotification();
+	const { mutate: deleteNotification } = useDeleteNotification();
 
 	return (
 		<div className="space-y-6 p-3">
@@ -85,7 +91,7 @@ function RouteComponent() {
 					</div>
 					<div className="flex items-center space-x-2">
 						{unreadCount > 0 && (
-							<DefaultButton onPress={() => markAllAsRead.mutate}>
+							<DefaultButton onPress={() => markAllAsRead}>
 								<MessagesSquareCheck />
 								すべて既読
 							</DefaultButton>
@@ -108,12 +114,12 @@ function RouteComponent() {
 					transition={{ duration: 0.3, delay: 0.1 }}
 					className="flex items-center space-x-2"
 				>
-					{["all", "unread", "read"].map((filterType) => (
+					{options.map((filterType) => (
 						<m.button
 							key={filterType}
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
-							onClick={() => setFilter(filterType as typeof filter)}
+							onClick={() => setFilter(filterType)}
 							className={`rounded-lg px-4 py-2 font-medium text-sm transition-colors ${
 								filter === filterType
 									? "bg-blue-500 text-white"
@@ -145,7 +151,7 @@ function RouteComponent() {
 									}`}
 									onClick={() => {
 										if (!notification.isRead) {
-											markAsRead.mutate(notification.id);
+											markAsRead(notification.id);
 										}
 										toggleExpand(notification.id);
 									}}
@@ -166,13 +172,13 @@ function RouteComponent() {
 														<span className="inline-flex h-2 w-2 rounded-full bg-blue-500" />
 													)}
 												</div>
-												<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+												<p className="mt-1 whitespace-pre-wrap text-gray-600 text-sm dark:text-gray-400">
 													{notification.description}
 												</p>
 												<p className="mt-2 text-gray-500 text-xs dark:text-gray-500">
 													{formatTimestamp(notification.createdAt)}
 												</p>
-												{expandedNotifications.has(notification.id) && (
+												{/* {expandedNotifications.has(notification.id) && (
 													<m.div
 														initial={{ opacity: 0, height: 0 }}
 														animate={{ opacity: 1, height: "auto" }}
@@ -188,10 +194,10 @@ function RouteComponent() {
 															}}
 															className="rounded-lg bg-blue-500 px-3 py-1 font-medium text-sm text-white transition-colors hover:bg-blue-600"
 														>
-															{/* {notification.action.label} */}
+															テスト
 														</m.button>
 													</m.div>
-												)}
+												)} */}
 											</div>
 										</div>
 										<div className="flex items-center space-x-2">
@@ -201,23 +207,11 @@ function RouteComponent() {
 													whileTap={{ scale: 0.9 }}
 													onClick={(e) => {
 														e.stopPropagation();
-														markAsRead.mutate(notification.id);
+														markAsRead(notification.id);
 													}}
 													className="rounded-full p-1 text-gray-400 hover:text-blue-500 dark:text-gray-500 dark:hover:text-blue-400"
 												>
-													<svg
-														className="h-4 w-4"
-														fill="none"
-														stroke="currentColor"
-														viewBox="0 0 24 24"
-													>
-														<path
-															strokeLinecap="round"
-															strokeLinejoin="round"
-															strokeWidth={2}
-															d="M5 13l4 4L19 7"
-														/>
-													</svg>
+													<Check width={18} height={18} />
 												</m.button>
 											)}
 											<m.button
@@ -225,23 +219,11 @@ function RouteComponent() {
 												whileTap={{ scale: 0.9 }}
 												onClick={(e) => {
 													e.stopPropagation();
-													deleteNotification.mutate(notification.id);
+													deleteNotification(notification.id);
 												}}
 												className="rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
 											>
-												<svg
-													className="h-4 w-4"
-													fill="none"
-													stroke="currentColor"
-													viewBox="0 0 24 24"
-												>
-													<path
-														strokeLinecap="round"
-														strokeLinejoin="round"
-														strokeWidth={2}
-														d="M6 18L18 6M6 6l12 12"
-													/>
-												</svg>
+												<Close width={18} height={18} />
 											</m.button>
 										</div>
 									</div>
@@ -256,19 +238,7 @@ function RouteComponent() {
 							>
 								<div className="space-y-4">
 									<div className="mx-auto h-12 w-12 rounded-full bg-gray-100 p-3 dark:bg-gray-700">
-										<svg
-											className="h-6 w-6 text-gray-400 dark:text-gray-500"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15 17h5l-5 5v-5zM4 19h8M4 15h8M4 11h16M4 7h16"
-											/>
-										</svg>
+										<MessagesSquareOff className="text-gray-400 dark:text-gray-500" />
 									</div>
 									<div>
 										<h3 className="font-semibold text-gray-900 dark:text-white">

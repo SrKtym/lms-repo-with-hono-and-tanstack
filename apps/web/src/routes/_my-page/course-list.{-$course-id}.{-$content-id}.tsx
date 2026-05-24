@@ -16,15 +16,15 @@ export const Route = createFileRoute(
 	component: RouteComponent,
 	loader: async ({ params }) => {
 		const { "content-id": contentId } = params;
-		// キャッシュからデータ取得（既にプリフェッチ済み）
+		// キャッシュからデータ取得
 		const [courses, announcements, assignments, submission] = await Promise.all(
 			[
 				queryClient.ensureQueryData({
 					queryKey: ["registered-courses"],
 					queryFn: fetchRegisteredCoursesQueryFn,
-					staleTime: 5 * 60 * 1000, // 5 minutes
+					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
 				}),
-
 				queryClient.ensureQueryData({
 					queryKey: ["announcements-related-courses"],
 					queryFn: fetchAnnouncementsQueryFn,
@@ -85,6 +85,7 @@ function RouteComponent() {
 				courseWithCoverImage={targetCourse}
 				announcements={targetAnnouncements}
 				assignments={targetAssignments}
+				courseId={courseId}
 			/>
 		);
 	}
@@ -97,6 +98,7 @@ function RouteComponent() {
 		<RegisteredCourseContents
 			targetAssignment={targetAssignment}
 			submission={submission[0]}
+			assignmentId={contentId}
 		/>
 	);
 }

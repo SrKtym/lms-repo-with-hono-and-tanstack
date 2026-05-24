@@ -18,7 +18,7 @@ export function CreateAssignmentForm() {
 	const { "course-id": courseId } = useParams({
 		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
 	});
-	const createAssignment = useCreateAssignment();
+	const { mutate: createAssignment } = useCreateAssignment();
 	const form = useForm({
 		defaultValues: {
 			title: "",
@@ -30,16 +30,16 @@ export function CreateAssignmentForm() {
 		},
 		onSubmit: async ({ value }) => {
 			const { dueDate, ...rest } = value;
-			createAssignment.mutate({
+			createAssignment({
 				...rest,
 				dueDate: dueDate.toDate(),
 			});
 		},
 		validators: {
 			onSubmit: z.object({
-				title: z.string().min(1),
-				description: z.string(),
-				points: z.number(),
+				title: z.string().min(1).max(100),
+				description: z.string().min(1).max(500),
+				points: z.number().min(0).max(100),
 				dueDate: z.custom<ZonedDateTime>(),
 				format: z.enum(assignmentFormat),
 				courseId: z.string().min(1),
@@ -73,10 +73,13 @@ export function CreateAssignmentForm() {
 									id: field.name,
 									name: field.name,
 									type: "text",
+									minLength: 1,
+									maxLength: 100,
 									value: field.state.value,
 									"aria-describedby": "title-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
+									placeholder: "タイトルを入力",
 								}}
 								labelProps={{
 									htmlFor: field.name,
@@ -100,14 +103,17 @@ export function CreateAssignmentForm() {
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								inputProps={{
+								textAreaProps={{
 									id: field.name,
 									name: field.name,
-									type: "text",
+									minLength: 1,
+									maxLength: 500,
 									value: field.state.value,
 									"aria-describedby": "description-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
+									placeholder: "説明を入力",
+									rows: 3,
 								}}
 								labelProps={{
 									htmlFor: field.name,

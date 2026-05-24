@@ -1,4 +1,5 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
+import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { AnimatePresence } from "motion/react";
@@ -38,9 +39,6 @@ export function NotificationsModal({
 							{/* Modal Header */}
 							<div className="flex items-center justify-between border-b p-6 dark:border-gray-700">
 								<div className="flex items-center gap-3">
-									{/* <span className="text-2xl">
-										{getNotificationIcon(notification.type)}
-									</span> */}
 									<div>
 										<h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
 											{notification.title}
@@ -55,14 +53,14 @@ export function NotificationsModal({
 									isIconOnly
 									onPress={onClose}
 								>
-									<span className="text-xl">×</span>
+									<Close />
 								</CancelButton>
 							</div>
 
 							{/* Modal Content */}
 							<div className="flex-1 overflow-y-auto p-6">
 								<div className="prose dark:prose-invert max-w-none">
-									<p className="text-gray-700 dark:text-gray-300">
+									<p className="whitespace-pre-wrap text-gray-700 dark:text-gray-300">
 										{notification.description}
 									</p>
 								</div>

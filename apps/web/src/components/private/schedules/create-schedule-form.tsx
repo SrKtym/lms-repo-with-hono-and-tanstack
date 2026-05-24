@@ -81,8 +81,6 @@ export function CreateScheduleForm() {
 								labelProps={{
 									htmlFor: field.name,
 									children: "タイトル",
-									className:
-										"text-gray-700 text-sm font-medium dark:text-gray-300",
 								}}
 								isRequired={false}
 							/>
@@ -99,11 +97,6 @@ export function CreateScheduleForm() {
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								labelProps={{
-									children: "説明",
-									className:
-										"text-gray-700 text-sm font-medium dark:text-gray-300",
-								}}
 								textAreaProps={{
 									id: field.name,
 									name: field.name,
@@ -112,6 +105,9 @@ export function CreateScheduleForm() {
 									onChange: (e) => field.handleChange(e.target.value),
 									placeholder: "説明を入力",
 									rows: 3,
+								}}
+								labelProps={{
+									children: "説明",
 								}}
 								isRequired={false}
 							/>
@@ -127,9 +123,6 @@ export function CreateScheduleForm() {
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								labelProps={{
-									children: "期間",
-								}}
 								dateRangePickerProps={{
 									defaultValue: {
 										start: field.state.value.start,
@@ -143,6 +136,9 @@ export function CreateScheduleForm() {
 											});
 										}
 									},
+								}}
+								labelProps={{
+									children: "期間",
 								}}
 								isRequired={true}
 							/>

@@ -28,22 +28,3 @@ export function OutlineButton(props: React.ComponentProps<typeof Button>) {
 export function DropdownButton(props: React.ComponentProps<typeof Button>) {
 	return <Button className="h-auto p-2" variant="secondary" {...props} />;
 }
-
-// Popover button
-export function PopoverButton(props: React.ComponentProps<typeof Button>) {
-	return (
-		<Button isIconOnly className="h-auto p-2" variant="secondary" {...props} />
-	);
-}
-
-// Back to top button
-export function BackToTopButton() {
-	return (
-		<button
-			onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-			className="w-full cursor-pointer bg-gray-500 px-3 py-2 text-white"
-		>
-			Back to Top
-		</button>
-	);
-}

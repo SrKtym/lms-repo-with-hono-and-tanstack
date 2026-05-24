@@ -22,9 +22,7 @@ export function AnnouncementCard({
 		}
 	}
 
-	function getChipColor(
-		type: string,
-	): "default" | "success" | "warning" | "danger" | "accent" {
+	function getChipColor(type: string) {
 		switch (type) {
 			case "資料":
 				return "accent";
@@ -44,7 +42,7 @@ export function AnnouncementCard({
 	return (
 		<BaseCard
 			key={data.id}
-			className="cursor-pointer border border-gray-200 dark:border-gray-700"
+			className="border border-gray-200 dark:border-gray-700"
 		>
 			<div className="flex gap-3">
 				<div className="mt-1">

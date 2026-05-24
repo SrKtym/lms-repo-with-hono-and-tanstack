@@ -12,7 +12,7 @@ export function CreateCourseForm() {
 	const { "content-id": contentId } = useParams({
 		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
 	});
-	const createCourse = useCreateCourse();
+	const { mutate: createCourse } = useCreateCourse();
 	const form = useForm({
 		defaultValues: {
 			name: "",
@@ -25,7 +25,7 @@ export function CreateCourseForm() {
 			departmentId: contentId || "",
 		},
 		onSubmit: async ({ value }) => {
-			createCourse.mutate(value);
+			createCourse(value);
 		},
 		validators: {
 			onSubmit: z.object({

@@ -87,7 +87,7 @@ export function UpcomingAssignmentsCard({
 				</div>
 
 				{filteredAssignments.length > 0 ? (
-					<div className="max-h-[320px] space-y-3 overflow-y-auto">
+					<div className="max-h-[240px] space-y-3 overflow-y-auto">
 						{filteredAssignments.map((assignment) => (
 							<div
 								key={assignment.id}
