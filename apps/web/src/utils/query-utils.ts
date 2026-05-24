@@ -21,7 +21,7 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 	}
 
 	const res = await client.api.courses.$get({
-		query: { weekdays, period, queryParams },
+		query: { weekdays, period, ...queryParams },
 	});
 	const data = await res.json();
 	return data;
