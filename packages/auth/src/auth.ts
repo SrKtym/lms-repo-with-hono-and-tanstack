@@ -2,10 +2,10 @@ import { passkey } from "@better-auth/passkey";
 import { db } from "@lms-repo/db";
 import * as schema from "@lms-repo/db/schema/auth";
 import { resend } from "@lms-repo/emails";
-import { ConfirmSignUpEmail } from "@lms-repo/emails/components/confirm-sign-up-email";
-import { DeleteAccountEmail } from "@lms-repo/emails/components/delete-account-email";
-import { OtpNotificationEmail } from "@lms-repo/emails/components/otp-notification-email";
-import { ResetPasswordEmail } from "@lms-repo/emails/components/reset-password-email";
+import ConfirmSignUpEmail from "@lms-repo/emails/components/confirm-sign-up-email";
+import DeleteAccountEmail from "@lms-repo/emails/components/delete-account-email";
+import OtpNotificationEmail from "@lms-repo/emails/components/otp-notification-email";
+import ResetPasswordEmail from "@lms-repo/emails/components/reset-password-email";
 import { env } from "@lms-repo/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
@@ -37,7 +37,7 @@ export const auth = betterAuth({
 	emailVerification: {
 		sendOnSignUp: true,
 		autoSignInAfterVerification: true,
-		expiresIn: 3600,
+		expiresIn: 3600, // 1 hour
 		async sendVerificationEmail({ user, url }) {
 			const redirectUrl = new URL(url);
 			redirectUrl.searchParams.set("callbackURL", "/set-twofactor");
@@ -66,6 +66,12 @@ export const auth = betterAuth({
 					}),
 				});
 			},
+		},
+	},
+	account: {
+		accountLinking: {
+			enabled: true,
+			trustedProviders: ["google", "github", "twitter"],
 		},
 	},
 	secret: env.BETTER_AUTH_SECRET,
@@ -101,14 +107,14 @@ export const auth = betterAuth({
 		passkey(),
 	],
 	socialProviders: {
-		// github: {
-		//     clientId: serverEnv.GITHUB_CLIENT_ID,
-		//     clientSecret: serverEnv.GITHUB_CLIENT_SECRET
-		// },
-		// google: {
-		//     clientId: serverEnv.GOOGLE_CLIENT_ID,
-		//     clientSecret: serverEnv.GOOGLE_CLIENT_SECRET
-		// },
+		github: {
+			clientId: env.GITHUB_CLIENT_ID,
+			clientSecret: env.GITHUB_CLIENT_SECRET,
+		},
+		google: {
+			clientId: env.GOOGLE_CLIENT_ID,
+			clientSecret: env.GOOGLE_CLIENT_SECRET,
+		},
 		// twitter: {
 		//     clientId: serverEnv.TWITTER_CLIENT_ID,
 		//     clientSecret: serverEnv.TWITTER_CLIENT_SECRET
