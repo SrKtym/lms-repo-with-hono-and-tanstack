@@ -25,3 +25,26 @@ export function ThemeSwitch() {
 		</Switch>
 	);
 }
+
+interface EmailNotificationSwitchProps {
+	isSelected: boolean;
+	onChange: () => void;
+}
+
+// メール通知スイッチ
+export function EmailNotificationSwitch({
+	isSelected,
+	onChange,
+}: EmailNotificationSwitchProps) {
+	return (
+		<Switch size="lg" isSelected={isSelected} onChange={onChange}>
+			{({ isSelected }) => (
+				<Switch.Control className={isSelected ? "bg-accent" : "bg-default-500"}>
+					<Switch.Thumb>
+						<Switch.Icon>{isSelected ? "🔔" : "🔕"}</Switch.Icon>
+					</Switch.Thumb>
+				</Switch.Control>
+			)}
+		</Switch>
+	);
+}
