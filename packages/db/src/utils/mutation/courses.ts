@@ -1,4 +1,4 @@
-import { and, eq, lte, or } from "drizzle-orm";
+import { and, eq, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	courses,
@@ -23,11 +23,12 @@ export async function createCourses(coursesData: Courses) {
 export async function registerCourses(courseId: string, userId: string) {
 	try {
 		const result = await db.transaction(async (tx) => {
-			// 登録しようとする講義の曜日・時限を取得
+			// 登録しようとする講義の曜日・時限・単位数を取得
 			const targetCourse = await tx
 				.select({
 					weekdays: courses.weekdays,
 					period: courses.period,
+					credits: courses.credits,
 				})
 				.from(courses)
 				.where(eq(courses.id, courseId))
@@ -37,9 +38,9 @@ export async function registerCourses(courseId: string, userId: string) {
 				return { message: "指定された講義が見つかりません。", status: 404 };
 			}
 
-			const { weekdays, period } = targetCourse[0];
+			const { weekdays, period, credits } = targetCourse[0];
 
-			// 同じ曜日・時限に必修の講義があるか確認する
+			// 1. 同じ曜日・時限に必修の講義があるか確認する
 			const requiredCourses = await tx
 				.select({
 					courseId: courses.id,
@@ -62,7 +63,7 @@ export async function registerCourses(courseId: string, userId: string) {
 					),
 				);
 
-			// 同じ曜日・時限に必修の講義が1件だけ存在する場合
+			// 1-1. 同じ曜日・時限に必修の講義が1件だけ存在する場合
 			if (requiredCourses.length === 1) {
 				const requiredCourseName = requiredCourses[0]?.courseName;
 				const selectedIsNotRequied = requiredCourses.some(
@@ -76,7 +77,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				}
 			}
 
-			// 同じ曜日・時限に必修の講義が2件以上存在する場合、最も対象学年が低い講義を優先して登録する
+			// 1-2. 同じ曜日・時限に必修の講義が2件以上存在する場合、最も対象学年が低い講義を優先して登録する
 			if (requiredCourses.length > 1) {
 				const minGrade = Math.min(...requiredCourses.map((c) => c.targetGrade));
 				const lowestGradeCourses = requiredCourses.filter(
@@ -105,8 +106,26 @@ export async function registerCourses(courseId: string, userId: string) {
 				}
 			}
 
-			// ユーザーが既に同じ曜日・時限の講義を登録していないかチェック
-			// 1つのクエリで重複チェックと講義名取得を同時に行う
+			// 2. ユーザーが登録する講義の総単位数が50以上になる場合、登録を中止する
+			const total = await tx
+				.select({
+					totalCredits: sql<number>`sum(${courses.credits})`,
+				})
+				.from(courses)
+				.innerJoin(registration, eq(courses.id, registration.courseId))
+				.where(eq(registration.userId, userId))
+				.limit(1);
+
+			const currentValue = total[0]?.totalCredits;
+
+			if (currentValue && currentValue + credits >= 50) {
+				return {
+					message: "登録できる講義の単位数の上限に達しています。",
+					status: 400,
+				};
+			}
+
+			// 3. ユーザーが既に同じ曜日・時限の講義を登録していないかチェック
 			const conflictingCourse = await tx
 				.select({
 					courseId: courses.id,
@@ -122,7 +141,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				)
 				.limit(1);
 
-			// 重複がある場合、登録講義を更新する
+			// 3-1. 重複がある場合、登録講義を更新する
 			if (conflictingCourse.length > 0) {
 				const existingCourse = conflictingCourse[0];
 				if (existingCourse?.courseId === courseId) {
