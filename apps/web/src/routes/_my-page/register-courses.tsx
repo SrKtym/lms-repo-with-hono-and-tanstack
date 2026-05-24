@@ -1,11 +1,10 @@
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { Check } from "@lms-repo/ui/assets/icons/check";
-import { Search } from "@lms-repo/ui/assets/icons/search";
-import { DefaultButton } from "@lms-repo/ui/components/button";
+import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
-import { CourseDrawer } from "@lms-repo/ui/components/drawer";
+import { DefaultChip } from "@lms-repo/ui/components/chip";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import { ConfirmationModal } from "@lms-repo/ui/components/modals/confirmation-modal";
+import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { Toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
@@ -19,7 +18,6 @@ import {
 } from "@/hooks/courses";
 import { queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
-import { DefaultChip } from "@lms-repo/ui/components/chip";
 
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
@@ -30,7 +28,8 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: fetchRegisteredCoursesQueryFn,
-			staleTime: 5 * 60 * 1000,
+			staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+			gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
 		});
 		return { initialCourses };
 	},
@@ -38,26 +37,32 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 
 function RouteComponent() {
 	const { initialCourses } = Route.useLoaderData();
-	const params = Route.useSearch();
+	const { weekdays, period } = Route.useSearch();
 	const navigate = useNavigate();
 
 	// 登録済み講義の取得
 	const { data: courses = [] } = useRegisteredCourses(initialCourses);
 
-	// 講義の検索
-	const { data: searchCourses = [], isPending } = useSearchCourses(
-		params.weekdays,
-		params.period,
-	);
+	// 講義の検索（無限スクロール対応）
+	const {
+		data: searchCoursesData,
+		isPending,
+		hasNextPage,
+		fetchNextPage,
+		isFetchingNextPage,
+	} = useSearchCourses(weekdays, period);
+
+	// 全ページのデータをフラット化
+	const searchCourses = searchCoursesData?.pages.flat() || [];
 
 	// 講義の登録
-	const handleRegisterCourses = useRegisterCourse(searchCourses);
+	const { mutate: handleRegisterCourses } = useRegisterCourse(searchCourses);
 
 	// 登録講義の確定
-	const handleCheckCourse = useCheckCourse();
+	const { mutate: handleCheckCourse } = useCheckCourse();
 
 	// 講義の削除
-	const handleDeleteCourse = useUnregisterCourse();
+	const { mutate: handleDeleteCourse } = useUnregisterCourse();
 
 	// search paramsのセット
 	const handleCellClick = (day: number, period: number) => {
@@ -81,14 +86,6 @@ function RouteComponent() {
 					className="flex items-center justify-between"
 				>
 					<h2 className="font-bold text-xl">履修登録</h2>
-					<CourseDrawer
-						triggerButton={
-							<DefaultButton size="sm" className="flex items-center gap-2">
-								<Search />
-								<p className="max-sm:hidden">講義を検索する</p>
-							</DefaultButton>
-						}
-					/>
 				</m.div>
 
 				<m.div
@@ -121,15 +118,14 @@ function RouteComponent() {
 								>
 									<p>取得予定の単位数: {totalCredits}</p>
 									{courses.length > 0 && (
-										<ConfirmationModal
+										<DefaultModal
 											triggerButton={
 												<DefaultButton size="sm">
 													<Check />
 													<p className="max-sm:hidden">登録を確定する</p>
 												</DefaultButton>
 											}
-											onConfirm={handleCheckCourse.mutate}
-											title="登録講義の確認"
+											heading="登録講義の確認"
 										>
 											<div className="space-y-4">
 												<p className="text-gray-700 dark:text-gray-300">
@@ -176,10 +172,19 @@ function RouteComponent() {
 														</tbody>
 													</table>
 												</div>
+												<div className="flex justify-end gap-2">
+													<CancelButton slot="close">キャンセル</CancelButton>
+													<DefaultButton
+														slot="close"
+														onPress={() => handleCheckCourse}
+													>
+														確定
+													</DefaultButton>
+												</div>
 											</div>
-										</ConfirmationModal>
+										</DefaultModal>
 									)}
-									{everyCourseIsChecked && (
+									{courses.length > 0 && everyCourseIsChecked && (
 										<DefaultChip color="success">
 											<Check />
 											登録完了
@@ -195,11 +200,14 @@ function RouteComponent() {
 							>
 								<TimeTableCard
 									courses={courses}
-									onDeleteCourse={handleDeleteCourse.mutate}
-									onCourseSelect={handleRegisterCourses.mutate}
+									onDeleteCourse={handleDeleteCourse}
+									onCourseSelect={handleRegisterCourses}
 									onCellClick={handleCellClick}
 									isPending={isPending}
 									availableCourses={searchCourses}
+									hasNextPage={hasNextPage}
+									fetchNextPage={fetchNextPage}
+									isFetchingNextPage={isFetchingNextPage}
 								/>
 							</m.div>
 						</div>

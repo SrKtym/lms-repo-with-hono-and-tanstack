@@ -1,12 +1,16 @@
+import type { Courses } from "@lms-repo/db/types";
 import type {
 	FetchCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
 import { toast } from "@lms-repo/ui/components/toast";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
-import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
+import {
+	fetchCoursesByWeekdayAndPeriodQueryFn,
+	fetchRegisteredCoursesQueryFn,
+} from "@/utils/query-utils";
 
 // トースト表示
 function showToast(data: { status: number; message: string }) {
@@ -29,37 +33,60 @@ export const useRegisteredCourses = (
 	return useQuery({
 		queryKey: ["registered-courses"],
 		queryFn: fetchRegisteredCoursesQueryFn,
-		staleTime: 5 * 60 * 1000,
+		staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+		gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
 		initialData,
 	});
 };
 
-// 曜日と時限から講義を取得するカスタムフック
-export const useSearchCourses = (weekdays?: number, period?: number) => {
-	return useQuery({
+// 曜日と時限から講義を取得するカスタムフック（無限スクロール対応）
+export const useSearchCourses = (
+	weekdays?: number,
+	period?: number,
+	offset?: number,
+) => {
+	return useInfiniteQuery({
 		queryKey: ["search-courses", weekdays, period],
 		queryFn: async () => {
-			if (!weekdays || !period) {
-				return [];
+			return fetchCoursesByWeekdayAndPeriodQueryFn(
+				weekdays,
+				period,
+				10, // limit
+				(offset || 0) * 10, // offset
+			);
+		},
+		initialPageParam: 0,
+		enabled: !!weekdays && !!period,
+		staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
+		gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+		getNextPageParam: (lastPage, allPages) => {
+			if (lastPage.length < 10) {
+				return undefined; // データが10件未満の場合はこれ以上データがない
 			}
-			const res = await client.api.courses[":weekdays"][":period"].$get({
-				param: {
-					weekdays: weekdays.toString(),
-					period: period.toString(),
-				},
+			return allPages.length; // 次のページ番号
+		},
+	});
+};
+
+// 講義を作成するカスタムフック
+export const useCreateCourse = () => {
+	return useMutation({
+		mutationFn: async (courseData: Omit<Courses, "professorId">) => {
+			const res = await client.api.courses.$post({
+				json: courseData,
 			});
 			const data = await res.json();
 			return data;
 		},
-		enabled: !!weekdays && !!period,
-		staleTime: 5 * 60 * 1000, // 5 minutes
+		onSettled: () => {
+			// Always refetch after error or success
+			queryClient.invalidateQueries({ queryKey: ["announcements"] });
+		},
 	});
 };
 
 // 講義を登録するカスタムフック
-export const useRegisterCourse = (
-	searchCourses?: FetchCoursesReturnType,
-) => {
+export const useRegisterCourse = (searchCourses?: FetchCoursesReturnType) => {
 	return useMutation({
 		mutationFn: async (courseId: string) => {
 			const res = await client.api.courses.registered.$post({

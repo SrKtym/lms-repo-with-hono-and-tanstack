@@ -13,6 +13,8 @@ import {
 export async function fetchCourses(
 	weekdays: number,
 	period: number,
+	limit = 10,
+	offset = 0,
 	userId: string,
 ) {
 	const result = await db.transaction(async (tx) => {
@@ -60,7 +62,9 @@ export async function fetchCourses(
 						eq(departments.name, "全学科"),
 					),
 				),
-			);
+			)
+			.limit(limit)
+			.offset(offset);
 
 		return courseList;
 	});

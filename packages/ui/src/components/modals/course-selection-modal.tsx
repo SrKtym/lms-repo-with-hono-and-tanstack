@@ -7,9 +7,12 @@ import { Loader } from "../loader";
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
 	onCourseSelect: (course: FetchCoursesReturnType[number]) => void;
-	selectedCell: { day: string; period: string };
+	selectedCell: { day: number; period: number };
 	availableCourses: FetchCoursesReturnType;
 	isPending?: boolean;
+	hasNextPage?: boolean;
+	fetchNextPage?: () => void;
+	isFetchingNextPage?: boolean;
 }
 
 // Course selection modal
@@ -19,17 +22,20 @@ export function CourseSelectionModal({
 	selectedCell,
 	availableCourses,
 	isPending = false,
+	hasNextPage = false,
+	fetchNextPage,
+	isFetchingNextPage = false,
 }: CourseSelectionModalProps) {
 	return (
-		<Modal key={`${selectedCell.day}-${selectedCell.period}`}>
+		<Modal>
 			{triggerButton}
 			<Modal.Backdrop variant="transparent">
 				<Modal.Container size="lg">
 					<Modal.Dialog>
 						<Modal.CloseTrigger />
 						<Modal.Header>
-							<Modal.Heading className="text-gray-900 dark:text-white">
-								{`${DAYS[Number.parseInt(selectedCell.day)]}曜 ${selectedCell.period}限 の講義を選択`}
+							<Modal.Heading>
+								{`${DAYS[selectedCell.day]}曜 ${selectedCell.period}限 の講義を選択`}
 							</Modal.Heading>
 						</Modal.Header>
 						<Modal.Body>
@@ -37,25 +43,38 @@ export function CourseSelectionModal({
 								{isPending ? (
 									<Loader />
 								) : (
-									availableCourses.map((course) => (
-										<OutlineButton
-											key={course.id}
-											size="lg"
-											onPress={() => onCourseSelect(course)}
-										>
-											<p className="font-medium text-gray-900 dark:text-white">
-												{course.name}
-											</p>
-											<p className="text-gray-600 text-sm dark:text-gray-400">
-												{course.targetGrade}年・{course.requirements}
-											</p>
-										</OutlineButton>
-									))
-								)}
-								{!isPending && availableCourses.length === 0 && (
-									<div className="py-8 text-center text-gray-500 dark:text-gray-400">
-										<p>該当する講義が見つかりません</p>
-									</div>
+									<>
+										{availableCourses.map((course) => (
+											<OutlineButton
+												key={course.id}
+												size="lg"
+												onPress={() => onCourseSelect(course)}
+											>
+												<p className="font-medium text-gray-900 dark:text-white">
+													{course.name}
+												</p>
+												<p className="text-gray-600 text-sm dark:text-gray-400">
+													{course.targetGrade}年・{course.requirements}
+												</p>
+											</OutlineButton>
+										))}
+										{hasNextPage && (
+											<OutlineButton
+												size="lg"
+												onPress={() => fetchNextPage?.()}
+												isDisabled={isFetchingNextPage}
+											>
+												{isFetchingNextPage
+													? "読み込み中..."
+													: "もっと読み込む"}
+											</OutlineButton>
+										)}
+										{!isPending && availableCourses.length === 0 && (
+											<div className="py-8 text-center text-gray-500 dark:text-gray-400">
+												<p>該当する講義が見つかりません</p>
+											</div>
+										)}
+									</>
 								)}
 							</div>
 						</Modal.Body>

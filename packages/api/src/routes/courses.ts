@@ -23,22 +23,36 @@ export const coursesRoute = new Hono<{
 	};
 }>()
 	// 講義作成
-	.post("/", zValidator("json", z.custom<Courses>()), async (c) => {
-		const courseData = c.req.valid("json");
-		const result = await createCourses(courseData);
-		return c.json(result);
-	})
-	// 講義検索
-	.get(
-		"/:weekdays/:period",
-		zValidator("param", z.custom<Pick<Courses, "weekdays" | "period">>()),
+	.post(
+		"/",
+		zValidator("json", z.custom<Omit<Courses, "professorId">>()),
 		async (c) => {
 			const { userId } = c.get("session");
-			const { weekdays, period } = c.req.valid("param");
-			const result = await fetchCourses(weekdays, period, userId);
-			return c.json(result, 200);
+			const courseData = c.req.valid("json");
+			const result = await createCourses({
+				...courseData,
+				professorId: userId,
+			});
+			return c.json(result);
 		},
 	)
+	// 講義検索
+	.get("/", async (c) => {
+		const { userId } = c.get("session");
+		const { weekdays, period, limit, offset } = c.req.query();
+		if (!weekdays || !period) {
+			return c.json([], 200);
+		}
+
+		const result = await fetchCourses(
+			Number(weekdays),
+			Number(period),
+			Number(limit),
+			Number(offset),
+			userId,
+		);
+		return c.json(result, 200);
+	})
 	// 修了した講義の単位数の合計を取得
 	.get("/completed", async (c) => {
 		const { userId } = c.get("session");
