@@ -3,6 +3,7 @@ import type {
 	assignments,
 	comments,
 	courses,
+	emailNotificationSettings,
 	notifications,
 	registration,
 	schedules,
@@ -18,6 +19,8 @@ export type Comments = typeof comments.$inferInsert;
 export type Notifications = typeof notifications.$inferInsert;
 export type Schedules = typeof schedules.$inferInsert;
 export type Registration = typeof registration.$inferInsert;
+export type EmailNotificationSettings =
+	typeof emailNotificationSettings.$inferInsert;
 
 // データ挿入時のオプショナルフィールド
 export type CoursesOptional = "id" | "departmentId" | "professorId";
@@ -25,3 +28,4 @@ export type SchedulesOptional = "id" | "createdBy" | "createdAt" | "updatedAt";
 export type AnnouncementsOptional = "id" | "createdAt" | "updatedAt";
 export type AssignmentsOptional = "id" | "courseId" | "createdAt" | "updatedAt";
 export type UserOptional = "id";
+export type CommentsOptional = "id" | "createdBy";
