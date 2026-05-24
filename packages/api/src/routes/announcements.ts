@@ -2,6 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import { createAnnouncements } from "@lms-repo/db/utils/mutation/announcements";
 import { fetchAnnouncementsFromUserCourses } from "@lms-repo/db/utils/query/announcements";
+import { resend } from "@lms-repo/emails";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -22,11 +23,30 @@ export const announcementsRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
+	// アナウンスメントの作成
 	.post("/", zValidator("json", formSchema), async (c) => {
+		const { userId } = c.get("session");
 		const announcementData = c.req.valid("json");
-		const result = await createAnnouncements(announcementData);
-		return c.json(result, 201);
+		const result = await createAnnouncements(announcementData, userId);
+
+		if ("message" in result) {
+			return c.json(result);
+		}
+
+		const { emails } = result.find((v) => v.emails.length > 0) ?? {};
+
+		if (emails) {
+			await resend.emails.send({
+				from: "onboarding@resend.dev",
+				to: emails,
+				subject: "Hello world",
+				html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+			});
+		}
+
+		return c.json({ message: "アナウンスメントを作成しました", status: 201 });
 	})
+	// アナウンスメントの取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const announcements = await fetchAnnouncementsFromUserCourses(userId);
