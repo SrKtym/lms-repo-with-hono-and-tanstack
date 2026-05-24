@@ -12,7 +12,7 @@ export function CreateAnnouncementForm() {
 	const { "course-id": courseId } = useParams({
 		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
 	});
-	const createAnnouncement = useCreateAnnouncement();
+	const { mutate: createAnnouncement } = useCreateAnnouncement();
 	const form = useForm({
 		defaultValues: {
 			title: "",
@@ -21,11 +21,11 @@ export function CreateAnnouncementForm() {
 			courseId: courseId || "",
 		},
 		onSubmit: async ({ value }) => {
-			createAnnouncement.mutate(value);
+			createAnnouncement(value);
 		},
 		validators: {
 			onSubmit: z.object({
-				title: z.string().min(1),
+				title: z.string().min(1).max(100),
 				description: z.string().min(1).max(500),
 				type: z.enum(announcementType),
 				courseId: z.string().min(1),
@@ -59,10 +59,13 @@ export function CreateAnnouncementForm() {
 									id: field.name,
 									name: field.name,
 									type: "text",
+									minLength: 1,
+									maxLength: 100,
 									value: field.state.value,
 									"aria-describedby": "title-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
+									placeholder: "タイトルを入力",
 								}}
 								labelProps={{
 									htmlFor: field.name,
@@ -86,16 +89,17 @@ export function CreateAnnouncementForm() {
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								inputProps={{
+								textAreaProps={{
 									id: field.name,
 									name: field.name,
-									type: "text",
 									minLength: 1,
 									maxLength: 500,
 									value: field.state.value,
 									"aria-describedby": "description-error",
 									onBlur: field.handleBlur,
 									onChange: (e) => field.handleChange(e.target.value),
+									placeholder: "説明を入力",
+									rows: 3,
 								}}
 								labelProps={{
 									htmlFor: field.name,
