@@ -252,11 +252,28 @@ export const textSubmissions = pgTable(
 );
 
 // ファイル形式の提出物メタデータ
-export const fileSubmissionsMetadata = pgTable("file_submissions_metadata", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-});
+export const fileSubmissionsMetadata = pgTable(
+	"file_submissions_metadata",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		bucket: text("bucket").notNull(),
+		objectName: text("object_name").notNull(),
+		originalName: text("original_name").notNull(),
+		mimeType: text("mime_type").notNull(),
+		fileSize: integer("file_size").notNull(),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => new Date())
+			.notNull(),
+		createdBy: text("created_by")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+	},
+	(t) => [index("file_submissions_metadata_created_by_idx").on(t.createdBy)],
+);
 
 // 提出状況テーブル
 export const submissionStatus = pgTable(
@@ -310,6 +327,23 @@ export const notifications = pgTable(
 	(t) => [index("notifications_receiver_is_read_idx").on(t.receiver, t.isRead)],
 );
 
+// メール通知設定テーブル
+export const emailNotificationSettings = pgTable(
+	"email_notification_settings",
+	{
+		userId: text("user_id")
+			.primaryKey()
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		announcementsEmail: boolean("announcements_email").default(false).notNull(),
+		assignmentsEmail: boolean("assignments_email").default(false).notNull(),
+		submissionsEmail: boolean("submissions_email").default(false).notNull(),
+		evaluationsEmail: boolean("evaluations_email").default(false).notNull(),
+		remindersEmail: boolean("reminders_email").default(false).notNull(),
+	},
+	(t) => [index("email_notification_settings_user_id_idx").on(t.userId)],
+);
+
 // コメントテーブル
 export const comments = pgTable(
 	"comments",
@@ -326,6 +360,9 @@ export const comments = pgTable(
 		createdBy: text("created_by")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
+		assignmentId: text("assignment_id")
+			.notNull()
+			.references(() => assignments.id, { onDelete: "cascade" }),
 	},
 	(t) => [index("comments_created_by_idx").on(t.createdBy)],
 );
