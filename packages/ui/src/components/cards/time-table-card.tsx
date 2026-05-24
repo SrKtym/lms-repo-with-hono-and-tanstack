@@ -17,9 +17,12 @@ interface TimeTableCardProps {
 	courses: FetchRegisteredCoursesReturnType;
 	onDeleteCourse: (courseId: string) => void;
 	onCourseSelect: (courseId: string) => void;
-	onCellClick?: (day: number, period: number) => void;
+	onCellClick: (day: number, period: number) => void;
 	isPending?: boolean;
 	availableCourses: FetchCoursesReturnType;
+	hasNextPage?: boolean;
+	fetchNextPage?: () => void;
+	isFetchingNextPage?: boolean;
 }
 
 export function TimeTableCard({
@@ -29,6 +32,9 @@ export function TimeTableCard({
 	onCellClick,
 	isPending = false,
 	availableCourses,
+	hasNextPage = false,
+	fetchNextPage,
+	isFetchingNextPage = false,
 }: TimeTableCardProps) {
 	// Generate timeSlots and extract unique values
 	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) =>
@@ -125,7 +131,6 @@ export function TimeTableCard({
 														<div className="mt-1 text-gray-500 dark:text-gray-400">
 															{targetSlot.course.credits}単位
 														</div>
-														{/* Action buttons */}
 														{/* タッチデバイスでない場合は表示しない */}
 														{hasHover && (
 															<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
@@ -133,11 +138,9 @@ export function TimeTableCard({
 																	<CourseSelectionModal
 																		triggerButton={
 																			<OutlineButton
-																				className="rounded-full bg-blue-500 text-white hover:bg-blue-600"
+																				className="rounded-full bg-blue-500 text-white"
 																				size="sm"
-																				onPress={() =>
-																					onCellClick?.(day, period)
-																				}
+																				onPress={() => onCellClick(day, period)}
 																			>
 																				<Edit width={10} height={10} />
 																			</OutlineButton>
@@ -145,12 +148,12 @@ export function TimeTableCard({
 																		onCourseSelect={(course) =>
 																			onCourseSelect(course.id)
 																		}
-																		selectedCell={{
-																			day: day.toString(),
-																			period: period.toString(),
-																		}}
+																		selectedCell={{ day, period }}
 																		availableCourses={availableCourses}
 																		isPending={isPending}
+																		hasNextPage={hasNextPage}
+																		fetchNextPage={fetchNextPage}
+																		isFetchingNextPage={isFetchingNextPage}
 																	/>
 																	<OutlineButton
 																		className="rounded-full bg-red-500 text-white hover:bg-red-600"
@@ -181,7 +184,7 @@ export function TimeTableCard({
 																					className="rounded-full bg-blue-500 text-white"
 																					size="sm"
 																					onPress={() =>
-																						onCellClick?.(day, period)
+																						onCellClick(day, period)
 																					}
 																				>
 																					<Edit width={10} height={10} />
@@ -190,12 +193,12 @@ export function TimeTableCard({
 																			onCourseSelect={(course) =>
 																				onCourseSelect(course.id)
 																			}
-																			selectedCell={{
-																				day: day.toString(),
-																				period: period.toString(),
-																			}}
+																			selectedCell={{ day, period }}
 																			availableCourses={availableCourses}
 																			isPending={isPending}
+																			hasNextPage={hasNextPage}
+																			fetchNextPage={fetchNextPage}
+																			isFetchingNextPage={isFetchingNextPage}
 																		/>
 																		<OutlineButton
 																			className="rounded-full bg-red-500 text-white"
@@ -216,7 +219,7 @@ export function TimeTableCard({
 														triggerButton={
 															<OutlineButton
 																className="h-full rounded-lg"
-																onPress={() => onCellClick?.(day, period)}
+																onPress={() => onCellClick(day, period)}
 															>
 																<Plus />
 															</OutlineButton>
@@ -224,12 +227,12 @@ export function TimeTableCard({
 														onCourseSelect={(course) =>
 															onCourseSelect(course.id)
 														}
-														selectedCell={{
-															day: day.toString(),
-															period: period.toString(),
-														}}
+														selectedCell={{ day, period }}
 														availableCourses={availableCourses}
 														isPending={isPending}
+														hasNextPage={hasNextPage}
+														fetchNextPage={fetchNextPage}
+														isFetchingNextPage={isFetchingNextPage}
 													/>
 												)}
 											</AnimatePresence>
