@@ -72,9 +72,24 @@ function MyPageLayoutComponent() {
 					persistOptions={{
 						persister: asyncStoragePersister,
 						dehydrateOptions: {
-							// 成功したクエリのみを永続化
-							shouldDehydrateQuery: (query) => query.state.status === "success",
-							// ミューテーションは永続化しない
+							// 特定のクエリキーのみを永続化
+							shouldDehydrateQuery: (query) => {
+								// 成功したクエリのみ
+								if (query.state.status !== "success") {
+									return false;
+								}
+								// studentDataのみを永続化
+								const queryKey = query.queryKey;
+								const filteredQueryKey = queryKey.filter(
+									(key) =>
+										key === "studentData" ||
+										key === "totalCredits" ||
+										key === "email-notification-settings" ||
+										key === "registered-courses",
+								);
+								return filteredQueryKey.length > 0;
+							},
+							// ミューテーションは永恒化しない
 							shouldDehydrateMutation: () => false,
 						},
 						// 24時間キャッシュを保持
@@ -91,6 +106,12 @@ function MyPageLayoutComponent() {
 						<Outlet />
 					</main>
 				</PersistQueryClientProvider>
+				{/* Footer */}
+				<div className="mt-8 text-center">
+					<p className="p-4 text-gray-500 text-sm dark:text-gray-400">
+						© 2026 LMS. All rights reserved.
+					</p>
+				</div>
 			</div>
 		</div>
 	);
