@@ -2,7 +2,7 @@ import { authClient } from "@lms-repo/auth/web";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { RadioGroupFor2fa } from "@lms-repo/ui/components/radio-group";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
 import { RegisterTotpSecretForm } from "@/components/public/register-totp-secret-form";
 import { TwoFactorSettingForm } from "@/components/public/twofactor-setting-form";
@@ -21,6 +21,13 @@ export const Route = createFileRoute("/_auth/set-twofactor")({
 			staleTime: 5 * 60 * 1000, // 5 minutes
 			gcTime: 10 * 60 * 1000, // 10 minutes
 		});
+
+		if (!session.data) {
+			redirect({
+				to: "/sign-in",
+				throw: true,
+			});
+		}
 
 		return { session };
 	},
