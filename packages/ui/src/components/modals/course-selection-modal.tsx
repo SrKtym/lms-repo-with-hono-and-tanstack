@@ -3,6 +3,7 @@ import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { DAYS } from "../../lib/utils";
 import { CancelButton, OutlineButton } from "../button";
 import { Loader } from "../loader";
+import { useEffect, useRef } from "react";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;
@@ -26,6 +27,29 @@ export function CourseSelectionModal({
 	fetchNextPage,
 	isFetchingNextPage = false,
 }: CourseSelectionModalProps) {
+	const sentinelRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		const observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+					fetchNextPage?.();
+				}
+			},
+			{ threshold: 0.1 },
+		);
+
+		if (sentinelRef.current) {
+			observer.observe(sentinelRef.current);
+		}
+
+		return () => {
+			if (sentinelRef.current) {
+				observer.unobserve(sentinelRef.current);
+			}
+		};
+	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
+
 	return (
 		<Modal>
 			{triggerButton}
@@ -59,15 +83,9 @@ export function CourseSelectionModal({
 											</OutlineButton>
 										))}
 										{hasNextPage && (
-											<OutlineButton
-												size="lg"
-												onPress={() => fetchNextPage?.()}
-												isDisabled={isFetchingNextPage}
-											>
-												{isFetchingNextPage
-													? "読み込み中..."
-													: "もっと読み込む"}
-											</OutlineButton>
+											<div ref={sentinelRef} className="py-2">
+												{isFetchingNextPage && <Loader />}
+											</div>
 										)}
 										{!isPending && availableCourses.length === 0 && (
 											<div className="py-8 text-center text-gray-500 dark:text-gray-400">
