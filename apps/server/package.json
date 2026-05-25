@@ -12,6 +12,7 @@
 	"dependencies": {
 		"@arcjet/bun": "^1.4.0",
 		"@arcjet/inspect": "^1.4.0",
+		"@arcjet/ip": "^1.4.0",
 		"@lms-repo/api": "workspace:*",
 		"@lms-repo/auth": "workspace:*",
 		"@lms-repo/db": "workspace:*",
