@@ -18,7 +18,8 @@ export const env = createEnv({
 		GOOGLE_CLIENT_ID: z.string().min(1),
 		GITHUB_CLIENT_SECRET: z.string().min(32),
 		GITHUB_CLIENT_ID: z.string().min(1),
-		RESEND_API_KEY: z.string().min(1),
+		RESEND_API_KEY: z.string().min(32),
+		ARCJET_KEY: z.string().min(32),
 		CORS_ORIGIN: z.url(),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
