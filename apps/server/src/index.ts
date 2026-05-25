@@ -5,6 +5,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { authMiddleware } from "./middleware/auth";
+import { securityMiddleware } from "./middleware/security";
 
 const app = new Hono()
 	.use(
@@ -38,6 +39,7 @@ const app = new Hono()
 		// }),
 	)
 	// 認証ミドルウェア
+	.on(["POST", "PUT", "DELETE"], "*", securityMiddleware)
 	.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
 	.use("*", authMiddleware)
 	// ルーティング

@@ -3,12 +3,13 @@ import { env } from "@lms-repo/env/server";
 
 export const aj = arcjet({
 	key: env.ARCJET_KEY,
+	characteristics: ["userId"],
 	rules: [
 		// 一般的な攻撃（OWASP Top10に列挙される攻撃）からアプリケーションを保護する
 		shield({ mode: "LIVE" }),
 		// ボット検出のルール
 		detectBot({
-			mode: "LIVE", 
+			mode: "LIVE",
 			allow: [
 				"CATEGORY:SEARCH_ENGINE", // Googlebot, Bingbot など
 				"CATEGORY:MONITOR", // UptimeRobot などの死活監視ツール
@@ -18,10 +19,9 @@ export const aj = arcjet({
 		// レート制限のアルゴリズムとしてトークンバケットを採用
 		tokenBucket({
 			mode: "LIVE",
-			characteristics: ["ip.src"], // IPアドレスを追跡
-			refillRate: 5, // 5個のトークンを補充
-			interval: 10, // 10秒ごとに
-			capacity: 10, // バケットには最大10個のトークンが含まれる
+			refillRate: 1, // 1個のトークンを補充
+			interval: 60, // 1分ごとに
+			capacity: 5, // バケットには最大5個のトークンが含まれる
 		}),
 	],
 });
