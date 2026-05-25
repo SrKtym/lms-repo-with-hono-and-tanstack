@@ -1,9 +1,9 @@
 import { Modal } from "@heroui/react";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import { useEffect, useRef } from "react";
 import { DAYS } from "../../lib/utils";
 import { CancelButton, OutlineButton } from "../button";
 import { Loader } from "../loader";
-import { useEffect, useRef } from "react";
 
 interface CourseSelectionModalProps {
 	triggerButton: React.ReactNode;

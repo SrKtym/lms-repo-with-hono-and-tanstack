@@ -40,10 +40,7 @@ export const useRegisteredCourses = (
 };
 
 // 曜日と時限から講義を取得するカスタムフック（無限スクロール対応）
-export const useSearchCourses = (
-	weekdays?: number,
-	period?: number,
-) => {
+export const useSearchCourses = (weekdays?: number, period?: number) => {
 	return useInfiniteQuery({
 		queryKey: ["search-courses", weekdays, period],
 		queryFn: async ({ pageParam }) => {
