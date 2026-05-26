@@ -5,6 +5,8 @@ import { fetchAssignmentsFromUserCourses } from "@lms-repo/db/utils/query/assign
 import { resend } from "@lms-repo/emails";
 import { Hono } from "hono";
 import { z } from "zod";
+import NewAssignmentEmail from "@lms-repo/emails/components/new-assignment-email";
+import { env } from "@lms-repo/env/server";
 
 const formSchema = z.object({
 	title: z.string().min(1, "課題名は必須です"),
@@ -31,20 +33,26 @@ export const assignmentsRoute = new Hono<{
 	// 課題作成
 	.post("/", zValidator("json", formSchema), async (c) => {
 		const { userId } = c.get("session");
+		const { email } = c.get("user");
 		const assignmentData = c.req.valid("json");
 		const result = await createAssignments(assignmentData, userId);
+
 		if ("message" in result) {
 			return c.json(result);
 		}
 
-		const { emails } = result.find((v) => v.emails.length > 0) ?? {};
-
-		if (emails) {
+		if (result[0]) {
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
-				to: emails,
-				subject: "Hello world",
-				html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+				to: result[0].emails,
+				subject: "新しい課題",
+				react: NewAssignmentEmail({
+					email: email,
+					assignmentTitle: result[0].title,
+					assignmentDescription: result[0].description,
+					dueDate: result[0].dueDate.toString(),
+					viewUrl: env.CORS_ORIGIN,
+				}),
 			});
 		}
 

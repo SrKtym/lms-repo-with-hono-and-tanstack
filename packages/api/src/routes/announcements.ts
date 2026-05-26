@@ -5,6 +5,8 @@ import { fetchAnnouncementsFromUserCourses } from "@lms-repo/db/utils/query/anno
 import { resend } from "@lms-repo/emails";
 import { Hono } from "hono";
 import { z } from "zod";
+import NewAnnouncementEmail from "@lms-repo/emails/components/new-announcement-email";
+import { env } from "@lms-repo/env/server";
 
 const formSchema = z.object({
 	title: z.string().min(1, "タイトルは必須です"),
@@ -26,6 +28,7 @@ export const announcementsRoute = new Hono<{
 	// アナウンスメントの作成
 	.post("/", zValidator("json", formSchema), async (c) => {
 		const { userId } = c.get("session");
+		const { email } = c.get("user");
 		const announcementData = c.req.valid("json");
 		const result = await createAnnouncements(announcementData, userId);
 
@@ -33,14 +36,17 @@ export const announcementsRoute = new Hono<{
 			return c.json(result);
 		}
 
-		const { emails } = result.find((v) => v.emails.length > 0) ?? {};
-
-		if (emails) {
+		if (result[0]) {
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
-				to: emails,
-				subject: "Hello world",
-				html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+				to: result[0].emails,
+				subject: "新しいお知らせ",
+				react: NewAnnouncementEmail({
+					email: email,
+					announcementTitle: result[0].title,
+					announcementContent: result[0].description,
+					viewUrl: env.CORS_ORIGIN,
+				}),
 			});
 		}
 
