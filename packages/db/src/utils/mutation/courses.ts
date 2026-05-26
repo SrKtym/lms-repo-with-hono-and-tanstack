@@ -4,8 +4,9 @@ import {
 	courses,
 	departments,
 	faculties,
+	notifications,
 	registration,
-	students,
+	students
 } from "../../schema";
 import type { Courses } from "../../types";
 
@@ -191,12 +192,25 @@ export async function registerCourses(courseId: string, userId: string) {
 // 登録講義を確定する
 export async function checkCourse(userId: string) {
 	try {
-		await db
-			.update(registration)
-			.set({
-				isChecked: true,
-			})
-			.where(eq(registration.userId, userId));
+		await db.transaction(async (tx) => {
+			// 履修登録の完了
+			await tx
+				.update(registration)
+				.set({ isChecked: true })
+				.where(eq(registration.userId, userId));
+
+			// 通知の作成
+			await tx
+				.insert(notifications)
+				.values({
+					title: "履修登録が完了しました。",
+					description: "指定された期日まで登録内容を編集することができます。",
+					sender: "system",
+					receiver: userId
+				})
+				.onConflictDoNothing();
+		});
+
 		return { message: "登録講義の確定に成功しました。", status: 200 };
 	} catch (error) {
 		return { message: "登録講義の確定に失敗しました。", status: 500 };
