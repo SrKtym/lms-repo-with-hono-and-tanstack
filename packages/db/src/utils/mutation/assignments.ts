@@ -10,6 +10,7 @@ import {
 } from "../../schema";
 import type { Assignments } from "../../types";
 
+// 課題の作成
 export async function createAssignments(
 	assignmentsData: Assignments,
 	userId: string,
@@ -97,6 +98,7 @@ export async function createAssignments(
 	}
 }
 
+// 課題の更新
 export async function updateAssignments(assignmentsData: Assignments) {
 	try {
 		await db.update(assignments).set(assignmentsData);
@@ -106,6 +108,7 @@ export async function updateAssignments(assignmentsData: Assignments) {
 	}
 }
 
+// 課題の削除
 export async function deleteAssignments(assignmentId: string) {
 	try {
 		await db.delete(assignments).where(eq(assignments.id, assignmentId));

@@ -8,6 +8,7 @@ import {
 	registration,
 } from "../../schema";
 
+// 通知の取得
 export async function fetchNotifications(userId: string) {
 	const notificationList = await db.transaction(async (tx) => {
 		const ids = await tx
@@ -31,7 +32,7 @@ export async function fetchNotifications(userId: string) {
 		const notificationsList = await tx
 			.select()
 			.from(notifications)
-			.where(inArray(notifications.receiver, idList));
+			.where(inArray(notifications.receiver, [...idList, "students"]));
 
 		return notificationsList;
 	});
