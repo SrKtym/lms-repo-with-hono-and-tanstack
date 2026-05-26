@@ -6,7 +6,7 @@ import {
 	faculties,
 	notifications,
 	registration,
-	students
+	students,
 } from "../../schema";
 import type { Courses } from "../../types";
 
@@ -206,7 +206,7 @@ export async function checkCourse(userId: string) {
 					title: "履修登録が完了しました。",
 					description: "指定された期日まで登録内容を編集することができます。",
 					sender: "system",
-					receiver: "students"
+					receiver: "students",
 				})
 				.onConflictDoNothing();
 		});
