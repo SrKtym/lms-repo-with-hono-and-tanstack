@@ -40,29 +40,31 @@ export const useSubmitMultipleFiles = () => {
 			const signedUrls = await signedUrlsRes.json();
 
 			// 2. Cloud Storageにファイルを並列アップロード
-			const uploadPromises = signedUrls.map(async ({ fileName, signedUrl, objectName }) => {
-				const file = files.find((f) => f.name === fileName);
-				if (!file) throw new Error(`ファイル ${fileName} が見つかりません`);
+			const uploadPromises = signedUrls.map(
+				async ({ fileName, signedUrl, objectName }) => {
+					const file = files.find((f) => f.name === fileName);
+					if (!file) throw new Error(`ファイル ${fileName} が見つかりません`);
 
-				const uploadRes = await fetch(signedUrl, {
-					method: "PUT",
-					body: file,
-					headers: {
-						"Content-Type": file.type,
-					},
-				});
+					const uploadRes = await fetch(signedUrl, {
+						method: "PUT",
+						body: file,
+						headers: {
+							"Content-Type": file.type,
+						},
+					});
 
-				if (!uploadRes.ok) {
-					throw new Error(`${file.name}のアップロードに失敗しました`);
-				}
+					if (!uploadRes.ok) {
+						throw new Error(`${file.name}のアップロードに失敗しました`);
+					}
 
-				return {
-					objectName,
-					originalName: file.name,
-					mimeType: file.type,
-					fileSize: file.size,
-				};
-			});
+					return {
+						objectName,
+						originalName: file.name,
+						mimeType: file.type,
+						fileSize: file.size,
+					};
+				},
+			);
 
 			const uploadedMetadata = await Promise.all(uploadPromises);
 

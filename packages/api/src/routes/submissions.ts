@@ -12,9 +12,9 @@ import {
 	fetchSubmissionById,
 	fetchSubmissionsFromUserCourses,
 } from "@lms-repo/db/utils/query/submissions";
+import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { z } from "zod";
-import { env } from "@lms-repo/env/server";
 
 const storage = new Storage({
 	apiEndpoint: env.GCS_EMULATOR_HOST,
