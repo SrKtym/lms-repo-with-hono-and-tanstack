@@ -4,29 +4,29 @@ import type { FetchSubmissionByIdReturnType } from "@lms-repo/db/utils/query/sub
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 import { TabsForSubmissions } from "../tabs";
-import { FileUploaderCard } from "./file-uploader-card";
+import { FileUploaderCard, type UploadedFile } from "./file-uploader-card";
 
 interface SubmissionsCardProps {
 	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
 	targetSubmission?: FetchSubmissionByIdReturnType[number];
-	// attachments: AttachmentData[];
-	// selectedTab: AssignmentTabKey;
 	submitState: any;
 	isPending: boolean;
-	// onTabChange: (key: AssignmentTabKey) => void;
 	onFileRemove: (fileId: string, relatedTo: any) => void;
 	formAction: any;
+	selectedFiles?: UploadedFile[];
+	onFilesChange?: (files: UploadedFile[]) => void;
+	onFileUpload?: (file: File) => Promise<string>;
 }
 
 export function SubmissionsCard({
 	targetAssignment,
 	targetSubmission,
-	// attachments,
-	// selectedTab,
 	submitState,
 	isPending,
-	// onTabChange,
 	onFileRemove,
+	selectedFiles,
+	onFilesChange,
+	onFileUpload,
 }: SubmissionsCardProps) {
 	return (
 		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
@@ -66,8 +66,8 @@ export function SubmissionsCard({
 									<FileUploaderCard
 										maxFiles={10}
 										accept="*/*"
-										onFilesChange={() => {}}
-										onFileUpload={() => {}}
+										onFilesChange={onFilesChange}
+										onFileUpload={onFileUpload}
 									/>
 								</form>
 							}
