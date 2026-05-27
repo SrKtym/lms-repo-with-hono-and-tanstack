@@ -4,9 +4,11 @@ import type {
 	comments,
 	courses,
 	emailNotificationSettings,
+	fileSubmissionsMetadata,
 	notifications,
 	registration,
 	schedules,
+	textSubmissions,
 } from "@lms-repo/db/schema/service";
 import type { user } from "./schema/auth";
 
@@ -21,6 +23,9 @@ export type Schedules = typeof schedules.$inferInsert;
 export type Registration = typeof registration.$inferInsert;
 export type EmailNotificationSettings =
 	typeof emailNotificationSettings.$inferInsert;
+export type TextSubmissions = typeof textSubmissions.$inferInsert;
+export type FileSubmissionsMetadata =
+	typeof fileSubmissionsMetadata.$inferInsert;
 
 // データ挿入時のオプショナルフィールド
 export type CoursesOptional = "id" | "departmentId" | "professorId";
