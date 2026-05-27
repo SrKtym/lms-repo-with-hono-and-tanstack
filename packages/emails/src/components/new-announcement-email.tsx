@@ -21,10 +21,10 @@ export default function NewAnnouncementEmail({
 			<Text className="text-base text-gray-700 leading-relaxed">
 				新しいお知らせが投稿されました。
 			</Text>
-			<Text className="mt-4 text-lg font-bold text-gray-900">
+			<Text className="mt-4 font-bold text-gray-900 text-lg">
 				{announcementTitle}
 			</Text>
-			<Text className="mt-2 text-base text-gray-700 leading-relaxed whitespace-pre-line">
+			<Text className="mt-2 whitespace-pre-line text-base text-gray-700 leading-relaxed">
 				{announcementContent}
 			</Text>
 			<Button

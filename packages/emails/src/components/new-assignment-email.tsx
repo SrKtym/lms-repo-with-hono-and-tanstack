@@ -23,16 +23,14 @@ export default function NewAssignmentEmail({
 			<Text className="text-base text-gray-700 leading-relaxed">
 				新しい課題が投稿されました。
 			</Text>
-			<Text className="mt-4 text-lg font-bold text-gray-900">
+			<Text className="mt-4 font-bold text-gray-900 text-lg">
 				{assignmentTitle}
 			</Text>
-			<Text className="mt-2 text-base text-gray-700 leading-relaxed whitespace-pre-line">
+			<Text className="mt-2 whitespace-pre-line text-base text-gray-700 leading-relaxed">
 				{assignmentDescription}
 			</Text>
 			{dueDate && (
-				<Text className="mt-2 text-sm text-gray-600">
-					提出期限: {dueDate}
-				</Text>
+				<Text className="mt-2 text-gray-600 text-sm">提出期限: {dueDate}</Text>
 			)}
 			<Button
 				href={viewUrl}
