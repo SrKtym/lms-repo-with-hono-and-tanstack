@@ -8,11 +8,12 @@
 	},
 	"scripts": {},
 	"dependencies": {
+		"@google-cloud/storage": "^7.19.0",
+		"@hono/zod-validator": "^0.7.6",
 		"@lms-repo/auth": "workspace:*",
-		"@lms-repo/emails": "workspace:",
 		"@lms-repo/db": "workspace:*",
-		"hono": "catalog:",
-		"@hono/zod-validator": "^0.7.6"
+		"@lms-repo/emails": "workspace:",
+		"hono": "catalog:"
 	},
 	"devDependencies": {
 		"typescript": "catalog:"
