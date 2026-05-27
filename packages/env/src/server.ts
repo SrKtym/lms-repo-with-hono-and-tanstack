@@ -20,6 +20,8 @@ export const env = createEnv({
 		GITHUB_CLIENT_ID: z.string().min(1),
 		RESEND_API_KEY: z.string().min(32),
 		ARCJET_KEY: z.string().min(32),
+		GCS_EMULATOR_HOST: z.string().min(1),
+		GCS_BUCKET_NAME: z.string().min(1),
 		CORS_ORIGIN: z.url(),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])

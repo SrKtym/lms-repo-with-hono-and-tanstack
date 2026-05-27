@@ -14,14 +14,14 @@ import {
 } from "@lms-repo/db/utils/query/submissions";
 import { Hono } from "hono";
 import { z } from "zod";
+import { env } from "@lms-repo/env/server";
 
 const storage = new Storage({
-	// ダミー
+	apiEndpoint: env.GCS_EMULATOR_HOST,
 	projectId: "dummy-project",
-	credentials: JSON.parse("serviceAccount-key"),
 });
 
-const bucket = storage.bucket("dummy-storage-bucket");
+const bucket = storage.bucket(env.GCS_BUCKET_NAME);
 
 export const submissionsRoute = new Hono<{
 	Variables: {

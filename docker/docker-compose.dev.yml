@@ -16,6 +16,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:password@db:5432/lmsdb
       NODE_ENV: development
+      GCS_EMULATOR_HOST: http://fake-gcs:8000
+      GCS_BUCKET_NAME: dummy-storage-bucket
     depends_on:
       - db
 
@@ -51,7 +53,32 @@ services:
       # PostgreSQLのデータを永続化
       - postgres_data:/var/lib/postgresql
 
+  fake-gcs:
+    container_name: lms-fake-gcs
+    image: fsouza/fake-gcs-server
+    ports:
+      - 4443:4443
+      - 8000:8000
+    volumes:
+      - gcs_data:/data
+    command: ["-scheme", "both", "-backend", "memory"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+
+  gcs-init:
+    container_name: lms-gcs-init
+    image: curlimages/curl:latest
+    depends_on:
+      fake-gcs:
+        condition: service_healthy
+    command: >
+      sh -c "curl -X PUT http://fake-gcs:8000/dummy-storage-bucket && echo 'Bucket created successfully'"
+
 volumes:
   node_modules:
   postgres_data:
+  gcs_data:
 
