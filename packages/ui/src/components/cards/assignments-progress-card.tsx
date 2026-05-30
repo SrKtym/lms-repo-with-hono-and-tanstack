@@ -4,14 +4,18 @@ import { TrendingUp } from "@lms-repo/ui/assets/icons/trending-up";
 import { BaseCard } from "../cards/base-card";
 import { DefaultProgressBar } from "../progress-bar";
 
-export function AssignmentsProgressCard({
-	submissions,
-	overdueAssignments,
-}: {
+interface AssignmentsProgressCardProps {
+	assignments: FetchAssignmentsFromUserCoursesReturnType;
 	submissions: FetchSubmissionsFromUserCoursesReturnType;
 	overdueAssignments: FetchAssignmentsFromUserCoursesReturnType;
-}) {
-	const totalAssignments = submissions.length;
+}
+
+export function AssignmentsProgressCard({
+	assignments,
+	submissions,
+	overdueAssignments,
+}: AssignmentsProgressCardProps) {
+	const totalAssignments = assignments.length;
 	const submittedAssignments = submissions.filter(
 		(submission) => submission.status === "提出済み",
 	);

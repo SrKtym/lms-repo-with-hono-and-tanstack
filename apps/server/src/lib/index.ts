@@ -19,9 +19,9 @@ export const aj = arcjet({
 		// レート制限のアルゴリズムとしてトークンバケットを採用
 		tokenBucket({
 			mode: "LIVE",
-			refillRate: 1, // 1個のトークンを補充
+			refillRate: 10, // 10個のトークンを補充
 			interval: 60, // 1分ごとに
-			capacity: 5, // バケットには最大5個のトークンが含まれる
+			capacity: 30, // バケットには最大30個のトークンが含まれる
 		}),
 	],
 });

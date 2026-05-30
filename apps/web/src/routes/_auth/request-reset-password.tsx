@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { env } from "@lms-repo/env/web";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { ResetPasswordIcon } from "@lms-repo/ui/assets/icons/reset-password";
 import { DefaultButton } from "@lms-repo/ui/components/button";
@@ -28,7 +29,7 @@ function RouteComponent() {
 				await authClient.requestPasswordReset(
 					{
 						email: value.email,
-						redirectTo: "/reset-password",
+						redirectTo: `${env.VITE_CLIENT_URL}/reset-password`,
 					},
 					{
 						onError: () => {
@@ -38,7 +39,7 @@ function RouteComponent() {
 				);
 
 				setIsSuccess(true);
-			} catch (err) {
+			} catch {
 				setError(
 					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 				);
@@ -93,10 +94,7 @@ function RouteComponent() {
 									value: field.state.value,
 									"aria-describedby": "email-error",
 									onBlur: field.handleBlur,
-									onChange: (e) => {
-										field.handleChange(e.target.value);
-										setError(""); // Clear error on input
-									},
+									onChange: (e) => field.handleChange(e.target.value),
 									placeholder: "メールアドレスを入力してください",
 									className: "w-full",
 								}}

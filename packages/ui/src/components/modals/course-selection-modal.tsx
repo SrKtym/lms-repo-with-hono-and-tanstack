@@ -84,7 +84,7 @@ export function CourseSelectionModal({
 										))}
 										{hasNextPage && (
 											<div ref={sentinelRef} className="py-2">
-												{isFetchingNextPage && <Loader />}
+												{isPending && <Loader />}
 											</div>
 										)}
 										{!isPending && availableCourses.length === 0 && (

@@ -123,6 +123,7 @@ function RouteComponent() {
 						deleteNotification={deleteNotification}
 					/>
 					<AssignmentsProgressCard
+						assignments={assignments}
 						submissions={submissions}
 						overdueAssignments={overdueAssignments}
 					/>
@@ -139,6 +140,7 @@ function RouteComponent() {
 					/>
 					<UpcomingAssignmentsCard assignments={assignments} />
 					<AssignmentsProgressCard
+						assignments={assignments}
 						submissions={submissions}
 						overdueAssignments={overdueAssignments}
 					/>

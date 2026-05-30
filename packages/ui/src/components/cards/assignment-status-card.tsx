@@ -10,7 +10,6 @@ interface AssignmentStatusCardProps {
 			status: string;
 		};
 	} | null;
-	isTeacher?: boolean;
 	dateOptionforAnnouncement?: Intl.DateTimeFormatOptions;
 	getAssignmentStatusColor?: (
 		status: string,
@@ -20,7 +19,6 @@ interface AssignmentStatusCardProps {
 // AssignmentStatusCard component
 export function AssignmentStatusCard({
 	currentAssignment,
-	isTeacher = false,
 	dateOptionforAnnouncement = {
 		year: "numeric",
 		month: "short",
@@ -51,10 +49,10 @@ export function AssignmentStatusCard({
 									size="sm"
 									className="ml-3"
 									color={getAssignmentStatusColor(
-										currentAssignment.assignmentStatus.status,
+										currentAssignment.assignmentStatus?.status || "",
 									)}
 								>
-									{currentAssignment.assignmentStatus.status}
+									{currentAssignment.assignmentStatus?.status}
 								</DefaultChip>
 							</div>
 
