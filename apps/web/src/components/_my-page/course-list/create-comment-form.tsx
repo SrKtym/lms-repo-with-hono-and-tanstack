@@ -1,19 +1,19 @@
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateComment } from "@/hooks/comments";
 
 export function CreateCommentForm() {
-	const { "content-id": contentId } = useParams({
-		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
+	const { "assignment-id": assignmentId } = useSearch({
+		from: "/_my-page/course-list",
 	});
 	const { mutate: createComment } = useCreateComment();
 	const form = useForm({
 		defaultValues: {
 			content: "",
-			assignmentId: contentId || "",
+			assignmentId: assignmentId || "",
 		},
 		onSubmit: async ({ value }) => {
 			createComment(value);

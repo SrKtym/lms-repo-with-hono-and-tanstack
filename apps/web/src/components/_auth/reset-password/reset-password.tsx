@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { Check } from "@lms-repo/ui/assets/icons/check";
 import { ResetPasswordIcon } from "@lms-repo/ui/assets/icons/reset-password";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
@@ -27,18 +28,12 @@ export default function ResetPassword({ token }: { token: string }) {
 						newPassword: value.password,
 					},
 					{
-						onError: (error) => {
-							const errorMessage =
-								error.error.message ||
-								error.error.statusText ||
-								"パスワードのリセットに失敗しました";
-							setError(errorMessage);
-						},
+						onError: () => setError("パスワードのリセットに失敗しました"),
 					},
 				);
 
 				setIsSuccess(true);
-			} catch (err) {
+			} catch {
 				setError(
 					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 				);
@@ -55,6 +50,7 @@ export default function ResetPassword({ token }: { token: string }) {
 						.min(8, "パスワードは8文字以上である必要があります"),
 				})
 				.refine((data) => data.password === data.confirmPassword, {
+					path: ["confirmPassword"],
 					message: "パスワードが一致しません",
 				}),
 		},
@@ -88,7 +84,7 @@ export default function ResetPassword({ token }: { token: string }) {
 					form.handleSubmit();
 				}}
 				className="space-y-6"
-				aria-describedby="reset-password-error"
+				aria-describedby="reset-password-messages"
 			>
 				<form.Field
 					name="password"
@@ -100,12 +96,10 @@ export default function ResetPassword({ token }: { token: string }) {
 									name: field.name,
 									type: "password",
 									value: field.state.value,
+									minLength: 8,
 									"aria-describedby": "password-error",
 									onBlur: field.handleBlur,
-									onChange: (e) => {
-										field.handleChange(e.target.value);
-										setError(""); // Clear error on input
-									},
+									onChange: (e) => field.handleChange(e.target.value),
 									placeholder: "新しいパスワードを入力",
 									className: "w-full",
 								}}
@@ -137,12 +131,10 @@ export default function ResetPassword({ token }: { token: string }) {
 									name: field.name,
 									type: "password",
 									value: field.state.value,
+									minLength: 8,
 									"aria-describedby": "confirm-password-error",
 									onBlur: field.handleBlur,
-									onChange: (e) => {
-										field.handleChange(e.target.value);
-										setError(""); // Clear error on input
-									},
+									onChange: (e) => field.handleChange(e.target.value),
 									placeholder: "新しいパスワードを再入力",
 									className: "w-full",
 								}}
@@ -168,7 +160,7 @@ export default function ResetPassword({ token }: { token: string }) {
 				{error && (
 					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
 						<p
-							id="reset-password-error"
+							id="reset-password-messages"
 							className="text-red-600 dark:text-red-400"
 						>
 							{error}
@@ -179,21 +171,13 @@ export default function ResetPassword({ token }: { token: string }) {
 				{/* 成功メッセージ */}
 				{isSuccess && (
 					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
-						<div className="flex items-center">
-							<svg
-								className="mr-3 h-5 w-5 text-green-600 dark:text-green-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
-								<path
-									strokeLinecap="round"
-									strokeLinejoin="round"
-									strokeWidth={2}
-									d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-								/>
-							</svg>
-							<div>
+						<div className="flex items-center gap-2">
+							<Check
+								width={32}
+								height={32}
+								className="text-green-600 dark:text-green-400"
+							/>
+							<div id="reset-password-messages">
 								<h4 className="font-medium text-green-800 dark:text-green-200">
 									パスワードのリセットに成功しました。
 								</h4>
@@ -218,15 +202,6 @@ export default function ResetPassword({ token }: { token: string }) {
 					)}
 				</form.Subscribe>
 			</form>
-
-			{/* Success State - Additional Info */}
-			{isSuccess && (
-				<div className="text-center">
-					<p className="text-gray-500 dark:text-gray-400">
-						サインインページにリダイレクトされます。
-					</p>
-				</div>
-			)}
 
 			{/* Back to Sign In */}
 			<div className="text-center">

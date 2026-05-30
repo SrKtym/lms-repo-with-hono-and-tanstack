@@ -47,12 +47,11 @@ export default function RegisteredCourseInfos({
 						className="h-full w-full object-cover"
 						alt="Course background"
 						decoding="async"
-						priority={true}
 					/>
 					<div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 					<Link
-						to="/course-list/{-$course-id}/{-$content-id}"
-						params={(prev) => ({ ...prev, "course-id": undefined })}
+						to="/course-list"
+						search={(prev) => ({ ...prev, "course-id": undefined })}
 						className="absolute top-4 left-4 flex items-center gap-1"
 					>
 						<CancelButton size="sm">
@@ -119,10 +118,10 @@ export default function RegisteredCourseInfos({
 										{assignments.map((assignment) => (
 											<Link
 												key={assignment.id}
-												to="/course-list/{-$course-id}/{-$content-id}"
-												params={(prev) => ({
+												to="/course-list"
+												search={(prev) => ({
 													...prev,
-													"content-id": assignment.id,
+													"assignment-id": assignment.id,
 												})}
 												className="block"
 											>

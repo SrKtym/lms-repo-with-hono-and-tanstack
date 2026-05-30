@@ -9,14 +9,14 @@ import {
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateAssignment } from "@/hooks/assignments";
 
 export function CreateAssignmentForm() {
 	const dateTime = now(getLocalTimeZone());
-	const { "course-id": courseId } = useParams({
-		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
+	const { "course-id": courseId } = useSearch({
+		from: "/_my-page/course-list",
 	});
 	const { mutate: createAssignment } = useCreateAssignment();
 	const form = useForm({

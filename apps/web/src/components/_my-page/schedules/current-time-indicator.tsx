@@ -74,7 +74,7 @@ export function CurrentTimeIndicator({
 			className="absolute right-0 left-0 z-8 flex items-center"
 			initial={{ opacity: 0 }}
 			animate={{ opacity: 1, top: `${currentPosition - elementHeight / 2}px` }}
-			transition={{ type: "spring", stiffness: 100, damping: 10 }}
+			transition={{ type: "spring", stiffness: 80, damping: 30 }}
 		>
 			<span className="font-medium text-primary text-xs">
 				{new Date().toLocaleTimeString("default", {

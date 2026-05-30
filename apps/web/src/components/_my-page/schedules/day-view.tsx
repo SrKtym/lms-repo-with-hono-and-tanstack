@@ -3,7 +3,7 @@ import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import * as m from "motion/react-m";
 import type { Event } from "@/hooks/use-course-events";
-import { CurrentTimeIndicator } from "../current-time-indicator";
+import { CurrentTimeIndicator } from "./current-time-indicator";
 
 interface DayViewProps {
 	currentDate: Date;

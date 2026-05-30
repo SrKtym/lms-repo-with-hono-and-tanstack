@@ -4,13 +4,13 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateAnnouncement } from "@/hooks/announcements";
 
 export function CreateAnnouncementForm() {
-	const { "course-id": courseId } = useParams({
-		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
+	const { "course-id": courseId } = useSearch({
+		from: "/_my-page/course-list",
 	});
 	const { mutate: createAnnouncement } = useCreateAnnouncement();
 	const form = useForm({

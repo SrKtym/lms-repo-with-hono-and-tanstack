@@ -3,14 +3,14 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { useForm } from "@tanstack/react-form";
-import { useParams } from "@tanstack/react-router";
+import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateCourse } from "@/hooks/courses";
 
 export function CreateCourseForm() {
 	type Requirement = (typeof requirements)[number];
-	const { "content-id": contentId } = useParams({
-		from: "/_my-page/course-list/{-$course-id}/{-$content-id}",
+	const { "assignment-id": assignmentId } = useSearch({
+		from: "/_my-page/course-list",
 	});
 	const { mutate: createCourse } = useCreateCourse();
 	const form = useForm({
@@ -22,7 +22,7 @@ export function CreateCourseForm() {
 			credits: 1,
 			requirements: "任意" as Requirement,
 			classRoom: "",
-			departmentId: contentId || "",
+			departmentId: assignmentId || "",
 		},
 		onSubmit: async ({ value }) => {
 			createCourse(value);

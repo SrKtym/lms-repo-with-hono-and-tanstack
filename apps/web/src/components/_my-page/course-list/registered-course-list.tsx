@@ -103,8 +103,8 @@ export default function RegisteredCourseList({
 											course={currentCourseData}
 											LinkComponent={
 												<Link
-													to="/course-list/{-$course-id}/{-$content-id}"
-													params={{
+													to="/course-list"
+													search={{
 														"course-id": currentCourseData.id,
 													}}
 												>
