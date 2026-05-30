@@ -4,8 +4,8 @@ import { StudentsModal } from "@lms-repo/ui/components/modals/students-modal";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { CreateStudentDataForm } from "@/components/_my-page/shared/create-student-data-form";
 import { Header } from "@/components/header";
-import { CreateStudentDataForm } from "@/components/private/students/create-student-data-form";
 import { queryClient } from "@/lib/query-client";
 import { fetchStudentDataQueryFn } from "@/utils/query-utils";
 

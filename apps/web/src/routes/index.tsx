@@ -1,11 +1,11 @@
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { DeviceShowcase } from "@/components/public/device-showcase";
-import { FeaturesSection } from "@/components/public/features-section";
-import { Footer } from "@/components/public/footer";
-import { HeroSection } from "@/components/public/hero-section";
-import { VideoTutorial } from "@/components/public/video-tutorial";
+import { DeviceShowcase } from "@/components/landing/device-showcase";
+import { FeaturesSection } from "@/components/landing/features-section";
+import { Footer } from "@/components/landing/footer";
+import { HeroSection } from "@/components/landing/hero-section";
+import { VideoTutorial } from "@/components/landing/video-tutorial";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,

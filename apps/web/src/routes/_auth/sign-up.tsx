@@ -7,7 +7,7 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
-import { SocialLoginField } from "@/components/public/social-login-field";
+import { SocialLoginField } from "@/components/_auth/social-login-field";
 
 export const Route = createFileRoute("/_auth/sign-up")({
 	component: RouteComponent,

@@ -4,8 +4,8 @@ import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
 import { RadioGroupFor2fa } from "@lms-repo/ui/components/radio-group";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
-import { RegisterTotpSecretForm } from "@/components/public/register-totp-secret-form";
-import { TwoFactorSettingForm } from "@/components/public/twofactor-setting-form";
+import { RegisterTotpSecretForm } from "@/components/_auth/set-twofactor/register-totp-secret-form";
+import { TwoFactorSettingForm } from "@/components/_auth/set-twofactor/twofactor-setting-form";
 import { queryClient } from "@/lib/query-client";
 
 export const Route = createFileRoute("/_auth/set-twofactor")({

@@ -2,10 +2,10 @@ import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider"
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { CreateScheduleForm } from "@/components/private/schedules/create-schedule-form";
-import { DayView } from "@/components/private/schedules/day-view";
-import { MonthView } from "@/components/private/schedules/month-view";
-import { WeekView } from "@/components/private/schedules/week-view";
+import { CreateScheduleForm } from "@/components/_my-page/schedules/create-schedule-form";
+import { DayView } from "@/components/_my-page/schedules/day-view";
+import { MonthView } from "@/components/_my-page/schedules/month-view";
+import { WeekView } from "@/components/_my-page/schedules/week-view";
 import { useSchedules } from "@/hooks/schedules";
 import { useCourseEvents } from "@/hooks/use-course-events";
 import { queryClient } from "@/lib/query-client";

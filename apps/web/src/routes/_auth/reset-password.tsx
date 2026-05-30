@@ -3,7 +3,7 @@ import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { DangerIcon } from "@lms-repo/ui/assets/icons/danger";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
-import ResetPassword from "@/components/public/reset-password";
+import ResetPassword from "@/components/_auth/reset-password/reset-password";
 
 export const Route = createFileRoute("/_auth/reset-password")({
 	component: RouteComponent,

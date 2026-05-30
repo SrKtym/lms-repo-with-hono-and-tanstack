@@ -1,7 +1,7 @@
 import { TabsFor2fa } from "@lms-repo/ui/components/tabs";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import OtpVerifyForm from "@/components/public/otp-verify-form";
-import TotpVerifyForm from "@/components/public/totp-verify-form";
+import OtpVerifyForm from "@/components/_auth/verify-otp/otp-verify-form";
+import TotpVerifyForm from "@/components/_auth/verify-otp/totp-verify-form";
 
 export const Route = createFileRoute("/_auth/verify-otp")({
 	component: RouteComponent,
