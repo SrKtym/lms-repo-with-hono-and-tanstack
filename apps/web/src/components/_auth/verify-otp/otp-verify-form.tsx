@@ -76,7 +76,7 @@ export default function OtpVerifyForm({
 						},
 					},
 				});
-			} catch (err) {
+			} catch {
 				setError(
 					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 				);
