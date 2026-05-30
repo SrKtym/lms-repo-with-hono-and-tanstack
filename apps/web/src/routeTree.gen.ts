@@ -17,6 +17,7 @@ import { Route as MyPageRegisterCoursesRouteImport } from './routes/_my-page/reg
 import { Route as MyPageProfileRouteImport } from './routes/_my-page/profile'
 import { Route as MyPageNotificationsRouteImport } from './routes/_my-page/notifications'
 import { Route as MyPageDashboardRouteImport } from './routes/_my-page/dashboard'
+import { Route as MyPageCourseListRouteImport } from './routes/_my-page/course-list'
 import { Route as AuthVerifyOtpRouteImport } from './routes/_auth/verify-otp'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
@@ -24,7 +25,6 @@ import { Route as AuthSetTwofactorRouteImport } from './routes/_auth/set-twofact
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAddPasskeyRouteImport } from './routes/_auth/add-passkey'
-import { Route as MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport } from './routes/_my-page/course-list.{-$course-id}.{-$content-id}'
 
 const MyPageRouteRoute = MyPageRouteRouteImport.update({
   id: '/_my-page',
@@ -64,6 +64,11 @@ const MyPageDashboardRoute = MyPageDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => MyPageRouteRoute,
 } as any)
+const MyPageCourseListRoute = MyPageCourseListRouteImport.update({
+  id: '/course-list',
+  path: '/course-list',
+  getParentRoute: () => MyPageRouteRoute,
+} as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
   id: '/verify-otp',
   path: '/verify-otp',
@@ -100,14 +105,6 @@ const AuthAddPasskeyRoute = AuthAddPasskeyRouteImport.update({
   path: '/add-passkey',
   getParentRoute: () => AuthRouteRoute,
 } as any)
-const MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route =
-  MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport.update(
-    {
-      id: '/course-list/{-$course-id}/{-$content-id}',
-      path: '/course-list/{-$course-id}/{-$content-id}',
-      getParentRoute: () => MyPageRouteRoute,
-    } as any,
-  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -118,12 +115,12 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/course-list': typeof MyPageCourseListRoute
   '/dashboard': typeof MyPageDashboardRoute
   '/notifications': typeof MyPageNotificationsRoute
   '/profile': typeof MyPageProfileRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
-  '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -134,12 +131,12 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
+  '/course-list': typeof MyPageCourseListRoute
   '/dashboard': typeof MyPageDashboardRoute
   '/notifications': typeof MyPageNotificationsRoute
   '/profile': typeof MyPageProfileRoute
   '/register-courses': typeof MyPageRegisterCoursesRoute
   '/schedules': typeof MyPageSchedulesRoute
-  '/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -153,12 +150,12 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
+  '/_my-page/course-list': typeof MyPageCourseListRoute
   '/_my-page/dashboard': typeof MyPageDashboardRoute
   '/_my-page/notifications': typeof MyPageNotificationsRoute
   '/_my-page/profile': typeof MyPageProfileRoute
   '/_my-page/register-courses': typeof MyPageRegisterCoursesRoute
   '/_my-page/schedules': typeof MyPageSchedulesRoute
-  '/_my-page/course-list/{-$course-id}/{-$content-id}': typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,12 +168,12 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
+    | '/course-list'
     | '/dashboard'
     | '/notifications'
     | '/profile'
     | '/register-courses'
     | '/schedules'
-    | '/course-list/{-$course-id}/{-$content-id}'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -187,12 +184,12 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
+    | '/course-list'
     | '/dashboard'
     | '/notifications'
     | '/profile'
     | '/register-courses'
     | '/schedules'
-    | '/course-list/{-$course-id}/{-$content-id}'
   id:
     | '__root__'
     | '/'
@@ -205,12 +202,12 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_auth/verify-otp'
+    | '/_my-page/course-list'
     | '/_my-page/dashboard'
     | '/_my-page/notifications'
     | '/_my-page/profile'
     | '/_my-page/register-courses'
     | '/_my-page/schedules'
-    | '/_my-page/course-list/{-$course-id}/{-$content-id}'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -277,6 +274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MyPageDashboardRouteImport
       parentRoute: typeof MyPageRouteRoute
     }
+    '/_my-page/course-list': {
+      id: '/_my-page/course-list'
+      path: '/course-list'
+      fullPath: '/course-list'
+      preLoaderRoute: typeof MyPageCourseListRouteImport
+      parentRoute: typeof MyPageRouteRoute
+    }
     '/_auth/verify-otp': {
       id: '/_auth/verify-otp'
       path: '/verify-otp'
@@ -326,13 +330,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAddPasskeyRouteImport
       parentRoute: typeof AuthRouteRoute
     }
-    '/_my-page/course-list/{-$course-id}/{-$content-id}': {
-      id: '/_my-page/course-list/{-$course-id}/{-$content-id}'
-      path: '/course-list/{-$course-id}/{-$content-id}'
-      fullPath: '/course-list/{-$course-id}/{-$content-id}'
-      preLoaderRoute: typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125RouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
   }
 }
 
@@ -361,22 +358,21 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
 )
 
 interface MyPageRouteRouteChildren {
+  MyPageCourseListRoute: typeof MyPageCourseListRoute
   MyPageDashboardRoute: typeof MyPageDashboardRoute
   MyPageNotificationsRoute: typeof MyPageNotificationsRoute
   MyPageProfileRoute: typeof MyPageProfileRoute
   MyPageRegisterCoursesRoute: typeof MyPageRegisterCoursesRoute
   MyPageSchedulesRoute: typeof MyPageSchedulesRoute
-  MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route: typeof MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route
 }
 
 const MyPageRouteRouteChildren: MyPageRouteRouteChildren = {
+  MyPageCourseListRoute: MyPageCourseListRoute,
   MyPageDashboardRoute: MyPageDashboardRoute,
   MyPageNotificationsRoute: MyPageNotificationsRoute,
   MyPageProfileRoute: MyPageProfileRoute,
   MyPageRegisterCoursesRoute: MyPageRegisterCoursesRoute,
   MyPageSchedulesRoute: MyPageSchedulesRoute,
-  MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route:
-    MyPageCourseListChar123CourseIdChar125Char123ContentIdChar125Route,
 }
 
 const MyPageRouteRouteWithChildren = MyPageRouteRoute._addFileChildren(

@@ -21,7 +21,7 @@ export const links = [
 	},
 	{
 		icon: <List width={24} height={24} />,
-		to: "/course-list/{-$course-id}/{-$content-id}",
+		to: "/course-list",
 		label: "履修一覧",
 	},
 	{

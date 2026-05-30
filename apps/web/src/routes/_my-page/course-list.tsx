@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import RegisteredCourseContents from "@/components/private/courses/registered-course-contents";
-import RegisteredCourseInfos from "@/components/private/courses/registered-course-infos";
-import RegisteredCourseList from "@/components/private/courses/registered-course-list";
+import { z } from "zod";
+import RegisteredCourseContents from "@/components/_my-page/course-list/registered-course-contents";
+import RegisteredCourseInfos from "@/components/_my-page/course-list/registered-course-infos";
+import RegisteredCourseList from "@/components/_my-page/course-list/registered-course-list";
 import { queryClient } from "@/lib/query-client";
 import {
 	fetchAnnouncementsQueryFn,
@@ -10,12 +11,18 @@ import {
 	fetchSubmissionByIdQueryFn,
 } from "@/utils/query-utils";
 
-export const Route = createFileRoute(
-	"/_my-page/course-list/{-$course-id}/{-$content-id}",
-)({
+const searchSchema = z.object({
+	"course-id": z.string().optional(),
+	"assignment-id": z.string().optional(),
+});
+
+export const Route = createFileRoute("/_my-page/course-list")({
 	component: RouteComponent,
-	loader: async ({ params }) => {
-		const { "content-id": contentId } = params;
+	validateSearch: (search) => searchSchema.parse(search),
+	loaderDeps: ({ search: { "assignment-id": assignmentId } }) => ({
+		assignmentId,
+	}),
+	loader: async ({ deps: { assignmentId } }) => {
 		// キャッシュからデータ取得
 		const [courses, announcements, assignments, submission] = await Promise.all(
 			[
@@ -36,8 +43,8 @@ export const Route = createFileRoute(
 					staleTime: 5 * 60 * 1000, // 5 minutes
 				}),
 				queryClient.ensureQueryData({
-					queryKey: ["submissions-related-courses", contentId],
-					queryFn: () => fetchSubmissionByIdQueryFn(contentId),
+					queryKey: ["submissions-related-courses", assignmentId],
+					queryFn: () => fetchSubmissionByIdQueryFn(assignmentId),
 					staleTime: 5 * 60 * 1000, // 5 minutes
 				}),
 			],
@@ -48,7 +55,8 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-	const { "course-id": courseId, "content-id": contentId } = Route.useParams();
+	const { "course-id": courseId, "assignment-id": assignmentId } =
+		Route.useSearch();
 	const { courses, announcements, assignments, submission } =
 		Route.useLoaderData();
 
@@ -70,7 +78,7 @@ function RouteComponent() {
 		);
 	}
 	// 講義詳細ページ
-	if (!contentId) {
+	if (!assignmentId) {
 		const targetCourse = coursesWithCoverImage.find(
 			(course) => course.id === courseId,
 		);
@@ -91,14 +99,14 @@ function RouteComponent() {
 	}
 	// 課題詳細ページ
 	const targetAssignment = assignments.find(
-		(assignment) => assignment.id === contentId,
+		(assignment) => assignment.id === assignmentId,
 	);
 
 	return (
 		<RegisteredCourseContents
 			targetAssignment={targetAssignment}
 			submission={submission[0]}
-			assignmentId={contentId}
+			assignmentId={assignmentId}
 		/>
 	);
 }
