@@ -21,11 +21,7 @@ export function TwoFactorSettingForm({
 			password: "",
 		},
 		onSubmit: ({ value }) => {
-			try {
-				handleSetTwofactor(value.password);
-			} catch (error) {
-				console.error(error);
-			}
+			handleSetTwofactor(value.password);
 		},
 		validators: {
 			onSubmit: z.object({

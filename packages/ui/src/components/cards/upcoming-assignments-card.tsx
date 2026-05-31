@@ -1,10 +1,6 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileDocument } from "@lms-repo/ui/assets/icons/file-document";
-import { FileText } from "@lms-repo/ui/assets/icons/file-text";
-import { MSExcel } from "@lms-repo/ui/assets/icons/ms-excel";
-import { MSPowerpoint } from "@lms-repo/ui/assets/icons/ms-powerpoint";
-import { MSword } from "@lms-repo/ui/assets/icons/ms-word";
-import { PDFFile } from "@lms-repo/ui/assets/icons/pdf-file";
+import { getIconByFormat } from "@lms-repo/ui/lib/utils";
 import { useState } from "react";
 import { DefaultSelect } from "../select";
 import { BaseCard } from "./base-card";
@@ -42,21 +38,6 @@ export function UpcomingAssignmentsCard({
 		return `${diffDays}日後`;
 	};
 
-	const getTypeIcon = (format: string) => {
-		switch (format) {
-			case "powerpoint":
-				return <MSPowerpoint width={20} height={20} />;
-			case "pdf":
-				return <PDFFile width={20} height={20} />;
-			case "excel":
-				return <MSExcel width={20} height={20} />;
-			case "word":
-				return <MSword width={20} height={20} />;
-			default:
-				return <FileText width={20} height={20} />;
-		}
-	};
-
 	return (
 		<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-orange-50/30 p-5 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-orange-900/20">
 			{/* Decorative background elements */}
@@ -91,13 +72,16 @@ export function UpcomingAssignmentsCard({
 						{filteredAssignments.map((assignment) => (
 							<div
 								key={assignment.id}
-								className="cursor-pointer rounded-lg border bg-gradient-to-r from-white to-orange-50/50 p-3 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:from-gray-800 dark:to-orange-900/30 dark:hover:border-orange-600"
+								className="rounded-lg border bg-gradient-to-r from-white to-orange-50/50 p-3 transition-all hover:border-orange-300 hover:shadow-md dark:border-gray-700 dark:from-gray-800 dark:to-orange-900/30 dark:hover:border-orange-600"
 							>
 								<div className="flex items-start justify-between gap-3">
 									<div className="flex-1">
 										<div className="mb-1 flex items-center gap-2">
 											<span className="text-sm">
-												{getTypeIcon(assignment.format)}
+												{(() => {
+													const Icon = getIconByFormat(assignment.format);
+													return <Icon width={20} height={20} />;
+												})()}
 											</span>
 											<h3 className="font-semibold text-gray-900 text-sm dark:text-gray-100">
 												{assignment.title}
