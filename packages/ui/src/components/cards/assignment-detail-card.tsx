@@ -1,5 +1,5 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import { FileText } from "../../assets/icons/file-text";
+import { getIconByFormat } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 import { DefaultSeparator } from "../separator";
@@ -23,25 +23,20 @@ export function AssignmentDetailCard({
 				<div className="flex items-start justify-between">
 					<div className="flex gap-4">
 						<div className="mt-1">
-							<div className="flex h-12 w-12 items-center justify-center rounded-full bg-content2">
-								{targetAssignment.format && <FileText />}
+							<div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+								{(() => {
+									const Icon = getIconByFormat(targetAssignment.format);
+									return <Icon width={32} height={32} />;
+								})()}
 							</div>
 						</div>
 						<div className="space-y-2">
 							<h1 className="font-medium text-2xl">{targetAssignment.title}</h1>
-							{/* <span>
-								{targetAssignment.createdAt.toLocaleDateString(
-									"default",
-									dateOptionforAnnouncement,
-								)}
-							</span> */}
-							{targetAssignment.points && (
-								<div className="mt-2">
-									<DefaultChip size="sm" color="accent">
-										{targetAssignment.points} 点
-									</DefaultChip>
-								</div>
-							)}
+							<div className="mt-2">
+								<DefaultChip color="accent">
+									{targetAssignment.points || 0} 点
+								</DefaultChip>
+							</div>
 						</div>
 					</div>
 				</div>

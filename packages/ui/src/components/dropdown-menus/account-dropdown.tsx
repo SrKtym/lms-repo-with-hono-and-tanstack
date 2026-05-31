@@ -50,6 +50,8 @@ export function DropdownMenuForAccount({
 												{label}
 											</Dropdown.Item>
 										);
+									default:
+										return null;
 								}
 							})}
 						</Dropdown.Section>

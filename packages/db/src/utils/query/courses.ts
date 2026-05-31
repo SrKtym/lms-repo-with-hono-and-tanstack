@@ -11,11 +11,11 @@ import {
 
 // 学生が所属する学部に基づき、登録可能な講義のみを取得する
 export async function fetchCourses(
+	userId: string,
 	weekdays: number,
 	period: number,
 	limit = 10,
 	offset = 0,
-	userId: string,
 ) {
 	const result = await db.transaction(async (tx) => {
 		// 学生が所属する学部を取得

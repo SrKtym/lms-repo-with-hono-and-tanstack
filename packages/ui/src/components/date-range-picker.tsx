@@ -166,7 +166,7 @@ export function DateRangePicker({
 						</div>
 						<span className="mt-1 text-muted text-xs dark:text-gray-400">
 							期間:{" "}
-							{state.value && state.value.start && state.value.end
+							{state.value.start && state.value.end
 								? formatDate({ end: state.value.end, start: state.value.start })
 								: "日時が選択されていません"}
 						</span>

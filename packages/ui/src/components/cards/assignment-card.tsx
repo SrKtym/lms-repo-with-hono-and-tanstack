@@ -1,6 +1,5 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import { FileText } from "../../assets/icons/file-text";
-import { getFileColor } from "../../lib/utils";
+import { getFileColor, getIconByFormat } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
@@ -18,8 +17,7 @@ export function AssignmentCard({
 
 	const isOverdue = assignment.dueDate < new Date();
 	const daysUntilDue = Math.ceil(
-		(assignment.dueDate.getTime() - new Date().getTime()) /
-			(1000 * 60 * 60 * 24),
+		(assignment.dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
 	);
 
 	return (
@@ -30,7 +28,10 @@ export function AssignmentCard({
 			<div className="flex gap-3">
 				<div className="mt-1">
 					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-						<FileText />
+						{(() => {
+							const Icon = getIconByFormat(assignment.format);
+							return <Icon />;
+						})()}
 					</div>
 				</div>
 

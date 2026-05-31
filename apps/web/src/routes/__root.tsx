@@ -12,9 +12,7 @@ import {
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 import "../index.css";
 
-export type RouterAppContext = {};
-
-export const Route = createRootRouteWithContext<RouterAppContext>()({
+export const Route = createRootRouteWithContext()({
 	component: RootComponent,
 	errorComponent: ErrorComponent,
 	notFoundComponent: NotFoundComponent,

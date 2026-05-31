@@ -1,9 +1,10 @@
 import { authClient } from "@lms-repo/auth/web";
+import { env } from "@lms-repo/env/web";
 import { AccountSettings } from "@lms-repo/ui/components/surfaces/account-settings";
 import { NotificationSettings } from "@lms-repo/ui/components/surfaces/notification-settings";
 import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-info";
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
-import { toast, Toast } from "@lms-repo/ui/components/toast";
+import { Toast, toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUpdateEmailNotificationSettings } from "@/hooks/settings";
 import { queryClient } from "@/lib/query-client";
@@ -12,7 +13,6 @@ import {
 	fetchEmailNotificationSettingsQueryFn,
 	fetchStudentDataQueryFn,
 } from "@/utils/query-utils";
-import { env } from "@lms-repo/env/web";
 
 export const Route = createFileRoute("/_my-page/profile")({
 	component: RouteComponent,
@@ -87,7 +87,9 @@ function RouteComponent() {
 		if (error) {
 			showToast(error);
 		} else {
-			toast.success("アカウントが正常に削除されました");
+			toast.success(
+				`${user.name}に確認メールを送信しました。メールに添付されたリンクからアカウント削除を完了してください。`,
+			);
 		}
 	};
 

@@ -19,7 +19,7 @@ export function UpcomingAssignmentsCard({
 	const periodOptions = ["3日以内", "7日以内", "すべて"];
 	const filteredAssignments = assignments.filter(
 		(assignment) =>
-			assignment.dueDate.getTime() - new Date().getTime() <=
+			assignment.dueDate.getTime() - Date.now() <=
 			(selectedPeriod === "3日以内"
 				? 3
 				: selectedPeriod === "7日以内"

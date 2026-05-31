@@ -18,7 +18,7 @@ const decimalHours = (date: Date | undefined | null) => {
 
 // 現在進行中であるかどうかを判定
 const isProgressingOrUpcoming = (start: Date, end: Date) => {
-	const now = new Date().getTime();
+	const now = Date.now();
 	const isProgressing = start.getTime() < now && end.getTime() > now;
 	const upcoming = now < start.getTime();
 

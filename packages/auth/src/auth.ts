@@ -40,7 +40,10 @@ export const auth = betterAuth({
 		expiresIn: 3600, // 1 hour
 		async sendVerificationEmail({ user, url }) {
 			const redirectUrl = new URL(url);
-			redirectUrl.searchParams.set("callbackURL", `${env.CORS_ORIGIN}/set-twofactor`);
+			redirectUrl.searchParams.set(
+				"callbackURL",
+				`${env.CORS_ORIGIN}/set-twofactor`,
+			);
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
 				to: user.email,
