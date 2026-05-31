@@ -13,6 +13,7 @@ export const TrendingUp = ({
 		viewBox="0 0 24 24"
 	>
 		<title>Trending Up</title>
+
 		<g
 			fill="none"
 			stroke="currentColor"
@@ -20,25 +21,42 @@ export const TrendingUp = ({
 			strokeLinejoin="round"
 			strokeWidth={2}
 		>
-			<path d="M16 7h6v6" strokeDasharray={20} strokeDashoffset={20}>
-				<animate
-					fill="freeze"
-					attributeName="stroke-dashoffset"
-					dur="0.3s"
-					to={0}
-				/>
-			</path>
+			{/* メインの線 */}
 			<path
-				d="m22 7l-8.5 8.5l-5-5L2 17"
+				d="M2 17L8.5 10.5L13.5 15.5L22 7"
 				strokeDasharray={30}
 				strokeDashoffset={30}
 			>
 				<animate
-					fill="freeze"
 					attributeName="stroke-dashoffset"
-					begin="0.3s"
-					dur="0.4s"
-					to={0}
+					from="30"
+					to="0"
+					dur="0.5s"
+					fill="freeze"
+				/>
+			</path>
+
+			{/* 矢印右上 */}
+			<path d="M22 7L18 7" strokeDasharray={4} strokeDashoffset={4}>
+				<animate
+					attributeName="stroke-dashoffset"
+					from="4"
+					to="0"
+					begin="0.5s"
+					dur="0.15s"
+					fill="freeze"
+				/>
+			</path>
+
+			{/* 矢印下 */}
+			<path d="M22 7L22 11" strokeDasharray={4} strokeDashoffset={4}>
+				<animate
+					attributeName="stroke-dashoffset"
+					from="4"
+					to="0"
+					begin="0.5s"
+					dur="0.15s"
+					fill="freeze"
 				/>
 			</path>
 		</g>
