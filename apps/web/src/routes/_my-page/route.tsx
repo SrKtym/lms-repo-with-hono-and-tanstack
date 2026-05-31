@@ -5,7 +5,7 @@ import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persi
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { CreateStudentDataForm } from "@/components/_my-page/shared/create-student-data-form";
-import { Header } from "@/components/header";
+import { Header } from "@/components/_my-page/shared/header";
 import { queryClient } from "@/lib/query-client";
 import { fetchStudentDataQueryFn } from "@/utils/query-utils";
 
