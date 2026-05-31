@@ -13,16 +13,16 @@ import {
 } from "@/utils/query-utils";
 
 // トースト表示
-function showToast(data: { status: number; message: string }) {
-	switch (data.status) {
+function showToast(error: { status: number; message: string }) {
+	switch (error.status) {
 		case 400:
 		case 404:
 			toast.danger("講義の登録に失敗しました", {
-				description: data.message,
+				description: error.message,
 			});
 			break;
 		case 500:
-			toast.danger(data.message);
+			toast.danger(error.message);
 	}
 }
 
