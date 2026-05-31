@@ -1,3 +1,4 @@
+import { DAYS } from "@lms-repo/ui/lib/utils";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
@@ -13,7 +14,6 @@ interface MonthDay {
 interface MonthViewProps {
 	currentDate: Date;
 	calendar: MonthDay[][];
-	weekDays: string[];
 	changeMonth: (direction: number) => void;
 	getEventsForDay: (date: Date) => Event[];
 }
@@ -27,7 +27,6 @@ function getMonthRange(date: Date) {
 export function MonthView({
 	currentDate,
 	calendar,
-	weekDays,
 	changeMonth,
 	getEventsForDay,
 }: MonthViewProps) {
@@ -71,7 +70,7 @@ export function MonthView({
 
 				{/* 曜日ヘッダー */}
 				<div className="grid grid-cols-7 border-gray-200 border-b dark:border-gray-700">
-					{weekDays.map((day, index) => (
+					{DAYS.map((day, index) => (
 						<div
 							key={day}
 							className={`p-2 text-center font-medium text-sm ${

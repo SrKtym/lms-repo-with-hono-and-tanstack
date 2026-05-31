@@ -44,9 +44,6 @@ function RouteComponent() {
 	const { data: schedules = [] } = useSchedules(initialSchedules);
 	const { getEventsForDay } = useCourseEvents(courses, schedules);
 
-	// 曜日の配列
-	const weekDays = ["日", "月", "火", "水", "木", "金", "土"];
-
 	// 月の最初の日と最後の日を取得
 	const getMonthRange = (date: Date) => {
 		const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -163,7 +160,6 @@ function RouteComponent() {
 		<MonthView
 			currentDate={currentDate}
 			calendar={generateMonthCalendar()}
-			weekDays={weekDays}
 			changeMonth={changeMonth}
 			getEventsForDay={getEventsForDay}
 		/>
@@ -173,7 +169,6 @@ function RouteComponent() {
 	const renderWeekView = () => (
 		<WeekView
 			weekData={generateWeekCalendar()}
-			weekDays={weekDays}
 			changeWeek={changeWeek}
 			getEventsForDay={getEventsForDay}
 		/>

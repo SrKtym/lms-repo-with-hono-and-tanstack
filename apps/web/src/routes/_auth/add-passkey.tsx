@@ -65,7 +65,7 @@ function RouteComponent() {
 			<div className="text-center">
 				<div className="mb-6 flex justify-center">
 					<div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 dark:from-blue-600 dark:to-purple-700">
-						<PasskeyLogo />
+						<PasskeyLogo className="text-white" />
 					</div>
 				</div>
 				<h1 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">

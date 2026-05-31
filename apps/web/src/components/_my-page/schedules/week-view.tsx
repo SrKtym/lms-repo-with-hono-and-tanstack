@@ -1,5 +1,6 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
+import { DAYS } from "@lms-repo/ui/lib/utils";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import * as m from "motion/react-m";
 import type { Event } from "@/hooks/use-course-events";
@@ -12,14 +13,12 @@ interface WeekDay {
 
 interface WeekViewProps {
 	weekData: WeekDay[];
-	weekDays: string[];
 	changeWeek: (direction: number) => void;
 	getEventsForDay: (date: Date) => Event[];
 }
 
 export function WeekView({
 	weekData,
-	weekDays,
 	changeWeek,
 	getEventsForDay,
 }: WeekViewProps) {
@@ -115,7 +114,7 @@ export function WeekView({
 														: "text-gray-600 dark:text-gray-400"
 											}`}
 										>
-											{weekDays[day.date.getDay()]}
+											{DAYS[day.date.getDay()]}
 										</div>
 										<div
 											className={`font-bold text-sm ${

@@ -124,7 +124,6 @@ export function DayView({
 										zIndex: 10,
 										boxShadow: "0 10px 30px rgba(0,0,0,0.2)",
 									}}
-									whileTap={{ scale: 0.98 }}
 								>
 									<div className="mb-1 font-bold text-sm">{event.title}</div>
 									<div className="text-xs opacity-90">
