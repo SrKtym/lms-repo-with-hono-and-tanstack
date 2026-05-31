@@ -11,7 +11,7 @@
 			"./src/components/**/*.tsx"
 		],
 		"./assets/*": [
-			"./src/assets/icons/*.{tsx,ico}",
+			"./src/assets/icons/*.tsx",
 			"./src/assets/images/*.{png,jpg,jpeg,svg,gif}"
 		],
 		"./hooks/*": "./src/hooks/*.ts",
