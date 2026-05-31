@@ -3,6 +3,7 @@ import { AccountSettings } from "@lms-repo/ui/components/surfaces/account-settin
 import { NotificationSettings } from "@lms-repo/ui/components/surfaces/notification-settings";
 import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-info";
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
+import { toast, Toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useUpdateEmailNotificationSettings } from "@/hooks/settings";
 import { queryClient } from "@/lib/query-client";
@@ -11,6 +12,7 @@ import {
 	fetchEmailNotificationSettingsQueryFn,
 	fetchStudentDataQueryFn,
 } from "@/utils/query-utils";
+import { env } from "@lms-repo/env/web";
 
 export const Route = createFileRoute("/_my-page/profile")({
 	component: RouteComponent,
@@ -63,11 +65,30 @@ function RouteComponent() {
 	} = Route.useLoaderData();
 	const user = { ...userData, ...completedCourses[0], ...studentData[0] };
 
+	// トースト表示
+	function showToast(error: { status: number }) {
+		switch (error.status) {
+			case 400:
+			case 404:
+				toast.danger("アカウント削除に失敗しました");
+				break;
+			case 500:
+				toast.danger(
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				);
+		}
+	}
+
 	// アカウント削除処理
 	const handleDeleteAccount = async () => {
-		await authClient.deleteUser({
-			callbackURL: "/",
+		const { error } = await authClient.deleteUser({
+			callbackURL: env.VITE_CLIENT_URL,
 		});
+		if (error) {
+			showToast(error);
+		} else {
+			toast.success("アカウントが正常に削除されました");
+		}
 	};
 
 	// メール通知設定変更時の処理
@@ -76,6 +97,7 @@ function RouteComponent() {
 
 	return (
 		<div className="container mx-auto max-w-6xl px-4 py-8">
+			<Toast.Provider placement="top" />
 			{/* ページタイトル */}
 			<div className="mb-8">
 				<h1 className="mb-2 font-bold text-3xl text-foreground">
