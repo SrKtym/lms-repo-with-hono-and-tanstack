@@ -6,7 +6,6 @@ export const TrendingUp = ({
 	height?: number;
 }) => (
 	<svg
-		aria-label="trending-up"
 		xmlns="http://www.w3.org/2000/svg"
 		width={width}
 		height={height}
