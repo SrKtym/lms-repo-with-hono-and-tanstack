@@ -11,6 +11,7 @@ export const MSword = ({
 		height={height}
 		viewBox="0 0 32 32"
 	>
+		<title>MS Word</title>
 		<defs>
 			<linearGradient
 				id="SVG2m3AVb6p"

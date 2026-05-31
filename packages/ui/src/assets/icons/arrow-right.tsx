@@ -12,6 +12,7 @@ export const ArrowRight = ({
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
 	>
+		<title>Arrow Right</title>
 		<path
 			d="M9 18L15 12L9 6"
 			stroke="currentColor"

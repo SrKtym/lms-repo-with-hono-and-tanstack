@@ -16,6 +16,7 @@ export const Lock = ({
 		viewBox="0 0 24 24"
 		className={className}
 	>
+		<title>Lock</title>
 		<path
 			strokeLinecap="round"
 			strokeLinejoin="round"

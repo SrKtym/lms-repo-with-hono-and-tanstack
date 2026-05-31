@@ -11,6 +11,7 @@ export const MessagesSquareCheck = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Messages Square Check</title>
 		<g
 			fill="none"
 			stroke="currentColor"

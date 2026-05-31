@@ -11,6 +11,7 @@ export const NotebookPen = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Notebook Pen</title>
 		<g
 			fill="none"
 			stroke="currentColor"

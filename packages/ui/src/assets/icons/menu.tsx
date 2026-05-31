@@ -5,6 +5,7 @@ export const Menu = () => (
 		height="30"
 		viewBox="0 0 24 24"
 	>
+		<title>Menu</title>
 		<path
 			fill="none"
 			stroke="var(--foreground)"

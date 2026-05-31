@@ -11,6 +11,7 @@ export const DangerIcon = ({
 		height={height ?? 24}
 		viewBox="0 0 24 24"
 	>
+		<title>Danger</title>
 		<path
 			fill="red"
 			fillRule="evenodd"

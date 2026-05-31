@@ -14,6 +14,7 @@ export const Close = ({
 		viewBox="0 0 24 24"
 		className={className}
 	>
+		<title>Close</title>
 		<path
 			fill="none"
 			stroke="currentColor"

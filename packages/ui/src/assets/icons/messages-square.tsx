@@ -11,6 +11,7 @@ export const MessagesSquare = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Messages Square</title>
 		<path
 			fill="none"
 			stroke="currentColor"

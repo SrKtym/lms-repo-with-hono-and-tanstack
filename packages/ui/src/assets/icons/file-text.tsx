@@ -13,6 +13,7 @@ export const FileText = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>File Text</title>
 		<g
 			fill="none"
 			stroke={color}

@@ -11,6 +11,7 @@ export const List = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>List</title>
 		<path
 			fill="none"
 			stroke="currentColor"

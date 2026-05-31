@@ -11,6 +11,7 @@ export const Edit = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Edit</title>
 		<g
 			fill="none"
 			stroke="currentColor"

@@ -11,6 +11,7 @@ export const MSPowerpoint = ({
 		height={height}
 		viewBox="0 0 32 32"
 	>
+		<title>MS PowerPoint</title>
 		<defs>
 			<linearGradient
 				id="SVGNTQfxeQw"

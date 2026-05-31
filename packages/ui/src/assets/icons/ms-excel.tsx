@@ -11,6 +11,7 @@ export const MSExcel = ({
 		height={height}
 		viewBox="0 0 32 32"
 	>
+		<title>MS Excel</title>
 		<defs>
 			<linearGradient
 				id="SVGSuUii0pt"

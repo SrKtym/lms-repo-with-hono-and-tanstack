@@ -11,6 +11,7 @@ export const PaperClip = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Paper Clip</title>
 		<path
 			fill="none"
 			stroke="currentColor"

@@ -16,6 +16,7 @@ export const Email = ({
 		viewBox="0 0 24 24"
 		className={className}
 	>
+		<title>Email</title>
 		<path
 			strokeLinecap="round"
 			strokeLinejoin="round"

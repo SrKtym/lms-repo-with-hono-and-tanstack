@@ -11,6 +11,7 @@ export const CloudUpload = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Cloud Upload</title>
 		<defs>
 			<mask id="SVGk4d2PcWu">
 				<path

@@ -11,6 +11,7 @@ export const Info = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Info</title>
 		<g
 			fill="none"
 			stroke="currentColor"

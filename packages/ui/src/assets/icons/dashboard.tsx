@@ -11,6 +11,7 @@ export const DashBoard = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Dashboard</title>
 		<g
 			fill="none"
 			stroke="currentColor"

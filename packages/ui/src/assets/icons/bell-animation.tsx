@@ -11,6 +11,7 @@ export const BellAnimation = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Bell Animation</title>
 		<g
 			stroke="#eab308"
 			strokeLinecap="round"

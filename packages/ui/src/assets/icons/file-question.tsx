@@ -11,6 +11,7 @@ export const FileQuestion = ({
 		height={height ?? 24}
 		viewBox="0 0 24 24"
 	>
+		<title>File Question</title>
 		<g
 			fill="none"
 			stroke="currentColor"

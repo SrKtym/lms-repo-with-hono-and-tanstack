@@ -11,6 +11,7 @@ export const CalendarClock = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Calendar Clock</title>
 		<g
 			fill="none"
 			stroke="currentColor"

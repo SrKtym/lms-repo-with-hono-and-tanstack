@@ -11,6 +11,7 @@ export const Search = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Search</title>
 		<g
 			fill="none"
 			stroke="currentColor"

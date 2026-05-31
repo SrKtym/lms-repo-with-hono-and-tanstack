@@ -12,6 +12,7 @@ export const Plus = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Plus</title>
 		<path
 			fill="none"
 			stroke="currentColor"

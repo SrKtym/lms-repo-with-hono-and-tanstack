@@ -5,6 +5,7 @@ export const GithubLogo = () => (
 		height="48"
 		viewBox="0 0 128 128"
 	>
+		<title>Github Logo</title>
 		<g fill="currentColor">
 			<path
 				fillRule="evenodd"

@@ -11,6 +11,7 @@ export const SquarePlus = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Square Plus</title>
 		<g
 			fill="none"
 			stroke="currentColor"

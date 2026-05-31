@@ -11,6 +11,7 @@ export const PDFFile = ({
 		height={height}
 		viewBox="0 0 32 32"
 	>
+		<title>PDF File</title>
 		<path
 			fill="#909090"
 			d="m24.1 2.072l5.564 5.8v22.056H8.879V30h20.856V7.945z"

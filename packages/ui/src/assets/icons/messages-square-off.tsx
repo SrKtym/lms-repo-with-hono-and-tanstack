@@ -14,6 +14,7 @@ export const MessagesSquareOff = ({
 		viewBox="0 0 24 24"
 		className={className}
 	>
+		<title>Messages Square Off</title>
 		<path
 			fill="none"
 			stroke="currentColor"

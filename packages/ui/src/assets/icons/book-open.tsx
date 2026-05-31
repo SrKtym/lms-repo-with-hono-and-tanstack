@@ -11,6 +11,7 @@ export const BookOpen = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Book Open</title>
 		<path
 			fill="none"
 			stroke="currentColor"

@@ -11,6 +11,7 @@ export const CalendarAnimation = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>Calendar Animation</title>
 		<path
 			fill="none"
 			stroke="var(--color-primary)"

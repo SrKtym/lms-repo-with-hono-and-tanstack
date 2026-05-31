@@ -11,6 +11,7 @@ export const FileDocument = ({
 		height={height}
 		viewBox="0 0 24 24"
 	>
+		<title>File Document</title>
 		<g
 			stroke="orange"
 			strokeLinecap="round"
