@@ -1,7 +1,6 @@
 import { authClient } from "@lms-repo/auth/web";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { Loader } from "@lms-repo/ui/components/loader";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
@@ -17,8 +16,6 @@ function RouteComponent() {
 	const navigate = useNavigate({
 		from: "/",
 	});
-
-	const { isPending } = authClient.useSession();
 
 	const handlePasskeySignIn = async () => {
 		await authClient.signIn.passkey({
@@ -79,10 +76,6 @@ function RouteComponent() {
 			}),
 		},
 	});
-
-	if (isPending) {
-		return <Loader className="min-h-screen" />;
-	}
 
 	return (
 		<div className="form-container">

@@ -2,7 +2,6 @@ import { authClient } from "@lms-repo/auth/web";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { Loader } from "@lms-repo/ui/components/loader";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
@@ -19,7 +18,6 @@ function RouteComponent() {
 		isSuccess: false,
 		email: "",
 	});
-	const { isPending } = authClient.useSession();
 
 	const form = useForm({
 		defaultValues: {
@@ -63,10 +61,6 @@ function RouteComponent() {
 			}),
 		},
 	});
-
-	if (isPending) {
-		return <Loader className="min-h-screen" />;
-	}
 
 	return (
 		<div className="form-container">

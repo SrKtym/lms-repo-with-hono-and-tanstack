@@ -1,4 +1,3 @@
-import { Loader } from "@lms-repo/ui/components/loader";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import ReactDOM from "react-dom/client";
 import { QueryClientProvider, queryClient } from "@/lib/query-client";
@@ -7,7 +6,6 @@ import { routeTree } from "./routeTree.gen";
 const router = createRouter({
 	routeTree,
 	defaultPreload: "intent",
-	defaultPendingComponent: () => <Loader className="min-h-screen" />,
 });
 
 declare module "@tanstack/react-router" {
