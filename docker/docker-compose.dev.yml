@@ -20,6 +20,7 @@ services:
       GCS_BUCKET_NAME: dummy-storage-bucket
     depends_on:
       - db
+      - fake-gcs
 
   web:
     container_name: lms-web
@@ -53,6 +54,7 @@ services:
       # PostgreSQLのデータを永続化
       - postgres_data:/var/lib/postgresql
 
+  # ローカル環境用のGCSエミュレーター
   fake-gcs:
     container_name: lms-fake-gcs
     image: fsouza/fake-gcs-server
@@ -62,18 +64,14 @@ services:
     volumes:
       - gcs_data:/data
     command: ["-scheme", "both", "-backend", "memory"]
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000"]
-      interval: 5s
-      timeout: 10s
-      retries: 5
 
+  # GCSバケット作成
   gcs-init:
     container_name: lms-gcs-init
     image: curlimages/curl:latest
     depends_on:
       fake-gcs:
-        condition: service_healthy
+        condition: service_started
     command: >
       sh -c "curl -X PUT http://fake-gcs:8000/dummy-storage-bucket && echo 'Bucket created successfully'"
 
