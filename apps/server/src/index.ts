@@ -4,9 +4,9 @@ import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
+import { secureHeaders } from "hono/secure-headers";
 import { authMiddleware } from "./middleware/auth";
 import { securityMiddleware } from "./middleware/security";
-import { secureHeaders } from "hono/secure-headers";
 
 const app = new Hono()
 	.use(
