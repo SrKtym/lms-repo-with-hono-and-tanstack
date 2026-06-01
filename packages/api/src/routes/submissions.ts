@@ -17,11 +17,30 @@ import { Hono } from "hono";
 import { z } from "zod";
 
 const storage = new Storage({
-	apiEndpoint: env.GCS_EMULATOR_HOST,
-	projectId: "dummy-project",
+	// エミュレータ環境の場合のみAPIエンドポイントを設定
+	...(env.GCS_EMULATOR_HOST && {
+		apiEndpoint: env.GCS_EMULATOR_HOST,
+		projectId: "dummy-project",
+		credentials: {
+			client_email: "dummy@example.com",
+			private_key:
+				"-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7WJT1m8tY4z\n-----END PRIVATE KEY-----",
+		},
+	}),
 });
 
 const bucket = storage.bucket(env.GCS_BUCKET_NAME);
+
+// エミュレータ環境でバケットが存在しない場合は作成
+async function ensureBucketExists() {
+	if (env.GCS_EMULATOR_HOST) {
+		const [exists] = await bucket.exists();
+		if (!exists) {
+			await bucket.create();
+			console.log(`Bucket ${env.GCS_BUCKET_NAME} created`);
+		}
+	}
+}
 
 export const submissionsRoute = new Hono<{
 	Variables: {
@@ -29,6 +48,33 @@ export const submissionsRoute = new Hono<{
 		session: Session["session"];
 	};
 }>()
+	// エミュレータ環境用の直接アップロードエンドポイント
+	.post("/upload", async (c) => {
+		const formData = await c.req.formData();
+		const file = formData.get("file") as File;
+		const fileName = formData.get("fileName") as string;
+
+		if (!file || !fileName) {
+			return c.json({ error: "Missing file or fileName" }, 400);
+		}
+
+		// バケットが存在することを確認
+		await ensureBucketExists();
+
+		// エミュレータ環境ではストレージクライアントを使用して直接アップロード
+		const fileObject = bucket.file(`uploads/${fileName}`);
+		const buffer = Buffer.from(await file.arrayBuffer());
+		await fileObject.save(buffer, {
+			contentType: file.type,
+		});
+
+		return c.json({
+			objectName: `uploads/${fileName}`,
+			originalName: fileName,
+			mimeType: file.type,
+			fileSize: file.size,
+		});
+	})
 	// 署名付きURLの一括発行（複数ファイルアップロード用）
 	.post(
 		"/signed_urls",
@@ -44,16 +90,27 @@ export const submissionsRoute = new Hono<{
 		async (c) => {
 			const files = c.req.valid("json");
 
+			// バケットが存在することを確認
+			await ensureBucketExists();
+
 			const signedUrls = await Promise.all(
 				files.map(async ({ fileName, fileType }) => {
-					const [signedUrl] = await bucket
-						.file(`uploads/${fileName}`)
-						.getSignedUrl({
-							version: "v4",
-							action: "write",
-							expires: Date.now() + 15 * 60 * 1000,
-							contentType: fileType,
-						});
+					let signedUrl: string;
+
+					// エミュレータ環境では署名なしURLを使用
+					if (env.GCS_EMULATOR_HOST) {
+						signedUrl = `${env.GCS_EMULATOR_HOST}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
+					} else {
+						// 本番環境では署名付きURLを使用
+						[signedUrl] = await bucket
+							.file(`uploads/${fileName}`)
+							.getSignedUrl({
+								version: "v4",
+								action: "write",
+								expires: Date.now() + 15 * 60 * 1000,
+								contentType: fileType,
+							});
+					}
 
 					return {
 						fileName,
