@@ -23,6 +23,7 @@ export function Footer() {
 							<div className="flex space-x-3">
 								<a
 									href="#"
+									role="button"
 									className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-blue-600 hover:text-white"
 									aria-label="Twitter"
 								>
@@ -36,6 +37,7 @@ export function Footer() {
 								</a>
 								<a
 									href="#"
+									role="button"
 									className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-blue-700 hover:text-white"
 									aria-label="Facebook"
 								>
@@ -49,6 +51,7 @@ export function Footer() {
 								</a>
 								<a
 									href="#"
+									role="button"
 									className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-pink-600 hover:text-white"
 									aria-label="Instagram"
 								>
@@ -64,6 +67,7 @@ export function Footer() {
 								</a>
 								<a
 									href="#"
+									role="button"
 									className="flex h-10 w-10 items-center justify-center rounded-lg bg-gray-800 text-gray-400 transition-colors hover:bg-gray-700 hover:text-white"
 									aria-label="GitHub"
 								>
@@ -82,18 +86,21 @@ export function Footer() {
 						<div className="flex flex-wrap gap-4 text-sm">
 							<a
 								href="#"
+								role="button"
 								className="text-gray-400 transition-colors hover:text-white"
 							>
 								Privacy Policy
 							</a>
 							<a
 								href="#"
+								role="button"
 								className="text-gray-400 transition-colors hover:text-white"
 							>
 								Terms of Service
 							</a>
 							<a
 								href="#"
+								role="button"
 								className="text-gray-400 transition-colors hover:text-white"
 							>
 								Cookie Policy
@@ -108,6 +115,7 @@ export function Footer() {
 							<li>
 								<a
 									href="#"
+									role="button"
 									className="text-gray-400 transition-colors hover:text-white"
 								>
 									機能
@@ -116,6 +124,7 @@ export function Footer() {
 							<li>
 								<a
 									href="#"
+									role="button"
 									className="text-gray-400 transition-colors hover:text-white"
 								>
 									価格

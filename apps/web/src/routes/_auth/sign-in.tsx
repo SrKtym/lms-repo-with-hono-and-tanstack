@@ -17,6 +17,7 @@ function RouteComponent() {
 		from: "/",
 	});
 
+	// パスキーでサインイン
 	const handlePasskeySignIn = async () => {
 		await authClient.signIn.passkey({
 			fetchOptions: {

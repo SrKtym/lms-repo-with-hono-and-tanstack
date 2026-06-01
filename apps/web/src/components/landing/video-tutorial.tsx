@@ -113,16 +113,15 @@ export function VideoTutorial() {
 											<div className="max-h-40 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
 												{filteredCourses.length > 0 ? (
 													filteredCourses.map((course) => (
-														<div
+														<DefaultButton
 															key={course}
-															onClick={() => {
+															onPress={() => {
 																setSelectedCourse(course);
 																setCurrentStep(1);
 															}}
-															className="cursor-pointer px-4 py-2 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
 														>
 															{course}
-														</div>
+														</DefaultButton>
 													))
 												) : (
 													<div className="px-4 py-2 text-gray-500 dark:text-gray-400">

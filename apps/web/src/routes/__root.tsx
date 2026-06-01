@@ -1,5 +1,7 @@
 // ルートレイアウト
 
+import { DangerIcon } from "@lms-repo/ui/assets/icons/danger";
+import { NotFoundFace } from "@lms-repo/ui/assets/icons/not-found-face";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { ThemeProvider } from "@lms-repo/ui/components/theme-provider";
 import {
@@ -74,19 +76,7 @@ function NotFoundComponent() {
 			<div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 				<div className="mb-4 text-center">
 					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
-						<svg
-							className="h-8 w-8 text-yellow-600 dark:text-yellow-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+						<NotFoundFace className="text-yellow-600 dark:text-yellow-400" />
 					</div>
 					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
 						ページが見つかりません
@@ -102,7 +92,7 @@ function NotFoundComponent() {
 					<Link to="/">
 						<DefaultButton className="w-full">ホームに戻る</DefaultButton>
 					</Link>
-					<Link to=".">
+					<Link to="..">
 						<DefaultButton variant="outline" className="w-full">
 							前のページに戻る
 						</DefaultButton>
@@ -120,19 +110,11 @@ function ErrorComponent({ error }: ErrorComponentProps) {
 			<div className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-800">
 				<div className="mb-4 text-center">
 					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900">
-						<svg
-							className="h-8 w-8 text-red-600 dark:text-red-400"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth={2}
-								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-							/>
-						</svg>
+						<DangerIcon
+							width={32}
+							height={32}
+							className="text-red-600 dark:text-red-400"
+						/>
 					</div>
 					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
 						エラーが発生しました

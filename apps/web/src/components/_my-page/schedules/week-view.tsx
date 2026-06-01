@@ -172,7 +172,6 @@ export function WeekView({
 														backgroundColor: event.theme,
 													}}
 													whileHover={{ scale: 1.02, zIndex: 10 }}
-													whileTap={{ scale: 0.98 }}
 												>
 													<div className="truncate font-medium">
 														{event.title}

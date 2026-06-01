@@ -124,7 +124,7 @@ export function MonthView({
 												animate={{ opacity: 1, x: 0 }}
 												transition={{ delay: index * 0.05 }}
 												className={
-													"cursor-pointer truncate rounded p-1 text-white text-xs"
+													"truncate rounded p-1 text-white text-xs"
 												}
 												style={{ backgroundColor: event.theme }}
 												whileHover={{ scale: 1.05 }}
