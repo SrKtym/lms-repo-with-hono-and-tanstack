@@ -99,7 +99,7 @@ export const courses = pgTable(
 		weekdays: integer("weekdays").notNull(),
 		period: integer("period").notNull(),
 		credits: integer("credits").notNull(),
-		requirements: requirementsEnum("requirements").notNull(),
+		requirements: requirementsEnum("requirements").notNull().default("任意"),
 		classRoom: text("class_room").notNull(),
 		departmentId: text("department_id")
 			.notNull()
