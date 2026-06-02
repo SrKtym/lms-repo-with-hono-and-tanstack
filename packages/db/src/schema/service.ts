@@ -10,7 +10,6 @@ import {
 	primaryKey,
 	text,
 	timestamp,
-	unique,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
@@ -123,25 +122,26 @@ export const courses = pgTable(
 	],
 );
 
-// 履修登録テーブル
+// 履修登録テーブル（関連エンティティ）
 export const registration = pgTable(
 	"registration",
 	{
-		id: text("id")
-			.primaryKey()
-			.$defaultFn(() => crypto.randomUUID()),
-		userId: text("user_id")
-			.notNull()
-			.references(() => user.id, { onDelete: "cascade" }),
-		courseId: text("course_id")
-			.notNull()
-			.references(() => courses.id, { onDelete: "cascade" }),
+		userId: text("user_id").notNull(),
+		courseId: text("course_id").notNull(),
 		isChecked: boolean("is_checked").notNull().default(false),
 		isCompleted: boolean("is_completed").notNull().default(false),
 	},
 	(t) => [
 		index("registration_user_id_course_id_idx").on(t.userId, t.courseId),
-		unique("registration_user_id_course_id_unique").on(t.userId, t.courseId),
+		primaryKey({ columns: [t.userId, t.courseId] }),
+		foreignKey({
+			columns: [t.courseId],
+			foreignColumns: [courses.id],
+		}).onDelete("cascade"),
+		foreignKey({
+			columns: [t.userId],
+			foreignColumns: [user.id],
+		}).onDelete("cascade"),
 	],
 );
 
