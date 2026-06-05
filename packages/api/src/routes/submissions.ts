@@ -1,12 +1,11 @@
 import { Storage } from "@google-cloud/storage";
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import { db } from "@lms-repo/db";
-import { submissionStatus } from "@lms-repo/db/schema/service";
 import type { TextSubmissions } from "@lms-repo/db/types";
 import {
 	createFileSubmissionMetadata,
 	createTextSubmission,
+	updateSubmissionStatus,
 } from "@lms-repo/db/utils/mutation/submissions";
 import {
 	fetchSubmissionById,
@@ -30,6 +29,19 @@ const storage = new Storage({
 });
 
 const bucket = storage.bucket(env.GCS_BUCKET_NAME);
+
+// ファイルアップロードの制限
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_COUNT = 5;
+const ALLOWED_MIME_TYPES = [
+	"application/pdf",
+	"application/msword",
+	"application/vnd.ms-excel",
+	"application/vnd.ms-powerpoint",
+	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+	"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+];
 
 // エミュレータ環境でバケットが存在しない場合は作成
 async function ensureBucketExists() {
@@ -80,15 +92,39 @@ export const submissionsRoute = new Hono<{
 		"/signed_urls",
 		zValidator(
 			"json",
-			z.array(
-				z.object({
-					fileName: z.string(),
-					fileType: z.string(),
-				}),
-			),
+			z
+				.array(
+					z.object({
+						fileName: z.string(),
+						fileType: z.string(),
+						fileSize: z
+							.number()
+							.max(
+								MAX_FILE_SIZE,
+								"ファイルサイズは10MB以下である必要があります",
+							),
+					}),
+				)
+				.max(
+					MAX_FILE_COUNT,
+					`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
+				),
 		),
 		async (c) => {
 			const files = c.req.valid("json");
+
+			// MIMEタイプの検証
+			for (const file of files) {
+				if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
+					return c.json(
+						{
+							error: `許可されていないファイルタイプです: ${file.fileType}`,
+							allowedTypes: ALLOWED_MIME_TYPES,
+						},
+						400,
+					);
+				}
+			}
 
 			// バケットが存在することを確認
 			await ensureBucketExists();
@@ -129,20 +165,43 @@ export const submissionsRoute = new Hono<{
 		zValidator(
 			"json",
 			z.object({
-				metadataList: z.array(
-					z.object({
-						objectName: z.string(),
-						originalName: z.string(),
-						mimeType: z.string(),
-						fileSize: z.number(),
-					}),
-				),
+				metadataList: z
+					.array(
+						z.object({
+							objectName: z.string(),
+							originalName: z.string(),
+							mimeType: z.string(),
+							fileSize: z
+								.number()
+								.max(
+									MAX_FILE_SIZE,
+									"ファイルサイズは10MB以下である必要があります",
+								),
+						}),
+					)
+					.max(
+						MAX_FILE_COUNT,
+						`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
+					),
 				assignmentId: z.string(),
 			}),
 		),
 		async (c) => {
 			const { userId } = c.get("session");
 			const { metadataList, assignmentId } = c.req.valid("json");
+
+			// MIMEタイプの検証
+			for (const metadata of metadataList) {
+				if (!ALLOWED_MIME_TYPES.includes(metadata.mimeType)) {
+					return c.json(
+						{
+							error: `許可されていないファイルタイプです: ${metadata.mimeType}`,
+							allowedTypes: ALLOWED_MIME_TYPES,
+						},
+						400,
+					);
+				}
+			}
 
 			// メタデータを一括保存
 			const results = await Promise.all(
@@ -157,17 +216,14 @@ export const submissionsRoute = new Hono<{
 			);
 
 			// 提出状況を更新
-			await db
-				.insert(submissionStatus)
-				.values({
-					userId,
-					assignmentId,
-					status: "提出済み",
-				})
-				.onConflictDoUpdate({
-					target: [submissionStatus.userId, submissionStatus.assignmentId],
-					set: { status: "提出済み" },
-				});
+			const updateResult = await updateSubmissionStatus(
+				assignmentId,
+				userId,
+				"提出済み",
+			);
+			if (updateResult.status !== 200) {
+				return c.json(updateResult);
+			}
 
 			return c.json({ successCount: results.length, results }, 201);
 		},
