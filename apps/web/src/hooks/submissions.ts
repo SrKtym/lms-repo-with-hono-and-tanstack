@@ -20,7 +20,7 @@ export const useCreateTextSubmission = () => {
 	});
 };
 
-// 複数ファイルアップロードのフック（n+1問題回避版）
+// 複数ファイルアップロードのフック（n+1問題を回避）
 export const useSubmitMultipleFiles = () => {
 	return useMutation({
 		mutationFn: async ({
@@ -75,9 +75,14 @@ export const useSubmitMultipleFiles = () => {
 				json: files.map((file) => ({
 					fileName: file.name,
 					fileType: file.type,
+					fileSize: file.size,
 				})),
 			});
 			const signedUrls = await signedUrlsRes.json();
+
+			if ("error" in signedUrls) {
+				throw new Error(signedUrls.error);
+			}
 
 			// 2. Cloud Storageにファイルを並列アップロード
 			const uploadPromises = signedUrls.map(

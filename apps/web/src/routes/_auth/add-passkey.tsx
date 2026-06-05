@@ -1,4 +1,5 @@
 import { authClient } from "@lms-repo/auth/web";
+import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { DangerIcon } from "@lms-repo/ui/assets/icons/danger";
 import { PasskeyLogo } from "@lms-repo/ui/assets/icons/passkey-logo";
@@ -17,8 +18,6 @@ export const Route = createFileRoute("/_auth/add-passkey")({
 				const res = await authClient.getSession();
 				return res;
 			},
-			staleTime: 5 * 60 * 1000, // 5 minutes
-			gcTime: 10 * 60 * 1000, // 10 minutes
 		});
 
 		if (!session.data) {
@@ -185,6 +184,7 @@ function RouteComponent() {
 					<Link to="/dashboard">
 						<DefaultButton className="w-full">
 							ダッシュボードへ移動
+							<ArrowRight />
 						</DefaultButton>
 					</Link>
 				)}
