@@ -1,7 +1,8 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Close } from "@lms-repo/ui/assets/icons/close";
-import { formatTimestamp } from "@lms-repo/ui/lib/utils";
+import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
+import { formatTimestamp, getNotificationIcon } from "@lms-repo/ui/lib/utils";
 import {
 	AnimatePresence,
 	domAnimation,
@@ -12,6 +13,7 @@ import * as m from "motion/react-m";
 import { useState } from "react";
 import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
+import { Loader } from "../loader";
 import { NotificationsModal } from "../modals/notifications-modal";
 
 interface NotificationsListCardProps {
@@ -19,6 +21,9 @@ interface NotificationsListCardProps {
 	markAsRead: (id: string) => void;
 	markAllAsRead: () => void;
 	deleteNotification: (id: string) => void;
+	hasNextPage?: boolean;
+	fetchNextPage?: () => void;
+	isFetchingNextPage?: boolean;
 }
 
 export function NotificationsListCard({
@@ -26,37 +31,18 @@ export function NotificationsListCard({
 	markAsRead,
 	markAllAsRead,
 	deleteNotification,
+	hasNextPage = false,
+	fetchNextPage,
+	isFetchingNextPage = false,
 }: NotificationsListCardProps) {
 	const [selectedNotification, setSelectedNotification] = useState<
 		string | null
 	>(null);
-	// const getNotificationIcon = (type: string) => {
-	// 	switch (type) {
-	// 		case "課題":
-	// 			return "📝";
-	// 		case "アンケート":
-	// 			return "💬";
-	// 		case "資料":
-	// 			return "📚";
-	// 		case "システム":
-	// 			return "⚙️";
-	// 		default:
-	// 			return "📢";
-	// 	}
-	// };
-
-	// const getPriorityColor = (priority: string) => {
-	// 	switch (priority) {
-	// 		case "high":
-	// 			return "border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950";
-	// 		case "medium":
-	// 			return "border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950";
-	// 		case "low":
-	// 			return "border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950";
-	// 		default:
-	// 			return "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900";
-	// 	}
-	// };
+	const sentinelRef = useInfiniteScroll({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+	});
 
 	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
@@ -133,9 +119,9 @@ export function NotificationsListCard({
 												}}
 											>
 												<div className="flex items-start gap-3">
-													{/* <span className="mt-1 flex-shrink-0 text-base">
-														{getNotificationIcon(notification.type)}
-													</span> */}
+													<span className="mt-1 flex-shrink-0 text-base">
+														{getNotificationIcon(notification.title)}
+													</span>
 													<div className="min-w-0 flex-1">
 														<div className="mb-1 flex items-center justify-between gap-2">
 															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
@@ -168,6 +154,11 @@ export function NotificationsListCard({
 											</m.div>
 										))}
 									</AnimatePresence>
+									{hasNextPage && (
+										<div ref={sentinelRef} className="py-2">
+											{isFetchingNextPage && <Loader />}
+										</div>
+									)}
 								</m.div>
 							)}
 						</div>
