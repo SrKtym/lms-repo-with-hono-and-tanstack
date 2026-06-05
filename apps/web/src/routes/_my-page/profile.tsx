@@ -4,10 +4,13 @@ import { AccountSettings } from "@lms-repo/ui/components/surfaces/account-settin
 import { NotificationSettings } from "@lms-repo/ui/components/surfaces/notification-settings";
 import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-info";
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
-import { Toast, toast } from "@lms-repo/ui/components/toast";
+import { toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useUpdateEmailNotificationSettings } from "@/hooks/settings";
-import { queryClient } from "@/lib/query-client";
+import {
+	useEmailNotificationSettings,
+	useUpdateEmailNotificationSettings,
+} from "@/hooks/settings";
+import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
 import {
 	fetchCompletedCoursesQueryFn,
 	fetchEmailNotificationSettingsQueryFn,
@@ -22,27 +25,23 @@ export const Route = createFileRoute("/_my-page/profile")({
 		}
 		const { email, name, image, role } = context.session.data.user;
 
-		const [studentData, completedCourses, emailNotificationSettings] =
-			await Promise.all([
-				queryClient.ensureQueryData({
-					queryKey: ["studentData"],
-					queryFn: fetchStudentDataQueryFn,
-					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
-				}),
-				queryClient.ensureQueryData({
-					queryKey: ["totalCredits"],
-					queryFn: fetchCompletedCoursesQueryFn,
-					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
-				}),
-				queryClient.ensureQueryData({
-					queryKey: ["email-notification-settings"],
-					queryFn: fetchEmailNotificationSettingsQueryFn,
-					staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-					gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
-				}),
-			]);
+		const [studentData, completedCourses, initialSettings] = await Promise.all([
+			queryClient.ensureQueryData({
+				queryKey: ["studentData"],
+				queryFn: fetchStudentDataQueryFn,
+				...QUERY_CONFIG.STUDENT_DATA,
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["totalCredits"],
+				queryFn: fetchCompletedCoursesQueryFn,
+				...QUERY_CONFIG.STUDENT_DATA,
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["email-notification-settings"],
+				queryFn: fetchEmailNotificationSettingsQueryFn,
+				...QUERY_CONFIG.STUDENT_DATA,
+			}),
+		]);
 
 		return {
 			email,
@@ -51,18 +50,14 @@ export const Route = createFileRoute("/_my-page/profile")({
 			role,
 			studentData,
 			completedCourses,
-			emailNotificationSettings,
+			initialSettings,
 		};
 	},
 });
 
 function RouteComponent() {
-	const {
-		studentData,
-		completedCourses,
-		emailNotificationSettings,
-		...userData
-	} = Route.useLoaderData();
+	const { studentData, completedCourses, initialSettings, ...userData } =
+		Route.useLoaderData();
 	const user = { ...userData, ...completedCourses[0], ...studentData[0] };
 
 	// トースト表示
@@ -93,13 +88,15 @@ function RouteComponent() {
 		}
 	};
 
+	const { data: emailNotificationSettings = [] } =
+		useEmailNotificationSettings(initialSettings);
+
 	// メール通知設定変更時の処理
 	const { mutate: updateEmailNotificationSettings } =
 		useUpdateEmailNotificationSettings();
 
 	return (
 		<div className="container mx-auto max-w-6xl px-4 py-8">
-			<Toast.Provider placement="top" />
 			{/* ページタイトル */}
 			<div className="mb-8">
 				<h1 className="mb-2 font-bold text-3xl text-foreground">
