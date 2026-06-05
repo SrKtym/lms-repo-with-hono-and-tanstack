@@ -5,7 +5,6 @@ import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { DefaultChip } from "@lms-repo/ui/components/chip";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
-import { Toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { z } from "zod";
@@ -16,7 +15,7 @@ import {
 	useSearchCourses,
 	useUnregisterCourse,
 } from "@/hooks/courses";
-import { queryClient } from "@/lib/query-client";
+import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/register-courses")({
@@ -28,8 +27,7 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: fetchRegisteredCoursesQueryFn,
-			staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-			gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+			...QUERY_CONFIG.STUDENT_DATA,
 		});
 		return { initialCourses };
 	},
@@ -77,7 +75,6 @@ function RouteComponent() {
 
 	return (
 		<div className="space-y-6 p-3">
-			<Toast.Provider placement="top" />
 			<LazyMotionProvider>
 				<m.div
 					initial={{ opacity: 0, y: -20 }}

@@ -1,12 +1,13 @@
 // マイページレイアウト
 import { authClient } from "@lms-repo/auth/web";
 import { StudentsModal } from "@lms-repo/ui/components/modals/students-modal";
+import { Toast } from "@lms-repo/ui/components/toast";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { CreateStudentDataForm } from "@/components/_my-page/shared/create-student-data-form";
 import { Header } from "@/components/_my-page/shared/header";
-import { queryClient } from "@/lib/query-client";
+import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
 import { fetchStudentDataQueryFn } from "@/utils/query-utils";
 
 // Queryキャッシュの永続化（ブラウザのlocalStorageに保存）設定
@@ -27,8 +28,6 @@ export const Route = createFileRoute("/_my-page")({
 				const res = await authClient.getSession();
 				return res;
 			},
-			staleTime: 5 * 60 * 1000, // 5 minutes
-			gcTime: 10 * 60 * 1000, // 10 minutes
 		});
 
 		if (!session.data) {
@@ -52,8 +51,7 @@ export const Route = createFileRoute("/_my-page")({
 				const data = await fetchStudentDataQueryFn();
 				return data;
 			},
-			staleTime: 1000 * 60 * 60 * 24, // 24時間は「新鮮」と見なす
-			gcTime: 1000 * 60 * 60 * 24 * 7, // 7日間はキャッシュを保持
+			...QUERY_CONFIG.STUDENT_DATA,
 		});
 		return { email, name, image, role, studentData };
 	},
@@ -66,6 +64,7 @@ function MyPageLayoutComponent() {
 		<div className="relative min-h-screen">
 			{/* Background - inherited from __root.tsx */}
 			{/* Content */}
+			<Toast.Provider placement="top" />
 			<div className="relative z-10 flex flex-col">
 				<PersistQueryClientProvider
 					client={queryClient}
