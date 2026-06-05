@@ -1,4 +1,5 @@
 import type { Schedules, SchedulesOptional } from "@lms-repo/db/types";
+import type { FetchScheduleByIdReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { ColorSwatchPicker } from "@lms-repo/ui/components/color-swatch-picker";
@@ -10,18 +11,49 @@ import {
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
+import { forwardRef } from "react";
 import { z } from "zod";
 import { useCreateSchedule } from "@/hooks/schedules";
 
-export function CreateScheduleForm() {
+interface CreateScheduleFormProps {
+	initialData: FetchScheduleByIdReturnType;
+	triggerRef?: React.Ref<HTMLButtonElement>;
+}
+
+export const CreateScheduleForm = forwardRef<
+	HTMLButtonElement,
+	CreateScheduleFormProps
+>(({ initialData, triggerRef }, ref) => {
+	const initialSchedule = initialData[0];
 	const dateTime = now(getLocalTimeZone());
 	const createSchedule = useCreateSchedule();
+	const isEditMode = !!initialSchedule;
+
 	const form = useForm({
 		defaultValues: {
-			title: "",
-			description: "",
-			timeSpan: { start: dateTime, end: dateTime },
-			theme: "#059669",
+			title: initialSchedule?.title || "",
+			description: initialSchedule?.description || "",
+			timeSpan: {
+				start: initialSchedule
+					? dateTime.set({
+							year: initialSchedule.startTime.getFullYear(),
+							month: initialSchedule.startTime.getMonth() + 1,
+							day: initialSchedule.startTime.getDate(),
+							hour: initialSchedule.startTime.getHours(),
+							minute: initialSchedule.startTime.getMinutes(),
+						})
+					: dateTime,
+				end: initialSchedule
+					? dateTime.set({
+							year: initialSchedule.endTime.getFullYear(),
+							month: initialSchedule.endTime.getMonth() + 1,
+							day: initialSchedule.endTime.getDate(),
+							hour: initialSchedule.endTime.getHours(),
+							minute: initialSchedule.endTime.getMinutes(),
+						})
+					: dateTime,
+			},
+			theme: initialSchedule?.theme || "#059669",
 		},
 		onSubmit: async ({ value }) => {
 			const { timeSpan, ...rest } = value;
@@ -50,12 +82,12 @@ export function CreateScheduleForm() {
 	return (
 		<DefaultModal
 			triggerButton={
-				<DefaultButton>
+				<DefaultButton ref={ref || triggerRef}>
 					<CalendarClock />
 					スケジュールを追加
 				</DefaultButton>
 			}
-			heading="スケジュールの追加"
+			heading={isEditMode ? "スケジュールの編集" : "スケジュールの追加"}
 		>
 			<form
 				onSubmit={(e) => {
@@ -119,6 +151,7 @@ export function CreateScheduleForm() {
 						</div>
 					)}
 				</form.Field>
+
 				<form.Field name="timeSpan">
 					{(field) => (
 						<div className="space-y-2">
@@ -150,6 +183,7 @@ export function CreateScheduleForm() {
 						</div>
 					)}
 				</form.Field>
+
 				<form.Field name="theme">
 					{(field) => (
 						<div className="space-y-2">
@@ -165,6 +199,7 @@ export function CreateScheduleForm() {
 						</div>
 					)}
 				</form.Field>
+
 				<div className="flex justify-end gap-2">
 					<CancelButton slot="close">キャンセル</CancelButton>
 					<form.Subscribe>
@@ -174,7 +209,7 @@ export function CreateScheduleForm() {
 								slot="close"
 								isDisabled={!canSubmit || isSubmitting}
 							>
-								{isSubmitting ? "処理中..." : "作成"}
+								{isSubmitting ? "処理中..." : isEditMode ? "更新" : "作成"}
 							</DefaultButton>
 						)}
 					</form.Subscribe>
@@ -182,4 +217,6 @@ export function CreateScheduleForm() {
 			</form>
 		</DefaultModal>
 	);
-}
+});
+
+CreateScheduleForm.displayName = "CreateScheduleForm";

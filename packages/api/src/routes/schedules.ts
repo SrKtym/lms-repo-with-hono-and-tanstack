@@ -3,7 +3,6 @@ import type { Session } from "@lms-repo/auth/server";
 import {
 	createSchedules,
 	deleteSchedules,
-	updateSchedules,
 } from "@lms-repo/db/utils/mutation/schedules";
 import {
 	fetchScheduleById,
@@ -61,15 +60,13 @@ export const schedulesRoute = new Hono<{
 		const result = await fetchScheduleById(scheduleId);
 		return c.json(result, 200);
 	})
-	// スケジュール更新
-	.patch("/", zValidator("json", formSchema), async (c) => {
-		const scheduleData = c.req.valid("json");
-		const result = await updateSchedules(scheduleData);
-		return c.json(result);
-	})
 	// スケジュール削除
-	.delete("/", zValidator("json", z.string()), async (c) => {
-		const scheduleId = c.req.valid("json");
-		const result = await deleteSchedules(scheduleId);
-		return c.json(result);
-	});
+	.delete(
+		"/",
+		zValidator("json", z.object({ scheduleId: z.string() })),
+		async (c) => {
+			const { scheduleId } = c.req.valid("json");
+			const result = await deleteSchedules(scheduleId);
+			return c.json(result);
+		},
+	);
