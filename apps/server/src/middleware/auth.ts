@@ -17,5 +17,5 @@ export const authMiddleware = createMiddleware<{
 
 	c.set("user", session.user);
 	c.set("session", session.session);
-	await next();
+	return next();
 });
