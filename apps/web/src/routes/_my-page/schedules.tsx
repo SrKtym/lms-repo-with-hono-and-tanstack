@@ -43,6 +43,13 @@ export const Route = createFileRoute("/_my-page/schedules")({
 		]);
 		return { courses, initialSchedules, view };
 	},
+	head: () => ({
+		meta: [
+			{
+				title: "スケジュール | LMS-repo",
+			},
+		],
+	}),
 });
 
 function RouteComponent() {

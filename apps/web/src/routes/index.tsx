@@ -9,6 +9,13 @@ import { VideoTutorial } from "@/components/landing/video-tutorial";
 
 export const Route = createFileRoute("/")({
 	component: HomeComponent,
+	head: () => ({
+		meta: [
+			{
+				title: "ホーム | LMS-repo",
+			},
+		],
+	}),
 });
 
 function HomeComponent() {
