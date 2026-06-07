@@ -1,6 +1,6 @@
 import { authClient } from "@lms-repo/auth/web";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
-import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
+import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { RadioGroupFor2fa } from "@lms-repo/ui/components/radio-group";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState } from "react";
@@ -42,6 +42,7 @@ function RouteComponent() {
 	const { twoFactorEnabled } = Route.useLoaderData();
 	const [selected, setSelected] = useState<string>("valid");
 	const [totpURI, setTotpURI] = useState<string>();
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	return (
 		<div className="space-y-6">
@@ -54,8 +55,10 @@ function RouteComponent() {
 				<Link to="/add-passkey">
 					<CancelButton>今はしない</CancelButton>
 				</Link>
-				<DefaultModal
-					triggerButton={<DefaultButton>続行</DefaultButton>}
+				<DefaultButton onPress={() => setIsModalOpen(true)}>続行</DefaultButton>
+				<ControlledModal
+					isOpen={isModalOpen}
+					onOpenChange={setIsModalOpen}
 					heading={
 						totpURI
 							? "TOTPシークレットキーの登録"
@@ -70,7 +73,7 @@ function RouteComponent() {
 							setTotpURI={(totpURI) => setTotpURI(totpURI)}
 						/>
 					)}
-				</DefaultModal>
+				</ControlledModal>
 			</div>
 		</div>
 	);

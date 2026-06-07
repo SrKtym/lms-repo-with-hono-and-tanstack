@@ -1,73 +1,80 @@
-import type { Schedules, SchedulesOptional } from "@lms-repo/db/types";
-import type { FetchScheduleByIdReturnType } from "@lms-repo/db/utils/query/schedules";
-import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
+import type { Schedules } from "@lms-repo/db/types";
+import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { ColorSwatchPicker } from "@lms-repo/ui/components/color-swatch-picker";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
+import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import {
 	getLocalTimeZone,
 	now,
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { forwardRef } from "react";
 import { z } from "zod";
 import { useCreateSchedule } from "@/hooks/schedules";
 
 interface CreateScheduleFormProps {
-	initialData: FetchScheduleByIdReturnType;
-	triggerRef?: React.Ref<HTMLButtonElement>;
+	initialData?: FetchSchedulesReturnType[number];
+	isOpen: boolean;
+	onOpenChange: (open: boolean) => void;
 }
 
-export const CreateScheduleForm = forwardRef<
-	HTMLButtonElement,
-	CreateScheduleFormProps
->(({ initialData, triggerRef }, ref) => {
-	const initialSchedule = initialData[0];
+export function CreateScheduleForm({
+	initialData,
+	isOpen,
+	onOpenChange,
+}: CreateScheduleFormProps) {
 	const dateTime = now(getLocalTimeZone());
-	const createSchedule = useCreateSchedule();
-	const isEditMode = !!initialSchedule;
+	const { mutateAsync: createSchedule } = useCreateSchedule();
+	const isEditMode = !!initialData;
 
 	const form = useForm({
 		defaultValues: {
-			title: initialSchedule?.title || "",
-			description: initialSchedule?.description || "",
+			id: initialData?.id || "",
+			title: initialData?.title || "",
+			description: initialData?.description || "",
 			timeSpan: {
-				start: initialSchedule
+				start: initialData
 					? dateTime.set({
-							year: initialSchedule.startTime.getFullYear(),
-							month: initialSchedule.startTime.getMonth() + 1,
-							day: initialSchedule.startTime.getDate(),
-							hour: initialSchedule.startTime.getHours(),
-							minute: initialSchedule.startTime.getMinutes(),
+							year: initialData.startTime.getFullYear(),
+							month: initialData.startTime.getMonth() + 1,
+							day: initialData.startTime.getDate(),
+							hour: initialData.startTime.getHours(),
+							minute: initialData.startTime.getMinutes(),
 						})
 					: dateTime,
-				end: initialSchedule
+				end: initialData
 					? dateTime.set({
-							year: initialSchedule.endTime.getFullYear(),
-							month: initialSchedule.endTime.getMonth() + 1,
-							day: initialSchedule.endTime.getDate(),
-							hour: initialSchedule.endTime.getHours(),
-							minute: initialSchedule.endTime.getMinutes(),
+							year: initialData.endTime.getFullYear(),
+							month: initialData.endTime.getMonth() + 1,
+							day: initialData.endTime.getDate(),
+							hour: initialData.endTime.getHours(),
+							minute: initialData.endTime.getMinutes(),
 						})
 					: dateTime,
 			},
-			theme: initialSchedule?.theme || "#059669",
+			theme: initialData?.theme || "#059669",
 		},
 		onSubmit: async ({ value }) => {
 			const { timeSpan, ...rest } = value;
 
-			const scheduleData: Omit<Schedules, SchedulesOptional> = {
+			const scheduleData: Omit<Schedules, "createdBy"> = {
 				...rest,
 				startTime: timeSpan.start.toDate(),
 				endTime: timeSpan.end.toDate(),
 			};
 
-			createSchedule.mutate(scheduleData);
+			const res = await createSchedule(scheduleData);
+
+			if (res.status === 200) {
+				onOpenChange(false);
+			} else {
+				return;
+			}
 		},
 		validators: {
 			onSubmit: z.object({
+				id: z.string(),
 				title: z.string(),
 				description: z.string(),
 				timeSpan: z.object({
@@ -80,13 +87,9 @@ export const CreateScheduleForm = forwardRef<
 	});
 
 	return (
-		<DefaultModal
-			triggerButton={
-				<DefaultButton ref={ref || triggerRef}>
-					<CalendarClock />
-					スケジュールを追加
-				</DefaultButton>
-			}
+		<ControlledModal
+			isOpen={isOpen}
+			onOpenChange={onOpenChange}
 			heading={isEditMode ? "スケジュールの編集" : "スケジュールの追加"}
 		>
 			<form
@@ -200,13 +203,28 @@ export const CreateScheduleForm = forwardRef<
 					)}
 				</form.Field>
 
+				<form.Field name="id">
+					{(field) => (
+						<input
+							type="hidden"
+							name="id"
+							value={field.state.value}
+							onChange={(e) => {
+								console.log(e.target.value);
+								field.handleChange(e.target.value);
+							}}
+						/>
+					)}
+				</form.Field>
+
 				<div className="flex justify-end gap-2">
-					<CancelButton slot="close">キャンセル</CancelButton>
+					<CancelButton onPress={() => onOpenChange(false)}>
+						キャンセル
+					</CancelButton>
 					<form.Subscribe>
 						{({ canSubmit, isSubmitting }) => (
 							<DefaultButton
 								type="submit"
-								slot="close"
 								isDisabled={!canSubmit || isSubmitting}
 							>
 								{isSubmitting ? "処理中..." : isEditMode ? "更新" : "作成"}
@@ -215,8 +233,6 @@ export const CreateScheduleForm = forwardRef<
 					</form.Subscribe>
 				</div>
 			</form>
-		</DefaultModal>
+		</ControlledModal>
 	);
-});
-
-CreateScheduleForm.displayName = "CreateScheduleForm";
+}

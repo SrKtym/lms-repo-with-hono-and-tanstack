@@ -4,9 +4,10 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { DefaultChip } from "@lms-repo/ui/components/chip";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import { DefaultModal } from "@lms-repo/ui/components/modals/default-modal";
+import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
+import { useState } from "react";
 import { z } from "zod";
 import {
 	useCheckCourse,
@@ -15,7 +16,7 @@ import {
 	useSearchCourses,
 	useUnregisterCourse,
 } from "@/hooks/courses";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/register-courses")({
@@ -37,6 +38,7 @@ function RouteComponent() {
 	const { initialCourses } = Route.useLoaderData();
 	const { weekdays, period } = Route.useSearch();
 	const navigate = useNavigate();
+	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
 
 	// 登録済み講義の取得
 	const { data: courses = [] } = useRegisteredCourses(initialCourses);
@@ -115,71 +117,82 @@ function RouteComponent() {
 								>
 									<p>取得予定の単位数: {totalCredits}</p>
 									{courses.length > 0 && (
-										<DefaultModal
-											triggerButton={
-												<DefaultButton size="sm">
-													<Check />
-													<p className="max-sm:hidden">登録を確定する</p>
-												</DefaultButton>
-											}
-											heading="登録講義の確認"
-										>
-											<div className="space-y-4">
-												<p className="text-gray-700 dark:text-gray-300">
-													以下の講義を登録してもよろしいですか？
-												</p>
-												<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
-													<table className="w-full">
-														<thead>
-															<tr className="border-gray-200 border-b dark:border-gray-600">
-																<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
-																	講義名
-																</th>
-																<th className="pb-2 text-right font-semibold text-gray-900 dark:text-white">
-																	単位数
-																</th>
-															</tr>
-														</thead>
-														<tbody>
-															{courses.map((course, index) => (
-																<tr
-																	key={course.id}
-																	className={
-																		index < courses.length - 1
-																			? "border-gray-100 border-b dark:border-gray-600"
-																			: ""
-																	}
-																>
-																	<td className="py-2 text-gray-900 dark:text-white">
-																		{course.name}
+										<>
+											<DefaultButton
+												size="sm"
+												onPress={() => setIsConfirmModalOpen(true)}
+											>
+												<Check />
+												<p className="max-sm:hidden">登録を確定する</p>
+											</DefaultButton>
+											<ControlledModal
+												isOpen={isConfirmModalOpen}
+												onOpenChange={setIsConfirmModalOpen}
+												heading="登録講義の確認"
+											>
+												<div className="space-y-4">
+													<p className="text-gray-700 dark:text-gray-300">
+														以下の講義を登録してもよろしいですか？
+													</p>
+													<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+														<table className="w-full">
+															<thead>
+																<tr className="border-gray-200 border-b dark:border-gray-600">
+																	<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
+																		講義名
+																	</th>
+																	<th className="pb-2 text-right font-semibold text-gray-900 dark:text-white">
+																		単位数
+																	</th>
+																</tr>
+															</thead>
+															<tbody>
+																{courses.map((course, index) => (
+																	<tr
+																		key={course.id}
+																		className={
+																			index < courses.length - 1
+																				? "border-gray-100 border-b dark:border-gray-600"
+																				: ""
+																		}
+																	>
+																		<td className="py-2 text-gray-900 dark:text-white">
+																			{course.name}
+																		</td>
+																		<td className="py-2 text-right text-gray-900 dark:text-white">
+																			{course.credits}
+																		</td>
+																	</tr>
+																))}
+																<tr className="border-gray-300 border-t-2 dark:border-gray-500">
+																	<td className="py-2 font-bold text-gray-900 dark:text-white">
+																		合計単位数
 																	</td>
-																	<td className="py-2 text-right text-gray-900 dark:text-white">
-																		{course.credits}
+																	<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
+																		{totalCredits}
 																	</td>
 																</tr>
-															))}
-															<tr className="border-gray-300 border-t-2 dark:border-gray-500">
-																<td className="py-2 font-bold text-gray-900 dark:text-white">
-																	合計単位数
-																</td>
-																<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
-																	{totalCredits}
-																</td>
-															</tr>
-														</tbody>
-													</table>
+															</tbody>
+														</table>
+													</div>
+													<div className="flex justify-end gap-2">
+														<CancelButton
+															onClick={() => setIsConfirmModalOpen(false)}
+														>
+															キャンセル
+														</CancelButton>
+														<DefaultButton
+															onClick={() => {
+																handleCheckCourse();
+																setIsConfirmModalOpen(false);
+															}}
+														>
+															確定
+														</DefaultButton>
+													</div>
 												</div>
-												<div className="flex justify-end gap-2">
-													<CancelButton slot="close">キャンセル</CancelButton>
-													<DefaultButton
-														slot="close"
-														onPress={() => handleCheckCourse}
-													>
-														確定
-													</DefaultButton>
-												</div>
-											</div>
-										</DefaultModal>
+											</ControlledModal>
+										</>
 									)}
 									{courses.length > 0 && everyCourseIsChecked && (
 										<DefaultChip color="success">

@@ -3,13 +3,14 @@ import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/uti
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
-import { CancelButton } from "@lms-repo/ui/components/button";
+import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-card";
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { Loader } from "@lms-repo/ui/components/loader";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { useAnnouncements } from "@/hooks/announcements";
 import { useAssignments } from "@/hooks/assignments";
 import { useMembersByCourseId } from "@/hooks/students";
@@ -38,6 +39,8 @@ export default function RegisteredCourseInfos({
 	const { data: announcementsData = [] } = useAnnouncements(announcements);
 	const { data: assignmentsData = [] } = useAssignments(assignments);
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
+	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
+	const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
 
 	return (
 		<>
@@ -87,8 +90,16 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										お知らせ
 									</h2>
-									<CreateAnnouncementForm />
+									<DefaultButton
+										onPress={() => setIsAnnouncementModalOpen(true)}
+									>
+										お知らせを作成
+									</DefaultButton>
 								</div>
+								<CreateAnnouncementForm
+									isOpen={isAnnouncementModalOpen}
+									onOpenChange={setIsAnnouncementModalOpen}
+								/>
 
 								{announcementsData.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -114,8 +125,14 @@ export default function RegisteredCourseInfos({
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										課題
 									</h2>
-									<CreateAssignmentForm />
+									<DefaultButton onPress={() => setIsAssignmentModalOpen(true)}>
+										課題を作成
+									</DefaultButton>
 								</div>
+								<CreateAssignmentForm
+									isOpen={isAssignmentModalOpen}
+									onOpenChange={setIsAssignmentModalOpen}
+								/>
 
 								{assignmentsData.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">

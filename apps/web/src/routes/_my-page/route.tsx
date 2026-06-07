@@ -1,13 +1,13 @@
 // マイページレイアウト
 import { authClient } from "@lms-repo/auth/web";
-import { StudentsModal } from "@lms-repo/ui/components/modals/students-modal";
+import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { Toast } from "@lms-repo/ui/components/toast";
 import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { CreateStudentDataForm } from "@/components/_my-page/shared/create-student-data-form";
 import { Header } from "@/components/_my-page/shared/header";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchStudentDataQueryFn } from "@/utils/query-utils";
 
 // Queryキャッシュの永続化（ブラウザのlocalStorageに保存）設定
@@ -97,9 +97,14 @@ function MyPageLayoutComponent() {
 				>
 					<Header {...userData} />
 					{role === "student" && studentData.length === 0 ? (
-						<StudentsModal isOpen={true}>
+						<ControlledModal
+							isOpen={true}
+							heading="学科・学年の登録をしましょう"
+							size="cover"
+							showCloseTrigger={false}
+						>
 							<CreateStudentDataForm />
-						</StudentsModal>
+						</ControlledModal>
 					) : null}
 					<main className="flex-1">
 						<Outlet />
