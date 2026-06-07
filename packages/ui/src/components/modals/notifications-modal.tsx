@@ -1,7 +1,7 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
-import { formatTimestamp } from "@lms-repo/ui/lib/utils";
+import { formatTimestamp, getNotificationIcon } from "@lms-repo/ui/lib/utils";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 
@@ -39,9 +39,9 @@ export function NotificationsModal({
 							{/* Modal Header */}
 							<div className="flex items-center justify-between border-b p-6 dark:border-gray-700">
 								<div className="flex items-center gap-3">
-									{/* <span className="text-2xl">
-										{getNotificationIcon(notification.type)}
-									</span> */}
+									<span className="text-2xl">
+										{getNotificationIcon(notification.title)}
+									</span>
 									<div>
 										<h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
 											{notification.title}

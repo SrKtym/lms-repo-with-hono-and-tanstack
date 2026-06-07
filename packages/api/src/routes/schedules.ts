@@ -4,15 +4,16 @@ import {
 	createSchedules,
 	deleteSchedules,
 } from "@lms-repo/db/utils/mutation/schedules";
-import {
-	fetchScheduleById,
-	fetchSchedules,
-} from "@lms-repo/db/utils/query/schedules";
+import { fetchSchedules } from "@lms-repo/db/utils/query/schedules";
 import { Hono } from "hono";
 import { z } from "zod";
 
 const formSchema = z
 	.object({
+		id: z
+			.string()
+			.transform((value) => (value === "" ? undefined : value))
+			.optional(),
 		title: z
 			.string()
 			.transform((value) => (value === "" ? "タイトルなし" : value))
@@ -28,7 +29,8 @@ const formSchema = z
 			.optional(),
 	})
 	.refine((value) => value.startTime < value.endTime, {
-		error: "開始日時は終了日時よりも前でなければなりません。",
+		path: ["startTime"],
+		message: "開始日時は終了日時よりも前でなければなりません。",
 	});
 
 // スケジュールに関するロジック
@@ -52,12 +54,6 @@ export const schedulesRoute = new Hono<{
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchSchedules(userId);
-		return c.json(result, 200);
-	})
-	// スケジュール個別取得
-	.get("/:id", async (c) => {
-		const scheduleId = c.req.param("id");
-		const result = await fetchScheduleById(scheduleId);
 		return c.json(result, 200);
 	})
 	// スケジュール削除
