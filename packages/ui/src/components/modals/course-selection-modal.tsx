@@ -1,5 +1,8 @@
 import { Modal } from "@heroui/react";
-import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import type {
+	FetchCoursesReturnType,
+	FetchRegisteredCoursesReturnType,
+} from "@lms-repo/db/utils/query/courses";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
 import { DAYS } from "../../lib/utils";
 import { CancelButton, OutlineButton } from "../button";
@@ -9,6 +12,7 @@ interface CourseSelectionModalProps {
 	onCourseSelect: (course: FetchCoursesReturnType[number]) => void;
 	selectedCell: { day: number; period: number };
 	availableCourses: FetchCoursesReturnType;
+	registeredCourses?: FetchRegisteredCoursesReturnType;
 	isPending?: boolean;
 	hasNextPage?: boolean;
 	fetchNextPage?: () => void;
@@ -22,6 +26,7 @@ export function CourseSelectionModal({
 	onCourseSelect,
 	selectedCell,
 	availableCourses,
+	registeredCourses,
 	isPending = false,
 	hasNextPage = false,
 	fetchNextPage,
@@ -55,20 +60,26 @@ export function CourseSelectionModal({
 								<Loader />
 							) : (
 								<>
-									{availableCourses.map((course) => (
-										<OutlineButton
-											key={course.id}
-											size="lg"
-											onPress={() => onCourseSelect(course)}
-										>
-											<p className="font-medium text-gray-900 dark:text-white">
-												{course.name}
-											</p>
-											<p className="text-gray-600 text-sm dark:text-gray-400">
-												{course.targetGrade}年・{course.requirements}
-											</p>
-										</OutlineButton>
-									))}
+									{availableCourses.map((course) => {
+										const isRegistered = registeredCourses?.some(
+											(registered) => registered.id === course.id,
+										);
+										return (
+											<OutlineButton
+												key={course.id}
+												size="lg"
+												isDisabled={isRegistered}
+												onPress={() => onCourseSelect(course)}
+											>
+												<p className="font-medium text-gray-900 dark:text-white">
+													{course.name}
+												</p>
+												<p className="text-gray-600 text-sm dark:text-gray-400">
+													{course.targetGrade}年・{course.requirements}
+												</p>
+											</OutlineButton>
+										);
+									})}
 									{hasNextPage && (
 										<div ref={sentinelRef} className="py-2">
 											{isPending && <Loader />}
