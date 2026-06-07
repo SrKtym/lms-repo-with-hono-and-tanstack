@@ -2,19 +2,20 @@ import type {
 	FetchCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
+import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { Plus } from "@lms-repo/ui/assets/icons/plus";
-import { MenuButton } from "@lms-repo/ui/components/button";
 import {
-	LongPressMenu,
+	LongPressPopover,
 	useLongPress,
-} from "@lms-repo/ui/components/long-press-menu";
+} from "@lms-repo/ui/components/popover";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { DAYS, getColorbyRequirements } from "../../lib/utils";
-import { OutlineButton } from "../button";
+import { MenuActionButton, OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
+import { DefaultTooltip } from "../tooltip";
 import { BaseCard } from "./base-card";
 
 interface TimeTableCardProps {
@@ -83,13 +84,36 @@ function CourseCell({
 			</div>
 			{/* メニューボタン */}
 			<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
-				<MenuButton
-					onEdit={() => {
-						onCellClick(day, period);
-						setCurrentCell({ day, period });
-					}}
-					onDelete={() => onDeleteCourse(course.id)}
-				/>
+				<div className="flex flex-col gap-1">
+					<DefaultTooltip
+						triggerElement={
+							<MoreVertical
+								width={28}
+								height={28}
+								className="rounded-full p-1 text-white"
+							/>
+						}
+						content={
+							<div className="flex flex-col gap-1">
+								<MenuActionButton
+									type="edit"
+									onClick={(e) => {
+										e?.stopPropagation();
+										onCellClick?.(day, period);
+										setCurrentCell({ day, period });
+									}}
+								/>
+								<MenuActionButton
+									type="delete"
+									onClick={(e) => {
+										e?.stopPropagation();
+										onDeleteCourse(course.id);
+									}}
+								/>
+							</div>
+						}
+					/>
+				</div>
 			</div>
 		</m.div>
 	);
@@ -106,7 +130,7 @@ export function TimeTableCard({
 	fetchNextPage,
 	isFetchingNextPage = false,
 }: TimeTableCardProps) {
-	// Generate timeSlots and extract unique values
+	// タイムスロットの生成と重複の削除
 	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) =>
 		Array.from({ length: 5 }, (_, periodIndex) => {
 			const day = dayIndex + 1;
@@ -261,6 +285,7 @@ export function TimeTableCard({
 				}}
 				selectedCell={currentCell || { day: 1, period: 1 }}
 				availableCourses={availableCourses}
+				registeredCourses={courses}
 				isPending={isPending}
 				hasNextPage={hasNextPage}
 				fetchNextPage={fetchNextPage}
@@ -270,7 +295,7 @@ export function TimeTableCard({
 			{/* 長押しメニュー */}
 			<AnimatePresence>
 				{longPressMenu && (
-					<LongPressMenu
+					<LongPressPopover
 						position={longPressMenu.position}
 						onEdit={() => {
 							onCellClick(longPressMenu.day, longPressMenu.period);
