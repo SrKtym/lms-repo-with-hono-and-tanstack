@@ -28,9 +28,5 @@ export type FileSubmissionsMetadata =
 	typeof fileSubmissionsMetadata.$inferInsert;
 
 // データ挿入時のオプショナルフィールド
-export type CoursesOptional = "id" | "departmentId" | "professorId";
-export type SchedulesOptional = "id" | "createdBy" | "createdAt" | "updatedAt";
-export type AnnouncementsOptional = "id" | "createdAt" | "updatedAt";
+export type CoursesOptional = "departmentId" | "professorId";
 export type AssignmentsOptional = "id" | "courseId" | "createdAt" | "updatedAt";
-export type UserOptional = "id";
-export type CommentsOptional = "id" | "createdBy";

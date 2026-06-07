@@ -1,8 +1,8 @@
-import type { Comments, CommentsOptional } from "@lms-repo/db/types";
+import type { Comments } from "@lms-repo/db/types";
 import type { FetchCommentsWithAssignmentReturnType } from "@lms-repo/db/utils/query/comments";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchCommentsWithAssignmentQueryFn } from "../utils/query-utils";
 
 // 課題についてのコメントを取得するカスタムフック
@@ -17,7 +17,7 @@ export const useCommentsWithAssignment = (assignmentId: string) => {
 // コメントを作成するカスタムフック
 export const useCreateComment = () => {
 	return useMutation({
-		mutationFn: async (comment: Omit<Comments, CommentsOptional>) => {
+		mutationFn: async (comment: Omit<Comments, "createdBy">) => {
 			const res = await client.api.comments.$post({
 				json: comment,
 			});

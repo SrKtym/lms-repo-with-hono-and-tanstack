@@ -10,7 +10,7 @@ import {
 	useEmailNotificationSettings,
 	useUpdateEmailNotificationSettings,
 } from "@/hooks/settings";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import {
 	fetchCompletedCoursesQueryFn,
 	fetchEmailNotificationSettingsQueryFn,

@@ -6,11 +6,14 @@ import type { Schedules } from "../../types";
 // スケジュール作成・更新
 export async function createSchedules(schedulesData: Schedules) {
 	try {
-		await db.insert(schedules).values(schedulesData).onConflictDoUpdate({
-			target: schedules.id,
-			set: schedulesData,
-		});
-		return { message: "スケジュールの作成に成功しました。", status: 201 };
+		await db
+			.insert(schedules)
+			.values(schedulesData)
+			.onConflictDoUpdate({
+				target: schedules.id,
+				set: schedulesData,
+			});
+		return { message: "スケジュールの作成に成功しました。", status: 200 };
 	} catch (error) {
 		return { message: "スケジュールの作成に失敗しました。", status: 500 };
 	}

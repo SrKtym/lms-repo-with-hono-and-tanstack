@@ -1,11 +1,13 @@
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
-import { MenuButton } from "@lms-repo/ui/components/button";
+import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
+import { MenuActionButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import {
 	LongPressMenu,
 	useLongPress,
 } from "@lms-repo/ui/components/long-press-menu";
+import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -77,9 +79,32 @@ function DayEventItem({
 				{event.title}
 				{event.type === "schedule" && (
 					<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
-						<MenuButton
-							onEdit={() => editSchedule?.(event.id)}
-							onDelete={() => deleteSchedule(event.id)}
+						<DefaultTooltip
+							triggerElement={
+								<MoreVertical
+									width={32}
+									height={32}
+									className="rounded-full p-1 text-white"
+								/>
+							}
+							content={
+								<div className="flex flex-col gap-1">
+									<MenuActionButton
+										type="edit"
+										onClick={(e) => {
+											e?.stopPropagation();
+											editSchedule?.(event.id);
+										}}
+									/>
+									<MenuActionButton
+										type="delete"
+										onClick={(e) => {
+											e?.stopPropagation();
+											deleteSchedule(event.id);
+										}}
+									/>
+								</div>
+							}
 						/>
 					</div>
 				)}
@@ -217,7 +242,7 @@ export function DayView({
 						))}
 					</div>
 
-					{/* 長押しメニュー */}
+					{/* 長押しポップオーバー */}
 					{selectedEvent && menuPosition && (
 						<LongPressMenu
 							position={menuPosition}

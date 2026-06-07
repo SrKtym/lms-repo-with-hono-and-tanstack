@@ -2,7 +2,7 @@ import type { EmailNotificationSettings } from "@lms-repo/db/types";
 import type { FetchEmailNotificationSettings } from "@lms-repo/db/utils/query/settings";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query-utils";
 
 // メール通知設定を取得するカスタムフック

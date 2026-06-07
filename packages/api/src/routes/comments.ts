@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { Comments, CommentsOptional } from "@lms-repo/db/types";
+import type { Comments } from "@lms-repo/db/types";
 import { createComments } from "@lms-repo/db/utils/mutation/comments";
 import { fetchCommentsWithAssignment } from "@lms-repo/db/utils/query/comments";
 import { Hono } from "hono";
@@ -15,7 +15,7 @@ export const commentsRoute = new Hono<{
 	// コメント作成
 	.post(
 		"/",
-		zValidator("json", z.custom<Omit<Comments, CommentsOptional>>()),
+		zValidator("json", z.custom<Omit<Comments, "createdBy">>()),
 		async (c) => {
 			const { userId } = c.get("session");
 			const comment = c.req.valid("json");

@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchMembersByCourseIdQueryFn } from "@/utils/query-utils";
 
 // 講義を登録しているメンバーの取得

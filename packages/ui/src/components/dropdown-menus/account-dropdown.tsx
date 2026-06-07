@@ -2,8 +2,7 @@ import { Dropdown } from "@heroui/react";
 import type React from "react";
 import { useState } from "react";
 import type { LinkComponentProps } from "../../lib/utils";
-import { CancelButton, DefaultButton } from "../button";
-import { DropdownButton } from "../button";
+import { CancelButton, DefaultButton, DropdownButton } from "../button";
 import { ControlledModal } from "../modals/controlled-modal";
 
 interface DropdownMenuForAccountProps {

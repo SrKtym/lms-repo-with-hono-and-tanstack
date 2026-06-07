@@ -1,4 +1,4 @@
-import type { User, UserOptional } from "../types";
+import type { User } from "../types";
 
 const defaultUserValues = {
 	emailVerified: true,
@@ -6,7 +6,7 @@ const defaultUserValues = {
 	twoFactorEnabled: true,
 };
 
-export const mockProfessors: Omit<User, UserOptional>[] = [
+export const mockProfessors: Omit<User, "id">[] = [
 	{
 		name: "田村四郎",
 		email: "prof1@university.ac.jp",

@@ -10,7 +10,7 @@ import {
 	useMarkNotificationAsRead,
 	useNotifications,
 } from "@/hooks/notifications";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import {
 	fetchAssignmentsQueryFn,
 	fetchNotificationsQueryFn,

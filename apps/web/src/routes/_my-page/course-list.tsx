@@ -3,7 +3,7 @@ import { z } from "zod";
 import RegisteredCourseContents from "@/components/_my-page/course-list/registered-course-contents";
 import RegisteredCourseInfos from "@/components/_my-page/course-list/registered-course-infos";
 import RegisteredCourseList from "@/components/_my-page/course-list/registered-course-list";
-import { queryClient, QUERY_CONFIG } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import {
 	fetchAnnouncementsQueryFn,
 	fetchAssignmentsQueryFn,

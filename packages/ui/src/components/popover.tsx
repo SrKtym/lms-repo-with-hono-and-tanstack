@@ -1,21 +1,20 @@
-import { Edit } from "@lms-repo/ui/assets/icons/edit";
-import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import * as m from "motion/react-m";
 import { useEffect, useRef } from "react";
+import { MenuActionButton } from "./button";
 
-interface LongPressMenuProps {
+interface LongPressPopoverProps {
 	onEdit: () => void;
 	onDelete: () => void;
 	onClose: () => void;
 	position: { x: number; y: number };
 }
 
-export function LongPressMenu({
+export function LongPressPopover({
 	onEdit,
 	onDelete,
 	onClose,
 	position,
-}: LongPressMenuProps) {
+}: LongPressPopoverProps) {
 	const menuRef = useRef<HTMLDivElement>(null);
 
 	// メニュー外クリックで閉じる
@@ -44,30 +43,20 @@ export function LongPressMenu({
 			}}
 		>
 			<div className="flex flex-col gap-1">
-				<m.button
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
+				<MenuActionButton
+					type="edit"
 					onClick={() => {
 						onEdit();
 						onClose();
 					}}
-					className="flex items-center gap-2 rounded px-3 py-2 text-gray-700 text-sm hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700"
-				>
-					<Edit width={16} height={16} />
-					<p>編集</p>
-				</m.button>
-				<m.button
-					whileHover={{ scale: 1.05 }}
-					whileTap={{ scale: 0.95 }}
+				/>
+				<MenuActionButton
+					type="delete"
 					onClick={() => {
 						onDelete();
 						onClose();
 					}}
-					className="flex items-center gap-2 rounded px-3 py-2 text-red-600 text-sm hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
-				>
-					<Trash width={16} height={16} />
-					<p>削除</p>
-				</m.button>
+				/>
 			</div>
 		</m.div>
 	);
