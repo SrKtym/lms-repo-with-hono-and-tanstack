@@ -4,9 +4,9 @@ import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { MenuActionButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import {
-	LongPressMenu,
+	LongPressPopover,
 	useLongPress,
-} from "@lms-repo/ui/components/long-press-menu";
+} from "@lms-repo/ui/components/popover";
 import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import { DAYS } from "@lms-repo/ui/lib/utils";
@@ -241,7 +241,7 @@ export function MonthView({
 
 				{/* 長押しポップオーバー */}
 				{selectedEvent && menuPosition && (
-					<LongPressMenu
+					<LongPressPopover
 						position={menuPosition}
 						onEdit={() => {
 							if (editSchedule && selectedEvent.type === "schedule") {
