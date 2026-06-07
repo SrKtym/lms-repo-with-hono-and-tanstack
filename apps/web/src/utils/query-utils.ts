@@ -56,20 +56,6 @@ export const fetchSchedulesQueryFn = async () => {
 	return parsedData;
 };
 
-// 単一のスケジュール取得用のqueryFn
-export const fetchScheduleByIdQueryFn = async (scheduleId: string) => {
-	const res = await client.api.schedules[":id"].$get({
-		param: { id: scheduleId },
-	});
-	const data = await res.json();
-	const parsedData = data.map((schedule) => ({
-		...schedule,
-		startTime: new Date(schedule.startTime),
-		endTime: new Date(schedule.endTime),
-	}));
-	return parsedData;
-};
-
 // お知らせ取得用のqueryFn
 export const fetchAnnouncementsQueryFn = async () => {
 	const res = await client.api.announcements.$get();

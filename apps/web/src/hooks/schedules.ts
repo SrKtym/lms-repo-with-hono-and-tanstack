@@ -1,12 +1,9 @@
-import type { Schedules, SchedulesOptional } from "@lms-repo/db/types";
+import type { Schedules } from "@lms-repo/db/types";
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
-import {
-	fetchScheduleByIdQueryFn,
-	fetchSchedulesQueryFn,
-} from "@/utils/query-utils";
+import { fetchSchedulesQueryFn } from "@/utils/query-utils";
 
 // スケジュールを取得するカスタムフック
 export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
@@ -17,19 +14,10 @@ export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 	});
 };
 
-// 単一のスケジュールを取得するカスタムフック
-export const useFetchSchedule = (scheduleId: string) => {
-	return useQuery({
-		queryKey: ["schedule", scheduleId],
-		queryFn: () => fetchScheduleByIdQueryFn(scheduleId),
-		enabled: !!scheduleId,
-	});
-};
-
 // スケジュールを作成するカスタムフック
 export const useCreateSchedule = () => {
 	return useMutation({
-		mutationFn: async (scheduleData: Omit<Schedules, SchedulesOptional>) => {
+		mutationFn: async (scheduleData: Omit<Schedules, "createdBy">) => {
 			const res = await client.api.schedules.$post({
 				json: scheduleData,
 			});
