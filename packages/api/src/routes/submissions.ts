@@ -54,6 +54,40 @@ async function ensureBucketExists() {
 	}
 }
 
+const signedUrlSchema = z
+	.array(
+		z.object({
+			fileName: z.string(),
+			fileType: z.string(),
+			fileSize: z
+				.number()
+				.max(MAX_FILE_SIZE, "ファイルサイズは10MB以下である必要があります"),
+		}),
+	)
+	.max(
+		MAX_FILE_COUNT,
+		`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
+	);
+
+const metadataSchema = z.object({
+	metadataList: z
+		.array(
+			z.object({
+				objectName: z.string(),
+				originalName: z.string(),
+				mimeType: z.string(),
+				fileSize: z
+					.number()
+					.max(MAX_FILE_SIZE, "ファイルサイズは10MB以下である必要があります"),
+			}),
+		)
+		.max(
+			MAX_FILE_COUNT,
+			`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
+		),
+	assignmentId: z.string(),
+});
+
 export const submissionsRoute = new Hono<{
 	Variables: {
 		user: Session["user"];
@@ -88,146 +122,98 @@ export const submissionsRoute = new Hono<{
 		});
 	})
 	// 署名付きURLの一括発行（複数ファイルアップロード用）
-	.post(
-		"/signed_urls",
-		zValidator(
-			"json",
-			z
-				.array(
-					z.object({
-						fileName: z.string(),
-						fileType: z.string(),
-						fileSize: z
-							.number()
-							.max(
-								MAX_FILE_SIZE,
-								"ファイルサイズは10MB以下である必要があります",
-							),
-					}),
-				)
-				.max(
-					MAX_FILE_COUNT,
-					`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
-				),
-		),
-		async (c) => {
-			const files = c.req.valid("json");
+	.post("/signed_urls", zValidator("json", signedUrlSchema), async (c) => {
+		const files = c.req.valid("json");
 
-			// MIMEタイプの検証
-			for (const file of files) {
-				if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
-					return c.json(
-						{
-							error: `許可されていないファイルタイプです: ${file.fileType}`,
-							allowedTypes: ALLOWED_MIME_TYPES,
-						},
-						400,
-					);
-				}
+		// MIMEタイプの検証
+		for (const file of files) {
+			if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
+				return c.json(
+					{
+						error: `許可されていないファイルタイプです: ${file.fileType}`,
+						allowedTypes: ALLOWED_MIME_TYPES,
+					},
+					400,
+				);
 			}
+		}
 
-			// バケットが存在することを確認
-			await ensureBucketExists();
+		// バケットが存在することを確認
+		await ensureBucketExists();
 
-			const signedUrls = await Promise.all(
-				files.map(async ({ fileName, fileType }) => {
-					let signedUrl: string;
+		const signedUrls = await Promise.all(
+			files.map(async ({ fileName, fileType }) => {
+				let signedUrl: string;
 
-					// エミュレータ環境では署名なしURLを使用
-					if (env.GCS_EMULATOR_HOST) {
-						signedUrl = `${env.GCS_EMULATOR_HOST}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
-					} else {
-						// 本番環境では署名付きURLを使用
-						[signedUrl] = await bucket
-							.file(`uploads/${fileName}`)
-							.getSignedUrl({
-								version: "v4",
-								action: "write",
-								expires: Date.now() + 15 * 60 * 1000,
-								contentType: fileType,
-							});
-					}
-
-					return {
-						fileName,
-						signedUrl,
-						objectName: `uploads/${fileName}`,
-					};
-				}),
-			);
-
-			return c.json(signedUrls);
-		},
-	)
-	// ファイルメタデータの一括保存（複数ファイルアップロード用）
-	.post(
-		"/metadata",
-		zValidator(
-			"json",
-			z.object({
-				metadataList: z
-					.array(
-						z.object({
-							objectName: z.string(),
-							originalName: z.string(),
-							mimeType: z.string(),
-							fileSize: z
-								.number()
-								.max(
-									MAX_FILE_SIZE,
-									"ファイルサイズは10MB以下である必要があります",
-								),
-						}),
-					)
-					.max(
-						MAX_FILE_COUNT,
-						`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
-					),
-				assignmentId: z.string(),
-			}),
-		),
-		async (c) => {
-			const { userId } = c.get("session");
-			const { metadataList, assignmentId } = c.req.valid("json");
-
-			// MIMEタイプの検証
-			for (const metadata of metadataList) {
-				if (!ALLOWED_MIME_TYPES.includes(metadata.mimeType)) {
-					return c.json(
-						{
-							error: `許可されていないファイルタイプです: ${metadata.mimeType}`,
-							allowedTypes: ALLOWED_MIME_TYPES,
-						},
-						400,
+				// エミュレータ環境では署名なしURLを使用
+				if (env.GCS_EMULATOR_HOST) {
+					const gcsHost = env.GCS_EMULATOR_HOST.replace(
+						"fake-gcs",
+						"localhost",
 					);
-				}
-			}
-
-			// メタデータを一括保存
-			const results = await Promise.all(
-				metadataList.map(async (metadata) => {
-					const result = await createFileSubmissionMetadata({
-						bucket: "dummy-storage-bucket",
-						...metadata,
-						createdBy: userId,
+					signedUrl = `${gcsHost}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
+				} else {
+					// 本番環境では署名付きURLを使用
+					[signedUrl] = await bucket.file(`uploads/${fileName}`).getSignedUrl({
+						version: "v4",
+						action: "write",
+						expires: Date.now() + 15 * 60 * 1000,
+						contentType: fileType,
 					});
-					return result;
-				}),
-			);
+				}
 
-			// 提出状況を更新
-			const updateResult = await updateSubmissionStatus(
-				assignmentId,
-				userId,
-				"提出済み",
-			);
-			if (updateResult.status !== 200) {
-				return c.json(updateResult);
+				return {
+					fileName,
+					signedUrl,
+					objectName: `uploads/${fileName}`,
+				};
+			}),
+		);
+
+		return c.json(signedUrls);
+	})
+	// ファイルメタデータの一括保存（複数ファイルアップロード用）
+	.post("/metadata", zValidator("json", metadataSchema), async (c) => {
+		const { userId } = c.get("session");
+		const { metadataList, assignmentId } = c.req.valid("json");
+
+		// MIMEタイプの検証
+		for (const metadata of metadataList) {
+			if (!ALLOWED_MIME_TYPES.includes(metadata.mimeType)) {
+				return c.json(
+					{
+						error: `許可されていないファイルタイプです: ${metadata.mimeType}`,
+						allowedTypes: ALLOWED_MIME_TYPES,
+					},
+					400,
+				);
 			}
+		}
 
-			return c.json({ successCount: results.length, results }, 201);
-		},
-	)
+		// メタデータを一括保存
+		const results = await Promise.all(
+			metadataList.map(async (metadata) => {
+				const result = await createFileSubmissionMetadata({
+					bucket: "dummy-storage-bucket",
+					...metadata,
+					createdBy: userId,
+				});
+				return result;
+			}),
+		);
+
+		// 提出状況を更新
+		const updateResult = await updateSubmissionStatus(
+			assignmentId,
+			userId,
+			"提出済み",
+		);
+		if (updateResult.status !== 200) {
+			return c.json(updateResult);
+		}
+
+		return c.json({ successCount: results.length, results }, 201);
+	})
 	// 課題の提出（テキスト形式）
 	.post(
 		"/text",
