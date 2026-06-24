@@ -42,6 +42,13 @@ export default function RegisteredCourseInfos({
 	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
 	const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
 
+	const targetAnnouncements = announcementsData.filter(
+		(announcement) => announcement.courseId === courseId,
+	);
+	const targetAssignments = assignmentsData.filter(
+		(assignment) => assignment.courseId === courseId,
+	);
+
 	return (
 		<>
 			{/* Course Header */}
@@ -101,9 +108,9 @@ export default function RegisteredCourseInfos({
 									onOpenChange={setIsAnnouncementModalOpen}
 								/>
 
-								{announcementsData.length > 0 ? (
+								{targetAnnouncements.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-										{announcementsData.map((announcement) => (
+										{targetAnnouncements.map((announcement) => (
 											<AnnouncementCard
 												key={announcement.id}
 												announcement={announcement}
@@ -134,9 +141,9 @@ export default function RegisteredCourseInfos({
 									onOpenChange={setIsAssignmentModalOpen}
 								/>
 
-								{assignmentsData.length > 0 ? (
+								{targetAssignments.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-										{assignmentsData.map((assignment) => (
+										{targetAssignments.map((assignment) => (
 											<Link
 												key={assignment.id}
 												to="/course-list"

@@ -42,6 +42,12 @@ export const assignmentsRoute = new Hono<{
 		}
 
 		if (result[0]) {
+			const dateOptions: Intl.DateTimeFormatOptions = {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+			};
+
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
 				to: result[0].emails,
@@ -50,7 +56,7 @@ export const assignmentsRoute = new Hono<{
 					email: email,
 					assignmentTitle: result[0].title,
 					assignmentDescription: result[0].description,
-					dueDate: result[0].dueDate.toString(),
+					dueDate: result[0].dueDate.toLocaleDateString("default", dateOptions),
 					viewUrl: env.CORS_ORIGIN,
 				}),
 			});
