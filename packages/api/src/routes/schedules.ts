@@ -29,8 +29,7 @@ const formSchema = z
 			.optional(),
 	})
 	.refine((value) => value.startTime < value.endTime, {
-		path: ["startTime"],
-		message: "開始日時は終了日時よりも前でなければなりません。",
+		error: "開始日時は終了日時よりも前でなければなりません。",
 	});
 
 // スケジュールに関するロジック

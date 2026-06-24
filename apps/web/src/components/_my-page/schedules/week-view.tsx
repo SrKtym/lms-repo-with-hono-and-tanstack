@@ -78,7 +78,7 @@ function WeekEventItem({
 			<div className="truncate font-medium">
 				{event.title}
 				{event.type === "schedule" && (
-					<div className="absolute top-0 right-0 opacity-0 transition-opacity group-hover:opacity-100">
+					<div className="absolute top-0 right-[-5px] opacity-0 transition-opacity group-hover:opacity-100">
 						<DefaultTooltip
 							triggerElement={
 								<MoreVertical

@@ -51,7 +51,7 @@ export function CreateFileSubmissionForm({
 			// アップロード完了したファイル名を記録
 			setUploadedFileNames((prev) => {
 				const newSet = new Set(prev);
-				newFiles.map((file) => {
+				newFiles.forEach((file) => {
 					newSet.add(file.name);
 				});
 				return newSet;

@@ -90,7 +90,7 @@ function CourseCell({
 							<MoreVertical
 								width={28}
 								height={28}
-								className="rounded-full p-1 text-white"
+								className="rounded-full p-1 text-foreground"
 							/>
 						}
 						content={
