@@ -267,7 +267,7 @@ function RouteComponent() {
 										setSelectedView(view);
 										handleViewChange(view);
 									}}
-									className={`rounded-md px-4 py-2 font-medium text-sm transition-colors${
+									className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
 										selectedView === view
 											? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
 											: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
