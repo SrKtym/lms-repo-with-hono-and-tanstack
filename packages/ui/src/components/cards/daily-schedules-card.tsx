@@ -2,7 +2,6 @@ import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
-import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { memo } from "react";
@@ -10,9 +9,9 @@ import { BaseCard } from "../cards/base-card";
 
 // 現在進行中であるかどうかを判定
 const isProgressingOrUpcoming = (start: Date, end: Date) => {
-	const now = Date.now();
-	const isProgressing = start.getTime() < now && end.getTime() > now;
-	const upcoming = now < start.getTime();
+	const now = new Date();
+	const isProgressing = start < now && end > now;
+	const upcoming = now < start;
 
 	if (isProgressing) {
 		return "progressing";
@@ -70,26 +69,28 @@ function DailySchedulesCardComponent({
 				initial={{ opacity: 0, x: -50 }}
 				animate={{ opacity: isPast ? 0.6 : 1, x: 0 }}
 				transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
-				className={cn(
-					"rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 dark:border-gray-700 dark:bg-gray-800",
+				className={`rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 ${
 					isProgressing &&
-						"bg-blue-50 shadow-md ring-2 ring-blue-500 dark:bg-blue-950",
-					!isPast &&
-						"hover:border-blue-300 hover:shadow-md dark:hover:border-blue-600",
-				)}
+					"bg-blue-50 shadow-md ring-2 ring-blue-500 dark:bg-blue-950"
+				}
+					${
+						!isPast &&
+						"hover:border-blue-300 hover:shadow-md dark:hover:border-blue-600"
+					}
+				`}
 			>
 				<div className="flex items-start justify-between">
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={cn(
-									"rounded-full px-2 py-1 font-medium text-xs",
+								className={`rounded-full px-2 py-1 font-medium text-xs ${
 									isProgressing
 										? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
 										: isPast
 											? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-											: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
-								)}
+											: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+								}
+								`}
 							>
 								{item.start.toLocaleTimeString("default", {
 									hour: "2-digit",
@@ -139,26 +140,28 @@ function DailySchedulesCardComponent({
 					duration: 0.4,
 					ease: "easeOut",
 				}}
-				className={cn(
-					"rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 shadow-sm transition-all duration-300 dark:border-blue-800 dark:from-blue-950 dark:to-indigo-950",
+				className={`rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 shadow-sm transition-all duration-300 dark:border-blue-800 dark:from-blue-950 dark:to-indigo-950 ${
 					isProgressing &&
-						"from-green-50 to-emerald-50 shadow-md ring-2 ring-green-500 dark:from-green-950 dark:to-emerald-950",
-					!isPast &&
-						"hover:border-green-300 hover:shadow-md dark:hover:border-green-600",
-				)}
+					"from-green-50 to-emerald-50 shadow-md ring-2 ring-green-500 dark:from-green-950 dark:to-emerald-950"
+				}
+					${
+						!isPast &&
+						"hover:border-green-300 hover:shadow-md dark:hover:border-green-600"
+					}
+				`}
 			>
 				<div className="flex items-start justify-between">
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={cn(
-									"rounded-full px-2 py-1 font-medium text-xs",
+								className={`rounded-full px-2 py-1 font-medium text-xs ${
 									isProgressing
 										? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
 										: isPast
 											? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-											: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400",
-								)}
+											: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+								}
+								`}
 							>
 								{item.start.toLocaleTimeString("default", {
 									hour: "2-digit",
@@ -242,7 +245,7 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-blue-500" />
 										講義
 									</h2>
-									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
+									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
 										{todayCourse.map((item, index) => (
 											<CourseScheduleCard
 												key={item.id}
@@ -269,7 +272,7 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-green-500" />
 										個人スケジュール
 									</h2>
-									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
+									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
 										{todaySchedule.map((item, index) => (
 											<ScheduleCard key={item.id} item={item} index={index} />
 										))}

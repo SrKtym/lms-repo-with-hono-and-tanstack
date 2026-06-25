@@ -4,7 +4,7 @@ import { MSPowerpoint } from "../assets/icons/ms-powerpoint";
 import { MSword } from "../assets/icons/ms-word";
 import { PDFFile } from "../assets/icons/pdf-file";
 
-export { cn, parseColor } from "@heroui/react";
+export { parseColor } from "@heroui/react";
 export {
 	DateFormatter,
 	type DateValue,

@@ -10,7 +10,6 @@ import {
 import { DefaultSeparator } from "@lms-repo/ui/components/separator";
 import { ThemeSwitch } from "@lms-repo/ui/components/switch";
 import { toast } from "@lms-repo/ui/components/toast";
-import { cn } from "@lms-repo/ui/lib/utils";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
 export function Header({ email, name, image }: UserData) {
@@ -60,10 +59,8 @@ export function Header({ email, name, image }: UserData) {
 							<Link
 								key={to}
 								to={to}
-								className={cn(
-									"nav-link nav-link-shrink",
-									location.pathname === to && "nav-link-active",
-								)}
+								className={`nav-link nav-link-shrink ${location.pathname === to && "nav-link-active"}
+								`}
 							>
 								<span>{icon}</span>
 								<p>{label}</p>
