@@ -5,16 +5,20 @@ export function DeviceShowcase() {
 	const controls = useAnimation();
 	const ref = useRef<HTMLDivElement>(null);
 	const { scrollYProgress } = useScroll({
+		// 対象の要素（DeviceShowcaseコンポーネント自体）のスクロール進捗を監視
 		target: ref,
+		// 要素が画面に完全に表示された時点で開始、完全に消えたら終了
 		offset: ["start end", "end start"],
 	});
 
 	useEffect(() => {
 		const unsubscribe = scrollYProgress.on("change", (latest) => {
+			// スクロール進捗が0.1以上になったらアニメーションを開始
 			if (latest > 0.1) {
 				controls.start("visible");
 			}
 		});
+		// アンマウント時にリスナーを解除
 		return unsubscribe;
 	}, [controls, scrollYProgress]);
 

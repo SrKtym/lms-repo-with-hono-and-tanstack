@@ -78,7 +78,9 @@ function RouteComponent() {
 		fetchNextPage,
 		isFetchingNextPage,
 	} = useNotifications(10, initialNotifications);
+
 	const notifications = notificationsData?.pages.flat() || [];
+
 	const { mutate: markAsRead } = useMarkNotificationAsRead();
 	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
 	const { mutate: deleteNotification } = useDeleteNotification();

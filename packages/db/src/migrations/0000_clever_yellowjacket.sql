@@ -109,7 +109,8 @@ CREATE TABLE "comments" (
 	"content" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"created_by" text NOT NULL
+	"created_by" text NOT NULL,
+	"assignment_id" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "courses" (
@@ -119,7 +120,7 @@ CREATE TABLE "courses" (
 	"weekdays" integer NOT NULL,
 	"period" integer NOT NULL,
 	"credits" integer NOT NULL,
-	"requirements" "requirements" NOT NULL,
+	"requirements" "requirements" DEFAULT '任意' NOT NULL,
 	"class_room" text NOT NULL,
 	"department_id" text NOT NULL,
 	"professor_id" text NOT NULL,
@@ -133,7 +134,18 @@ CREATE TABLE "departments" (
 	"id" text PRIMARY KEY NOT NULL,
 	"name" text NOT NULL,
 	"faculty_id" text NOT NULL,
-	CONSTRAINT "departments_name_unique" UNIQUE("name")
+	"required_credits" integer NOT NULL,
+	CONSTRAINT "departments_name_unique" UNIQUE("name"),
+	CONSTRAINT "required_credits_range" CHECK ("departments"."required_credits" >= 130 AND "departments"."required_credits" <= 200)
+);
+--> statement-breakpoint
+CREATE TABLE "email_notification_settings" (
+	"user_id" text PRIMARY KEY NOT NULL,
+	"announcements_email" boolean DEFAULT false NOT NULL,
+	"assignments_email" boolean DEFAULT false NOT NULL,
+	"submissions_email" boolean DEFAULT false NOT NULL,
+	"evaluations_email" boolean DEFAULT false NOT NULL,
+	"reminders_email" boolean DEFAULT false NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "faculties" (
@@ -143,7 +155,15 @@ CREATE TABLE "faculties" (
 );
 --> statement-breakpoint
 CREATE TABLE "file_submissions_metadata" (
-	"id" text PRIMARY KEY NOT NULL
+	"id" text PRIMARY KEY NOT NULL,
+	"bucket" text NOT NULL,
+	"object_name" text NOT NULL,
+	"original_name" text NOT NULL,
+	"mime_type" text NOT NULL,
+	"file_size" integer NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"created_by" text NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "notifications" (
@@ -162,11 +182,11 @@ CREATE TABLE "professors" (
 );
 --> statement-breakpoint
 CREATE TABLE "registration" (
-	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,
 	"course_id" text NOT NULL,
 	"is_checked" boolean DEFAULT false NOT NULL,
-	"is_completed" boolean DEFAULT false NOT NULL
+	"is_completed" boolean DEFAULT false NOT NULL,
+	CONSTRAINT "registration_user_id_course_id_pk" PRIMARY KEY("user_id","course_id")
 );
 --> statement-breakpoint
 CREATE TABLE "schedules" (
@@ -185,16 +205,7 @@ CREATE TABLE "students" (
 	"id" text PRIMARY KEY NOT NULL,
 	"grade" integer NOT NULL,
 	"department_id" text NOT NULL,
-	"department_name" text NOT NULL,
-	"required_credits" integer DEFAULT 130 NOT NULL,
-	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4),
-	CONSTRAINT "required_credits_by_department" CHECK (
-				CASE
-					WHEN "students"."department_name" = '医学科' THEN "students"."required_credits" = 200
-					WHEN "students"."department_name" IN ('看護学科', '保健学科') THEN "students"."required_credits" = 140
-					ELSE "students"."required_credits" = 130
-				END
-			)
+	CONSTRAINT "grade_range" CHECK ("students"."grade" >= 1 AND "students"."grade" <= 4)
 );
 --> statement-breakpoint
 CREATE TABLE "submission_status" (
@@ -228,13 +239,16 @@ ALTER TABLE "better_auth"."two_factor" ADD CONSTRAINT "two_factor_user_id_user_i
 ALTER TABLE "announcements" ADD CONSTRAINT "announcements_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "assignments" ADD CONSTRAINT "assignments_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "comments" ADD CONSTRAINT "comments_assignment_id_assignments_id_fk" FOREIGN KEY ("assignment_id") REFERENCES "public"."assignments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "courses" ADD CONSTRAINT "courses_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "courses" ADD CONSTRAINT "courses_professor_id_professors_id_fk" FOREIGN KEY ("professor_id") REFERENCES "public"."professors"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "departments" ADD CONSTRAINT "departments_faculty_id_faculties_id_fk" FOREIGN KEY ("faculty_id") REFERENCES "public"."faculties"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "email_notification_settings" ADD CONSTRAINT "email_notification_settings_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "file_submissions_metadata" ADD CONSTRAINT "file_submissions_metadata_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "professors" ADD CONSTRAINT "professors_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "professors" ADD CONSTRAINT "professors_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "registration" ADD CONSTRAINT "registration_course_id_courses_id_fk" FOREIGN KEY ("course_id") REFERENCES "public"."courses"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "registration" ADD CONSTRAINT "registration_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "schedules" ADD CONSTRAINT "schedules_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "students" ADD CONSTRAINT "students_id_user_id_fk" FOREIGN KEY ("id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "students" ADD CONSTRAINT "students_department_id_departments_id_fk" FOREIGN KEY ("department_id") REFERENCES "public"."departments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -247,12 +261,16 @@ CREATE INDEX "verification_identifier_idx" ON "better_auth"."verification" USING
 CREATE INDEX "announcements_course_id_idx" ON "announcements" USING btree ("course_id");--> statement-breakpoint
 CREATE INDEX "assignments_course_id_idx" ON "assignments" USING btree ("course_id");--> statement-breakpoint
 CREATE INDEX "comments_created_by_idx" ON "comments" USING btree ("created_by");--> statement-breakpoint
+CREATE INDEX "comments_assignment_id_idx" ON "comments" USING btree ("assignment_id");--> statement-breakpoint
 CREATE INDEX "courses_department_id_idx" ON "courses" USING btree ("department_id");--> statement-breakpoint
 CREATE INDEX "courses_professor_id_idx" ON "courses" USING btree ("professor_id");--> statement-breakpoint
 CREATE INDEX "courses_weekdays_period_idx" ON "courses" USING btree ("weekdays","period");--> statement-breakpoint
 CREATE INDEX "departments_faculty_id_idx" ON "departments" USING btree ("faculty_id");--> statement-breakpoint
+CREATE INDEX "file_submissions_metadata_created_by_idx" ON "file_submissions_metadata" USING btree ("created_by");--> statement-breakpoint
+CREATE INDEX "notifications_sender_idx" ON "notifications" USING btree ("sender");--> statement-breakpoint
 CREATE INDEX "notifications_receiver_is_read_idx" ON "notifications" USING btree ("receiver","is_read");--> statement-breakpoint
 CREATE INDEX "professors_department_id_idx" ON "professors" USING btree ("department_id");--> statement-breakpoint
+CREATE INDEX "registration_user_id_course_id_idx" ON "registration" USING btree ("user_id","course_id");--> statement-breakpoint
 CREATE INDEX "schedules_created_by_idx" ON "schedules" USING btree ("created_by");--> statement-breakpoint
 CREATE INDEX "students_department_id_idx" ON "students" USING btree ("department_id");--> statement-breakpoint
 CREATE INDEX "text_submissions_created_by_idx" ON "text_submissions" USING btree ("created_by");

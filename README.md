@@ -1,6 +1,6 @@
 this project is ongoing
 
-# lms-repo
+# LMS-repo
 
 This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, and more.
 
@@ -9,7 +9,7 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **TypeScript** - For type safety and improved developer experience
 - **TanStack Router** - File-based routing with full type safety
 - **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Shared UI package** - shadcn/ui primitives live in `packages/ui`
+- **Hero UI package** - Hero UI primitives live in `packages/ui`
 - **Hono** - Lightweight, performant server framework
 - **Bun** - Runtime environment
 - **Drizzle** - TypeScript-first ORM
@@ -21,6 +21,12 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 ## Getting Started
 
 First, install the dependencies:
+
+```bash
+npm install
+```
+
+or
 
 ```bash
 pnpm install
@@ -48,13 +54,13 @@ This project uses PostgreSQL with Drizzle ORM.
 3. Apply the schema to your database:
 
 ```bash
-pnpm run db:push
+bun run db:push
 ```
 
 Then, run the development server:
 
 ```bash
-pnpm run dev
+bun run dev
 ```
 
 Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
@@ -62,19 +68,13 @@ The API is running at [http://localhost:3000](http://localhost:3000).
 
 ## UI Customization
 
-React web apps in this stack share shadcn/ui primitives through `packages/ui`.
+React web apps in this stack share Hero UI primitives through `packages/ui`.
 
 - Change design tokens and global styles in `packages/ui/src/styles/globals.css`
 - Update shared primitives in `packages/ui/src/components/*`
-- Adjust shadcn aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+- Adjust Hero UI aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
 
 ### Add more shared components
-
-Run this from the project root to add more primitives to the shared UI package:
-
-```bash
-npx shadcn@latest add accordion dialog popover sheet table -c packages/ui
-```
 
 Import shared components like this:
 
@@ -82,13 +82,9 @@ Import shared components like this:
 import { Button } from "@lms-repo/ui/components/button";
 ```
 
-### Add app-specific blocks
-
-If you want to add app-specific blocks instead of shared primitives, run the shadcn CLI from `apps/web`.
-
 ## Git Hooks and Formatting
 
-- Format and lint fix: `pnpm run check`
+- Format and lint fix: `bun run check`
 
 ## Project Structure
 
@@ -98,27 +94,20 @@ lms-repo/
 │   ├── web/         # Frontend application (React + TanStack Router)
 │   └── server/      # Backend API (Hono)
 ├── packages/
-│   ├── ui/          # Shared shadcn/ui components and styles
+│   ├── ui/          # Shared Hero UI components and styles
 │   ├── auth/        # Authentication configuration & logic
 │   └── db/          # Database schema & queries
 ```
 
-依存の流れ
-server → packages/api, auth, env, ui, config
-web → packages/api, auth, db, env, config
-packages/api → packages/auth → packages/db, env, config
-packages/db → packages/env, config
-
-
 ## Available Scripts
 
-- `pnpm run dev`: Start all applications in development mode
-- `pnpm run build`: Build all applications
-- `pnpm run dev:web`: Start only the web application
-- `pnpm run dev:server`: Start only the server
-- `pnpm run check-types`: Check TypeScript types across all apps
-- `pnpm run db:push`: Push schema changes to database
-- `pnpm run db:generate`: Generate database client/types
-- `pnpm run db:migrate`: Run database migrations
-- `pnpm run db:studio`: Open database studio UI
-- `pnpm run check`: Run Biome formatting and linting
+- `bun run dev`: Start all applications in development mode
+- `bun run build`: Build all applications
+- `bun run dev:web`: Start only the web application
+- `bun run dev:server`: Start only the server
+- `bun run check-types`: Check TypeScript types across all apps
+- `bun run db:push`: Push schema changes to database
+- `bun run db:generate`: Generate database client/types
+- `bun run db:migrate`: Run database migrations
+- `bun run db:studio`: Open database studio UI
+- `bun run check`: Run Biome formatting and linting

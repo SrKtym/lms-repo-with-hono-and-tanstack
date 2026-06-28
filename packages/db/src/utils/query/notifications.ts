@@ -1,4 +1,4 @@
-import { and, eq, inArray, or } from "drizzle-orm";
+import { and, desc, eq, inArray, or } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	courses,
@@ -103,6 +103,7 @@ export async function fetchNotifications(
 				),
 			),
 		)
+		.orderBy(desc(notifications.createdAt))
 		.limit(limit)
 		.offset(offset);
 
