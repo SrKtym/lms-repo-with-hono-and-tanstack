@@ -80,17 +80,19 @@ export function formatTimestamp(date: Date) {
 	if (minutes < 1) {
 		return "たった今";
 	}
-	if (minutes < 60) {
+	else if (minutes < 60) {
 		return `${minutes}分前`;
 	}
-	if (hours < 24) {
+	else if (hours < 24) {
 		return `${hours}時間前`;
 	}
-	if (days < 7) {
+	else if (days < 7) {
 		return `${days}日前`;
 	}
-	return date.toLocaleDateString("ja-JP", {
-		month: "short",
-		day: "numeric",
-	});
+	else {
+		return date.toLocaleDateString("ja-JP", {
+			month: "short",
+			day: "numeric",
+		});
+	}
 }
