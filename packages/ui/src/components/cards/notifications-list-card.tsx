@@ -2,7 +2,7 @@ import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/noti
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
-import { formatTimestamp, getNotificationIcon } from "@lms-repo/ui/lib/utils";
+import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import {
 	AnimatePresence,
 	domAnimation,
@@ -100,7 +100,7 @@ export function NotificationsListCard({
 										{notifications.map((notification) => (
 											<m.div
 												key={notification.id}
-												layoutId={notification.id.toString()}
+												layoutId={notification.id}
 												layout
 												initial={{ opacity: 0, y: 50, scale: 0.3 }}
 												animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -119,9 +119,6 @@ export function NotificationsListCard({
 												}}
 											>
 												<div className="flex items-start gap-3">
-													<span className="mt-1 flex-shrink-0 text-base">
-														{getNotificationIcon(notification.title)}
-													</span>
 													<div className="min-w-0 flex-1">
 														<div className="mb-1 flex items-center justify-between gap-2">
 															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">

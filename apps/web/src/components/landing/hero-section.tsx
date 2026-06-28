@@ -16,13 +16,6 @@ export function HeroSection({ children }: HeroSectionProps) {
 
 	return (
 		<section className="relative flex min-h-screen items-center justify-center overflow-hidden">
-			{/* Background Gradient */}
-			<div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
-
-			{/* Decorative Elements */}
-			<div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-blue-400 opacity-20 blur-3xl" />
-			<div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-purple-400 opacity-20 blur-3xl" />
-
 			{/* Main Content */}
 			<div className="container relative z-10 mx-auto px-4 py-20">
 				<div className="mx-auto max-w-4xl text-center">
@@ -33,7 +26,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						className="mb-8"
 					>
 						<div className="mb-8 inline-flex items-center rounded-full bg-blue-100 px-4 py-2 font-medium text-blue-800 text-sm dark:bg-blue-900 dark:text-blue-200">
-							🎓 新しい学習体験へ
+							新しい学習体験へ
 						</div>
 					</motion.div>
 
