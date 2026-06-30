@@ -27,14 +27,20 @@ export function UpcomingAssignmentsCard({
 				1000,
 	);
 
+	// 締切までの日数を計算
 	const getDaysUntilDue = (dueDate: Date) => {
-		const now = new Date();
-		const diffTime = dueDate.getTime() - now.getTime();
+		const diffTime = dueDate.getTime() - Date.now();
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-		if (diffDays < 0) return `期限切れ (${Math.abs(diffDays)}日前)`;
-		if (diffDays === 0) return "今日が期限";
-		if (diffDays === 1) return "明日が期限";
+		if (diffDays < 0) {
+			return `期限切れ (${Math.abs(diffDays)}日前)`;
+		}
+		if (diffDays === 0) {
+			return "今日が期限";
+		}
+		if (diffDays === 1) {
+			return "明日が期限";
+		}
 		return `${diffDays}日後`;
 	};
 

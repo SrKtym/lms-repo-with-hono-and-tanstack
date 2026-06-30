@@ -28,6 +28,7 @@ export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 		>
 			{({ state }) => (
 				<>
+					{/* 日時の入力フィールド */}
 					<DateField.Group>
 						<DateField.Input>
 							{(segment) => <DateField.Segment segment={segment} />}
@@ -38,7 +39,10 @@ export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 							</Picker.Trigger>
 						</DateField.Suffix>
 					</DateField.Group>
+
+					{/* カレンダーと時刻選択ポップオーバー */}
 					<Picker.Popover className="flex w-full flex-col gap-3 dark:border-gray-700 dark:bg-gray-800">
+						{/* カレンダー */}
 						<Calendar
 							aria-label="Event date"
 							className="w-full dark:bg-gray-800 dark:text-white"
@@ -74,6 +78,8 @@ export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 								</Calendar.YearPickerGridBody>
 							</Calendar.YearPickerGrid>
 						</Calendar>
+
+						{/* 時刻選択 */}
 						<div className="flex items-center justify-between">
 							<Label>時刻</Label>
 							<TimeField

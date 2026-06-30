@@ -13,7 +13,7 @@ interface InputForFormProps {
 	isRequired?: boolean;
 }
 
-// // フォーム用の入力コンポーネント
+// フォーム用の入力コンポーネント
 export function InputForForm({
 	inputProps,
 	labelProps,

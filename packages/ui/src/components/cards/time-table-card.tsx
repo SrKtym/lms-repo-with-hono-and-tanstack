@@ -47,6 +47,7 @@ interface CourseCellProps {
 	isHoverCapable: boolean;
 }
 
+// 時間割上の講義セル
 function CourseCell({
 	course,
 	day,
@@ -75,13 +76,13 @@ function CourseCell({
 			}}
 			{...handlers}
 		>
-			<div className="truncate font-semibold text-xs">{course.name}</div>
-			<div className="mt-1 truncate text-gray-600 dark:text-gray-300">
+			<p className="truncate font-semibold text-xs">{course.name}</p>
+			<p className="mt-1 truncate text-gray-600 dark:text-gray-300">
 				{course.professor}
-			</div>
-			<div className="mt-1 text-gray-500 dark:text-gray-400">
+			</p>
+			<p className="mt-1 text-gray-500 dark:text-gray-400">
 				{course.credits}単位
-			</div>
+			</p>
 			{/* メニューボタン */}
 			<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
 				<div className="flex flex-col gap-1">

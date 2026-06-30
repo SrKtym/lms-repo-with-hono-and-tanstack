@@ -13,7 +13,7 @@ export function DeviceShowcase() {
 
 	useEffect(() => {
 		const unsubscribe = scrollYProgress.on("change", (latest) => {
-			// スクロール進捗が0.1以上になったらアニメーションを開始
+			// スクロール進捗が0.1より大きくなったらアニメーションを開始
 			if (latest > 0.1) {
 				controls.start("visible");
 			}

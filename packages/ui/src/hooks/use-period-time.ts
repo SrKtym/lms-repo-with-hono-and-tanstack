@@ -5,6 +5,7 @@ export interface TimeSlot {
 	end: Date;
 }
 
+// 講義の時間帯を管理するフック
 export const usePeriodTime = () => {
 	const [timeSlots] = useState<Record<number, () => TimeSlot>>(() => ({
 		1: () => {
@@ -45,11 +46,12 @@ export const usePeriodTime = () => {
 	}));
 
 	const periodToTime = (period: number): TimeSlot => {
+		// 期間番号に対応する時間帯を取得
 		const timeSlotFn = timeSlots[period];
 		if (timeSlotFn) {
 			return timeSlotFn();
 		}
-		// Default to period 1 if invalid period
+		// デフォルトは期間1を返す
 		const defaultSlot = timeSlots[1];
 		return defaultSlot ? defaultSlot() : { start: new Date(), end: new Date() };
 	};

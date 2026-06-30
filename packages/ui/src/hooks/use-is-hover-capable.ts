@@ -4,7 +4,7 @@ export function useIsHoverCapable() {
 	const [isHoverCapable, setIsHoverCapable] = useState(false);
 
 	useEffect(() => {
-		// Check if the device supports hover using media query
+		// ホバーに対応しているデバイスかどうかを判定
 		const mediaQuery = window.matchMedia("(hover: hover)");
 		setIsHoverCapable(mediaQuery.matches);
 
@@ -12,10 +12,11 @@ export function useIsHoverCapable() {
 			setIsHoverCapable(e.matches);
 		};
 
-		// Add listener for media query changes
+		// メディアクエリの変更を購読
 		mediaQuery.addEventListener("change", handleChange);
 
 		return () => {
+			// コンポーネントがアンマウントされるときに購読を解除
 			mediaQuery.removeEventListener("change", handleChange);
 		};
 	}, []);
