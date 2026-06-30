@@ -55,9 +55,13 @@ export function TwoFactorSettingForm({
 	};
 
 	const handleSetTwofactor = (password: string) => {
-		if (selected === "valid") handleValidTwofactor(password);
-		else if (selected === "invalid") handleInvalidTwofactor(password);
-		else return;
+		if (selected === "valid") {
+			handleValidTwofactor(password);
+		} else if (selected === "invalid") {
+			handleInvalidTwofactor(password);
+		} else {
+			return;
+		}
 	};
 
 	return (

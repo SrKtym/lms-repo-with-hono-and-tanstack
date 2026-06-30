@@ -17,10 +17,13 @@ export function CreateCourseForm({
 	onOpenChange,
 }: CreateCourseFormProps) {
 	type Requirement = (typeof requirements)[number];
+
 	const { "assignment-id": assignmentId } = useSearch({
 		from: "/_my-page/course-list",
 	});
+
 	const { mutateAsync: createCourse } = useCreateCourse();
+
 	const form = useForm({
 		defaultValues: {
 			name: "",

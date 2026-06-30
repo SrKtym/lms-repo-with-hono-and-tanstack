@@ -6,7 +6,7 @@ export function Footer() {
 		<footer className="bg-gray-900 text-white">
 			<div className="container mx-auto px-4 py-12">
 				<div className="flex items-center justify-around gap-3">
-					{/* Company Info */}
+					{/* App Info */}
 					<div className="col-span-1 md:col-span-2 lg:col-span-2">
 						<div className="mb-6">
 							<h3 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-bold text-2xl text-transparent">

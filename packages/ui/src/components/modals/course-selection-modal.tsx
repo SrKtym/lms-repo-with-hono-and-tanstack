@@ -80,15 +80,17 @@ export function CourseSelectionModal({
 											</OutlineButton>
 										);
 									})}
+									{/* スクロール後、追加データを読み込む間はローダーを表示 */}
 									{hasNextPage && (
 										<div ref={sentinelRef} className="py-2">
 											{isPending && <Loader />}
 										</div>
 									)}
+									{/* データが存在しない場合 */}
 									{!isPending && availableCourses.length === 0 && (
-										<div className="py-8 text-center text-gray-500 dark:text-gray-400">
-											<p>該当する講義が見つかりません</p>
-										</div>
+										<p className="py-8 text-center text-gray-500 dark:text-gray-400">
+											該当する講義が見つかりません
+										</p>
 									)}
 								</>
 							)}

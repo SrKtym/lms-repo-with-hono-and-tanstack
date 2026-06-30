@@ -25,6 +25,21 @@ export interface LinkComponentProps {
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
+// イベントが現在進行中であるかどうかを判定
+export const isProgressingOrUpcoming = (start: Date, end: Date) => {
+	const now = new Date();
+	const isProgressing = start < now && end > now;
+	const upcoming = now < start;
+
+	if (isProgressing) {
+		return "progressing";
+	}
+	if (upcoming) {
+		return "upcoming";
+	}
+	return "past";
+};
+
 // ファイルの形式に基づく配色
 export function getFileColor(type: string) {
 	switch (type) {
@@ -80,19 +95,17 @@ export function formatTimestamp(date: Date) {
 	if (minutes < 1) {
 		return "たった今";
 	}
-	else if (minutes < 60) {
+	if (minutes < 60) {
 		return `${minutes}分前`;
 	}
-	else if (hours < 24) {
+	if (hours < 24) {
 		return `${hours}時間前`;
 	}
-	else if (days < 7) {
+	if (days < 7) {
 		return `${days}日前`;
 	}
-	else {
-		return date.toLocaleDateString("ja-JP", {
-			month: "short",
-			day: "numeric",
-		});
-	}
+	return date.toLocaleDateString("ja-JP", {
+		month: "short",
+		day: "numeric",
+	});
 }

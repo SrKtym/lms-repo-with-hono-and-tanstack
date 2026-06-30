@@ -7,6 +7,7 @@ interface InputOTPFor2faProps {
 	ariaDescribedby?: string;
 }
 
+// 2要素認証用の入力OTPコンポーネント
 export function InputOTPFor2fa({
 	name,
 	value,

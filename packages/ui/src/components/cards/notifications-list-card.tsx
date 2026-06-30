@@ -3,16 +3,12 @@ import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
-import {
-	AnimatePresence,
-	domAnimation,
-	LayoutGroup,
-	LazyMotion,
-} from "motion/react";
+import { AnimatePresence, LayoutGroup } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
+import { LazyMotionProvider } from "../lazymotion-provider";
 import { Loader } from "../loader";
 import { NotificationsModal } from "../modals/notifications-modal";
 
@@ -47,7 +43,7 @@ export function NotificationsListCard({
 	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
 	return (
-		<LazyMotion features={domAnimation}>
+		<LazyMotionProvider>
 			<LayoutGroup>
 				<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50/30 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-purple-900/20">
 					{/* Decorative background elements */}
@@ -97,59 +93,60 @@ export function NotificationsListCard({
 									transition={{ duration: 0.3 }}
 								>
 									<AnimatePresence initial={false} mode="popLayout">
-										{notifications.map((notification) => (
-											<m.div
-												key={notification.id}
-												layoutId={notification.id}
-												layout
-												initial={{ opacity: 0, y: 50, scale: 0.3 }}
-												animate={{ opacity: 1, y: 0, scale: 1 }}
-												transition={{ duration: 0.3 }}
-												exit={{
-													opacity: 0,
-													scale: 0.5,
-												}}
-												whileHover={{ scale: 1.02 }}
-												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
-													!notification.isRead ? "font-semibold" : ""
-												} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
-												onClick={() => {
-													markAsRead(notification.id);
-													setSelectedNotification(notification.id);
-												}}
-											>
-												<div className="flex items-start gap-3">
-													<div className="min-w-0 flex-1">
-														<div className="mb-1 flex items-center justify-between gap-2">
-															<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
-																{notification.title}
-															</h3>
-															<span className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
-																{formatTimestamp(notification.createdAt)}
-															</span>
-														</div>
-														<p className="line-clamp-2 whitespace-pre-wrap text-gray-600 text-xs dark:text-gray-400">
-															{notification.description}
-														</p>
-													</div>
-												</div>
-
-												{!notification.isRead && (
-													<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
-												)}
-												<m.button
-													whileHover={{ scale: 1.1 }}
-													whileTap={{ scale: 0.9 }}
-													onClick={(e) => {
-														e.stopPropagation();
-														deleteNotification(notification.id);
+										<ul className="space-y-3">
+											{notifications.map((notification) => (
+												<m.li
+													key={notification.id}
+													layoutId={notification.id}
+													initial={{ opacity: 0, y: 50, scale: 0.3 }}
+													animate={{ opacity: 1, y: 0, scale: 1 }}
+													transition={{ duration: 0.3 }}
+													exit={{
+														opacity: 0,
+														scale: 0.5,
 													}}
-													className="absolute right-1 bottom-1 rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+													whileHover={{ scale: 1.02 }}
+													className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
+														!notification.isRead ? "font-semibold" : ""
+													} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
+													onClick={() => {
+														markAsRead(notification.id);
+														setSelectedNotification(notification.id);
+													}}
 												>
-													<Close width={18} height={18} />
-												</m.button>
-											</m.div>
-										))}
+													<div className="flex items-start gap-3">
+														<div className="min-w-0 flex-1">
+															<div className="mb-1 flex items-center justify-between gap-2">
+																<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
+																	{notification.title}
+																</h3>
+																<p className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
+																	{formatTimestamp(notification.createdAt)}
+																</p>
+															</div>
+															<p className="line-clamp-2 whitespace-pre-wrap text-gray-600 text-xs dark:text-gray-400">
+																{notification.description}
+															</p>
+														</div>
+													</div>
+
+													{!notification.isRead && (
+														<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
+													)}
+													<m.button
+														whileHover={{ scale: 1.1 }}
+														whileTap={{ scale: 0.9 }}
+														onClick={(e) => {
+															e.stopPropagation();
+															deleteNotification(notification.id);
+														}}
+														className="absolute right-1 bottom-1 rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+													>
+														<Close width={18} height={18} />
+													</m.button>
+												</m.li>
+											))}
+										</ul>
 									</AnimatePresence>
 									{hasNextPage && (
 										<div ref={sentinelRef} className="py-2">
@@ -171,6 +168,6 @@ export function NotificationsListCard({
 					onDelete={deleteNotification}
 				/>
 			</LayoutGroup>
-		</LazyMotion>
+		</LazyMotionProvider>
 	);
 }

@@ -55,6 +55,7 @@ export function DateRangePicker({
 		>
 			{({ state }) => (
 				<>
+					{/* 日時の入力フィールド */}
 					<DateField.Group>
 						<DateField.InputContainer>
 							<DateField.Input slot="start">
@@ -71,8 +72,13 @@ export function DateRangePicker({
 							</Picker.Trigger>
 						</DateField.Suffix>
 					</DateField.Group>
+
+					{/* エラーメッセージ */}
 					<FieldError />
+
+					{/* カレンダーと時刻選択ポップオーバー */}
 					<Picker.Popover className="flex w-full flex-col gap-3 dark:border-gray-700 dark:bg-gray-800">
+						{/* カレンダー */}
 						<RangeCalendar
 							aria-label="range-calendar"
 							className="w-full dark:bg-gray-800 dark:text-white"
@@ -108,6 +114,8 @@ export function DateRangePicker({
 								</RangeCalendar.YearPickerGridBody>
 							</RangeCalendar.YearPickerGrid>
 						</RangeCalendar>
+
+						{/* 時刻選択 */}
 						<div className="flex flex-col gap-3">
 							<div className="flex items-center justify-between">
 								<Label>開始日時</Label>
@@ -164,6 +172,8 @@ export function DateRangePicker({
 								</TimeField>
 							</div>
 						</div>
+
+						{/* 選択された期間を表示 */}
 						<span className="mt-1 text-muted text-xs dark:text-gray-400">
 							期間:{" "}
 							{state.value.start && state.value.end

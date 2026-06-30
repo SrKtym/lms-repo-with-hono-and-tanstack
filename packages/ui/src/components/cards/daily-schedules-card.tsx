@@ -5,22 +5,8 @@ import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { memo } from "react";
+import { isProgressingOrUpcoming } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
-
-// 現在進行中であるかどうかを判定
-const isProgressingOrUpcoming = (start: Date, end: Date) => {
-	const now = new Date();
-	const isProgressing = start < now && end > now;
-	const upcoming = now < start;
-
-	if (isProgressing) {
-		return "progressing";
-	}
-	if (upcoming) {
-		return "upcoming";
-	}
-	return "past";
-};
 
 function DailySchedulesCardComponent({
 	courses,
