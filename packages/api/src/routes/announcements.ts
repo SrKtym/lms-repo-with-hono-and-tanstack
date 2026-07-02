@@ -37,15 +37,19 @@ export const announcementsRoute = new Hono<{
 		}
 
 		if (result[0]) {
+			const { emails, title, description } = result[0];
+
+			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
-				to: result[0].emails,
+				to: emails,
 				subject: "新しいお知らせ",
 				react: NewAnnouncementEmail({
-					email: email,
-					announcementTitle: result[0].title,
-					announcementContent: result[0].description,
-					viewUrl: env.CORS_ORIGIN,
+					email,
+					announcementTitle: title,
+					announcementContent: description,
+					viewUrl,
 				}),
 			});
 		}
