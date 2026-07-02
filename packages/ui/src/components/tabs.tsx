@@ -74,6 +74,7 @@ export function TabsForProfile({
 }) {
 	return (
 		<>
+			{/* 画面サイズがmd未満のときはタブの向きを横向きにする */}
 			<div className="md:hidden">
 				<Tabs variant="secondary">
 					<Tabs.ListContainer>
@@ -99,6 +100,8 @@ export function TabsForProfile({
 					</Tabs.Panel>
 				</Tabs>
 			</div>
+
+			{/* 画面サイズがmd以上のときはタブの向きを縦向きにする */}
 			<div className="hidden md:block">
 				<Tabs variant="secondary" orientation="vertical">
 					<Tabs.ListContainer>

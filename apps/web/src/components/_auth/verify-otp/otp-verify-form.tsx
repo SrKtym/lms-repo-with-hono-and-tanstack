@@ -4,7 +4,7 @@ import { DefaultButton, OutlineButton } from "@lms-repo/ui/components/button";
 import { InputOTPFor2fa } from "@lms-repo/ui/components/input-otp";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
-import z from "zod";
+import { z } from "zod";
 
 export default function OtpVerifyForm({
 	onSuccess,
@@ -15,6 +15,30 @@ export default function OtpVerifyForm({
 	const [otpSent, setOtpSent] = useState(false);
 	const [resendTimer, setResendTimer] = useState(0);
 
+	// メール再送信までのカウントダウン
+	const startResendTimer = () => {
+		setResendTimer(60);
+		const timer = setInterval(() => {
+			setResendTimer((prev) => {
+				// タイマーが0以下なら停止
+				if (prev <= 1) {
+					clearInterval(timer);
+					return 0;
+				}
+				// カウントを1ずつ減らす
+				return prev - 1;
+			});
+		}, 1000);
+	};
+
+	// メール再送信
+	const handleResendOtp = () => {
+		if (resendTimer === 0) {
+			sendOtpForm.handleSubmit();
+		}
+	};
+
+	// 認証コード検証
 	const verifyForm = useForm({
 		defaultValues: {
 			otpCode: "",
@@ -51,6 +75,7 @@ export default function OtpVerifyForm({
 		},
 	});
 
+	// 認証コード取得のための送信
 	const sendOtpForm = useForm({
 		onSubmit: async () => {
 			try {
@@ -84,27 +109,6 @@ export default function OtpVerifyForm({
 		},
 	});
 
-	// メール再送信までのカウントダウン
-	const startResendTimer = () => {
-		setResendTimer(60);
-		const timer = setInterval(() => {
-			setResendTimer((prev) => {
-				if (prev <= 1) {
-					clearInterval(timer);
-					return 0;
-				}
-				return prev - 1;
-			});
-		}, 1000);
-	};
-
-	// メール再送信
-	const handleResendOtp = () => {
-		if (resendTimer === 0) {
-			sendOtpForm.handleSubmit();
-		}
-	};
-
 	return (
 		<div className="flex w-full flex-col items-center space-y-6">
 			{/* ヘッダー情報 */}
@@ -122,7 +126,7 @@ export default function OtpVerifyForm({
 				</p>
 			</div>
 
-			{/* OTP送信フォーム */}
+			{/* OTP取得のための送信フォーム */}
 			{!otpSent ? (
 				<form
 					onSubmit={(e) => {
@@ -173,10 +177,7 @@ export default function OtpVerifyForm({
 								<InputOTPFor2fa
 									name={field.name}
 									value={field.state.value}
-									onChange={(value) => {
-										field.handleChange(value);
-										setError(""); // 入力時にエラーをクリア
-									}}
+									onChange={(value) => field.handleChange(value)}
 									ariaDescribedby="otpCode-error"
 								/>
 								{field.state.meta.errors.map((error) => (

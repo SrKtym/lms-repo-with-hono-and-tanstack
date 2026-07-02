@@ -32,7 +32,7 @@ export async function fetchCourses(
 
 	const { departmentId, grade } = studentInfo[0];
 
-	// 登録可能な講義を取得（サブクエリで履修済み講義を除外）
+	// 登録可能な講義を取得
 	const courseList = await db
 		.select({
 			id: courses.id,
@@ -71,6 +71,8 @@ export async function fetchCourses(
 	return courseList;
 }
 
+export type FetchCoursesReturnType = Awaited<ReturnType<typeof fetchCourses>>;
+
 // 学生が登録する講義を取得する
 export async function fetchRegisteredCourses(userId: string) {
 	const registeredCourseList = await db
@@ -94,6 +96,10 @@ export async function fetchRegisteredCourses(userId: string) {
 	return registeredCourseList;
 }
 
+export type FetchRegisteredCoursesReturnType = Awaited<
+	ReturnType<typeof fetchRegisteredCourses>
+>;
+
 // 学生が修了した講義の単位数の合計を取得する
 export async function fetchCompletedCourses(userId: string) {
 	const completedCoursesCredits = await db
@@ -109,10 +115,6 @@ export async function fetchCompletedCourses(userId: string) {
 	return completedCoursesCredits;
 }
 
-export type FetchCoursesReturnType = Awaited<ReturnType<typeof fetchCourses>>;
-export type FetchRegisteredCoursesReturnType = Awaited<
-	ReturnType<typeof fetchRegisteredCourses>
->;
 export type FetchCompletedCoursesReturnType = Awaited<
 	ReturnType<typeof fetchCompletedCourses>
 >;

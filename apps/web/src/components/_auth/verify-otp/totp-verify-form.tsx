@@ -62,8 +62,8 @@ export default function TotpVerifyForm({
 					認証アプリのコード
 				</h3>
 				<p className="text-gray-600 text-sm dark:text-gray-400">
-					Google
-					Authenticatorや他の認証アプリに表示されている6桁のコードを入力してください
+					認証アプリ（Google AuthenticatorやMicrosoft
+					Authenticatorなど）に表示されている6桁のコードを入力してください
 				</p>
 			</div>
 
@@ -83,10 +83,7 @@ export default function TotpVerifyForm({
 							<InputOTPFor2fa
 								name={field.name}
 								value={field.state.value}
-								onChange={(value) => {
-									field.handleChange(value);
-									setError(""); // 入力時にエラーをクリア
-								}}
+								onChange={(value) => field.handleChange(value)}
 								ariaDescribedby="totpCode-error"
 							/>
 							{field.state.meta.errors.map((error) => (

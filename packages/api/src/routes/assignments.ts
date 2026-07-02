@@ -48,16 +48,20 @@ export const assignmentsRoute = new Hono<{
 				day: "numeric",
 			};
 
+			const { emails, title, description, dueDate } = result[0];
+
+			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
-				to: result[0].emails,
+				to: emails,
 				subject: "新しい課題",
 				react: NewAssignmentEmail({
-					email: email,
-					assignmentTitle: result[0].title,
-					assignmentDescription: result[0].description,
-					dueDate: result[0].dueDate.toLocaleDateString("default", dateOptions),
-					viewUrl: env.CORS_ORIGIN,
+					email,
+					assignmentTitle: title,
+					assignmentDescription: description,
+					dueDate: dueDate.toLocaleDateString("default", dateOptions),
+					viewUrl,
 				}),
 			});
 		}
