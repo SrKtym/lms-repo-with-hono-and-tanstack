@@ -1,46 +1,45 @@
 import { Input } from "@heroui/react";
-import { Check } from "@lms-repo/ui/assets/icons/check";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CloudUpload } from "@lms-repo/ui/assets/icons/cloud-upload";
+import { Download } from "@lms-repo/ui/assets/icons/download";
 import { AnimatePresence, domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { useCallback, useState } from "react";
 import { DefaultAvatar } from "../avatar";
 import { CancelButton } from "../button";
 import { BaseCard } from "../cards/base-card";
-import { DefaultProgressBar } from "../progress-bar";
 
 export interface UploadedFile {
 	id: string;
 	name: string;
 	size: number;
 	type: string;
-	url?: string;
-	uploadProgress: number;
-	status: "pending" | "uploading" | "success" | "error";
-	error?: string;
 }
 
 interface FileUploaderCardProps {
-	accept?: string;
-	maxSize?: number; // in MB
-	maxFiles?: number;
-	onFilesChange?: (files: UploadedFile[]) => void;
+	uploadedFiles?: UploadedFile[];
+	onFilesChange: (files: UploadedFile[]) => void;
 	onFileSelect?: (files: File[]) => void;
+	onFileDownload?: (fileId: string) => void;
+	onFileDelete?: (fileId: string) => void;
 	disabled?: boolean;
 	className?: string;
 }
 
 export function FileUploaderCard({
-	accept = "*/*",
-	maxSize = 10,
-	maxFiles = 5,
+	uploadedFiles = [],
 	onFilesChange,
 	onFileSelect,
+	onFileDownload,
+	onFileDelete,
 	disabled = false,
 	className = "",
 }: FileUploaderCardProps) {
-	const [files, setFiles] = useState<UploadedFile[]>([]);
+	const maxSize = 10;
+	const maxFiles = 5;
+	const accept =
+		"application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
 	const [isDragOver, setIsDragOver] = useState(false);
 
 	// ファイルサイズ表示のフォーマッター
@@ -59,23 +58,20 @@ export function FileUploaderCard({
 
 			const fileArray = Array.from(selectedFiles).slice(
 				0,
-				maxFiles - files.length,
+				maxFiles - uploadedFiles.length,
 			);
 
 			const newFiles: UploadedFile[] = fileArray.map((file) => ({
-				id: Math.random().toString(36).substr(2, 9),
+				id: Math.random().toString(36).substring(2, 9),
 				name: file.name,
 				size: file.size,
 				type: file.type,
-				uploadProgress: 0,
-				status: "pending" as const,
 			}));
 
-			setFiles((prev) => [...prev, ...newFiles]);
-			onFilesChange?.([...files, ...newFiles]);
+			onFilesChange([...uploadedFiles, ...newFiles]);
 			onFileSelect?.(fileArray);
 		},
-		[files, maxFiles, disabled, onFilesChange, onFileSelect],
+		[uploadedFiles, disabled, onFilesChange, onFileSelect],
 	);
 
 	// ドラッグオーバー時の処理
@@ -110,11 +106,13 @@ export function FileUploaderCard({
 	// ファイル削除時の処理
 	const removeFile = useCallback(
 		(id: string) => {
-			const newFiles = files.filter((file) => file.id !== id);
-			setFiles(newFiles);
-			onFilesChange?.(newFiles);
+			if (onFileDelete) {
+				onFileDelete(id);
+			}
+			const newFiles = uploadedFiles.filter((file) => file.id !== id);
+			onFilesChange(newFiles);
 		},
-		[files, onFilesChange],
+		[uploadedFiles, onFilesChange, onFileDelete],
 	);
 
 	return (
@@ -176,7 +174,7 @@ export function FileUploaderCard({
 
 				{/* File list */}
 				<AnimatePresence>
-					{files.length > 0 && (
+					{uploadedFiles.length > 0 && (
 						<m.div
 							initial={{ opacity: 0, height: 0 }}
 							animate={{ opacity: 1, height: "auto" }}
@@ -184,7 +182,7 @@ export function FileUploaderCard({
 							transition={{ duration: 0.3 }}
 							className="mt-4 space-y-2"
 						>
-							{files.map((file) => (
+							{uploadedFiles.map((file) => (
 								<m.div
 									key={file.id}
 									initial={{ opacity: 0, x: -20 }}
@@ -200,24 +198,17 @@ export function FileUploaderCard({
 										<p className="text-gray-600 text-sm dark:text-gray-400">
 											{formatFileSize(file.size)}
 										</p>
-										{file.status === "uploading" && (
-											<DefaultProgressBar
-												value={file.uploadProgress}
-												className="mt-1"
-											/>
-										)}
-										{file.status === "error" && (
-											<p className="text-red-600 text-sm dark:text-red-400">
-												{file.error}
-											</p>
-										)}
 									</div>
 									<div className="flex items-center gap-2">
-										{file.status === "success" && (
-											<Check className="text-green-600 dark:text-green-400" />
-										)}
-										{file.status === "error" && (
-											<Close className="text-red-600 dark:text-red-400" />
+										{onFileDownload && (
+											<CancelButton
+												isIconOnly
+												onPress={() => onFileDownload(file.id)}
+												className="rounded bg-transparent p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+												aria-label="ダウンロード"
+											>
+												<Download />
+											</CancelButton>
 										)}
 										<CancelButton
 											isIconOnly
@@ -234,14 +225,16 @@ export function FileUploaderCard({
 				</AnimatePresence>
 
 				{/* Actions */}
-				{files.length > 0 && (
+				{uploadedFiles.length > 0 && (
 					<m.div
 						initial={{ opacity: 0, y: 10 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.3, delay: 0.1 }}
 						className="mt-4 flex justify-end gap-2"
 					>
-						<CancelButton onPress={() => setFiles([])}>すべて削除</CancelButton>
+						<CancelButton onPress={() => onFilesChange([])}>
+							すべて削除
+						</CancelButton>
 					</m.div>
 				)}
 			</m.div>

@@ -5,10 +5,11 @@ import type { TextSubmissions } from "@lms-repo/db/types";
 import {
 	createFileSubmissionMetadata,
 	createTextSubmission,
+	deleteFileSubmissionMetadata,
 	updateSubmissionStatus,
 } from "@lms-repo/db/utils/mutation/submissions";
 import {
-	fetchSubmissionById,
+	fetchFileMetadataByUserId,
 	fetchSubmissionsFromUserCourses,
 } from "@lms-repo/db/utils/query/submissions";
 import { env } from "@lms-repo/env/server";
@@ -208,6 +209,7 @@ export const submissionsRoute = new Hono<{
 			userId,
 			"提出済み",
 		);
+
 		if (updateResult.status !== 200) {
 			return c.json(updateResult);
 		}
@@ -236,10 +238,91 @@ export const submissionsRoute = new Hono<{
 		const submissions = await fetchSubmissionsFromUserCourses(userId);
 		return c.json(submissions, 200);
 	})
-	// 特定の課題提出状況の取得
-	.get("/:assignmentId", async (c) => {
+	// ファイルメタデータの取得
+	.get("/files", async (c) => {
 		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
-		const submission = await fetchSubmissionById(userId, assignmentId);
-		return c.json(submission, 200);
+		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		return c.json(fileMetadata, 200);
+	})
+	// ファイルダウンロード用署名付きURLの発行
+	.get("/files/:id/download", async (c) => {
+		const { userId } = c.get("session");
+		const id = c.req.param("id");
+
+		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		const file = fileMetadata?.find((f) => f.id === id);
+
+		if (!file) {
+			return c.json({ error: "ファイルが見つかりません" }, 404);
+		}
+
+		// エミュレータ環境ではプロキシURLを返す
+		if (env.GCS_EMULATOR_HOST) {
+			return c.json(
+				{
+					signedUrl: `/api/submissions/files/${id}/proxy`,
+					fileName: file.originalName,
+				},
+				200,
+			);
+		}
+
+		// 本番環境では署名付きURLを返す
+		const [signedUrl] = await bucket.file(file.objectName).getSignedUrl({
+			version: "v4",
+			action: "read",
+			expires: Date.now() + 15 * 60 * 1000, // 15分有効
+		});
+
+		return c.json({ signedUrl, fileName: file.originalName }, 200);
+	})
+	// ファイルダウンロードプロキシ（エミュレータ環境用）
+	.get("/files/:id/proxy", async (c) => {
+		const { userId } = c.get("session");
+		const id = c.req.param("id");
+
+		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		const file = fileMetadata?.find((f) => f.id === id);
+
+		if (!file) {
+			return c.json({ error: "ファイルが見つかりません" }, 404);
+		}
+
+		// GCSからファイルを取得
+		const [fileData] = await bucket.file(file.objectName).download();
+
+		return c.newResponse(new Uint8Array(fileData), 200, {
+			"Content-Type": file.mimeType,
+			"Content-Disposition": `attachment; filename="${file.originalName}"`,
+		});
+	})
+	// ファイルの削除
+	.delete("/files/:id", async (c) => {
+		const { userId } = c.get("session");
+		const id = c.req.param("id");
+
+		// メタデータを取得してobjectNameを確認
+		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		const file = fileMetadata?.find((f) => f.id === id);
+
+		if (!file) {
+			return c.json({ error: "ファイルが見つかりません" }, 404);
+		}
+
+		// GCSからファイルを削除
+		try {
+			await bucket.file(file.objectName).delete();
+		} catch (error) {
+			console.error("GCSファイル削除エラー:", error);
+			// GCS削除に失敗してもDB削除は続行
+		}
+
+		// データベースからメタデータを削除
+		const deleteResult = await deleteFileSubmissionMetadata(id);
+
+		if (deleteResult.status !== 200) {
+			return c.json(deleteResult, 500);
+		}
+
+		return c.json({ message: "ファイルを削除しました" }, 200);
 	});
