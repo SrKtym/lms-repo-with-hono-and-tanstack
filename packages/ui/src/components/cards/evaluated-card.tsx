@@ -27,14 +27,14 @@ export function EvaluatedCard({ submission, isTeacher }: EvaluatedCardProps) {
 										ステータス:{" "}
 										<span className="font-medium">{submission.status}</span>
 									</p>
-									{submission.assignmentDueDate && (
+									{/* {submission.assignmentDueDate && (
 										<p className="text-default-500 text-sm">
 											提出日:{" "}
 											{submission.assignmentDueDate.toLocaleDateString(
 												"default",
 											)}
 										</p>
-									)}
+									)} */}
 									{/* {submission.score !== null && (
 										<p className="text-default-500 text-sm">
 											採点日:{" "}
