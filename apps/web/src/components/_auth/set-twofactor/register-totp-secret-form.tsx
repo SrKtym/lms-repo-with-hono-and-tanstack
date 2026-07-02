@@ -52,7 +52,8 @@ export function RegisterTotpSecretForm({ totpURI }: { totpURI: string }) {
 	return (
 		<div className="flex flex-col items-center gap-4">
 			<p>
-				以下のQRコードを認証アプリで読み取り、表示されているセキュリティコードを入力してください。
+				以下のQRコードを認証アプリ（Google AuthenticatorやMicrosoft
+				Authenticatorなど）で読み取り、表示されているセキュリティコードを入力してください。
 			</p>
 			<QRCodeComponent value={totpURI} />
 			<form
