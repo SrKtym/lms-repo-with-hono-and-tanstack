@@ -26,7 +26,7 @@ export default function RegisteredCourseContents({
 	assignmentId,
 }: RegisteredCourseContentsProps) {
 	if (!targetAssignment) {
-		return <div>課題が見つかりません。</div>;
+		throw new Error("課題が見つかりません");
 	}
 	const { data: comments = [] } = useCommentsWithAssignment(assignmentId);
 
