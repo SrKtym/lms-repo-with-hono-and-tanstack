@@ -1,6 +1,58 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+
+// ファイル削除のフック
+export const useDeleteFile = () => {
+	return useMutation({
+		mutationFn: async (fileId: string) => {
+			const res = await client.api.submissions.files[":id"].$delete({
+				param: { id: fileId },
+			});
+			const result = await res.json();
+			if (!res.ok) {
+				const errorMessage =
+					"error" in result
+						? result.error
+						: "message" in result
+							? result.message
+							: "ファイルの削除に失敗しました";
+				throw new Error(errorMessage);
+			}
+			return result;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["file-metadata"] });
+		},
+	});
+};
+
+// ファイルメタデータ取得のフック
+export const useFileMetadata = () => {
+	return useQuery({
+		queryKey: ["file-metadata"],
+		queryFn: async () => {
+			const res = await client.api.submissions.files.$get();
+			const result = await res.json();
+			return result;
+		},
+	});
+};
+
+// ダウンロードURL取得のフック
+export const useDownloadUrl = (fileId: string) => {
+	return useQuery({
+		queryKey: ["download-url", fileId],
+		queryFn: async () => {
+			const res = await client.api.submissions.files[":id"].download.$get({
+				param: { id: fileId },
+			});
+			const result = await res.json();
+			return result;
+		},
+		enabled: !!fileId,
+	});
+};
 
 // テキスト提出のフック
 export const useCreateTextSubmission = () => {
