@@ -11,6 +11,8 @@ import {
 	fetchNotificationsCount,
 } from "@lms-repo/db/utils/query/notifications";
 import { resend } from "@lms-repo/emails";
+import AssignmentReminderEmail from "@lms-repo/emails/components/assignment-reminder-email";
+import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -81,6 +83,7 @@ export const notificationsRoute = new Hono<{
 	// リマインダーの作成（このエンドポイントはSchedulerによって定期実行される）
 	.post("/reminder", async (c) => {
 		const { userId } = c.get("session");
+		const { email } = c.get("user");
 		const result = await createReminder(userId);
 
 		if ("message" in result) {
@@ -88,11 +91,29 @@ export const notificationsRoute = new Hono<{
 		}
 
 		if (result.length > 0) {
+			const dateOptions: Intl.DateTimeFormatOptions = {
+				year: "numeric",
+				month: "short",
+				day: "numeric",
+			};
+
+			const emails = result.flatMap((v) => v.email);
+			const assignmentsDetail = result.map(({ email, ...rest }) => ({
+				...rest,
+				dueDate: rest.dueDate.toLocaleDateString("default", dateOptions),
+			}));
+			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+
+			// リマインダー通知メールを送信
 			await resend.emails.send({
 				from: "onboarding@resend.dev",
-				to: result,
-				subject: "Hello world",
-				html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+				to: emails,
+				subject: "リマインダー通知",
+				react: AssignmentReminderEmail({
+					email,
+					assignmentsDetail,
+					viewUrl,
+				}),
 			});
 		}
 
