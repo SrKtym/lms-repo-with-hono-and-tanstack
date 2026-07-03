@@ -1,3 +1,14 @@
+# GitHub ActionsでCloud Runにデプロイするワークフロー
+# 1. biome ciでリント
+
+# 2. docker buildでバックエンドアプリケーション（Hono API Server）のビルド
+# 3. artifact registryにバックエンドイメージをプッシュ(roles/artifactregistry.writerが必要）
+# 4. gcloud run deployでバックエンドサービスをデプロイ(roles/run.adminが必要）
+
+# 5. docker buildでフロントエンドアプリケーション（React + TanStack Router）のビルド
+# 6. artifact registryにフロントエンドイメージをプッシュ(roles/artifactregistry.writerが必要）
+# 7. gcloud run deployでフロントエンドサービスをデプロイ(roles/run.adminが必要）
+
 name: Deploy to Cloud Run
 
 on:
@@ -71,7 +82,7 @@ jobs:
             --platform managed \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
-            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }},NODE_ENV=production,GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }},ARCJET_KEY=${{ secrets.ARCJET_KEY }},CORS_ORIGIN=${{ secrets.CORS_ORIGIN }},RESEND_API_KEY=${{ secrets.RESEND_API_KEY }},BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }},BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GITHUB_CLIENT_SECRET=${{ secrets.GITHUB_CLIENT_SECRET }},GITHUB_CLIENT_ID=${{ secrets.GITHUB_CLIENT_ID }},GCS_EMULATOR_HOST=
+            --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }},NODE_ENV=production,GCS_BUCKET_NAME=${{ secrets.GCS_BUCKET_NAME }},ARCJET_KEY=${{ secrets.ARCJET_KEY }},CORS_ORIGIN=${{ secrets.CORS_ORIGIN }},RESEND_API_KEY=${{ secrets.RESEND_API_KEY }},BETTER_AUTH_SECRET=${{ secrets.BETTER_AUTH_SECRET }},BETTER_AUTH_URL=${{ secrets.BETTER_AUTH_URL }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GH_CLIENT_SECRET=${{ secrets.GH_CLIENT_SECRET }},GH_CLIENT_ID=${{ secrets.GH_CLIENT_ID }},TWITTER_CLIENT_SECRET=${{ secrets.TWITTER_CLIENT_SECRET }},TWITTER_CLIENT_ID=${{ secrets.TWITTER_CLIENT_ID }},GCS_EMULATOR_HOST=
 
   # フロントエンドアプリケーション（React + TanStack Router）のデプロイ
   deploy-web:
