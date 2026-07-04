@@ -78,7 +78,7 @@ function DayEventItem({
 			<div className="mb-1 font-bold text-sm">
 				{event.title}
 				{event.type === "schedule" && (
-					<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
+					<div className="absolute top-1 right-[-5px] opacity-0 transition-opacity group-hover:opacity-100">
 						<DefaultTooltip
 							triggerElement={
 								<MoreVertical

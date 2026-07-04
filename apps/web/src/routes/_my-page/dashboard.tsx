@@ -59,6 +59,13 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 			submissions,
 		};
 	},
+	head: () => ({
+		meta: [
+			{
+				title: "ダッシュボード | LMS-repo",
+			},
+		],
+	}),
 });
 
 function RouteComponent() {
@@ -71,7 +78,9 @@ function RouteComponent() {
 		fetchNextPage,
 		isFetchingNextPage,
 	} = useNotifications(10, initialNotifications);
+
 	const notifications = notificationsData?.pages.flat() || [];
+
 	const { mutate: markAsRead } = useMarkNotificationAsRead();
 	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
 	const { mutate: deleteNotification } = useDeleteNotification();

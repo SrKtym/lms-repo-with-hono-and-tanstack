@@ -19,10 +19,12 @@ import {
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
 
+const searchSchema =
+	z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>();
+
 export const Route = createFileRoute("/_my-page/register-courses")({
 	component: RouteComponent,
-	validateSearch:
-		z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>(),
+	validateSearch: (search) => searchSchema.parse(search),
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得
 		const initialCourses = await queryClient.ensureQueryData({
@@ -32,6 +34,13 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		});
 		return { initialCourses };
 	},
+	head: () => ({
+		meta: [
+			{
+				title: "履修登録 | LMS-repo",
+			},
+		],
+	}),
 });
 
 function RouteComponent() {
@@ -177,12 +186,12 @@ function RouteComponent() {
 													</div>
 													<div className="flex justify-end gap-2">
 														<CancelButton
-															onClick={() => setIsConfirmModalOpen(false)}
+															onPress={() => setIsConfirmModalOpen(false)}
 														>
 															キャンセル
 														</CancelButton>
 														<DefaultButton
-															onClick={() => {
+															onPress={() => {
 																handleCheckCourse();
 																setIsConfirmModalOpen(false);
 															}}

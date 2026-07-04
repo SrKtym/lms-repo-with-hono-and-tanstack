@@ -12,6 +12,23 @@ export function RegisterTotpSecretForm({ totpURI }: { totpURI: string }) {
 		from: "/",
 	});
 	const [error, setError] = useState<string>("");
+
+	// TOTPシークレットキーの登録
+	const handleRegisterTotpSecret = async (code: string) => {
+		await authClient.twoFactor.verifyTotp(
+			{ code },
+			{
+				onSuccess: () =>
+					navigate({
+						to: "/add-passkey",
+					}),
+				onError: () => {
+					setError("認証コードが正しくありません。もう一度お試しください。");
+				},
+			},
+		);
+	};
+
 	const form = useForm({
 		defaultValues: {
 			totpCode: "",
@@ -32,26 +49,11 @@ export function RegisterTotpSecretForm({ totpURI }: { totpURI: string }) {
 		},
 	});
 
-	// TOTPシークレットキーの登録
-	const handleRegisterTotpSecret = async (code: string) => {
-		await authClient.twoFactor.verifyTotp(
-			{ code },
-			{
-				onSuccess: () =>
-					navigate({
-						to: "/add-passkey",
-					}),
-				onError: () => {
-					setError("認証コードが正しくありません。もう一度お試しください。");
-				},
-			},
-		);
-	};
-
 	return (
 		<div className="flex flex-col items-center gap-4">
 			<p>
-				以下のQRコードを認証アプリで読み取り、表示されているセキュリティコードを入力してください。
+				以下のQRコードを認証アプリ（Google AuthenticatorやMicrosoft
+				Authenticatorなど）で読み取り、表示されているセキュリティコードを入力してください。
 			</p>
 			<QRCodeComponent value={totpURI} />
 			<form

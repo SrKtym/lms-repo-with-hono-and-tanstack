@@ -2,25 +2,76 @@ import {
 	FileUploaderCard,
 	type UploadedFile,
 } from "@lms-repo/ui/components/cards/file-uploader-card";
-import { useState } from "react";
-import { useSubmitMultipleFiles } from "@/hooks/submissions";
-
-interface CreateFileSubmissionFormProps {
-	assignmentId: string;
-	onSubmitSuccess?: () => void;
-}
+import { toast } from "@lms-repo/ui/components/toast";
+import { useEffect, useState } from "react";
+import {
+	useDeleteFile,
+	useDownloadUrl,
+	useFileMetadata,
+	useSubmitMultipleFiles,
+} from "@/hooks/submissions";
 
 export function CreateFileSubmissionForm({
 	assignmentId,
-	onSubmitSuccess,
-}: CreateFileSubmissionFormProps) {
-	const allowedType =
-		"application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation";
-	const [isPending, setIsPending] = useState(false);
-	const [uploadedFileNames, setUploadedFileNames] = useState<Set<string>>(
-		new Set(),
+}: {
+	assignmentId: string;
+}) {
+	const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
+	const { mutateAsync: submitMultipleFiles, isPending } =
+		useSubmitMultipleFiles();
+	const { data: fileMetadata } = useFileMetadata();
+	const [downloadingFileId, setDownloadingFileId] = useState<string | null>(
+		null,
 	);
-	const { mutate: submitMultipleFiles } = useSubmitMultipleFiles();
+	const { data: downloadData } = useDownloadUrl(downloadingFileId || "");
+	const { mutate: deleteFile } = useDeleteFile();
+
+	// データベースからアップロード済みファイルを取得
+	useEffect(() => {
+		if (fileMetadata) {
+			const convertedFiles: UploadedFile[] = fileMetadata.map((meta) => ({
+				id: meta.id,
+				name: meta.originalName,
+				size: meta.fileSize,
+				type: meta.mimeType,
+				uploadProgress: 100,
+			}));
+			setUploadedFiles(convertedFiles);
+		}
+	}, [fileMetadata]);
+
+	// ダウンロードURLが取得できたらファイルをダウンロード
+	useEffect(() => {
+		if (downloadData && "signedUrl" in downloadData) {
+			const link = document.createElement("a");
+			link.href = downloadData.signedUrl;
+			link.download = downloadData.fileName;
+			document.body.appendChild(link);
+			link.click();
+			document.body.removeChild(link);
+			setDownloadingFileId(null);
+		}
+	}, [downloadData]);
+
+	// ファイルダウンロード時の処理
+	const handleFileDownload = (fileId: string) => {
+		setDownloadingFileId(fileId);
+	};
+
+	// ファイル削除時の処理
+	const handleFileDelete = (fileId: string) => {
+		deleteFile(fileId, {
+			onSuccess: () => {
+				toast.success("ファイルを削除しました");
+				setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
+			},
+			onError: (error) => {
+				toast.danger("ファイルの削除に失敗しました", {
+					description: error.message,
+				});
+			},
+		});
+	};
 
 	// ファイル選択時に新規ファイルをアップロード処理する
 	const onFilesChange = async (files: UploadedFile[]) => {
@@ -29,7 +80,9 @@ export function CreateFileSubmissionForm({
 		}
 
 		// 新規ファイルのみをフィルタリング
-		const newFiles = files.filter((file) => !uploadedFileNames.has(file.name));
+		const newFiles = files.filter(
+			(file) => !uploadedFiles.some((f) => f.name === file.name),
+		);
 
 		if (newFiles.length === 0) {
 			return;
@@ -40,39 +93,38 @@ export function CreateFileSubmissionForm({
 			return new File([file.name], file.name, { type: file.type });
 		});
 
-		setIsPending(true);
-
 		try {
-			submitMultipleFiles({
+			// アップロード処理
+			const res = await submitMultipleFiles({
 				files: fileObjects,
 				assignmentId,
 			});
 
-			// アップロード完了したファイル名を記録
-			setUploadedFileNames((prev) => {
-				const newSet = new Set(prev);
-				newFiles.map((file) => {
-					newSet.add(file.name);
+			if ("error" in res) {
+				toast.danger("ファイルの提出に失敗しました", {
+					description: res.error,
 				});
-				return newSet;
+			} else if ("message" in res) {
+				toast.danger(res.message);
+			} else {
+				// アップロード完了したファイル名を記録
+				setUploadedFiles((prev) => [...prev, ...newFiles]);
+			}
+		} catch {
+			toast.danger("ファイルの提出に失敗しました", {
+				description:
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 			});
-
-			onSubmitSuccess?.();
-		} catch (error) {
-			console.error("ファイルの提出に失敗しました:", error);
-			alert("ファイルの提出に失敗しました");
-		} finally {
-			setIsPending(false);
 		}
 	};
 
 	return (
 		<div className="space-y-4">
 			<FileUploaderCard
-				maxFiles={5}
-				maxSize={10}
-				accept={allowedType}
+				uploadedFiles={uploadedFiles}
 				onFilesChange={onFilesChange}
+				onFileDownload={handleFileDownload}
+				onFileDelete={handleFileDelete}
 				disabled={isPending}
 			/>
 			{isPending && (

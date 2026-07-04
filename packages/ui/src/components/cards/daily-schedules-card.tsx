@@ -2,34 +2,11 @@ import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
-import { cn } from "@lms-repo/ui/lib/utils";
 import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { memo } from "react";
+import { isProgressingOrUpcoming } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
-
-// 小数時間
-const decimalHours = (date: Date | undefined | null) => {
-	if (!date) return 0;
-	const hours = date.getHours();
-	const minutes = date.getMinutes();
-	return hours + minutes / 60;
-};
-
-// 現在進行中であるかどうかを判定
-const isProgressingOrUpcoming = (start: Date, end: Date) => {
-	const now = Date.now();
-	const isProgressing = start.getTime() < now && end.getTime() > now;
-	const upcoming = now < start.getTime();
-
-	if (isProgressing) {
-		return "progressing";
-	}
-	if (upcoming) {
-		return "upcoming";
-	}
-	return "past";
-};
 
 function DailySchedulesCardComponent({
 	courses,
@@ -61,56 +38,15 @@ function DailySchedulesCardComponent({
 		end: schedule.endTime,
 	}));
 
-	// 重複する予定を検出する関数
-	const detectOverlappingSchedules = (schedules: any[]) => {
-		const groups: any[][] = [];
-		const processed = new Set<number>();
-
-		schedules.forEach((schedule, index) => {
-			if (processed.has(index)) return;
-
-			const group = [schedule];
-			processed.add(index);
-
-			schedules.forEach((otherSchedule, otherIndex) => {
-				if (index === otherIndex || processed.has(otherIndex)) return;
-
-				// 時間が重複しているかチェック
-				const scheduleStart = decimalHours(schedule.startTime);
-				const scheduleEnd = decimalHours(schedule.endTime);
-				const otherStart = decimalHours(otherSchedule.startTime);
-				const otherEnd = decimalHours(otherSchedule.endTime);
-
-				const isOverlapping =
-					(scheduleStart < otherEnd && scheduleEnd > otherStart) ||
-					(otherStart < scheduleEnd && otherEnd > scheduleStart);
-
-				if (isOverlapping) {
-					group.push(otherSchedule);
-					processed.add(otherIndex);
-				}
-			});
-
-			groups.push(group);
-		});
-
-		return groups;
-	};
-
-	// 重複を検出してグループ化
-	const courseGroups = detectOverlappingSchedules(todayCourse);
-	const scheduleGroups = detectOverlappingSchedules(todaySchedule);
-
 	// 講義用カードコンポーネント
 	const CourseScheduleCard = ({
-		group,
+		item,
 		index,
 	}: {
-		group: any[];
+		item: (typeof todayCourse)[number];
 		index: number;
 	}) => {
-		const firstItem = group[0];
-		const status = isProgressingOrUpcoming(firstItem.start, firstItem.end);
+		const status = isProgressingOrUpcoming(item.start, item.end);
 		const isPast = status === "past";
 		const isProgressing = status === "progressing";
 
@@ -119,51 +55,43 @@ function DailySchedulesCardComponent({
 				initial={{ opacity: 0, x: -50 }}
 				animate={{ opacity: isPast ? 0.6 : 1, x: 0 }}
 				transition={{ delay: index * 0.1, duration: 0.4, ease: "easeOut" }}
-				className={cn(
-					"rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 dark:border-gray-700 dark:bg-gray-800",
+				className={`rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition-all duration-300 dark:border-gray-700 dark:bg-gray-800 ${
 					isProgressing &&
-						"bg-blue-50 shadow-md ring-2 ring-blue-500 dark:bg-blue-950",
-					!isPast &&
-						"hover:border-blue-300 hover:shadow-md dark:hover:border-blue-600",
-				)}
+					"bg-blue-50 shadow-md ring-2 ring-blue-500 dark:bg-blue-950"
+				}
+					${
+						!isPast &&
+						"hover:border-blue-300 hover:shadow-md dark:hover:border-blue-600"
+					}
+				`}
 			>
 				<div className="flex items-start justify-between">
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={cn(
-									"rounded-full px-2 py-1 font-medium text-xs",
+								className={`rounded-full px-2 py-1 font-medium text-xs ${
 									isProgressing
 										? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
 										: isPast
 											? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-											: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400",
-								)}
+											: "bg-blue-50 text-blue-600 dark:bg-blue-950 dark:text-blue-400"
+								}
+								`}
 							>
-								{firstItem.start.toLocaleTimeString("default", {
+								{item.start.toLocaleTimeString("default", {
 									hour: "2-digit",
 									minute: "2-digit",
 								})}{" "}
 								-{" "}
-								{firstItem.end.toLocaleTimeString("default", {
+								{item.end.toLocaleTimeString("default", {
 									hour: "2-digit",
 									minute: "2-digit",
 								})}
 							</span>
-							{group.length > 2 && (
-								<span className="rounded-full bg-orange-100 px-2 py-1 font-bold text-orange-700 text-xs dark:bg-orange-900 dark:text-orange-300">
-									+{group.length - 1}
-								</span>
-							)}
 						</div>
 						<h3 className="mb-1 font-semibold text-gray-900 dark:text-gray-100">
-							{firstItem.title}
+							{item.title}
 						</h3>
-						{group.length > 1 && (
-							<p className="text-gray-500 text-sm dark:text-gray-400">
-								他 {group.length - 1} 件の予定と重複
-							</p>
-						)}
 					</div>
 					{isProgressing && (
 						<m.div
@@ -178,9 +106,14 @@ function DailySchedulesCardComponent({
 	};
 
 	// 個人スケジュール用カードコンポーネント
-	const ScheduleCard = ({ group, index }: { group: any[]; index: number }) => {
-		const firstItem = group[0];
-		const status = isProgressingOrUpcoming(firstItem.start, firstItem.end);
+	const ScheduleCard = ({
+		item,
+		index,
+	}: {
+		item: (typeof todaySchedule)[number];
+		index: number;
+	}) => {
+		const status = isProgressingOrUpcoming(item.start, item.end);
 		const isPast = status === "past";
 		const isProgressing = status === "progressing";
 
@@ -193,54 +126,46 @@ function DailySchedulesCardComponent({
 					duration: 0.4,
 					ease: "easeOut",
 				}}
-				className={cn(
-					"rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 shadow-sm transition-all duration-300 dark:border-blue-800 dark:from-blue-950 dark:to-indigo-950",
+				className={`rounded-lg border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 shadow-sm transition-all duration-300 dark:border-blue-800 dark:from-blue-950 dark:to-indigo-950 ${
 					isProgressing &&
-						"from-green-50 to-emerald-50 shadow-md ring-2 ring-green-500 dark:from-green-950 dark:to-emerald-950",
-					!isPast &&
-						"hover:border-green-300 hover:shadow-md dark:hover:border-green-600",
-				)}
+					"from-green-50 to-emerald-50 shadow-md ring-2 ring-green-500 dark:from-green-950 dark:to-emerald-950"
+				}
+					${
+						!isPast &&
+						"hover:border-green-300 hover:shadow-md dark:hover:border-green-600"
+					}
+				`}
 			>
 				<div className="flex items-start justify-between">
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={cn(
-									"rounded-full px-2 py-1 font-medium text-xs",
+								className={`rounded-full px-2 py-1 font-medium text-xs ${
 									isProgressing
 										? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
 										: isPast
 											? "bg-gray-100 text-gray-500 dark:bg-gray-700 dark:text-gray-400"
-											: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400",
-								)}
+											: "bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400"
+								}
+								`}
 							>
-								{firstItem.start.toLocaleTimeString("default", {
+								{item.start.toLocaleTimeString("default", {
 									hour: "2-digit",
 									minute: "2-digit",
 								})}{" "}
 								-{" "}
-								{firstItem.end.toLocaleTimeString("default", {
+								{item.end.toLocaleTimeString("default", {
 									hour: "2-digit",
 									minute: "2-digit",
 								})}
 							</span>
-							{group.length > 2 && (
-								<span className="rounded-full bg-orange-100 px-2 py-1 font-bold text-orange-700 text-xs dark:bg-orange-900 dark:text-orange-300">
-									+{group.length - 1}
-								</span>
-							)}
 						</div>
 						<h3 className="mb-1 font-semibold text-gray-900 dark:text-gray-100">
-							{firstItem.title}
+							{item.title}
 						</h3>
-						{firstItem.description && (
+						{item.description && (
 							<p className="mb-2 text-gray-600 text-sm dark:text-gray-400">
-								{firstItem.description}
-							</p>
-						)}
-						{group.length > 1 && (
-							<p className="font-medium text-blue-600 text-sm dark:text-blue-400">
-								他 {group.length - 1} 件の予定と重複
+								{item.description}
 							</p>
 						)}
 					</div>
@@ -306,11 +231,11 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-blue-500" />
 										講義
 									</h2>
-									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
-										{courseGroups.map((group, index) => (
+									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
+										{todayCourse.map((item, index) => (
 											<CourseScheduleCard
-												key={group[0].id}
-												group={group}
+												key={item.id}
+												item={item}
 												index={index}
 											/>
 										))}
@@ -333,13 +258,9 @@ function DailySchedulesCardComponent({
 										<span className="h-2 w-2 rounded-full bg-green-500" />
 										個人スケジュール
 									</h2>
-									<div className="space-y-3 lg:max-h-[240px] lg:overflow-y-auto">
-										{scheduleGroups.map((group, index) => (
-											<ScheduleCard
-												key={group[0].id}
-												group={group}
-												index={index}
-											/>
+									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
+										{todaySchedule.map((item, index) => (
+											<ScheduleCard key={item.id} item={item} index={index} />
 										))}
 									</div>
 								</m.div>

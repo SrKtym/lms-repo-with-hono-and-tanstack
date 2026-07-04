@@ -33,7 +33,7 @@ export default function RegisteredCourseInfos({
 	courseId,
 }: RegisteredCourseInfosProps) {
 	if (!courseWithCoverImage) {
-		return <div>講義が見つかりません。</div>;
+		throw new Error("講義が見つかりません");
 	}
 
 	const { data: announcementsData = [] } = useAnnouncements(announcements);
@@ -41,6 +41,13 @@ export default function RegisteredCourseInfos({
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
 	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
 	const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
+
+	const targetAnnouncements = announcementsData.filter(
+		(announcement) => announcement.courseId === courseId,
+	);
+	const targetAssignments = assignmentsData.filter(
+		(assignment) => assignment.courseId === courseId,
+	);
 
 	return (
 		<>
@@ -85,7 +92,7 @@ export default function RegisteredCourseInfos({
 				<div className="container mx-auto max-w-screen-xl space-y-3 px-3 pt-1 pb-3">
 					<TabsForCourseInfo
 						announcementsTab={
-							<div>
+							<>
 								<div className="mb-6 flex items-center justify-between">
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										お知らせ
@@ -101,9 +108,9 @@ export default function RegisteredCourseInfos({
 									onOpenChange={setIsAnnouncementModalOpen}
 								/>
 
-								{announcementsData.length > 0 ? (
+								{targetAnnouncements.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-										{announcementsData.map((announcement) => (
+										{targetAnnouncements.map((announcement) => (
 											<AnnouncementCard
 												key={announcement.id}
 												announcement={announcement}
@@ -117,10 +124,10 @@ export default function RegisteredCourseInfos({
 										</p>
 									</div>
 								)}
-							</div>
+							</>
 						}
 						assignmentsTab={
-							<div>
+							<>
 								<div className="mb-6 flex items-center justify-between">
 									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
 										課題
@@ -134,9 +141,9 @@ export default function RegisteredCourseInfos({
 									onOpenChange={setIsAssignmentModalOpen}
 								/>
 
-								{assignmentsData.length > 0 ? (
+								{targetAssignments.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-										{assignmentsData.map((assignment) => (
+										{targetAssignments.map((assignment) => (
 											<Link
 												key={assignment.id}
 												to="/course-list"
@@ -157,14 +164,13 @@ export default function RegisteredCourseInfos({
 										</p>
 									</div>
 								)}
-							</div>
+							</>
 						}
 						membersTab={
-							<div>
+							<>
 								<h2 className="mb-6 font-medium text-gray-900 text-xl dark:text-gray-100">
 									コースメンバー
 								</h2>
-
 								{members.length > 0 ? (
 									<div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
 										{isPending ? (
@@ -197,7 +203,7 @@ export default function RegisteredCourseInfos({
 										</p>
 									</div>
 								)}
-							</div>
+							</>
 						}
 					/>
 				</div>

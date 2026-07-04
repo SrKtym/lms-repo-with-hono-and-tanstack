@@ -58,7 +58,7 @@ export default function RegisteredCourseList({
 							すべての講義 ({sortedCourses.length}件)
 						</h2>
 						<div className="flex items-center gap-2 text-gray-600 text-sm dark:text-gray-400">
-							<span>並び替え:</span>
+							<p>並び替え:</p>
 							<DefaultSelect
 								aria-label="options"
 								className="w-32"

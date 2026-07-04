@@ -9,6 +9,7 @@ interface LongPressPopoverProps {
 	position: { x: number; y: number };
 }
 
+// 長押しポップオーバー
 export function LongPressPopover({
 	onEdit,
 	onDelete,
@@ -26,6 +27,8 @@ export function LongPressPopover({
 		};
 
 		document.addEventListener("mousedown", handleClickOutside);
+
+		// アンマウント時にイベントリスナーを削除
 		return () => document.removeEventListener("mousedown", handleClickOutside);
 	}, [onClose]);
 
@@ -71,6 +74,7 @@ interface UseLongPressReturn {
 	handlers: UseLongPressHandlers;
 }
 
+// 長押しハンドラー
 export function useLongPress(
 	onLongPress: (position: { x: number; y: number }) => void,
 	delay = 500,
@@ -78,6 +82,7 @@ export function useLongPress(
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 	const startPositionRef = useRef<{ x: number; y: number } | null>(null);
 
+	// 0.5秒間タッチを検出
 	const start = (clientX: number, clientY: number) => {
 		startPositionRef.current = { x: clientX, y: clientY };
 		timerRef.current = setTimeout(() => {
@@ -85,6 +90,7 @@ export function useLongPress(
 		}, delay);
 	};
 
+	// タイマーをクリア
 	const clear = () => {
 		if (timerRef.current) {
 			clearTimeout(timerRef.current);
@@ -92,6 +98,7 @@ export function useLongPress(
 		}
 	};
 
+	// タッチ開始時に長押しを検出
 	const onTouchStart = (e: React.TouchEvent) => {
 		const touch = e.touches[0];
 		if (touch) {
@@ -99,6 +106,7 @@ export function useLongPress(
 		}
 	};
 
+	// タッチ終了時にタイマーをクリア
 	const onTouchEnd = () => {
 		clear();
 	};

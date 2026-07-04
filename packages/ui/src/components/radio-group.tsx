@@ -26,9 +26,7 @@ export function RadioGroupFor2fa({
 			</Description>
 			<Radio className={style} value="valid">
 				<Radio.Control>
-					<Radio.Indicator>
-						<span />
-					</Radio.Indicator>
+					<Radio.Indicator />
 				</Radio.Control>
 				<Radio.Content className="flex flex-col gap-2">
 					<Label>TOTPまたはOTPによる認証を有効にする</Label>
@@ -44,9 +42,7 @@ export function RadioGroupFor2fa({
 			</Radio>
 			<Radio className={style} value="invalid">
 				<Radio.Control>
-					<Radio.Indicator>
-						<span />
-					</Radio.Indicator>
+					<Radio.Indicator />
 				</Radio.Control>
 				<Radio.Content className="flex flex-col gap-2">
 					<Label>2要素認証を無効にする</Label>

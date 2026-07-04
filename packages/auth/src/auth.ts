@@ -132,17 +132,17 @@ export const auth = betterAuth({
 	],
 	socialProviders: {
 		github: {
-			clientId: env.GITHUB_CLIENT_ID,
-			clientSecret: env.GITHUB_CLIENT_SECRET,
+			clientId: env.GH_CLIENT_ID,
+			clientSecret: env.GH_CLIENT_SECRET,
 		},
 		google: {
 			clientId: env.GOOGLE_CLIENT_ID,
 			clientSecret: env.GOOGLE_CLIENT_SECRET,
 		},
-		// twitter: {
-		//     clientId: serverEnv.TWITTER_CLIENT_ID,
-		//     clientSecret: serverEnv.TWITTER_CLIENT_SECRET
-		// }
+		twitter: {
+			clientId: env.TWITTER_CLIENT_ID,
+			clientSecret: env.TWITTER_CLIENT_SECRET,
+		},
 	},
 });
 

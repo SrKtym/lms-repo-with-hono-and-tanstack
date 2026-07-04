@@ -42,10 +42,12 @@ export function SocialLoginField({
 						{provider === "github" && <GithubLogo />}
 						{provider === "twitter" && <XLogo />}
 						<p>
+							{/* プロバイダ名を先頭を大文字に変換して「でログイン」を追加 */}
 							{provider.charAt(0).toUpperCase() + provider.slice(1)}でログイン
 						</p>
 					</OutlineButton>
 				))}
+				{/* サインインページでのみパスキーを表示 */}
 				{location.pathname === "/sign-in" && (
 					<OutlineButton onPress={onPasskeySignIn}>
 						<PasskeyLogo />

@@ -1,7 +1,7 @@
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
-import { formatTimestamp, getNotificationIcon } from "@lms-repo/ui/lib/utils";
+import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 
@@ -31,7 +31,7 @@ export function NotificationsModal({
 
 					{/* Modal */}
 					<m.div
-						layoutId={notification.id.toString()}
+						layoutId={notification.id}
 						className="fixed top-1/2 left-1/2 z-[60] max-h-[80vh] w-[calc(100%-2rem)] max-w-2xl -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-xl bg-white/90 shadow-2xl backdrop-blur-sm dark:bg-gray-800/90"
 						style={{ margin: 0 }}
 					>
@@ -39,17 +39,12 @@ export function NotificationsModal({
 							{/* Modal Header */}
 							<div className="flex items-center justify-between border-b p-6 dark:border-gray-700">
 								<div className="flex items-center gap-3">
-									<span className="text-2xl">
-										{getNotificationIcon(notification.title)}
-									</span>
-									<div>
-										<h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
-											{notification.title}
-										</h2>
-										<p className="text-gray-500 text-sm dark:text-gray-400">
-											{formatTimestamp(notification.createdAt)}
-										</p>
-									</div>
+									<h2 className="font-semibold text-gray-900 text-lg dark:text-gray-100">
+										{notification.title}
+									</h2>
+									<p className="text-gray-500 text-sm dark:text-gray-400">
+										{formatTimestamp(notification.createdAt)}
+									</p>
 								</div>
 								<CancelButton
 									aria-label="close modal"
