@@ -18,14 +18,18 @@ on:
 
 env:
 # GCPプロジェクトID
-  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
 # リージョン(東京)
-  REGION: asia-northeast1
+  REGION: ${{ vars.REGION }}
 # サービス名
-  SERVER_SERVICE_NAME: lms-server
-  WEB_SERVICE_NAME: lms-web
+  SERVER_SERVICE_NAME: ${{ vars.SERVER_SERVICE_NAME }}
+  WEB_SERVICE_NAME: ${{ vars.WEB_SERVICE_NAME }}
 # Artifact Registry
-  ARTIFACT_REGISTRY: asia-northeast1-docker.pkg.dev
+  ARTIFACT_REGISTRY: ${{ vars.ARTIFACT_REGISTRY }}
+
+permissions:
+  id-token: write
+  contents: read
 
 jobs:
 # デプロイ前のリント
@@ -58,15 +62,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Google Cloud認証（Workload Identity 連携）
       - name: Google Auth
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: 'github-actions@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
+      # Docker認証
       - name: Configure Docker to use gcloud CLI
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
+      # Dockerイメージをビルドしてプッシュ
       - name: Build and push Server image
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-server:${{ github.sha }}"
@@ -74,8 +82,8 @@ jobs:
           docker push $IMAGE_NAME
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
-      - name: Deploy to Cloud Run
       # GCSエミュレーターはローカル環境で使用するため、本番環境では空にする
+      - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVER_SERVICE_NAME }} \
             --image ${{ env.IMAGE_NAME }} \
@@ -95,15 +103,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # Google Cloud認証（Workload Identity 連携）
       - name: Google Auth
         id: auth
         uses: google-github-actions/auth@v2
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: 'github-actions@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
+      # Docker CLIをgcloud CLIを使用するように設定
       - name: Configure Docker to use gcloud CLI
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
+      # Dockerイメージをビルドしてプッシュ
       - name: Build and push Web image
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-web:${{ github.sha }}"
@@ -111,8 +123,8 @@ jobs:
           docker push $IMAGE_NAME
           echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
 
-      - name: Deploy to Cloud Run
       # VITE_SERVER_URLとVITE_CLIENT_URLはCloud RunのURLを設定する
+      - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.WEB_SERVICE_NAME }} \
             --image ${{ env.IMAGE_NAME }} \
