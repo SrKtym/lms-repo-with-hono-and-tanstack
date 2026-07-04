@@ -70,6 +70,12 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: 'github-actions@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
+      # Google Cloud CLIのセットアップ
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
       # Docker認証
       - name: Configure Docker to use gcloud CLI
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
@@ -111,7 +117,13 @@ jobs:
           workload_identity_provider: ${{ secrets.WORKLOAD_IDENTITY_PROVIDER }}
           service_account: 'github-actions@${{ env.PROJECT_ID }}.iam.gserviceaccount.com'
 
-      # Docker CLIをgcloud CLIを使用するように設定
+      # Google Cloud CLIのセットアップ
+      - name: Set up Google Cloud CLI
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      # Docker認証
       - name: Configure Docker to use gcloud CLI
         run: gcloud auth configure-docker ${{ env.ARTIFACT_REGISTRY }}
 
