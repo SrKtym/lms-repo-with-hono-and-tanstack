@@ -28,7 +28,7 @@ COPY packages/emails/src ./packages/emails/src
 COPY packages/db/src ./packages/db/src
 COPY packages/ui/src ./packages/ui/src
 COPY packages/env/src ./packages/env/src
-COPY packages/config/src ./packages/config/src
+COPY packages/config/ ./packages/config/
 
 # ビルド
 RUN bun run build --filter=web
