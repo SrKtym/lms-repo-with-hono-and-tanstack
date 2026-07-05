@@ -39,8 +39,8 @@ FROM oven/bun:latest AS runner
 WORKDIR /lms-repo
 
 # 非rootユーザーの作成（Debian用コマンドを使用）
-RUN groupadd --system --gid 1001 bun
-RUN useradd --system --uid 1001 --gid bun bun
+RUN groupadd --system --gid 1001 bun || true
+RUN useradd --system --uid 1001 --gid bun bun || true
 
 # ビルド成果物のコピー
 COPY --from=builder /lms-repo/apps/web/dist ./apps/web/dist
