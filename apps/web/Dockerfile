@@ -22,6 +22,7 @@ RUN bun install --frozen-lockfile
 COPY apps/web/src ./apps/web/src
 COPY apps/web/public ./apps/web/public
 COPY apps/web/index.html ./apps/web/index.html
+COPY apps/web/vite.config.ts ./apps/web/vite.config.ts
 COPY packages/api/src ./packages/api/src
 COPY packages/auth/src ./packages/auth/src
 COPY packages/emails/src ./packages/emails/src
