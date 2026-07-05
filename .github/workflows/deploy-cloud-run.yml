@@ -38,16 +38,19 @@ jobs:
     permissions:
       contents: read
     steps:
+      # リポジトリのソースコードを仮想環境（ランナー）にクローン
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           persist-credentials: false
 
+      # Biomeのセットアップ
       - name: Setup Biome
         uses: biomejs/setup-biome@v2
         with:
           version: latest
 
+      # Biomeでリントを実行
       - name: Run Biome check
         run: biome ci .
 
@@ -59,8 +62,9 @@ jobs:
       contents: read
       id-token: write
     steps:
+      # リポジトリのソースコードを仮想環境（ランナー）にクローン
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Google Cloud認証（Workload Identity 連携）
       - name: Google Auth
@@ -106,8 +110,9 @@ jobs:
       contents: read
       id-token: write
     steps:
+      # リポジトリのソースコードを仮想環境（ランナー）にクローン
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       # Google Cloud認証（Workload Identity 連携）
       - name: Google Auth
