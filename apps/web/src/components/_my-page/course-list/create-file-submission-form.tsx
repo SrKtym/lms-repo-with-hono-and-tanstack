@@ -26,7 +26,7 @@ export function CreateFileSubmissionForm({
 	const { data: downloadData } = useDownloadUrl(downloadingFileId || "");
 	const { mutate: deleteFile } = useDeleteFile();
 
-	// データベースからアップロード済みファイルを取得
+	// データベースから取得したアップロード済みファイルをコンポーネントの状態に変換
 	useEffect(() => {
 		if (fileMetadata) {
 			const convertedFiles: UploadedFile[] = fileMetadata.map((meta) => ({
@@ -34,7 +34,6 @@ export function CreateFileSubmissionForm({
 				name: meta.originalName,
 				size: meta.fileSize,
 				type: meta.mimeType,
-				uploadProgress: 100,
 			}));
 			setUploadedFiles(convertedFiles);
 		}
