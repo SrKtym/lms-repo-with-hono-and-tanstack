@@ -89,7 +89,7 @@ export const fetchSubmissionsQueryFn = async () => {
 // 特定の課題提出状況取得用のqueryFn
 export const fetchSubmissionByIdQueryFn = async (assignmentId?: string) => {
 	if (!assignmentId) {
-		return;
+		return [];
 	}
 	const res = await client.api.submissions[":assignmentId"].$get({
 		param: { assignmentId },
