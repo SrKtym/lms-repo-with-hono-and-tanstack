@@ -121,7 +121,7 @@ function RouteComponent() {
 	return (
 		<RegisteredCourseContents
 			targetAssignment={targetAssignment}
-			submission={submission}
+			submission={submission[0]}
 			assignmentId={assignmentId}
 		/>
 	);

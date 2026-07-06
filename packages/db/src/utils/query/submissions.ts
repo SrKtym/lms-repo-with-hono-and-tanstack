@@ -32,7 +32,7 @@ export async function fetchSubmissionById(
 	userId: string,
 	assignmentId: string,
 ) {
-	const [submission] = await db
+	const submission = await db
 		.select({
 			status: submissionStatus.status,
 			score: submissionStatus.score,
