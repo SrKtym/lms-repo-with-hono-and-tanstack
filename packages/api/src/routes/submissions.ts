@@ -10,6 +10,7 @@ import {
 } from "@lms-repo/db/utils/mutation/submissions";
 import {
 	fetchFileMetadataByUserId,
+	fetchSubmissionById,
 	fetchSubmissionsFromUserCourses,
 } from "@lms-repo/db/utils/query/submissions";
 import { env } from "@lms-repo/env/server";
@@ -195,7 +196,7 @@ export const submissionsRoute = new Hono<{
 		const results = await Promise.all(
 			metadataList.map(async (metadata) => {
 				const result = await createFileSubmissionMetadata({
-					bucket: "dummy-storage-bucket",
+					bucket: env.GCS_BUCKET_NAME,
 					...metadata,
 					createdBy: userId,
 				});
@@ -237,6 +238,13 @@ export const submissionsRoute = new Hono<{
 		const { userId } = c.get("session");
 		const submissions = await fetchSubmissionsFromUserCourses(userId);
 		return c.json(submissions, 200);
+	})
+	// 特定の課題提出状況の取得
+	.get("/:assignmentId", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.param("assignmentId");
+		const submission = await fetchSubmissionById(userId, assignmentId);
+		return c.json(submission, 200);
 	})
 	// ファイルメタデータの取得
 	.get("/files", async (c) => {
