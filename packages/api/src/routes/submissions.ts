@@ -239,18 +239,18 @@ export const submissionsRoute = new Hono<{
 		const submissions = await fetchSubmissionsFromUserCourses(userId);
 		return c.json(submissions, 200);
 	})
+	// ファイルメタデータの取得
+	.get("/files", async (c) => {
+		const { userId } = c.get("session");
+		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		return c.json(fileMetadata, 200);
+	})
 	// 特定の課題提出状況の取得
 	.get("/:assignmentId", async (c) => {
 		const { userId } = c.get("session");
 		const assignmentId = c.req.param("assignmentId");
 		const submission = await fetchSubmissionById(userId, assignmentId);
 		return c.json(submission, 200);
-	})
-	// ファイルメタデータの取得
-	.get("/files", async (c) => {
-		const { userId } = c.get("session");
-		const fileMetadata = await fetchFileMetadataByUserId(userId);
-		return c.json(fileMetadata, 200);
 	})
 	// ファイルダウンロード用署名付きURLの発行
 	.get("/files/:id/download", async (c) => {
