@@ -98,6 +98,27 @@ export const fetchSubmissionByIdQueryFn = async (assignmentId?: string) => {
 	return data;
 };
 
+// ファイルメタデータ取得用のqueryFn
+export const fetchFileMetadataQueryFn = async (assignmentId?: string) => {
+	if (!assignmentId) {
+		return [];
+	}
+	const res = await client.api.submissions.files[":assignmentId"].$get({
+		param: { assignmentId },
+	});
+	const data = await res.json();
+	return data;
+};
+
+// ダウンロードURL取得用のqueryFn
+export const fetchDownloadUrlQueryFn = async (fileId: string) => {
+	const res = await client.api.submissions.files[":id"].download.$get({
+		param: { id: fileId },
+	});
+	const result = await res.json();
+	return result;
+};
+
 // 通知取得用のqueryFn
 export const fetchNotificationsQueryFn = async (
 	limit?: number,
