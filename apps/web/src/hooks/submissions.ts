@@ -1,6 +1,27 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import {
+	fetchDownloadUrlQueryFn,
+	fetchFileMetadataQueryFn,
+} from "@/utils/query-utils";
+
+// ファイルメタデータ取得のフック
+export const useFileMetadata = (assignmentId?: string) => {
+	return useQuery({
+		queryKey: ["file-metadata", assignmentId],
+		queryFn: () => fetchFileMetadataQueryFn(assignmentId),
+	});
+};
+
+// ダウンロードURL取得のフック
+export const useDownloadUrl = (fileId: string) => {
+	return useQuery({
+		queryKey: ["download-url", fileId],
+		queryFn: () => fetchDownloadUrlQueryFn(fileId),
+		enabled: !!fileId,
+	});
+};
 
 // ファイル削除のフック
 export const useDeleteFile = () => {
@@ -27,39 +48,13 @@ export const useDeleteFile = () => {
 	});
 };
 
-// ファイルメタデータ取得のフック
-export const useFileMetadata = () => {
-	return useQuery({
-		queryKey: ["file-metadata"],
-		queryFn: async () => {
-			const res = await client.api.submissions.files.$get();
-			const result = await res.json();
-			return result;
-		},
-	});
-};
-
-// ダウンロードURL取得のフック
-export const useDownloadUrl = (fileId: string) => {
-	return useQuery({
-		queryKey: ["download-url", fileId],
-		queryFn: async () => {
-			const res = await client.api.submissions.files[":id"].download.$get({
-				param: { id: fileId },
-			});
-			const result = await res.json();
-			return result;
-		},
-		enabled: !!fileId,
-	});
-};
-
 // テキスト提出のフック
 export const useCreateTextSubmission = () => {
 	return useMutation({
 		mutationFn: async (submissionData: {
 			title: string;
 			description: string;
+			assignmentId: string;
 		}) => {
 			const res = await client.api.submissions.text.$post({
 				json: submissionData,

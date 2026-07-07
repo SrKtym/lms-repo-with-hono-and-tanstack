@@ -1,16 +1,21 @@
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
+import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateTextSubmission } from "@/hooks/submissions";
 
 export function CreateTextSubmissionForm() {
+	const { "assignment-id": assignmentId } = useSearch({
+		from: "/_my-page/course-list",
+	});
 	const { mutate: createTextSubmission } = useCreateTextSubmission();
 
 	const form = useForm({
 		defaultValues: {
 			title: "",
 			description: "",
+			assignmentId: assignmentId || "",
 		},
 		onSubmit: async ({ value }) => {
 			createTextSubmission(value);
@@ -19,6 +24,7 @@ export function CreateTextSubmissionForm() {
 			onSubmit: z.object({
 				title: z.string().min(1).max(100),
 				description: z.string().min(1).max(2000),
+				assignmentId: z.string().min(1),
 			}),
 		},
 	});
@@ -92,6 +98,16 @@ export function CreateTextSubmissionForm() {
 							</p>
 						))}
 					</div>
+				)}
+			</form.Field>
+			<form.Field name="assignmentId">
+				{(field) => (
+					<input
+						type="hidden"
+						name={field.name}
+						value={field.state.value}
+						onChange={(e) => field.handleChange(e.target.value)}
+					/>
 				)}
 			</form.Field>
 			<div className="flex justify-end">
