@@ -20,7 +20,7 @@ env:
 # GCPプロジェクトID
   PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
 # リージョン(東京)
-  REGION: ${{ vars.REGION }}
+  REGION: ${{ vars.GCP_REGION }}
 # サービス名
   SERVER_SERVICE_NAME: ${{ vars.SERVER_SERVICE_NAME }}
   WEB_SERVICE_NAME: ${{ vars.WEB_SERVICE_NAME }}
