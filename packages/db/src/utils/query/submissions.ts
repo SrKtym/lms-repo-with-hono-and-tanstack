@@ -5,6 +5,7 @@ import {
 	fileSubmissionsMetadata,
 	registration,
 	submissionStatus,
+	textSubmissions,
 } from "../../schema";
 
 // ユーザーが登録している講義の課題提出状況を取得
@@ -53,8 +54,11 @@ export type FetchSubmissionByIdReturnType = Awaited<
 	ReturnType<typeof fetchSubmissionById>
 >;
 
-// ユーザーIDに基づいてファイルメタデータを取得
-export async function fetchFileMetadataByUserId(userId: string) {
+// ユーザーIDに基づいてファイルメタデータを取得（assignmentIdでフィルタリング可能）
+export async function fetchFileMetadataByUserId(
+	userId: string,
+	assignmentId?: string,
+) {
 	const fileMetadata = await db
 		.select({
 			id: fileSubmissionsMetadata.id,
@@ -64,7 +68,14 @@ export async function fetchFileMetadataByUserId(userId: string) {
 			mimeType: fileSubmissionsMetadata.mimeType,
 		})
 		.from(fileSubmissionsMetadata)
-		.where(eq(fileSubmissionsMetadata.createdBy, userId))
+		.where(
+			assignmentId
+				? and(
+						eq(fileSubmissionsMetadata.createdBy, userId),
+						eq(fileSubmissionsMetadata.assignmentId, assignmentId),
+					)
+				: eq(fileSubmissionsMetadata.createdBy, userId),
+		)
 		.orderBy(fileSubmissionsMetadata.createdAt);
 
 	return fileMetadata;
@@ -72,4 +83,34 @@ export async function fetchFileMetadataByUserId(userId: string) {
 
 export type FetchFileMetadataByUserIdReturnType = Awaited<
 	ReturnType<typeof fetchFileMetadataByUserId>
+>;
+
+// ユーザーIDに基づいてテキスト提出を取得（assignmentIdでフィルタリング可能）
+export async function fetchTextSubmissionsByUserId(
+	userId: string,
+	assignmentId: string,
+) {
+	const textSubmissionsData = await db
+		.select({
+			id: textSubmissions.id,
+			assignmentId: textSubmissions.assignmentId,
+			title: textSubmissions.title,
+			description: textSubmissions.description,
+			createdAt: textSubmissions.createdAt,
+			updatedAt: textSubmissions.updatedAt,
+		})
+		.from(textSubmissions)
+		.where(
+			and(
+				eq(textSubmissions.createdBy, userId),
+				eq(textSubmissions.assignmentId, assignmentId),
+			),
+		)
+		.orderBy(textSubmissions.createdAt);
+
+	return textSubmissionsData;
+}
+
+export type FetchTextSubmissionsByUserIdReturnType = Awaited<
+	ReturnType<typeof fetchTextSubmissionsByUserId>
 >;
