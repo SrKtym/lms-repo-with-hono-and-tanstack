@@ -26,6 +26,7 @@ export const createFileSubmissionMetadata = async (
 			.insert(fileSubmissionsMetadata)
 			.values(submissionMetadata)
 			.returning({
+				id: fileSubmissionsMetadata.id,
 				bucket: fileSubmissionsMetadata.bucket,
 				objectName: fileSubmissionsMetadata.objectName,
 				originalName: fileSubmissionsMetadata.originalName,

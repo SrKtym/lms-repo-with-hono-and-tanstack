@@ -10,7 +10,9 @@ import {
 } from "@lms-repo/db/utils/mutation/submissions";
 import {
 	fetchFileMetadataByUserId,
+	fetchSubmissionById,
 	fetchSubmissionsFromUserCourses,
+	fetchTextSubmissionsByUserId,
 } from "@lms-repo/db/utils/query/submissions";
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
@@ -195,7 +197,8 @@ export const submissionsRoute = new Hono<{
 		const results = await Promise.all(
 			metadataList.map(async (metadata) => {
 				const result = await createFileSubmissionMetadata({
-					bucket: "dummy-storage-bucket",
+					assignmentId,
+					bucket: env.GCS_BUCKET_NAME,
 					...metadata,
 					createdBy: userId,
 				});
@@ -222,9 +225,10 @@ export const submissionsRoute = new Hono<{
 		zValidator("json", z.custom<Omit<TextSubmissions, "createdBy">>()),
 		async (c) => {
 			const { userId } = c.get("session");
-			const { title, description } = c.req.valid("json");
+			const { assignmentId, title, description } = c.req.valid("json");
 
 			const result = await createTextSubmission({
+				assignmentId,
 				title,
 				description,
 				createdBy: userId,
@@ -239,10 +243,28 @@ export const submissionsRoute = new Hono<{
 		return c.json(submissions, 200);
 	})
 	// ファイルメタデータの取得
-	.get("/files", async (c) => {
+	.get("/files/:assignmentId", async (c) => {
 		const { userId } = c.get("session");
-		const fileMetadata = await fetchFileMetadataByUserId(userId);
+		const assignmentId = c.req.param("assignmentId");
+		const fileMetadata = await fetchFileMetadataByUserId(userId, assignmentId);
 		return c.json(fileMetadata, 200);
+	})
+	// テキスト提出の取得
+	.get("/text/:assignmentId", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.param("assignmentId");
+		const textSubmissionsData = await fetchTextSubmissionsByUserId(
+			userId,
+			assignmentId,
+		);
+		return c.json(textSubmissionsData, 200);
+	})
+	// 特定の課題提出状況の取得
+	.get("/:assignmentId", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.param("assignmentId");
+		const submission = await fetchSubmissionById(userId, assignmentId);
+		return c.json(submission, 200);
 	})
 	// ファイルダウンロード用署名付きURLの発行
 	.get("/files/:id/download", async (c) => {
