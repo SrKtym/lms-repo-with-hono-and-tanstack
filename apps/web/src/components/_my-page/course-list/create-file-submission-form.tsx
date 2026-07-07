@@ -19,7 +19,7 @@ export function CreateFileSubmissionForm({
 	const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 	const { mutateAsync: submitMultipleFiles, isPending } =
 		useSubmitMultipleFiles();
-	const { data: fileMetadata } = useFileMetadata();
+	const { data: fileMetadata = [] } = useFileMetadata(assignmentId);
 	const [downloadingFileId, setDownloadingFileId] = useState<string | null>(
 		null,
 	);
