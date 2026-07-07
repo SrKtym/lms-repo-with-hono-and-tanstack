@@ -240,6 +240,9 @@ export const textSubmissions = pgTable(
 		id: text("id")
 			.primaryKey()
 			.$defaultFn(() => crypto.randomUUID()),
+		assignmentId: text("assignment_id")
+			.notNull()
+			.references(() => assignments.id, { onDelete: "cascade" }),
 		title: text("title").notNull(),
 		description: text("description").notNull().default(""),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -251,7 +254,10 @@ export const textSubmissions = pgTable(
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 	},
-	(t) => [index("text_submissions_created_by_idx").on(t.createdBy)],
+	(t) => [
+		index("text_submissions_created_by_idx").on(t.createdBy),
+		index("text_submissions_assignment_id_idx").on(t.assignmentId),
+	],
 );
 
 // ファイル形式の提出物メタデータ
@@ -261,6 +267,9 @@ export const fileSubmissionsMetadata = pgTable(
 		id: text("id")
 			.primaryKey()
 			.$defaultFn(() => crypto.randomUUID()),
+		assignmentId: text("assignment_id")
+			.notNull()
+			.references(() => assignments.id, { onDelete: "cascade" }),
 		bucket: text("bucket").notNull(),
 		objectName: text("object_name").notNull(),
 		originalName: text("original_name").notNull(),
@@ -275,7 +284,10 @@ export const fileSubmissionsMetadata = pgTable(
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 	},
-	(t) => [index("file_submissions_metadata_created_by_idx").on(t.createdBy)],
+	(t) => [
+		index("file_submissions_metadata_created_by_idx").on(t.createdBy),
+		index("file_submissions_metadata_assignment_id_idx").on(t.assignmentId),
+	],
 );
 
 // 提出状況テーブル
