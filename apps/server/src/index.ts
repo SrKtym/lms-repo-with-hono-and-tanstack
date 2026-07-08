@@ -56,11 +56,14 @@ const app = new Hono()
 
 // サーバーの起動
 const port = Number.parseInt(env.PORT, 10);
+const hostname = "0.0.0.0";
+
 Bun.serve({
 	fetch: app.fetch,
 	port,
+	hostname,
 });
 
-console.log(`Server running on port ${port}`);
+console.log(`Server running on port ${port}（${hostname}）`);
 
 export default app;
