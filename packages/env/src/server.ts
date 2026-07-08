@@ -25,6 +25,7 @@ export const env = createEnv({
 		GCS_EMULATOR_HOST: z.string().min(1),
 		GCS_BUCKET_NAME: z.string().min(1),
 		CORS_ORIGIN: z.url(),
+		PORT: z.string().min(1).default("3000"),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
 			.default("development"),
