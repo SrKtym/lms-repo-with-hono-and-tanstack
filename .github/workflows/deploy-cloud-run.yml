@@ -86,18 +86,18 @@ jobs:
 
       # Dockerイメージをビルドしてプッシュ
       - name: Build and push Server image
+        id: build-server  # Add an ID to capture outputs
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-server:${{ github.sha }}"
           docker build -f apps/server/Dockerfile -t ${IMAGE_NAME} .
           docker push ${IMAGE_NAME}
-        env:
-          IMAGE_NAME: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-server:${{ github.sha }}
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       # GCSエミュレーターはローカル環境で使用するため、本番環境では空にする
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.SERVER_SERVICE_NAME }} \
-            --image ${{ env.IMAGE_NAME }} \
+            --image ${{ steps.build-server.outputs.image_name }} \
             --platform managed \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
@@ -135,18 +135,18 @@ jobs:
 
       # Dockerイメージをビルドしてプッシュ
       - name: Build and push Web image
+        id: build-web  # Add an ID to capture outputs
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-web:${{ github.sha }}"
           docker build -f apps/web/Dockerfile -t ${IMAGE_NAME} .
           docker push ${IMAGE_NAME}
-        env:
-          IMAGE_NAME: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-web:${{ github.sha }}
+          echo "image_name=${IMAGE_NAME}" >> $GITHUB_OUTPUT
 
       # VITE_SERVER_URLとVITE_CLIENT_URLはCloud RunのURLを設定する
       - name: Deploy to Cloud Run
         run: |
           gcloud run deploy ${{ env.WEB_SERVICE_NAME }} \
-            --image ${{ env.IMAGE_NAME }} \
+            --image ${{ steps.build-web.outputs.image_name }} \
             --platform managed \
             --region ${{ env.REGION }} \
             --allow-unauthenticated \
