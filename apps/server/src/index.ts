@@ -54,4 +54,13 @@ const app = new Hono()
 	// ルーティング
 	.route("/", fullRoutes);
 
+// サーバーの起動
+const port = Number.parseInt(env.PORT, 10);
+Bun.serve({
+	fetch: app.fetch,
+	port,
+});
+
+console.log(`Server running on port ${port}`);
+
 export default app;

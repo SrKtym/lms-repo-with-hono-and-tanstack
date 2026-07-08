@@ -54,4 +54,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # 本番サーバーの起動
-CMD ["bun", "run", "start", "--port", "8080", "--host", "0.0.0.0"]
+CMD ["bun", "run", "start"]
