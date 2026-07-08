@@ -59,4 +59,4 @@ ENV NODE_ENV=production
 ENV PORT=8080
 
 # 本番サーバーの起動（vite previewで静的ファイルを配信）
-CMD ["bun", "run", "serve", "--", "--port", "8080", "--host", "0.0.0.0"]
+CMD ["bun", "run", "serve", "--port", "8080", "--host", "0.0.0.0"]
