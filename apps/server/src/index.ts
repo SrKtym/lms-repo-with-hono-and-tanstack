@@ -55,7 +55,10 @@ const app = new Hono()
 	.route("/", fullRoutes);
 
 // サーバーの起動
-const port = Number.parseInt(env.NODE_ENV === "development" ? "3000" : "8080", 10);
+const port = Number.parseInt(
+	env.NODE_ENV === "development" ? "3000" : "8080",
+	10,
+);
 const hostname = "0.0.0.0";
 
 Bun.serve({
