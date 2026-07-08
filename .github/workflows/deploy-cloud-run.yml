@@ -88,9 +88,10 @@ jobs:
       - name: Build and push Server image
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-server:${{ github.sha }}"
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           docker build -f apps/server/Dockerfile -t ${IMAGE_NAME} .
           docker push ${IMAGE_NAME}
+        env:
+          IMAGE_NAME: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-server:${{ github.sha }}
 
       # GCSエミュレーターはローカル環境で使用するため、本番環境では空にする
       - name: Deploy to Cloud Run
@@ -136,9 +137,10 @@ jobs:
       - name: Build and push Web image
         run: |
           IMAGE_NAME="${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-web:${{ github.sha }}"
-          echo "IMAGE_NAME=${IMAGE_NAME}" >> $GITHUB_ENV
           docker build -f apps/web/Dockerfile -t ${IMAGE_NAME} .
           docker push ${IMAGE_NAME}
+        env:
+          IMAGE_NAME: ${{ env.ARTIFACT_REGISTRY }}/${{ env.PROJECT_ID }}/lms-web:${{ github.sha }}
 
       # VITE_SERVER_URLとVITE_CLIENT_URLはCloud RunのURLを設定する
       - name: Deploy to Cloud Run
