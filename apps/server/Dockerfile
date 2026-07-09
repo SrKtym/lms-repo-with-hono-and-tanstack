@@ -32,16 +32,16 @@ RUN bun run build --filter=server
 # 本番ステージ
 FROM oven/bun:latest AS runner
 
-WORKDIR /lms-repo
+WORKDIR /lms-repo/apps/server
 
 # 非rootユーザーの作成（Debian用コマンドを使用）
 RUN groupadd --system --gid 1001 bun || true
 RUN useradd --system --uid 1001 --gid bun bun || true
 
 # 必要なファイルのみコピー
-COPY --from=builder /lms-repo/apps/server/dist ./apps/server/dist
-COPY --from=builder /lms-repo/apps/server/package.json ./apps/server/package.json
-COPY --from=builder --chown=bun:bun /lms-repo/node_modules ./node_modules
+COPY --from=builder /lms-repo/apps/server/dist ./dist
+COPY --from=builder /lms-repo/apps/server/package.json ./package.json
+COPY --from=builder --chown=bun:bun /lms-repo/node_modules /lms-repo/node_modules
 
 # ユーザー切り替え
 USER bun
