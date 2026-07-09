@@ -1,47 +1,40 @@
-# マルチステージビルド - ビルドステージ
-FROM oven/bun:latest AS builder
+# Prune ステージ
+# 1.turboをインストール
+# 2.全ソースをコピーして turbo prune server --docker を実行（必要なファイルのみ抽出）
+FROM oven/bun:latest AS prune
+WORKDIR /app
+RUN bun add -g turbo
+COPY . .
+RUN turbo prune server --docker
 
-WORKDIR /lms-repo
-
-# 依存関係のコピー
-COPY package.json ./
-COPY turbo.json ./
-COPY apps/server/package.json ./apps/server/
-COPY packages/api/package.json ./packages/api/
-COPY packages/auth/package.json ./packages/auth/
-COPY packages/emails/package.json ./packages/emails/
-COPY packages/db/package.json ./packages/db/
-COPY packages/env/package.json ./packages/env/
-COPY packages/config/package.json ./packages/config/
-
-# 依存関係をインストール
+# Installer ステージ
+FROM oven/bun:latest AS installer
+WORKDIR /app
+# プルーンされたlockfileを使用して依存関係をインストール
+COPY --from=prune /app/out/json/ .
 RUN bun install --frozen-lockfile
 
-# ソースコードのコピー
-COPY apps/server/src ./apps/server/src
-COPY packages/api/src ./packages/api/src
-COPY packages/auth/src ./packages/auth/src
-COPY packages/emails/src ./packages/emails/src
-COPY packages/db/src ./packages/db/src
-COPY packages/env/src ./packages/env/src
-COPY packages/config/ ./packages/config/
-
+# Build ステージ
+FROM oven/bun:latest AS builder
+WORKDIR /app
+# インストールされた依存関係とプルーンされたソースをコピー
+COPY --from=installer /app/ .
+COPY --from=prune /app/out/full/ .
 # ビルド
 RUN bun run build --filter=server
+# Standaloneバイナリをコンパイル
+RUN cd apps/server && bun run compile
 
-# 本番ステージ
+# Production ステージ
 FROM oven/bun:latest AS runner
+WORKDIR /app
 
-WORKDIR /lms-repo/apps/server
-
-# 非rootユーザーの作成（Debian用コマンドを使用）
+# 非rootユーザーで実行
 RUN groupadd --system --gid 1001 bun || true
 RUN useradd --system --uid 1001 --gid bun bun || true
 
-# 必要なファイルのみコピー
-COPY --from=builder /lms-repo/apps/server/dist ./dist
-COPY --from=builder /lms-repo/apps/server/package.json ./package.json
-COPY --from=builder --chown=bun:bun /lms-repo/node_modules /lms-repo/node_modules
+# Standaloneバイナリをコピー
+COPY --from=builder --chown=bun:bun /app/apps/server/server ./apps/server/server
 
 # ユーザー切り替え
 USER bun
@@ -53,5 +46,5 @@ EXPOSE 8080
 ENV NODE_ENV=production
 ENV PORT=8080
 
-# 本番サーバーの起動
-CMD ["bun", "run", "start"]
+# Standaloneバイナリを実行
+CMD ["./apps/server/server"]
