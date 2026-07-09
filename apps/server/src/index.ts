@@ -64,6 +64,4 @@ Bun.serve({
 	hostname,
 });
 
-console.log(`Server running on port ${port}（${hostname}）`);
-
 export default app;
