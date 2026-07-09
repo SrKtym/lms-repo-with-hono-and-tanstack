@@ -35,8 +35,8 @@ export default defineConfig({
 		strictPort: true,
 	},
 	preview: {
+		host: true,
 		port: 8080,
-		host: "0.0.0.0",
 	},
 	envDir: "../../apps/web/.env",
 });
