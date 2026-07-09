@@ -5,7 +5,14 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-	plugins: [tailwindcss(), tanstackRouter({}), react()],
+	plugins: [
+		tailwindcss(),
+		tanstackRouter({
+			target: "react",
+			autoCodeSplitting: true,
+		}),
+		react(),
+	],
 	resolve: {
 		alias: [
 			{
@@ -33,10 +40,6 @@ export default defineConfig({
 		host: true,
 		port: 3001,
 		strictPort: true,
-	},
-	preview: {
-		port: 8080,
-		host: "0.0.0.0",
 	},
 	envDir: "../../apps/web/.env",
 });
