@@ -54,14 +54,4 @@ const app = new Hono()
 	// ルーティング
 	.route("/", fullRoutes);
 
-// サーバーの起動
-const port = Number.parseInt(process.env.PORT || "8080", 10);
-const hostname = "0.0.0.0";
-
-Bun.serve({
-	fetch: app.fetch,
-	port,
-	hostname,
-});
-
 export default app;
