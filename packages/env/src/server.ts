@@ -2,11 +2,13 @@ import { createEnv } from "@t3-oss/env-core";
 import dotenv from "dotenv";
 import { z } from "zod";
 
-dotenv.config({
-	encoding: "utf8",
-	path: "../../apps/server/.env",
-	debug: true,
-});
+// 開発環境のみ.envファイルを読み込む
+if (process.env.NODE_ENV !== "production") {
+	dotenv.config({
+		encoding: "utf8",
+		debug: true,
+	});
+}
 
 export const env = createEnv({
 	server: {
