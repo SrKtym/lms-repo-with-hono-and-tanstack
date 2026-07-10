@@ -13,7 +13,7 @@ if (process.env.NODE_ENV !== "production") {
 export const env = createEnv({
 	server: {
 		DATABASE_URL: z.string().min(1),
-		DATABASE_URL_FOR_DOCKER: z.string().min(1),
+		DATABASE_URL_FOR_DOCKER: z.string().min(1).optional(),
 		BETTER_AUTH_SECRET: z.string().min(32),
 		BETTER_AUTH_URL: z.url(),
 		GOOGLE_CLIENT_SECRET: z.string().min(32),

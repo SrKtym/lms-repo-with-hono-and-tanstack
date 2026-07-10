@@ -3,10 +3,13 @@ import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-const databaseUrl =
-	env.NODE_ENV === "development"
-		? env.DATABASE_URL_FOR_DOCKER
-		: env.DATABASE_URL;
+let databaseUrl: string;
+
+if (env.NODE_ENV === "development" && env.DATABASE_URL_FOR_DOCKER) {
+	databaseUrl = env.DATABASE_URL_FOR_DOCKER;
+} else {
+	databaseUrl = env.DATABASE_URL;
+}
 
 const pool = new Pool({
 	connectionString: databaseUrl,
