@@ -20,7 +20,7 @@ on:
 
 env:
   # Cloudflare Pagesのプロジェクト名
-  CLOUDFLARE_PROJECT_NAME: ${{ vars.WEB_SERVICE_NAME }}
+  CLOUDFLARE_PROJECT_NAME: ${{ vars.REPOSITORY }}
 
 permissions:
   contents: read
@@ -83,4 +83,5 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }}
+          command: pages deploy apps/web/dist --project-name=${{ env.CLOUDFLARE_PROJECT_NAME }}
+          packageManager: bun
