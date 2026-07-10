@@ -20,7 +20,7 @@ on:
 
 env:
   # Cloudflare Pagesのプロジェクト名
-  CLOUDFLARE_PROJECT_NAME: ${{ vars.WEB_SERVICE_NAME }}
+  CLOUDFLARE_PROJECT_NAME: ${{ vars.REPOSITORY }}
 
 permissions:
   contents: read
