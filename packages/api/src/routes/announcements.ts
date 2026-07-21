@@ -28,7 +28,6 @@ export const announcementsRoute = new Hono<{
 	// アナウンスメントの作成
 	.post("/", zValidator("json", formSchema), async (c) => {
 		const { userId } = c.get("session");
-		const { email } = c.get("user");
 		const announcementData = c.req.valid("json");
 		const result = await createAnnouncements(announcementData, userId);
 
@@ -42,11 +41,10 @@ export const announcementsRoute = new Hono<{
 			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
 
 			await resend.emails.send({
-				from: "onboarding@resend.dev",
+				from: env.EMAIL_ADDRESS,
 				to: emails,
 				subject: "新しいお知らせ",
 				react: NewAnnouncementEmail({
-					email,
 					announcementTitle: title,
 					announcementContent: description,
 					viewUrl,

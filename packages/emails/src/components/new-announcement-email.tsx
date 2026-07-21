@@ -2,12 +2,10 @@ import { Button, Text } from "react-email";
 import { BaseEmailTemplate } from "./base-email-template";
 
 export default function NewAnnouncementEmail({
-	email,
 	announcementTitle,
 	announcementContent,
 	viewUrl,
 }: {
-	email: string;
 	announcementTitle: string;
 	announcementContent: string;
 	viewUrl: string;
@@ -16,7 +14,6 @@ export default function NewAnnouncementEmail({
 		<BaseEmailTemplate
 			preview="新しいお知らせが投稿されました"
 			title="新しいお知らせ"
-			email={email}
 		>
 			<Text className="text-base text-gray-700 leading-relaxed">
 				新しいお知らせが投稿されました。
