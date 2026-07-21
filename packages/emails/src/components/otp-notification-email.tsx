@@ -21,7 +21,7 @@ export default function OtpNotificationEmail({
 				{otpCode}
 			</Text>
 			<Text className="text-gray-600 text-sm">
-				このコードは5分で有効期限が切れます。認証を完了するためにコードを入力してください。
+				このコードは10分で有効期限が切れます。認証を完了するためにコードを入力してください。
 			</Text>
 			<Text className="mt-4 text-amber-600 text-sm">
 				🔒 認証コードを誰かと共有しないでください。
