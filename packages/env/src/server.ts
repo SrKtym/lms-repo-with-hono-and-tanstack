@@ -23,6 +23,7 @@ export const env = createEnv({
 		TWITTER_CLIENT_SECRET: z.string().min(32),
 		TWITTER_CLIENT_ID: z.string().min(1),
 		RESEND_API_KEY: z.string().min(32),
+		EMAIL_ADDRESS: z.email(),
 		ARCJET_KEY: z.string().min(32),
 		GCS_EMULATOR_HOST: z.string().min(1).optional(),
 		GCS_BUCKET_NAME: z.string().min(1),
