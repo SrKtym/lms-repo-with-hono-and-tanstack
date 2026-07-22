@@ -45,7 +45,7 @@ export function Header({ email, name, image }: UserData) {
 	};
 
 	return (
-		<>
+		<div className="sticky inset-x-0 top-0 z-50 backdrop-blur-lg">
 			<div className="flex flex-row items-center justify-between px-3 py-2">
 				<nav className="flex items-center gap-4 text-lg">
 					<DropdownMenuForNavLink LinkComponent={Link} />
@@ -82,6 +82,6 @@ export function Header({ email, name, image }: UserData) {
 				</div>
 			</div>
 			<hr />
-		</>
+		</div>
 	);
 }
