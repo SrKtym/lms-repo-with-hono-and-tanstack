@@ -5,9 +5,9 @@ import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
 import { CommentsCard } from "@lms-repo/ui/components/cards/comments-card";
 import { SubmissionsCard } from "@lms-repo/ui/components/cards/submissions-card";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { TabsForSubmissions } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
-import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { useCommentsWithAssignment } from "@/hooks/comments";
 import { CreateCommentForm } from "./create-comment-form";
@@ -64,7 +64,7 @@ export default function RegisteredCourseContents({
 
 			<div className="container m-auto max-w-screen-xl px-4">
 				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-					<LazyMotion features={domAnimation}>
+					<LazyMotionProvider>
 						{/* 課題の詳細 */}
 						<m.div {...propaties} className="lg:col-span-2">
 							<AssignmentDetailCard targetAssignment={targetAssignment} />
@@ -100,7 +100,7 @@ export default function RegisteredCourseContents({
 								<CreateCommentForm />
 							</CommentsCard>
 						</m.div>
-					</LazyMotion>
+					</LazyMotionProvider>
 				</div>
 			</div>
 		</div>

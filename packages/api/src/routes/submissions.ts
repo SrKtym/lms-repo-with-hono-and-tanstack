@@ -57,6 +57,7 @@ async function ensureBucketExists() {
 	}
 }
 
+// 署名付きURL生成スキーマ
 const signedUrlSchema = z
 	.array(
 		z.object({
@@ -72,6 +73,7 @@ const signedUrlSchema = z
 		`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
 	);
 
+// メタデータスキーマ
 const metadataSchema = z.object({
 	metadataList: z
 		.array(

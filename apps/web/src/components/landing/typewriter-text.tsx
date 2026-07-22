@@ -1,12 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function TypewriterText({
-	texts,
-	className = "",
-}: {
-	texts: string[];
-	className?: string;
-}) {
+export function TypewriterText({ texts }: { texts: string[] }) {
 	const [displayedText, setDisplayedText] = useState("");
 	const [currentIndex, setCurrentIndex] = useState(0);
 	const [currentStringIndex, setCurrentStringIndex] = useState(0);
@@ -44,9 +38,9 @@ export function TypewriterText({
 	}, [currentIndex, isDeleting, currentStringIndex, texts]);
 
 	return (
-		<span className={className}>
+		<div className="block">
 			LMS <span className="text-primary">{displayedText}</span>
 			<span className="animate-blink">|</span>
-		</span>
+		</div>
 	);
 }

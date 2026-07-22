@@ -2,12 +2,13 @@ import { Input } from "@heroui/react";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CloudUpload } from "@lms-repo/ui/assets/icons/cloud-upload";
 import { Download } from "@lms-repo/ui/assets/icons/download";
-import { AnimatePresence, domAnimation, LazyMotion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useCallback, useState } from "react";
 import { DefaultAvatar } from "../avatar";
 import { CancelButton } from "../button";
 import { BaseCard } from "../cards/base-card";
+import { LazyMotionProvider } from "../lazymotion-provider";
 
 export interface UploadedFile {
 	id: string;
@@ -23,7 +24,6 @@ interface FileUploaderCardProps {
 	onFileDownload?: (fileId: string) => void;
 	onFileDelete?: (fileId: string) => void;
 	disabled?: boolean;
-	className?: string;
 }
 
 export function FileUploaderCard({
@@ -33,7 +33,6 @@ export function FileUploaderCard({
 	onFileDownload,
 	onFileDelete,
 	disabled = false,
-	className = "",
 }: FileUploaderCardProps) {
 	const maxSize = 10;
 	const maxFiles = 5;
@@ -116,12 +115,11 @@ export function FileUploaderCard({
 	);
 
 	return (
-		<LazyMotion features={domAnimation}>
+		<LazyMotionProvider>
 			<m.div
 				initial={{ opacity: 0, y: 20 }}
 				animate={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.3 }}
-				className={className}
 			>
 				<button
 					type="button"
@@ -238,6 +236,6 @@ export function FileUploaderCard({
 					</m.div>
 				)}
 			</m.div>
-		</LazyMotion>
+		</LazyMotionProvider>
 	);
 }
