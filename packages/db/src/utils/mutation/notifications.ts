@@ -49,8 +49,8 @@ export async function markAllNotificationsAsRead() {
 	}
 }
 
-// リマインダーの作成
-export async function createReminder(userId: string) {
+// リマインダーの作成（認証なし、全ユーザー対象）
+export async function createReminder() {
 	const now = new Date();
 
 	// 3日後
@@ -68,18 +68,29 @@ export async function createReminder(userId: string) {
 				})
 				.from(assignments)
 				.innerJoin(courses, eq(assignments.courseId, courses.id))
-				.innerJoin(registration, eq(courses.id, registration.courseId))
 				.where(
-					and(
-						eq(registration.userId, userId),
-						lte(assignments.dueDate, target),
-						gt(assignments.dueDate, now),
-					),
+					and(lte(assignments.dueDate, target), gt(assignments.dueDate, now)),
 				);
 
 			if (tasks.length === 0) {
 				return { message: "該当する課題が見つかりません。", status: 404 };
 			}
+
+			const courseIds = tasks.map((v) => v.courseId);
+
+			// 各講義を登録しており、かつメール通知を有効にしているユーザーのメールアドレスを取得
+			const userEmailsByCourse = await tx
+				.select({ email: user.email })
+				.from(registration)
+				.innerJoin(user, eq(registration.userId, user.id))
+				.innerJoin(
+					emailNotificationSettings,
+					and(
+						eq(user.id, emailNotificationSettings.userId),
+						eq(emailNotificationSettings.remindersEmail, true),
+					),
+				)
+				.where(inArray(registration.courseId, courseIds));
 
 			// 通知データを生成
 			const notificationsData = tasks.map((v) => ({
@@ -95,41 +106,14 @@ export async function createReminder(userId: string) {
 				.values(notificationsData)
 				.onConflictDoNothing();
 
-			const courseIds = tasks.map((v) => v.courseId);
+			const emails = userEmailsByCourse.map((user) => user.email);
 
-			// メール通知を有効にしているユーザーのメール一覧
-			const res = await tx
-				.select({
-					email: user.email,
-				})
-				.from(user)
-				.innerJoin(
-					emailNotificationSettings,
-					eq(user.id, emailNotificationSettings.userId),
-				)
-				.innerJoin(
-					registration,
-					eq(emailNotificationSettings.userId, registration.userId),
-				)
-				.where(
-					and(
-						inArray(registration.courseId, courseIds),
-						eq(emailNotificationSettings.remindersEmail, true),
-					),
-				);
-
-			// メール通知を有効にしているユーザーのメールアドレスを抽出
-			const emails = res.map(({ email }) => email);
-
-			// 課題の詳細とメールアドレスをマージ
-			const marged = tasks.map(({ title, description, dueDate }) => ({
-				title,
-				description,
-				dueDate,
-				email: emails,
+			// メール通知を有効にしているユーザーのリマインダー情報
+			const reminders = tasks.map(({ courseId, ...rest }) => ({
+				...rest,
 			}));
 
-			return marged;
+			return { emails, reminders };
 		});
 
 		return result;
