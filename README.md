@@ -1,10 +1,10 @@
-this project is ongoing
+このプロジェクトは進行中です。
 
 # LMS-repo
 
-This project was created with [Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack), a modern TypeScript stack that combines React, TanStack Router, Hono, and more.
+このプロジェクトは、[Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack)をベースに構築されています。 以下に、使用されている主要な技術スタックを示します。
 
-## Features
+## 技術スタック
 
 - **TypeScript** - For type safety and improved developer experience
 - **TanStack Router** - File-based routing with full type safety
@@ -18,96 +18,95 @@ This project was created with [Better-T-Stack](https://github.com/AmanVarshney01
 - **Turborepo** - Optimized monorepo build system
 - **Biome** - Linting and formatting
 
-## Getting Started
+## 始め方
 
-First, install the dependencies:
+はじめに、依存関係をインストールします:
 
 ```bash
 npm install
 ```
 
-or
+または
 
 ```bash
 pnpm install
 ```
 
-or
+または
 
 ```bash
 bun install
 ```
 
-and with docker(optional)
+dockerを使用する場合(任意)
 
 ```bash
 docker compose -f docker/docker-compose.dev.yml up -d
 ```
 
-## Database Setup
-
-This project uses PostgreSQL with Drizzle ORM.
-
-1. Make sure you have a PostgreSQL database set up.
-2. Update your `apps/server/.env` file with your PostgreSQL connection details.
-
-3. Apply the schema to your database:
-
-```bash
-bun run db:push
-```
-
-Then, run the development server:
+その後、開発サーバーを起動します（dockerを使用する場合は以下のコマンドは不要）:
 
 ```bash
 bun run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173) in your browser to see the web application.
-The API is running at [http://localhost:3000](http://localhost:3000).
+フロントエンドアプリケーションは、ブラウザ上の[http://localhost:3001](http://localhost:3001)で開きます。
+バックエンドアプリケーションは、[http://localhost:3000](http://localhost:3000)で実行されます。
 
-## UI Customization
+## データベースのセットアップ
 
-React web apps in this stack share Hero UI primitives through `packages/ui`.
+このプロジェクトではPostgreSQLとDrizzle ORMを使用します。
 
-- Change design tokens and global styles in `packages/ui/src/styles/globals.css`
-- Update shared primitives in `packages/ui/src/components/*`
-- Adjust Hero UI aliases or style config in `packages/ui/components.json` and `apps/web/components.json`
+1. PostgreSQLデータベースのセットアップを行います。
+2. プロジェクト内に `apps/server/.env` ファイルを作成し、PostgreSQLに接続するために必要な環境変数を設定します。
 
-### Add more shared components
+3. Drizzle ORMを使ってTypeScriptで記述されたデータベースのスキーマから、 SQLマイグレーションファイルを生成します。:
 
-Import shared components like this:
+```bash
+bun run db:generate
+```
+4. 生成されたSQLマイグレーションファイルをPostgreSQLデータベースに適用します。:
 
-```tsx
-import { Button } from "@lms-repo/ui/components/button";
+```bash
+bun run db:migrate
 ```
 
-## Git Hooks and Formatting
+## UIのカスタマイズ
 
-- Format and lint fix: `bun run check`
+- Hero UIベースのものや再利用性のあるコンポーネントは `packages/ui/src/components/*`に集約されます。
+- SVGアイコンのような静的アセットはReactコンポーネントとして`packages/ui/src/assets/icons`に集約されます。
+- 各コンポーネントに適用するCSSの共通設定は `packages/ui/src/styles/globals.css`内で行います。
 
-## Project Structure
+## フォーマットとリント
+
+- Biomeによるコードのフォーマットとリントを実行します:
+`bun run check`
+
+## プロジェクトの構成
 
 ```
 lms-repo/
 ├── apps/
-│   ├── web/         # Frontend application (React + TanStack Router)
-│   └── server/      # Backend API (Hono)
+│   ├── web/         # フロントエンドアプリケーション (React + TanStack Router)
+│   └── server/      # バックエンドアプリケーション (Hono)
 ├── packages/
-│   ├── ui/          # Shared Hero UI components and styles
-│   ├── auth/        # Authentication configuration & logic
-│   └── db/          # Database schema & queries
+|   |── api/         # APIルート（Hono）
+|   |── auth/        # 認証ロジック（Better Auth）
+|   |── config/      # packages/の共通設定
+|   |── db/          # データベース（postgres）のスキーマとクエリ
+|   |── emails/      # メールテンプレート
+│   ├── ui/          # Hero UIベースのコンポーネント
 ```
 
-## Available Scripts
+## 利用可能なスクリプト
 
-- `bun run dev`: Start all applications in development mode
-- `bun run build`: Build all applications
-- `bun run dev:web`: Start only the web application
-- `bun run dev:server`: Start only the server
-- `bun run check-types`: Check TypeScript types across all apps
-- `bun run db:push`: Push schema changes to database
-- `bun run db:generate`: Generate database client/types
-- `bun run db:migrate`: Run database migrations
-- `bun run db:studio`: Open database studio UI
-- `bun run check`: Run Biome formatting and linting
+- `bun run dev`: 開発モードですべてのアプリケーションを実行
+- `bun run build`: すべてのアプリケーションをビルド
+- `bun run dev:web`: フロントエンドアプリケーションのみ実行
+- `bun run dev:server`: バックエンドアプリケーションのみ実行
+- `bun run check-types`: すべてのアプリケーションをまたいだ型チェック
+- `bun run db:push`: スキーマの変更を直接データベースに反映
+- `bun run db:generate`: マイグレーションファイルの生成
+- `bun run db:migrate`: データベースへのマイグレーションを実行
+- `bun run db:studio`: Drizzle Studioの起動
+- `bun run check`: Biomeによるフォーマットとリント
