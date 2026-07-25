@@ -23,6 +23,10 @@ const app = new Hono()
 	)
 	// クライアントからの/api/authへのリクエストに対する処理
 	.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
+	// .well-known/webauthnを公開する
+	.get("/.well-known/webauthn", (_c, next) => {
+		return next();
+	})
 	// 認証ミドルウェア
 	.use("*", authMiddleware)
 	// レート制限、ボット検出
