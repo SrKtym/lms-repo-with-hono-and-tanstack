@@ -50,6 +50,7 @@ function RouteComponent() {
 			const { error } = await authClient.passkey.addPasskey();
 
 			if (error) {
+				console.log(error);
 				setError(
 					"パスキーの登録に失敗しました。お手数ですが再度試行してください。",
 				);
