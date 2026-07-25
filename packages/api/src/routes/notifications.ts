@@ -80,37 +80,36 @@ export const notificationsRoute = new Hono<{
 		const result = await deleteNotification(id);
 		return c.json(result);
 	})
-	// リマインダーの作成（このエンドポイントはSchedulerによって定期実行される）
+	// リマインダーの作成（Cloud Schedulerによって定期実行される）
 	.post("/reminder", async (c) => {
-		const { userId } = c.get("session");
-		const { email } = c.get("user");
-		const result = await createReminder(userId);
+		const result = await createReminder();
 
 		if ("message" in result) {
 			return c.json(result);
 		}
 
-		if (result.length > 0) {
+		if (result) {
 			const dateOptions: Intl.DateTimeFormatOptions = {
 				year: "numeric",
 				month: "short",
 				day: "numeric",
 			};
 
-			const emails = result.flatMap((v) => v.email);
-			const assignmentsDetail = result.map(({ email, ...rest }) => ({
-				...rest,
-				dueDate: rest.dueDate.toLocaleDateString("default", dateOptions),
+			// 全ユーザーのメールアドレスを収集
+			const { emails, reminders } = result;
+			const assignmentsDetail = reminders.map((reminder) => ({
+				title: reminder.title,
+				description: reminder.description,
+				dueDate: reminder.dueDate.toLocaleDateString("default", dateOptions),
 			}));
 			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
 
-			// リマインダー通知メールを送信
+			// バッチでメールを送信（全員に同じ内容）
 			await resend.emails.send({
-				from: "onboarding@resend.dev",
+				from: env.EMAIL_ADDRESS,
 				to: emails,
 				subject: "リマインダー通知",
 				react: AssignmentReminderEmail({
-					email,
 					assignmentsDetail,
 					viewUrl,
 				}),

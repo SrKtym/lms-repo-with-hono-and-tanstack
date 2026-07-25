@@ -42,7 +42,6 @@ export function HeroSection({ children }: HeroSectionProps) {
 								"manages your schedules",
 								"manages your assignments",
 							]}
-							className="block"
 						/>
 					</motion.h1>
 

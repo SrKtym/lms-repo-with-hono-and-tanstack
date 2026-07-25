@@ -165,6 +165,7 @@ export function CreateScheduleForm({
 									},
 								}}
 								labelProps={{
+									htmlFor: field.name,
 									children: "期間",
 								}}
 								isRequired={true}
@@ -200,10 +201,7 @@ export function CreateScheduleForm({
 							type="hidden"
 							name="id"
 							value={field.state.value}
-							onChange={(e) => {
-								console.log(e.target.value);
-								field.handleChange(e.target.value);
-							}}
+							onChange={(e) => field.handleChange(e.target.value)}
 						/>
 					)}
 				</form.Field>

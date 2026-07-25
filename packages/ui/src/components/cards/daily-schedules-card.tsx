@@ -2,11 +2,11 @@ import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
-import { domAnimation, LazyMotion } from "motion/react";
 import * as m from "motion/react-m";
 import { memo } from "react";
 import { isProgressingOrUpcoming } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
+import { LazyMotionProvider } from "../lazymotion-provider";
 
 function DailySchedulesCardComponent({
 	courses,
@@ -219,7 +219,7 @@ function DailySchedulesCardComponent({
 					</div>
 				) : (
 					<div className="space-y-6">
-						<LazyMotion features={domAnimation}>
+						<LazyMotionProvider>
 							{/* 講義セクション */}
 							{todayCourse.length > 0 && (
 								<m.div
@@ -265,7 +265,7 @@ function DailySchedulesCardComponent({
 									</div>
 								</m.div>
 							)}
-						</LazyMotion>
+						</LazyMotionProvider>
 					</div>
 				)}
 			</div>

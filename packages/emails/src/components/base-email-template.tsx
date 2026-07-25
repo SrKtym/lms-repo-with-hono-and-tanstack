@@ -15,7 +15,7 @@ interface BaseEmailTemplateProps {
 	preview: string;
 	title: string;
 	children: React.ReactNode;
-	email: string;
+	email?: string;
 }
 
 export const BaseEmailTemplate = ({
@@ -41,15 +41,17 @@ export const BaseEmailTemplate = ({
 						</Heading>
 						<div className="mb-[24px]">{children}</div>
 						<Hr className="mx-0 my-[26px] w-full border border-gray-200 border-solid" />
-						<Text className="text-center text-[14px] text-gray-500 leading-[24px]">
-							このメールは{" "}
-							<span className="font-medium text-blue-600">{email}</span>{" "}
-							宛に送信されました。
-							<br />
-							もし意図しないメールである場合は、このメールを無視してください。
-						</Text>
+						{email && (
+							<Text className="text-center text-[14px] text-gray-500 leading-[24px]">
+								このメールは{" "}
+								<span className="font-medium text-blue-600">{email}</span>{" "}
+								宛に送信されました。
+								<br />
+								もし意図しないメールである場合は、このメールを無視してください。
+							</Text>
+						)}
 						<Text className="text-center text-[12px] text-gray-400 leading-[24px]">
-							© {new Date().getFullYear()} LMS. All rights reserved.
+							&copy; {new Date().getFullYear()} LMS. All rights reserved.
 						</Text>
 					</Container>
 				</Body>

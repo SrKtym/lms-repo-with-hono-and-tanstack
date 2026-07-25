@@ -157,9 +157,12 @@ function RouteComponent() {
 	// 週カレンダーデータを生成
 	const generateWeekCalendar = () => {
 		const { startOfWeek } = getWeekRange(currentDate);
-		const weekData = [];
+		const weekData: Array<{
+			date: Date;
+			isToday: boolean;
+		}> = [];
 
-		for (let i = 0; i < 7; i++) {
+		Array.from({ length: 7 }).forEach((_, i) => {
 			const date = new Date(startOfWeek);
 			date.setDate(startOfWeek.getDate() + i);
 
@@ -167,7 +170,7 @@ function RouteComponent() {
 				date,
 				isToday: isSameDay(date, new Date()),
 			});
-		}
+		});
 
 		return weekData;
 	};

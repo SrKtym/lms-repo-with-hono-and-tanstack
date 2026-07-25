@@ -2,11 +2,9 @@ import { Button, Text } from "react-email";
 import { BaseEmailTemplate } from "./base-email-template";
 
 export default function AssignmentReminderEmail({
-	email,
 	assignmentsDetail = [],
 	viewUrl,
 }: {
-	email: string;
 	assignmentsDetail?: {
 		title: string;
 		description: string;
@@ -18,7 +16,6 @@ export default function AssignmentReminderEmail({
 		<BaseEmailTemplate
 			preview="課題の提出期限が近づいています"
 			title="リマインダー: 課題の提出"
-			email={email}
 		>
 			<Text className="text-base text-gray-700 leading-relaxed">
 				課題の提出期限が近づいています。
