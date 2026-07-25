@@ -1,34 +1,55 @@
-import { Check } from "@lms-repo/ui/assets/icons/check";
-import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
-import { DAYS } from "@lms-repo/ui/lib/utils";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AssignmentScene } from "./assignment-scene";
+import { MockHeader } from "./mock-header";
+import { RegistrationScene } from "./registration-scene";
+import { ScheduleScene } from "./schedule-scene";
 
 export function VideoTutorial() {
-	const [currentStep, setCurrentStep] = useState(0);
-	const [searchQuery, setSearchQuery] = useState("");
-	const [selectedCourse, setSelectedCourse] = useState("");
+	const stepCards = [
+		{
+			id: 0,
+			title: "履修登録",
+			description:
+				"時間割上の「＋ボタン」を押すと講義の一覧を取得できます。そこから講義を選択して登録します。",
+		},
+		{
+			id: 1,
+			title: "スケジュールの作成",
+			description:
+				"「スケジュールを追加」ボタンを押すとスケジュール作成用のモーダルが開きます。ここで必要な情報を入力して作成します。",
+		},
+		{
+			id: 2,
+			title: "課題詳細ページの表示",
+			description: "課題の詳細と提出エリア、コメントエリアを表示します。",
+		},
+	];
+	const [activeStep, setActiveStep] = useState<0 | 1 | 2>(0);
+	const [path, setPath] = useState<string>("/register-courses");
 
-	const courses = [
-		"データベース論",
-		"アルゴリズムとデータ構造",
-		"ソフトウェア工学",
-		"機械学習入門",
-		"Webアプリケーション開発",
-	] as const;
-
-	const filteredCourses = courses.filter((course) =>
-		course.toLowerCase().includes(searchQuery.toLowerCase()),
-	);
-
-	const handleStepChange = (step: number) => {
-		setCurrentStep(step);
-		if (step === 0) {
-			setSearchQuery("");
-			setSelectedCourse("");
-		}
-	};
+	useEffect(() => {
+		const durations = [5000, 5000, 5000] as const;
+		// 各シーンの表示時間（5秒）
+		const timer = setTimeout(() => {
+			setActiveStep((prev) => {
+				switch (prev) {
+					case 0:
+						setPath("/schedules");
+						return 1;
+					case 1:
+						setPath("/course-list?course-id=abc&assignment-id=def");
+						return 2;
+					case 2:
+						setPath("/register-courses");
+						return 0;
+				}
+			});
+		}, durations[activeStep]);
+		return () => clearTimeout(timer);
+	}, [activeStep]);
 
 	return (
 		<section className="px-4 py-20">
@@ -39,286 +60,141 @@ export function VideoTutorial() {
 						whileInView={{ opacity: 1, y: 0 }}
 						viewport={{ once: true }}
 						transition={{ duration: 0.5 }}
-						className="mb-16 text-center"
+						className="mb-14 text-center"
 					>
 						<h2 className="mb-4 font-bold text-3xl text-gray-900 dark:text-white">
-							講義登録チュートリアル
+							チュートリアル
 						</h2>
 						<p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-400">
-							検索から登録までの流れを実際に体験してみましょう
+							このアプリの使い方をアニメーションでご確認ください
 						</p>
 					</m.div>
 
-					<div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-						{/* Interactive Demo */}
+					<div className="grid gap-10 lg:grid-cols-[2fr_0.8fr]">
+						{/* 疑似ブラウザウィンドウ */}
 						<m.div
-							initial={{ opacity: 0, x: -30 }}
+							initial={{ opacity: 0, x: -24 }}
 							whileInView={{ opacity: 1, x: 0 }}
 							viewport={{ once: true }}
-							transition={{ duration: 0.5, delay: 0.2 }}
-							className="relative overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-800"
+							transition={{ duration: 0.5, delay: 0.1 }}
+							className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-50 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-slate-950"
 						>
-							<div className="p-6">
-								{/* Step Indicator */}
-								<div className="mb-6 flex items-center justify-between">
-									<div className="flex space-x-2">
-										{[0, 1, 2, 3].map((step) => (
-											<div
-												key={step}
-												className={`h-2 flex-1 rounded-full transition-colors ${
-													currentStep >= step
-														? "bg-blue-500"
-														: "bg-gray-200 dark:bg-gray-700"
-												}`}
-											/>
-										))}
+							<div className="border-slate-200 border-b px-5 py-4 dark:border-slate-800">
+								<div className="flex items-center gap-2 text-slate-500 text-sm dark:text-slate-400">
+									<div className="h-3 w-3 rounded-full bg-red-500" />
+									<div className="h-3 w-3 rounded-full bg-yellow-500" />
+									<div className="h-3 w-3 rounded-full bg-green-500" />
+									<p className="ml-4 flex-1 overflow-hidden rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-500 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+										https://lms-repo.com{path}
+									</p>
+								</div>
+							</div>
+
+							<div className="relative">
+								<m.div
+									initial={{ opacity: 0, scale: 0.98 }}
+									animate={{ opacity: 1, scale: 1 }}
+									transition={{ duration: 0.45, ease: "easeOut" }}
+									className="relative shadow-xl"
+								>
+									<div className="pointer-events-none relative h-[560px] overflow-hidden">
+										{/* Background Gradient - HeroSection inspired */}
+										<div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900" />
+
+										{/* Decorative Elements - HeroSection inspired */}
+										<div className="pointer-events-none absolute inset-0 overflow-hidden">
+											<div className="absolute top-20 left-10 h-72 w-72 rounded-full bg-gradient-to-br from-blue-400/10 to-purple-400/10 blur-3xl" />
+											<div className="absolute right-10 bottom-20 h-96 w-96 rounded-full bg-gradient-to-tr from-purple-400/10 to-pink-400/10 blur-3xl" />
+											<div className="absolute top-1/4 left-1/4 h-60 w-60 rounded-full bg-gradient-to-br from-blue-300/5 to-cyan-300/5 blur-2xl" />
+										</div>
+										{/* 3つのアニメーションが順番に表示される */}
+										<AnimatePresence mode="wait">
+											{activeStep === 0 && (
+												<m.div
+													key="registration"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													exit={{ opacity: 0 }}
+													transition={{ duration: 0.35 }}
+													className="absolute inset-0"
+												>
+													<MockHeader />
+													<RegistrationScene />
+												</m.div>
+											)}
+
+											{activeStep === 1 && (
+												<m.div
+													key="schedule"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													exit={{ opacity: 0 }}
+													transition={{ duration: 0.35 }}
+													className="absolute inset-0"
+												>
+													<MockHeader />
+													<ScheduleScene />
+												</m.div>
+											)}
+
+											{activeStep === 2 && (
+												<m.div
+													key="assignment"
+													initial={{ opacity: 0 }}
+													animate={{ opacity: 1 }}
+													exit={{ opacity: 0 }}
+													transition={{ duration: 0.35 }}
+													className="absolute inset-0"
+												>
+													<MockHeader />
+													<AssignmentScene />
+												</m.div>
+											)}
+										</AnimatePresence>
 									</div>
-								</div>
-
-								{/* Demo Content */}
-								{currentStep === 0 && (
-									<m.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										className="space-y-4"
-									>
-										<h3 className="font-semibold text-gray-900 text-lg dark:text-white">
-											ステップ1: 講義を検索
-										</h3>
-										<div className="relative">
-											<input
-												type="text"
-												placeholder="講義名を入力してください..."
-												value={searchQuery}
-												onChange={(e) => {
-													const target = e.currentTarget;
-													setSearchQuery(target.value);
-												}}
-												className="w-full rounded-lg border border-gray-300 px-4 py-2 pr-10 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white"
-											/>
-											{/* <svg
-												className="absolute top-2.5 right-3 h-5 w-5 text-gray-400"
-												fill="none"
-												stroke="currentColor"
-												viewBox="0 0 24 24"
-											>
-												<path
-													strokeLinecap="round"
-													strokeLinejoin="round"
-													strokeWidth={2}
-													d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-												/>
-											</svg> */}
-										</div>
-										{searchQuery && (
-											<div className="max-h-40 overflow-y-auto rounded-lg border border-gray-200 dark:border-gray-700">
-												{filteredCourses.length > 0 ? (
-													filteredCourses.map((course) => (
-														<DefaultButton
-															key={course}
-															onPress={() => {
-																setSelectedCourse(course);
-																setCurrentStep(1);
-															}}
-														>
-															{course}
-														</DefaultButton>
-													))
-												) : (
-													<div className="px-4 py-2 text-gray-500 dark:text-gray-400">
-														該当する講義が見つかりません
-													</div>
-												)}
-											</div>
-										)}
-									</m.div>
-								)}
-
-								{currentStep === 1 && (
-									<m.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										className="space-y-4"
-									>
-										<h3 className="font-semibold text-gray-900 text-lg dark:text-white">
-											ステップ2: 講義詳細を確認
-										</h3>
-										<div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-											<h4 className="font-medium text-gray-900 dark:text-white">
-												{selectedCourse}
-											</h4>
-											<p className="mt-2 text-gray-600 text-sm dark:text-gray-400">
-												担当教授: 田中教授
-												<br />
-												単位数: 2単位
-												<br />
-												時間割: 月曜 3限
-												<br />
-												教室: A101
-											</p>
-										</div>
-									</m.div>
-								)}
-
-								{currentStep === 2 && (
-									<m.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										className="space-y-4"
-									>
-										<h3 className="font-semibold text-gray-900 text-lg dark:text-white">
-											ステップ3: 時間割に追加
-										</h3>
-										<div className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
-											<div className="mb-4 text-gray-600 text-sm dark:text-gray-400">
-												以下の時間割に追加されます:
-											</div>
-											<div className="grid grid-cols-7 gap-1 text-xs">
-												{DAYS.map((day) => (
-													<div
-														key={day}
-														className="text-center font-medium text-gray-700 dark:text-gray-300"
-													>
-														{day}
-													</div>
-												))}
-												{Array.from({ length: 35 }).map((_, i) => (
-													<div
-														key={i}
-														className={`aspect-square rounded border ${
-															i === 17
-																? "bg-blue-500 text-white"
-																: "border-gray-200 dark:border-gray-700"
-														}`}
-													>
-														{i === 17 && (
-															<div className="flex h-full items-center justify-center text-xs">
-																3限
-															</div>
-														)}
-													</div>
-												))}
-											</div>
-										</div>
-									</m.div>
-								)}
-
-								{currentStep === 3 && (
-									<m.div
-										initial={{ opacity: 0 }}
-										animate={{ opacity: 1 }}
-										className="space-y-4 text-center"
-									>
-										<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-900">
-											<Check className="text-green-600 dark:text-green-400" />
-										</div>
-										<h3 className="font-semibold text-gray-900 text-lg dark:text-white">
-											登録完了！
-										</h3>
-										<p className="text-gray-600 dark:text-gray-400">
-											{selectedCourse}が時間割に追加されました
-										</p>
-									</m.div>
-								)}
-
-								{/* Navigation Buttons */}
-								<div className="mt-6 flex justify-between">
-									<DefaultButton
-										variant="outline"
-										onClick={() =>
-											handleStepChange(Math.max(0, currentStep - 1))
-										}
-										isDisabled={currentStep === 0}
-									>
-										戻る
-									</DefaultButton>
-									<DefaultButton
-										onClick={() => {
-											if (currentStep === 1) setCurrentStep(2);
-											else if (currentStep === 2) {
-												setCurrentStep(3);
-											} else if (currentStep === 0 && selectedCourse) {
-												setCurrentStep(1);
-											}
-										}}
-										isDisabled={currentStep === 0 && !selectedCourse}
-									>
-										{currentStep === 3
-											? "完了"
-											: currentStep === 2
-												? "登録する"
-												: "次へ"}
-									</DefaultButton>
-								</div>
+								</m.div>
 							</div>
 						</m.div>
 
-						{/* Tutorial Steps */}
+						{/* 操作説明 */}
 						<m.div
 							initial={{ opacity: 0, x: 30 }}
 							whileInView={{ opacity: 1, x: 0 }}
 							viewport={{ once: true }}
-							transition={{ duration: 0.5, delay: 0.3 }}
+							transition={{ duration: 0.5, delay: 0.2 }}
 							className="space-y-6"
 						>
-							<h3 className="font-bold text-2xl text-gray-900 dark:text-white">
-								講義登録の手順
+							<h3 className="font-bold text-2xl text-foreground">
+								各シーンの説明
 							</h3>
-							<div className="space-y-4">
-								{[
-									{
-										step: "1",
-										title: "講義を検索",
-										description: "検索フィールドに登録したい講義名を入力します",
-										active: currentStep === 0,
-									},
-									{
-										step: "2",
-										title: "詳細を確認",
-										description:
-											"講義情報（担当教授、単位数、時間割など）を確認します",
-										active: currentStep === 1,
-									},
-									{
-										step: "3",
-										title: "時間割に追加",
-										description:
-											"時間割プレビューで追加位置を確認し、登録ボタンを押します",
-										active: currentStep === 2,
-									},
-									{
-										step: "4",
-										title: "登録完了",
-										description: "講義が時間割に追加され、登録が完了します",
-										active: currentStep === 3,
-									},
-								].map((item, index) => (
+							<div className="space-y-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+								{stepCards.map((card) => (
 									<m.div
-										key={item.step}
-										initial={{ opacity: 0, x: 20 }}
-										whileInView={{ opacity: 1, x: 0 }}
+										key={card.id}
+										initial={{ opacity: 0, y: 12 }}
+										whileInView={{ opacity: 1, y: 0 }}
 										viewport={{ once: true }}
-										transition={{ duration: 0.3, delay: 0.4 + index * 0.1 }}
-										className={`flex items-start space-x-4 rounded-lg p-4 transition-colors ${
-											item.active ? "bg-blue-50 dark:bg-blue-900/20" : ""
+										transition={{ duration: 0.4, delay: 0.12 + card.id * 0.08 }}
+										className={`rounded-3xl border px-4 py-4 transition ${
+											activeStep === card.id
+												? "border-primary bg-primary/5"
+												: "border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950"
 										}`}
 									>
-										<div
-											className={`flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full font-bold ${
-												item.active
-													? "bg-blue-500 text-white"
-													: "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
-											}`}
-										>
-											{item.step}
-										</div>
-										<div>
-											<h4 className="font-semibold text-gray-900 dark:text-white">
-												{item.title}
-											</h4>
-											<p className="text-gray-600 text-sm dark:text-gray-400">
-												{item.description}
-											</p>
+										<div className="flex items-center justify-between gap-3">
+											<div>
+												<p className="font-semibold text-slate-900 text-sm dark:text-white">
+													{card.title}
+												</p>
+												<p className="mt-1 text-slate-500 text-sm dark:text-slate-400">
+													{card.description}
+												</p>
+											</div>
+											<div
+												className={`flex h-9 w-9 items-center justify-center rounded-full p-4 font-bold text-xs ${activeStep === card.id ? "bg-primary text-background" : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"}`}
+											>
+												{card.id + 1}
+											</div>
 										</div>
 									</m.div>
 								))}
