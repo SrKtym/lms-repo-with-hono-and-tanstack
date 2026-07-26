@@ -22,6 +22,9 @@ export interface LinkComponentProps {
 	children: React.ReactNode;
 }
 
+// スケジュールビューのラベル
+export const viewLabels = ["月", "週", "日"] as const;
+
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 

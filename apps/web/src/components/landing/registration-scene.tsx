@@ -130,14 +130,9 @@ export function RegistrationScene() {
 						<table className="w-full border-collapse">
 							<thead>
 								<tr>
-									<th className="border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-										時間
-									</th>
+									<th className="timetable-label">時間</th>
 									{dayIndices.map((day) => (
-										<th
-											key={day}
-											className="min-w-[120px] border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800"
-										>
+										<th key={day} className="timetable-label min-w-[120px]">
 											{DAYS[day]}
 										</th>
 									))}
@@ -146,17 +141,12 @@ export function RegistrationScene() {
 							<tbody>
 								{periods.map((period) => (
 									<tr key={period}>
-										<td className="border border-gray-300 bg-gray-50 p-2 text-center font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-											{period}限
-										</td>
+										<td className="timetable-label text-center">{period}限</td>
 										{dayIndices.map((day) => {
 											const isSelected =
 												day === 1 && period === 3 && selectedCourse !== null;
 											return (
-												<td
-													key={`${day}-${period}`}
-													className="h-20 border border-gray-300 p-1 align-top dark:border-gray-600"
-												>
+												<td key={`${day}-${period}`} className="timetable-cell">
 													{isSelected ? (
 														<m.div
 															ref={courseCellRef}
