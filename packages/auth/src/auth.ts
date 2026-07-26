@@ -129,7 +129,10 @@ export const auth = betterAuth({
 			},
 			skipVerificationOnEnable: true,
 		}),
-		passkey(),
+		passkey({
+			rpID: new URL(env.BETTER_AUTH_URL).hostname,
+			origin: env.BETTER_AUTH_URL,
+		}),
 	],
 	socialProviders: {
 		github: {
