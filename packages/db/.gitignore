@@ -37,3 +37,6 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 # Mock data
 mock/course-data/
 mock/mock-prof-data.ts
+
+# Seed
+seed/
