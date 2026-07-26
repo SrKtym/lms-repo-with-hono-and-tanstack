@@ -161,9 +161,9 @@ export function DayView({
 
 	return (
 		<LazyMotionProvider>
-			<div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
+			<div className="schedule-view-container">
 				{/* ヘッダー */}
-				<div className="flex items-center justify-between border-gray-200 border-b p-4 dark:border-gray-700">
+				<div className="schedule-view-header">
 					<m.button
 						whileHover={{ scale: 1.1 }}
 						whileTap={{ scale: 0.9 }}

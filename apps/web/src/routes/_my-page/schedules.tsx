@@ -2,6 +2,7 @@ import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedule
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import { viewLabels } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -19,7 +20,6 @@ import {
 } from "@/utils/query-utils";
 
 const views = ["month", "week", "day"] as const;
-type View = (typeof views)[number];
 const searchSchema = z.object({
 	view: z.enum(views).optional(),
 });
@@ -53,6 +53,11 @@ export const Route = createFileRoute("/_my-page/schedules")({
 });
 
 function RouteComponent() {
+	type View = (typeof views)[number];
+	const viewMapping: Record<View, string> = Object.fromEntries(
+		viewLabels.map((label, index) => [views[index], label]),
+	);
+
 	const { courses, initialSchedules, view } = Route.useLoaderData();
 	const navigate = Route.useNavigate();
 
@@ -277,7 +282,7 @@ function RouteComponent() {
 									}
 								`}
 								>
-									{view === "month" ? "月" : view === "week" ? "週" : "日"}
+									{viewMapping[view]}
 								</m.button>
 							))}
 							<DefaultButton onPress={handleCreateSchedule}>
@@ -288,13 +293,14 @@ function RouteComponent() {
 					</div>
 				</m.div>
 
+				{/* スケジュール作成・編集モーダル */}
 				<CreateScheduleForm
 					initialData={editingSchedule}
 					isOpen={isModalOpen}
 					onOpenChange={setIsModalOpen}
 				/>
 
-				{/*  */}
+				{/* スケジュールビュー */}
 				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					animate={{ opacity: 1, y: 0 }}

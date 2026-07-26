@@ -2,7 +2,7 @@ import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
-import { DAYS } from "@lms-repo/ui/lib/utils";
+import { DAYS, viewLabels } from "@lms-repo/ui/lib/utils";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useMoveCursorToElement } from "../../hooks/use-move-cursor";
 import { CursorAnimation } from "./cursor-animation";
@@ -20,8 +20,6 @@ export function ScheduleScene() {
 			};
 		}),
 	);
-
-	const views = ["月", "週", "日"] as const;
 	const mockEvents = [
 		{ id: "1", title: "進捗会議", theme: "#059669", type: "schedule" },
 		{
@@ -160,17 +158,17 @@ export function ScheduleScene() {
 
 					<div className="flex items-center space-x-3">
 						<div className="flex items-center space-x-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
-							{views.map((view) => (
+							{viewLabels.map((viewLabel) => (
 								<button
 									type="button"
-									key={view}
+									key={viewLabel}
 									className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
-										view === "月"
+										viewLabel === "月"
 											? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
 											: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
 									}`}
 								>
-									{view}
+									{viewLabel}
 								</button>
 							))}
 							<DefaultButton
@@ -185,8 +183,8 @@ export function ScheduleScene() {
 				</div>
 
 				{/* スケジュール表示エリア */}
-				<div className="rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
-					<div className="flex items-center justify-between border-gray-200 border-b p-4 dark:border-gray-700">
+				<div className="schedule-view-container">
+					<div className="schedule-view-header">
 						<button
 							type="button"
 							className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"

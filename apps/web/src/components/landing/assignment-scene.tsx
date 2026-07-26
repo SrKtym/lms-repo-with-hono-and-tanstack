@@ -79,8 +79,10 @@ export function AssignmentScene() {
 				ref={scrollContainerRef}
 				className="h-[500px] space-y-8 overflow-y-auto pb-12"
 			>
-				<div className="relative flex h-24 items-end bg-primary">
-					<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-4">
+				{/* ヘッダー */}
+				<div className="assignment-detail-header">
+					<div />
+					<div>
 						<div className="flex items-center space-x-4">
 							<CancelButton size="sm">
 								<ArrowLeft />
@@ -93,7 +95,7 @@ export function AssignmentScene() {
 					</div>
 				</div>
 
-				<div className="container m-auto max-w-screen-xl px-4">
+				<div className="assignment-detail-content">
 					<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 						{/* 課題の詳細 */}
 						<m.div

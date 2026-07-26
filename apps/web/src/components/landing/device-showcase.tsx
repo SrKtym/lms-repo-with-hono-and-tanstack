@@ -39,7 +39,7 @@ export function DeviceShowcase() {
 
 	return (
 		<section ref={ref} className="bg-gray-50 px-4 py-20 dark:bg-gray-900">
-			<div className="container mx-auto max-w-6xl">
+			<div className="landing-container">
 				<motion.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
@@ -47,10 +47,8 @@ export function DeviceShowcase() {
 					viewport={{ once: true }}
 					className="mb-16 text-center"
 				>
-					<h2 className="mb-4 font-bold text-3xl text-gray-900 dark:text-white">
-						あらゆるデバイスで利用可能
-					</h2>
-					<p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-400">
+					<h2 className="landing-sections-head">あらゆるデバイスで利用可能</h2>
+					<p className="landing-sections-description">
 						スマートフォン、タブレット、デスクトップなど、お使いのデバイスで最適な体験を提供します
 					</p>
 				</motion.div>
@@ -105,10 +103,8 @@ export function DeviceShowcase() {
 								</div>
 							</div>
 						</div>
-						<h3 className="mb-2 font-semibold text-gray-900 dark:text-white">
-							スマートフォン
-						</h3>
-						<p className="text-gray-600 text-sm dark:text-gray-400">
+						<h3 className="landing-inner-content-head">スマートフォン</h3>
+						<p className="landing-inner-content-description">
 							移動中でも手軽に確認
 						</p>
 					</motion.div>
@@ -155,10 +151,8 @@ export function DeviceShowcase() {
 								</div>
 							</div>
 						</div>
-						<h3 className="mb-2 font-semibold text-gray-900 dark:text-white">
-							タブレット
-						</h3>
-						<p className="text-gray-600 text-sm dark:text-gray-400">
+						<h3 className="landing-inner-content-head">タブレット</h3>
+						<p className="landing-inner-content-description">
 							勉強に最適なサイズ
 						</p>
 					</motion.div>
@@ -216,10 +210,8 @@ export function DeviceShowcase() {
 								<div className="mx-auto h-2 w-24 rounded bg-gray-600" />
 							</div>
 						</div>
-						<h3 className="mb-2 font-semibold text-gray-900 dark:text-white">
-							デスクトップ
-						</h3>
-						<p className="text-gray-600 text-sm dark:text-gray-400">
+						<h3 className="landing-inner-content-head">デスクトップ</h3>
+						<p className="landing-inner-content-description">
 							充実した機能で効率的に
 						</p>
 					</motion.div>
