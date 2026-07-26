@@ -166,16 +166,14 @@ export function TimeTableCard({
 				<table className="w-full border-collapse">
 					<thead>
 						<tr>
-							<th className="border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-								時間
-							</th>
+							<th className="timetable-label">時間</th>
 							{uniqueDays.map((day) => (
 								<m.th
 									key={day}
 									initial={{ opacity: 0, y: -10 }}
 									animate={{ opacity: 1, y: 0 }}
 									transition={{ duration: 0.2, delay: 0.1 + day * 0.05 }}
-									className="min-w-[120px] border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800"
+									className="timetable-label min-w-[120px]"
 								>
 									{` ${DAYS[day]} `}
 								</m.th>
@@ -193,18 +191,13 @@ export function TimeTableCard({
 									delay: 0.2 + period * 0.05,
 								}}
 							>
-								<td className="border border-gray-300 bg-gray-50 p-2 text-center font-medium text-sm dark:border-gray-600 dark:bg-gray-800">
-									{`${period} `}
-								</td>
+								<td className="timetable-label text-center">{`${period} `}</td>
 								{uniqueDays.map((day) => {
 									const targetSlot = timeSlots.find(
 										(s) => s.day === day && s.period === period,
 									);
 									return (
-										<m.td
-											key={`${day}-${period}`}
-											className="h-20 border border-gray-300 p-1 align-top dark:border-gray-600"
-										>
+										<m.td key={`${day}-${period}`} className="timetable-cell">
 											<AnimatePresence mode="wait">
 												{targetSlot?.course ? (
 													<CourseCell

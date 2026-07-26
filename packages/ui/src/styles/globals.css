@@ -127,6 +127,35 @@
 	html {
 		@apply font-sans relative;
 	}
+	/* ランディングページ */
+	.landing-container {
+		@apply container mx-auto max-w-6xl;
+	}
+	.landing-sections-head {
+		@apply mb-4 font-bold text-3xl;
+	}
+	.landing-sections-description {
+		@apply mx-auto max-w-2xl text-gray-600 dark:text-gray-400;
+	}
+	.landing-inner-content-head {
+		@apply mb-2 font-semibold text-gray-900 dark:text-white;
+	}
+	.landing-inner-content-description {
+		@apply text-gray-600 dark:text-gray-400;
+	}
+	@keyframes blink {
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0;
+		}
+	}
+	.animate-blink {
+		animation: blink 1s infinite;
+	}
+	/* ヘッダー */
 	.nav-link {
 		@apply relative flex items-center gap-2 py-2;
 	}
@@ -149,6 +178,7 @@
 	.nav-link-shrink {
 		@apply max-md:hidden;
 	}
+	/* フォーム */
 	.form-container {
 		@apply rounded-xl w-full max-w-[480px] m-auto p-6 gap-4 shadow-lg dark:shadow-gray-800;
 	}
@@ -158,38 +188,39 @@
 	.form-field {
 		@apply space-y-6;
 	}
+	/* リンク */
 	.default-link {
 		@apply text-primary;
 	}
 	.default-link:hover {
 		@apply underline;
 	}
-	.timetable-container {
-		@apply overflow-auto w-full p-4 mb-5 space-y-4 bg-white rounded-lg shadow-sm lg:sticky top-20 dark:bg-secondary relative;
+	/* 時間割 */
+	.timetable-label {
+		@apply border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800;
 	}
-	.timetable-header {
-		@apply text-2xl text-center mb-4;
+	.timetable-cell {
+		@apply h-20 border border-gray-300 p-1 align-top dark:border-gray-600;
 	}
-	.timetable-table {
-		@apply min-w-full table-fixed border border-gray-300;
+	/* スケジュール */
+	.schedule-view-container {
+		@apply rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
 	}
-	.timetable-thead {
-		@apply bg-gray-100 dark:bg-gray-600;
+	.schedule-view-header {
+		@apply flex items-center justify-between border-gray-200 border-b p-4 dark:border-gray-700;
 	}
-	.timetable-footer {
-		@apply flex justify-between items-center gap-3;
+	/* 課題詳細ページ */
+	.assignment-detail-header {
+		@apply relative flex h-24 items-end bg-primary;
 	}
-	@keyframes blink {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0;
-		}
+	.assignment-detail-header > div:first-child {
+		@apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent;
 	}
-	.animate-blink {
-		animation: blink 1s infinite;
+	.assignment-detail-header > div:last-child {
+		@apply container mx-auto max-w-screen-xl px-4 py-4;
+	}
+	.assignment-detail-content {
+		@apply container m-auto max-w-screen-xl px-4;
 	}
 }
 

@@ -39,9 +39,9 @@ export default function RegisteredCourseContents({
 	return (
 		<div className="space-y-8 pb-12">
 			{/* ヘッダー */}
-			<div className="relative flex h-24 items-end bg-primary">
-				<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-				<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-4">
+			<div className="assignment-detail-header">
+				<div />
+				<div>
 					<div className="flex items-center space-x-4">
 						<Link
 							to="/course-list"
@@ -62,7 +62,7 @@ export default function RegisteredCourseContents({
 				</div>
 			</div>
 
-			<div className="container m-auto max-w-screen-xl px-4">
+			<div className="assignment-detail-content">
 				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 					<LazyMotionProvider>
 						{/* 課題の詳細 */}

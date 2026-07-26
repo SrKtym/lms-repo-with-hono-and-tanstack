@@ -43,9 +43,9 @@ export function FeaturesSection() {
 
 	return (
 		<section className="px-4 py-20" id="features">
-			<div className="container mx-auto max-w-6xl">
+			<div className="landing-container">
 				<motion.div className="mb-16 text-center" {...propaties}>
-					<h2 className="mb-4 font-bold text-3xl">このアプリの特徴</h2>
+					<h2 className="landing-sections-head">このアプリの特徴</h2>
 				</motion.div>
 				<motion.div
 					className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
@@ -57,10 +57,10 @@ export function FeaturesSection() {
 								<div className="mb-4 flex items-center justify-center">
 									{feature.icon}
 								</div>
-								<h3 className="mb-2 text-center font-semibold text-lg">
+								<h3 className="landing-inner-content-head text-center text-lg">
 									{feature.title}
 								</h3>
-								<p className="text-center text-gray-600 dark:text-gray-400">
+								<p className="landing-inner-content-description text-center">
 									{feature.description}
 								</p>
 							</div>
