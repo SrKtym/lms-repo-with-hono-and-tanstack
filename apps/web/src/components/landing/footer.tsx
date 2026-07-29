@@ -26,7 +26,7 @@ export function Footer() {
 						<ul className="space-y-3">
 							<li>
 								<a
-									href="https://github.com/SrKtym/lms-repo-with-hono-and-tanstack/tree/3f65a0b863cae8548aed47d374e42e7f59eb6fc0"
+									href="https://github.com/SrKtym/lms-repo-with-hono-and-tanstack/tree/main"
 									className="text-gray-400 transition-colors hover:text-white"
 								>
 									<div className="flex items-center gap-3">
