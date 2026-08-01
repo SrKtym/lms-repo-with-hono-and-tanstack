@@ -235,6 +235,17 @@ export const submissionsRoute = new Hono<{
 				description,
 				createdBy: userId,
 			});
+
+			// 提出状況を更新
+			const updateResult = await updateSubmissionStatus(
+				assignmentId,
+				userId,
+				"提出済み",
+			);
+
+			if (updateResult.status !== 200) {
+				return c.json(updateResult);
+			}
 			return c.json(result, 201);
 		},
 	)

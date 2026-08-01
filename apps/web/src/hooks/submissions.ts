@@ -4,7 +4,16 @@ import { queryClient } from "@/lib/query-client";
 import {
 	fetchDownloadUrlQueryFn,
 	fetchFileMetadataQueryFn,
+	fetchTextSubmissionsQueryFn,
 } from "@/utils/query-utils";
+
+// テキスト提出取得のフック
+export const useTextSubmissions = (assignmentId?: string) => {
+	return useQuery({
+		queryKey: ["text-submissions", assignmentId],
+		queryFn: () => fetchTextSubmissionsQueryFn(assignmentId),
+	});
+};
 
 // ファイルメタデータ取得のフック
 export const useFileMetadata = (assignmentId?: string) => {
