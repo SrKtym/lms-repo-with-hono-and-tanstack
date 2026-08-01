@@ -102,7 +102,7 @@ export const notificationsRoute = new Hono<{
 				description: reminder.description,
 				dueDate: reminder.dueDate.toLocaleDateString("default", dateOptions),
 			}));
-			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
 			// バッチでメールを送信（全員に同じ内容）
 			await resend.emails.send({

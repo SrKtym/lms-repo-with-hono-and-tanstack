@@ -49,7 +49,7 @@ export const assignmentsRoute = new Hono<{
 
 			const { emails, title, description, dueDate } = result[0];
 
-			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
 			await resend.emails.send({
 				from: env.EMAIL_ADDRESS,
