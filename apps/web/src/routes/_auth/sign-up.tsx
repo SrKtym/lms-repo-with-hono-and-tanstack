@@ -188,11 +188,8 @@ function RouteComponent() {
 
 				{/* エラーメッセージ */}
 				{error && (
-					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-						<p
-							id="sign-up-messages"
-							className="text-red-600 text-sm dark:text-red-400"
-						>
+					<div className="alert-error">
+						<p id="sign-up-messages" className="alert-error-text">
 							{error}
 						</p>
 					</div>
@@ -200,17 +197,10 @@ function RouteComponent() {
 
 				{/* 成功メッセージ */}
 				{success.isSuccess && (
-					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
+					<div className="alert-success">
 						<div className="flex items-center gap-2">
-							<Check
-								width={32}
-								height={32}
-								className="text-green-600 dark:text-green-400"
-							/>
-							<p
-								id="sign-up-messages"
-								className="text-green-600 text-sm dark:text-green-400"
-							>
+							<Check width={32} height={32} className="alert-success-text" />
+							<p id="sign-up-messages" className="alert-success-text">
 								登録を受け付けました。アカウント作成可能な場合は
 								{success.email} へ確認メールを送信します。
 							</p>

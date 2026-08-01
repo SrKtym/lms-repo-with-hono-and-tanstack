@@ -25,6 +25,7 @@
 	--border: oklch(0.922 0 0);
 	--input: oklch(0.922 0 0);
 	--ring: oklch(0.708 0 0);
+	--divider: oklch(0.922 0 0);
 	--chart-1: oklch(0.809 0.105 251.813);
 	--chart-2: oklch(0.623 0.214 259.815);
 	--chart-3: oklch(0.546 0.245 262.881);
@@ -60,6 +61,7 @@
 	--border: oklch(1 0 0 / 10%);
 	--input: oklch(1 0 0 / 15%);
 	--ring: oklch(0.556 0 0);
+	--divider: oklch(1 0 0 / 10%);
 	--chart-1: oklch(0.809 0.105 251.813);
 	--chart-2: oklch(0.623 0.214 259.815);
 	--chart-3: oklch(0.546 0.245 262.881);
@@ -93,6 +95,7 @@
 	--color-ring: var(--ring);
 	--color-input: var(--input);
 	--color-border: var(--border);
+	--color-divider: var(--divider);
 	--color-destructive: var(--destructive);
 	--color-accent-foreground: var(--accent-foreground);
 	--color-accent: var(--accent);
@@ -155,6 +158,83 @@
 	.animate-blink {
 		animation: blink 1s infinite;
 	}
+	/* 履修登録ページ */
+	.timetable-label {
+		@apply border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800;
+	}
+	.timetable-cell {
+		@apply h-20 border border-gray-300 p-1 align-top dark:border-gray-600;
+	}
+	/* スケジュールページ */
+	.schedule-view-container {
+		@apply rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
+	}
+	.schedule-view-header {
+		@apply flex items-center justify-between border-gray-200 border-b p-4 dark:border-gray-700;
+	}
+	/* 課題詳細ページ */
+	.assignment-detail-header {
+		@apply relative flex h-24 items-end bg-primary;
+	}
+	.assignment-detail-header > div:first-child {
+		@apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent;
+	}
+	.assignment-detail-header > div:last-child {
+		@apply container mx-auto max-w-screen-xl px-4 py-4;
+	}
+	.assignment-detail-content {
+		@apply container m-auto max-w-screen-xl px-4;
+	}
+	/* プロフィールページ */
+	.account-settings-section {
+		@apply flex flex-col rounded-lg border border-divider p-4 gap-2 sm:flex-row sm:items-center sm:justify-between;
+	}
+}
+
+@layer components {
+	/*** hero uiコンポーネントごとの設定 ***/
+	.button--primary {
+		@apply bg-primary text-primary-foreground hover:bg-primary/80;
+	}
+	.spinner--accent {
+		@apply text-primary;
+	}
+	.card {
+		@apply hover:shadow-lg transition-shadow duration-300 dark:hover:shadow-gray-800;
+	}
+	.card-title {
+		@apply text-xl;
+	}
+	.card-description {
+		@apply text-base text-gray-600 dark:text-gray-400;
+	}
+	.table__column {
+		@apply text-foreground;
+	}
+	.modal__dialog {
+		@apply bg-white/90 backdrop-blur-sm dark:bg-gray-800/90;
+	}
+	/*** hero uiコンポーネント以外の設定 ***/
+	/* アラートメッセージ */
+	.alert-error {
+		@apply rounded-md bg-red-50 p-3 dark:bg-red-900/20;
+	}
+	.alert-error-text {
+		@apply text-red-600 dark:text-red-400;
+	}
+	.alert-success {
+		@apply rounded-md bg-green-50 p-3 dark:bg-green-900/20;
+	}
+	.alert-success-text {
+		@apply text-green-600 dark:text-green-400;
+	}
+	/* リンク */
+	.default-link {
+		@apply text-primary;
+	}
+	.default-link:hover {
+		@apply underline;
+	}
 	/* ヘッダー */
 	.nav-link {
 		@apply relative flex items-center gap-2 py-2;
@@ -187,64 +267,5 @@
 	}
 	.form-field {
 		@apply space-y-6;
-	}
-	/* リンク */
-	.default-link {
-		@apply text-primary;
-	}
-	.default-link:hover {
-		@apply underline;
-	}
-	/* 時間割 */
-	.timetable-label {
-		@apply border border-gray-300 bg-gray-50 p-2 font-medium text-sm dark:border-gray-600 dark:bg-gray-800;
-	}
-	.timetable-cell {
-		@apply h-20 border border-gray-300 p-1 align-top dark:border-gray-600;
-	}
-	/* スケジュール */
-	.schedule-view-container {
-		@apply rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800;
-	}
-	.schedule-view-header {
-		@apply flex items-center justify-between border-gray-200 border-b p-4 dark:border-gray-700;
-	}
-	/* 課題詳細ページ */
-	.assignment-detail-header {
-		@apply relative flex h-24 items-end bg-primary;
-	}
-	.assignment-detail-header > div:first-child {
-		@apply absolute inset-0 bg-gradient-to-t from-black/50 to-transparent;
-	}
-	.assignment-detail-header > div:last-child {
-		@apply container mx-auto max-w-screen-xl px-4 py-4;
-	}
-	.assignment-detail-content {
-		@apply container m-auto max-w-screen-xl px-4;
-	}
-}
-
-@layer components {
-	/* hero uiコンポーネントごとの設定 */
-	.button--primary {
-		@apply bg-primary text-primary-foreground hover:bg-primary/80;
-	}
-	.spinner--accent {
-		@apply text-primary;
-	}
-	.card {
-		@apply hover:shadow-lg transition-shadow duration-300 dark:hover:shadow-gray-800;
-	}
-	.card-title {
-		@apply text-xl;
-	}
-	.card-description {
-		@apply text-base text-gray-600 dark:text-gray-400;
-	}
-	.table__column {
-		@apply text-foreground;
-	}
-	.modal__dialog {
-		@apply bg-white/90 backdrop-blur-sm dark:bg-gray-800/90;
 	}
 }
