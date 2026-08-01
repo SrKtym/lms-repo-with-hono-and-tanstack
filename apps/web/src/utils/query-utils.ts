@@ -79,8 +79,22 @@ export const fetchAssignmentsQueryFn = async () => {
 	return parsedData;
 };
 
+// テキスト提出取得用のqueryFn
+export const fetchTextSubmissionsQueryFn = async (assignmentId?: string) => {
+	if (!assignmentId) {
+		return [];
+	}
+	const res = await client.api.submissions.text[":assignmentId"].$get({
+		param: {
+			assignmentId,
+		},
+	});
+	const data = await res.json();
+	return data;
+};
+
 // 課題提出状況取得用のqueryFn
-export const fetchSubmissionsQueryFn = async () => {
+export const fetchSubmissionsStatusQueryFn = async () => {
 	const res = await client.api.submissions.$get();
 	const data = await res.json();
 	return data;

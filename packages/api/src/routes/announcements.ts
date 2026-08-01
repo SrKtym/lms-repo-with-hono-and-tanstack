@@ -38,7 +38,7 @@ export const announcementsRoute = new Hono<{
 		if (result[0]) {
 			const { emails, title, description } = result[0];
 
-			const viewUrl = `${env.CORS_ORIGIN}/dashboard`;
+			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
 			await resend.emails.send({
 				from: env.EMAIL_ADDRESS,

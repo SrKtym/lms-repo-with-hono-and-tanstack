@@ -15,8 +15,6 @@ export function AccountSettings({
 	onDeleteAccount,
 }: AccountSettingsProps) {
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-	const style =
-		"flex flex-col rounded-lg border border-divider p-4 gap-2 sm:flex-row sm:items-center sm:justify-between";
 
 	return (
 		<Surface className="mx-auto w-full max-w-2xl rounded-2xl p-6 shadow-surface">
@@ -24,7 +22,7 @@ export function AccountSettings({
 
 			<div className="space-y-6">
 				{/* 2要素認証 */}
-				<div className={style}>
+				<div className="account-settings-section">
 					<div className="mb-4 sm:mb-0">
 						<h3 className="mb-1 font-medium text-foreground">2要素認証</h3>
 						<p className="text-foreground-600 text-sm">
@@ -40,7 +38,7 @@ export function AccountSettings({
 				</div>
 
 				{/* パスキー */}
-				<div className={style}>
+				<div className="account-settings-section">
 					<div className="mb-4 sm:mb-0">
 						<h3 className="mb-1 font-medium text-foreground">パスキー</h3>
 						<p className="text-foreground-600 text-sm">
@@ -56,7 +54,7 @@ export function AccountSettings({
 				</div>
 
 				{/* パスワードリセット */}
-				<div className={style}>
+				<div className="account-settings-section">
 					<div className="mb-4 sm:mb-0">
 						<h3 className="mb-1 font-medium text-foreground">
 							パスワードのリセット
@@ -93,11 +91,11 @@ export function AccountSettings({
 					>
 						<p className="text-foreground">本当にアカウントを削除しますか？</p>
 						<div className="flex justify-end gap-2">
-							<CancelButton onClick={() => setIsDeleteModalOpen(false)}>
+							<CancelButton onPress={() => setIsDeleteModalOpen(false)}>
 								キャンセル
 							</CancelButton>
 							<DangerButton
-								onClick={() => {
+								onPress={() => {
 									onDeleteAccount();
 									setIsDeleteModalOpen(false);
 								}}

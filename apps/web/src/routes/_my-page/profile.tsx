@@ -81,6 +81,16 @@ function RouteComponent() {
 		}
 	}
 
+	// ユーザー名更新処理
+	const handleUpdateName = async (name: string) => {
+		const { error } = await authClient.updateUser({
+			name,
+		});
+		if (error) {
+			toast.danger("ユーザー名の更新に失敗しました");
+		}
+	};
+
 	// アカウント削除処理
 	const handleDeleteAccount = async () => {
 		const { error } = await authClient.deleteUser({
@@ -95,6 +105,7 @@ function RouteComponent() {
 		}
 	};
 
+	// 現在のメール通知設定を取得
 	const { data: emailNotificationSettings = [] } =
 		useEmailNotificationSettings(initialSettings);
 
@@ -116,7 +127,9 @@ function RouteComponent() {
 
 			{/* タブコンテンツ */}
 			<TabsForProfile
-				profileTab={<UserProfileInfo user={user} />}
+				profileTab={
+					<UserProfileInfo user={user} onUpdateName={handleUpdateName} />
+				}
 				accountSettingsTab={
 					<AccountSettings
 						LinkComponent={Link}

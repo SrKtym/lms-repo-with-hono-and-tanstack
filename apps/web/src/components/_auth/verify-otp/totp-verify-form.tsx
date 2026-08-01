@@ -101,11 +101,8 @@ export default function TotpVerifyForm({
 
 				{/* エラーメッセージ */}
 				{error && (
-					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-						<p
-							id="totp-verify-error"
-							className="text-red-600 text-sm dark:text-red-400"
-						>
+					<div className="alert-error">
+						<p id="totp-verify-error" className="alert-error-text">
 							{error}
 						</p>
 					</div>

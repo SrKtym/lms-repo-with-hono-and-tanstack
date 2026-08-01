@@ -7,6 +7,7 @@ interface MockScheduleModalProps {
 	scheduleTitle: string;
 	handleTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 	inputRef: React.RefObject<HTMLInputElement | null>;
+	isReadOnly?: boolean;
 }
 
 export function MockScheduleModal({
@@ -14,6 +15,7 @@ export function MockScheduleModal({
 	scheduleTitle,
 	handleTitleChange,
 	inputRef,
+	isReadOnly = false,
 }: MockScheduleModalProps) {
 	const dateTime = now(getLocalTimeZone());
 
@@ -49,6 +51,7 @@ export function MockScheduleModal({
 								onChange: handleTitleChange,
 								placeholder: "タイトルを入力",
 								ref: inputRef,
+								readOnly: isReadOnly,
 							}}
 							labelProps={{
 								htmlFor: "schedule-title",
