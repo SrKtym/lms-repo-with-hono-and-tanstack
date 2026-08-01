@@ -93,7 +93,6 @@ export async function fetchTextSubmissionsByUserId(
 	const textSubmissionsData = await db
 		.select({
 			id: textSubmissions.id,
-			assignmentId: textSubmissions.assignmentId,
 			title: textSubmissions.title,
 			description: textSubmissions.description,
 			createdAt: textSubmissions.createdAt,
