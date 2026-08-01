@@ -132,10 +132,10 @@ function RouteComponent() {
 
 				{/* エラーメッセージ */}
 				{error && (
-					<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
+					<div className="alert-error">
 						<p
 							id="request-reset-password-messages"
-							className="text-red-600 text-sm dark:text-red-400"
+							className="alert-error-text"
 						>
 							{error}
 						</p>
@@ -144,14 +144,14 @@ function RouteComponent() {
 
 				{/* 成功メッセージ */}
 				{isSuccess && (
-					<div className="rounded-md bg-green-50 p-3 dark:bg-green-900/20">
+					<div className="alert-success">
 						<div className="flex items-center gap-3">
-							<Check className="text-green-600 dark:text-green-400" />
+							<Check width={24} height={24} className="alert-success-text" />
 							<div id="request-reset-password-messages">
 								<h4 className="font-medium text-green-800 dark:text-green-200">
 									リセットメールを送信しました
 								</h4>
-								<p className="text-green-600 text-sm dark:text-green-400">
+								<p className="alert-success-text text-sm">
 									メールアドレスを確認してください
 								</p>
 							</div>

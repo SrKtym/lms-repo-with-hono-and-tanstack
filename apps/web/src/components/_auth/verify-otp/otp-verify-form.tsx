@@ -139,11 +139,8 @@ export default function OtpVerifyForm({
 				>
 					{/* エラーメッセージ */}
 					{error && (
-						<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-							<p
-								id="sendOtp-error"
-								className="text-red-600 text-sm dark:text-red-400"
-							>
+						<div className="alert-error">
+							<p id="sendOtp-error" className="alert-error-text">
 								{error}
 							</p>
 						</div>
@@ -195,11 +192,8 @@ export default function OtpVerifyForm({
 
 					{/* エラーメッセージ */}
 					{error && (
-						<div className="rounded-md bg-red-50 p-3 dark:bg-red-900/20">
-							<p
-								id="otp-verify-error"
-								className="text-red-600 text-sm dark:text-red-400"
-							>
+						<div className="alert-error">
+							<p id="otp-verify-error" className="alert-error-text">
 								{error}
 							</p>
 						</div>

@@ -108,11 +108,8 @@ export function TwoFactorSettingForm({
 
 			{/* エラーメッセージ */}
 			{error && (
-				<div
-					id="2fa-setting-error"
-					className="rounded-md bg-red-50 p-3 dark:bg-red-900/20"
-				>
-					<p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+				<div id="2fa-setting-error" className="alert-error">
+					<p className="alert-error-text">{error}</p>
 				</div>
 			)}
 
