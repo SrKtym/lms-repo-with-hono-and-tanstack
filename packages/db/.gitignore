@@ -35,8 +35,8 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 .DS_Store
 
 # Mock data
-mock/course-data/
-mock/mock-prof-data.ts
+src/mock/course-data/
+src/mock/mock-prof-data.ts
 
 # Seed
 seed/
