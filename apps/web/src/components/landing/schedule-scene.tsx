@@ -41,6 +41,7 @@ export function ScheduleScene() {
 	const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
 	const [isCursorVisible, setIsCursorVisible] = useState(false);
 	const [isClicking, setIsClicking] = useState(false);
+	const [isReadOnly, setIsReadOnly] = useState(true);
 	const addScheduleButtonRef = useRef<HTMLButtonElement>(null);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const sceneContainerRef = useRef<HTMLDivElement>(null);
@@ -124,6 +125,8 @@ export function ScheduleScene() {
 					if (typingInterval) {
 						clearInterval(typingInterval);
 					}
+					// タイピング完了後、readOnlyを解除
+					setIsReadOnly(false);
 				}
 			}, 100);
 		}, 3300);
@@ -277,6 +280,7 @@ export function ScheduleScene() {
 						scheduleTitle={scheduleTitle}
 						handleTitleChange={handleTitleChange}
 						inputRef={inputRef}
+						isReadOnly={isReadOnly}
 					/>
 				)}
 			</div>
