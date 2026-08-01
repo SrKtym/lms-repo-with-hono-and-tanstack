@@ -16,7 +16,7 @@ import {
 	fetchNotificationsQueryFn,
 	fetchRegisteredCoursesQueryFn,
 	fetchSchedulesQueryFn,
-	fetchSubmissionsQueryFn,
+	fetchSubmissionsStatusQueryFn,
 } from "@/utils/query-utils";
 
 export const Route = createFileRoute("/_my-page/dashboard")({
@@ -46,8 +46,8 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 					queryFn: () => fetchNotificationsQueryFn(10, 0),
 				}),
 				queryClient.ensureQueryData({
-					queryKey: ["submissions"],
-					queryFn: fetchSubmissionsQueryFn,
+					queryKey: ["submissions-status"],
+					queryFn: fetchSubmissionsStatusQueryFn,
 				}),
 			]);
 
@@ -69,6 +69,7 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 });
 
 function RouteComponent() {
+	const date = new Date();
 	const { courses, schedules, assignments, initialNotifications, submissions } =
 		Route.useLoaderData();
 
@@ -96,7 +97,7 @@ function RouteComponent() {
 
 	// 期限切れの課題
 	const overdueAssignments = assignments.filter(
-		(assignment) => assignment.dueDate < new Date(),
+		(assignment) => assignment.dueDate < date,
 	);
 
 	return (
@@ -107,7 +108,7 @@ function RouteComponent() {
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
-					{new Date().toLocaleDateString("ja-JP", {
+					{date.toLocaleDateString("ja-JP", {
 						weekday: "long",
 						year: "numeric",
 						month: "long",

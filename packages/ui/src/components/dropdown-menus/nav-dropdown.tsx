@@ -36,7 +36,7 @@ export const links = [
 	},
 ] as const;
 
-// Navigation dropdown menu
+// ナビゲーションドロップダウンメニュー
 export function DropdownMenuForNavLink({
 	LinkComponent,
 }: {
@@ -49,7 +49,7 @@ export function DropdownMenuForNavLink({
 			</DropdownButton>
 			<Dropdown.Popover>
 				<Dropdown.Menu>
-					<Dropdown.Section>
+					<Dropdown.Section className="max-sm:text-lg">
 						{links.map(({ to, label }) => (
 							<Dropdown.Item key={to}>
 								<LinkComponent to={to}>{label}</LinkComponent>

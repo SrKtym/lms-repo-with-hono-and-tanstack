@@ -1,7 +1,6 @@
 import type { UserData } from "@lms-repo/auth/web";
 import { authClient } from "@lms-repo/auth/web";
 import { Books } from "@lms-repo/ui/assets/icons/books";
-import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
 import { DropdownMenuForAccount } from "@lms-repo/ui/components/dropdown-menus/account-dropdown";
 import {
 	DropdownMenuForNavLink,
@@ -70,15 +69,13 @@ export function Header({ email, name, image }: UserData) {
 				</nav>
 				<div className="flex items-center gap-2">
 					<ThemeSwitch />
-					<DropdownMenuForAccount LinkComponent={Link} onLogout={handleLogout}>
-						<DefaultAvatar src={image} userName={name} />
-						<div className="flex flex-col text-start text-foreground max-sm:hidden">
-							<h3>{name}</h3>
-							<p className="text-gray-500 text-sm dark:text-gray-400">
-								{email}
-							</p>
-						</div>
-					</DropdownMenuForAccount>
+					<DropdownMenuForAccount
+						email={email}
+						name={name}
+						image={image}
+						LinkComponent={Link}
+						onLogout={handleLogout}
+					/>
 				</div>
 			</div>
 			<hr />
