@@ -2,6 +2,7 @@ import { Surface } from "@heroui/react";
 import type { FetchCompletedCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import type { FetchStudentDataReturnType } from "@lms-repo/db/utils/query/students";
 import { DefaultAvatar } from "../avatar";
+import { DropdownMenuForProfile } from "../dropdown-menus/profile-dropdown";
 
 // ユーザーデータの型定義
 interface UserData {
@@ -17,19 +18,25 @@ interface UserProfileInfoProps {
 			FetchStudentDataReturnType[number] &
 				FetchCompletedCoursesReturnType[number]
 		>;
+	onUpdateName: (name: string) => Promise<void>;
 }
 
-export function UserProfileInfo({ user }: UserProfileInfoProps) {
+export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 	const isStudent = user.role === "student";
 	const isProfessor = user.role === "professor";
 	const style = "flex items-center gap-2";
 
 	return (
 		<Surface className="mx-auto w-full max-w-2xl rounded-2xl p-6 shadow-surface">
-			<div className="flex flex-col gap-6 sm:flex-row">
+			<div className="relative flex flex-col gap-6 sm:flex-row">
 				{/* プロフィール画像 */}
 				<div className="flex-shrink-0">
 					<DefaultAvatar size="lg" src={user.image} userName={user.name} />
+				</div>
+
+				{/* アクションボタン */}
+				<div className="absolute top-1 right-1">
+					<DropdownMenuForProfile onUpdateName={onUpdateName} />
 				</div>
 
 				{/* 基本情報 */}
