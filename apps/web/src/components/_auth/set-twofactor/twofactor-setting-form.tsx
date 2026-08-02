@@ -32,13 +32,31 @@ export function TwoFactorSettingForm({
 
 	const [error, setError] = useState<string>("");
 
+	// エラーハンドリング
+	const handleError = (status: number) => {
+		switch (status) {
+			case 429:
+				setError(
+					"ログイン試行回数が多すぎます。しばらくしてからもう一度お試しください。",
+				);
+				break;
+			case 500:
+				setError(
+					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				);
+				break;
+			default:
+				setError("メールアドレスまたはパスワードが正しくありません。");
+		}
+	};
+
 	// 2要素認証の有効化
 	const handleValidTwofactor = async (password: string) => {
-		const { data } = await authClient.twoFactor.enable({ password });
+		const { data, error } = await authClient.twoFactor.enable({ password });
 		if (data) {
 			setTotpURI(data.totpURI);
 		} else {
-			setError("2要素認証の有効化に失敗しました");
+			handleError(error.status);
 		}
 	};
 
@@ -46,7 +64,7 @@ export function TwoFactorSettingForm({
 	const handleInvalidTwofactor = async (password: string) => {
 		const { error } = await authClient.twoFactor.disable({ password });
 		if (error) {
-			setError("2要素認証の無効化に失敗しました");
+			handleError(error.status);
 		} else {
 			navigate({
 				to: "/add-passkey",

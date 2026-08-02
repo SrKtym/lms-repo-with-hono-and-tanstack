@@ -60,8 +60,10 @@ export function CreateFileSubmissionForm({
 	// ファイル削除時の処理
 	const handleFileDelete = (fileId: string) => {
 		deleteFile(fileId, {
-			onSuccess: () => {
-				toast.success("ファイルを削除しました");
+			onSuccess: (data) => {
+				if ("error" in data) {
+					toast.danger(data.error);
+				}
 				setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
 			},
 			onError: (error) => {
