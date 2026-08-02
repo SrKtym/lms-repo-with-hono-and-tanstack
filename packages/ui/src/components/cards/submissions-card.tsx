@@ -30,7 +30,7 @@ export function SubmissionsCard({
 									: "accent"
 						}
 					>
-						{targetSubmission?.status ? "提出済み" : "未提出"}
+						{targetSubmission?.status ?? "未提出"}
 					</DefaultChip>
 				</div>
 
