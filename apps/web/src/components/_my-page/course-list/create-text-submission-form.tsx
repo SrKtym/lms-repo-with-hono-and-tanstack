@@ -1,15 +1,20 @@
 import { Check } from "@lms-repo/ui/assets/icons/check";
-import { DefaultButton } from "@lms-repo/ui/components/button";
+import { Close } from "@lms-repo/ui/assets/icons/close";
+import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultDisclosure } from "@lms-repo/ui/components/disclosure";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
 import { useSearch } from "@tanstack/react-router";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import { useState } from "react";
 import { z } from "zod";
 import {
 	useCreateTextSubmission,
+	useDeleteTextSubmission,
 	useTextSubmissions,
 } from "@/hooks/submissions";
+import { toast } from "@lms-repo/ui/components/toast";
 
 export function CreateTextSubmissionForm() {
 	const { "assignment-id": assignmentId } = useSearch({
@@ -17,8 +22,24 @@ export function CreateTextSubmissionForm() {
 	});
 
 	const { mutateAsync: createTextSubmission } = useCreateTextSubmission();
+	const { mutate: deleteTextSubmission } = useDeleteTextSubmission();
 	const { data: textSubmissions } = useTextSubmissions(assignmentId);
 	const [success, setSuccess] = useState(false);
+
+	const handleDelete = (submissionId: string) => {
+		deleteTextSubmission(submissionId, {
+			onSuccess: (data) => {
+				if ("error" in data) {
+					toast.danger(data.error);
+				}
+			},
+			onError: (error) => {
+				toast.danger("テキスト提出物の削除に失敗しました", {
+					description: error.message,
+				});
+			},
+		});
+	};
 
 	const form = useForm({
 		defaultValues: {
@@ -38,6 +59,14 @@ export function CreateTextSubmissionForm() {
 			}),
 		},
 	});
+
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	};
 
 	return (
 		<form
@@ -134,41 +163,58 @@ export function CreateTextSubmissionForm() {
 			)}
 
 			{/* 提出物の表示 */}
-			{textSubmissions && textSubmissions.length > 0 && (
-				<div className="mx-auto w-full max-w-2xl text-center">
-					<DefaultDisclosure title="提出物の表示">
-						<div className="space-y-4 p-4">
-							{textSubmissions.map((submission) => (
-								<div
-									key={submission.id}
-									className="rounded-lg border border-divider bg-default-50 p-4 dark:bg-default-100/50"
-								>
-									<div className="mb-2 flex items-center justify-between">
-										<h3 className="font-medium text-lg">{submission.title}</h3>
-										{submission.createdAt && (
-											<p className="text-default-500 text-xs">
-												{new Date(submission.createdAt).toLocaleString(
-													"ja-JP",
-													{
-														year: "numeric",
-														month: "short",
-														day: "numeric",
-														hour: "2-digit",
-														minute: "2-digit",
-													},
+			<AnimatePresence>
+				{textSubmissions && textSubmissions.length > 0 && (
+					<m.div
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}
+						transition={{ duration: 0.3 }}
+						className="mx-auto w-full max-w-2xl text-center"
+					>
+						<DefaultDisclosure title="提出物の表示">
+							<div className="space-y-4 p-4">
+								{textSubmissions.map((submission) => (
+									<m.div
+										key={submission.id}
+										className="rounded-lg border border-divider bg-default-50 p-4 dark:bg-default-100/50"
+										initial={{ opacity: 0, y: 20 }}
+										animate={{ opacity: 1, y: 0 }}
+										exit={{ opacity: 0, y: -20 }}
+										transition={{ duration: 0.3 }}
+									>
+										<div className="mb-2 flex items-center justify-between">
+											<h3 className="font-medium text-lg">
+												{submission.title}
+											</h3>
+											<div className="flex items-center gap-3">
+												{submission.createdAt && (
+													<p className="text-default-500 text-xs">
+														{new Date(submission.createdAt).toLocaleString(
+															"default",
+															dateOptions,
+														)}
+													</p>
 												)}
-											</p>
-										)}
-									</div>
-									<p className="whitespace-pre-wrap text-default-600 dark:text-default-400">
-										{submission.description}
-									</p>
-								</div>
-							))}
-						</div>
-					</DefaultDisclosure>
-				</div>
-			)}
+												<CancelButton
+													isIconOnly
+													onPress={() => handleDelete(submission.id)}
+													className="rounded bg-transparent p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+												>
+													<Close />
+												</CancelButton>
+											</div>
+										</div>
+										<p className="whitespace-pre-wrap text-default-600 dark:text-default-400">
+											{submission.description}
+										</p>
+									</m.div>
+								))}
+							</div>
+						</DefaultDisclosure>
+					</m.div>
+				)}
+			</AnimatePresence>
 
 			<div className="flex justify-end">
 				<form.Subscribe>

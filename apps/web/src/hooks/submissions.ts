@@ -39,16 +39,9 @@ export const useDeleteFile = () => {
 			const res = await client.api.submissions.files[":id"].$delete({
 				param: { id: fileId },
 			});
+
 			const result = await res.json();
-			if (!res.ok) {
-				const errorMessage =
-					"error" in result
-						? result.error
-						: "message" in result
-							? result.message
-							: "ファイルの削除に失敗しました";
-				throw new Error(errorMessage);
-			}
+
 			return result;
 		},
 		onSuccess: () => {
@@ -68,7 +61,28 @@ export const useCreateTextSubmission = () => {
 			const res = await client.api.submissions.text.$post({
 				json: submissionData,
 			});
-			return res.json();
+
+			const result = await res.json();
+
+			return result;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["text-submissions"] });
+		},
+	});
+};
+
+// テキスト提出物削除のフック
+export const useDeleteTextSubmission = () => {
+	return useMutation({
+		mutationFn: async (submissionId: string) => {
+			const res = await client.api.submissions.text[":id"].$delete({
+				param: { id: submissionId },
+			});
+
+			const result = await res.json();
+
+			return result;
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["text-submissions"] });

@@ -74,3 +74,13 @@ export const deleteFileSubmissionMetadata = async (id: string) => {
 		return { message: "ファイルメタデータの削除に失敗しました", status: 500 };
 	}
 };
+
+// テキスト提出物の削除
+export const deleteTextSubmission = async (id: string) => {
+	try {
+		await db.delete(textSubmissions).where(eq(textSubmissions.id, id));
+		return { message: "テキスト提出物の削除に成功しました", status: 200 };
+	} catch {
+		return { message: "テキスト提出物の削除に失敗しました", status: 500 };
+	}
+};
