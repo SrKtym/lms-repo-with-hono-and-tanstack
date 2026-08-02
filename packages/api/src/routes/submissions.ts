@@ -6,6 +6,7 @@ import {
 	createFileSubmissionMetadata,
 	createTextSubmission,
 	deleteFileSubmissionMetadata,
+	deleteTextSubmission,
 	updateSubmissionStatus,
 } from "@lms-repo/db/utils/mutation/submissions";
 import {
@@ -359,5 +360,57 @@ export const submissionsRoute = new Hono<{
 			return c.json(deleteResult, 500);
 		}
 
+		// 削除後にテキスト提出とファイル提出が両方存在しない場合、ステータスを「未提出」に更新
+		const [remainingTextSubmissions, remainingFileSubmissions] =
+			await Promise.all([
+				fetchTextSubmissionsByUserId(userId, file.assignmentId),
+				fetchFileMetadataByUserId(userId, file.assignmentId),
+			]);
+
+		const isNotSubmitted =
+			remainingTextSubmissions.length === 0 &&
+			remainingFileSubmissions.length === 0;
+
+		if (isNotSubmitted) {
+			await updateSubmissionStatus(file.assignmentId, userId, "未提出");
+		}
+
 		return c.json({ message: "ファイルを削除しました" }, 200);
+	})
+	// テキスト提出物の削除
+	.delete("/text/:id", async (c) => {
+		const { userId } = c.get("session");
+		const id = c.req.param("id");
+
+		// ユーザーが所有するテキスト提出か確認
+		const textSubmissionsData = await fetchTextSubmissionsByUserId(userId);
+		const submission = textSubmissionsData?.find((s) => s.id === id);
+
+		if (!submission) {
+			return c.json({ error: "テキスト提出物が見つかりません" }, 404);
+		}
+
+		// データベースからテキスト提出物を削除
+		const deleteResult = await deleteTextSubmission(id);
+
+		if (deleteResult.status !== 200) {
+			return c.json(deleteResult, 500);
+		}
+
+		// 削除後にテキスト提出とファイル提出が両方存在しない場合、ステータスを「未提出」に更新
+		const [remainingTextSubmissions, remainingFileSubmissions] =
+			await Promise.all([
+				fetchTextSubmissionsByUserId(userId, submission.assignmentId),
+				fetchFileMetadataByUserId(userId, submission.assignmentId),
+			]);
+
+		const isNotSubmitted =
+			remainingTextSubmissions.length === 0 &&
+			remainingFileSubmissions.length === 0;
+
+		if (isNotSubmitted) {
+			await updateSubmissionStatus(submission.assignmentId, userId, "未提出");
+		}
+
+		return c.json({ message: "テキスト提出物を削除しました" }, 200);
 	});

@@ -62,6 +62,7 @@ export async function fetchFileMetadataByUserId(
 	const fileMetadata = await db
 		.select({
 			id: fileSubmissionsMetadata.id,
+			assignmentId: fileSubmissionsMetadata.assignmentId,
 			objectName: fileSubmissionsMetadata.objectName,
 			originalName: fileSubmissionsMetadata.originalName,
 			fileSize: fileSubmissionsMetadata.fileSize,
@@ -88,11 +89,12 @@ export type FetchFileMetadataByUserIdReturnType = Awaited<
 // ユーザーIDに基づいてテキスト提出を取得（assignmentIdでフィルタリング可能）
 export async function fetchTextSubmissionsByUserId(
 	userId: string,
-	assignmentId: string,
+	assignmentId?: string,
 ) {
 	const textSubmissionsData = await db
 		.select({
 			id: textSubmissions.id,
+			assignmentId: textSubmissions.assignmentId,
 			title: textSubmissions.title,
 			description: textSubmissions.description,
 			createdAt: textSubmissions.createdAt,
@@ -100,10 +102,12 @@ export async function fetchTextSubmissionsByUserId(
 		})
 		.from(textSubmissions)
 		.where(
-			and(
-				eq(textSubmissions.createdBy, userId),
-				eq(textSubmissions.assignmentId, assignmentId),
-			),
+			assignmentId
+				? and(
+						eq(textSubmissions.createdBy, userId),
+						eq(textSubmissions.assignmentId, assignmentId),
+					)
+				: eq(textSubmissions.createdBy, userId),
 		)
 		.orderBy(textSubmissions.createdAt);
 
