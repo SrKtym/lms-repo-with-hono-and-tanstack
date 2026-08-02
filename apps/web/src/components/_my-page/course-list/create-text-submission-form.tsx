@@ -15,7 +15,6 @@ import {
 	useDeleteTextSubmission,
 	useTextSubmissions,
 } from "@/hooks/submissions";
-import { toast } from "@lms-repo/ui/components/toast";
 
 export function CreateTextSubmissionForm() {
 	const { "assignment-id": assignmentId } = useSearch({
