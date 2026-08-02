@@ -3,6 +3,7 @@ import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultDisclosure } from "@lms-repo/ui/components/disclosure";
 import { InputForForm } from "@lms-repo/ui/components/input";
+import { toast } from "@lms-repo/ui/components/toast";
 import { useForm } from "@tanstack/react-form";
 import { useSearch } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
