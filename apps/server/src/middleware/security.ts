@@ -58,17 +58,9 @@ export const securityMiddleware = createMiddleware<{
 		if (decision.reason.isRateLimit()) {
 			return c.json({ error: "Too Many Requests" }, 429);
 		}
-		// リクエスト拒否の理由がボット検出の場合
-		// if (decision.reason.isBot()) {
-		// 	return c.json({ error: "Bot Detected" }, 403);
-		// }
 		// その他の理由の場合
 		return c.json({ error: "Forbidden" }, 403);
 	}
-
-	// if (decision.results.some(isSpoofedBot)) {
-	// 	return c.json({ error: "Forbidden" }, 403);
-	// }
 
 	return next();
 });
