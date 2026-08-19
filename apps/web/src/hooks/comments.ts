@@ -38,9 +38,10 @@ export const useCreateComment = () => {
 			// 楽観的更新
 			queryClient.setQueryData(
 				["comments-with-assignment"],
-				(old: FetchCommentsWithAssignmentReturnType) => {
-					return [...old, newComment];
-				},
+				(old?: FetchCommentsWithAssignmentReturnType) => [
+					...(old ?? []),
+					newComment,
+				],
 			);
 
 			return { previousComments };
