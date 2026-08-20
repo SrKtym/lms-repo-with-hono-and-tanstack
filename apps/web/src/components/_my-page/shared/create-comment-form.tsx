@@ -1,21 +1,21 @@
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
-import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateComment } from "@/hooks/comments";
 
-export function CreateCommentForm() {
-	const { "assignment-id": assignmentId } = useSearch({
-		from: "/_my-page/course-list",
-	});
+interface CreateCommentFormProps {
+	assignmentId: string;
+}
+
+export function CreateCommentForm({ assignmentId }: CreateCommentFormProps) {
 	const { mutate: createComment } = useCreateComment();
 	const form = useForm({
 		defaultValues: {
 			content: "",
-			assignmentId: assignmentId || "",
+			assignmentId,
 		},
-		onSubmit: async ({ value }) => {
+		onSubmit: ({ value }) => {
 			createComment(value);
 		},
 		validators: {
@@ -70,12 +70,7 @@ export function CreateCommentForm() {
 
 			<form.Field name="assignmentId">
 				{(field) => (
-					<input
-						type="hidden"
-						name={field.name}
-						value={field.state.value}
-						onChange={(e) => field.handleChange(e.target.value)}
-					/>
+					<input type="hidden" name={field.name} value={field.state.value} />
 				)}
 			</form.Field>
 

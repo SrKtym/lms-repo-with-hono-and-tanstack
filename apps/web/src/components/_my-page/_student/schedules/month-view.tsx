@@ -8,11 +8,11 @@ import {
 	useLongPress,
 } from "@lms-repo/ui/components/popover";
 import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
+import type { Event } from "@lms-repo/ui/hooks/use-course-events";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import { DAYS } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import type { Event } from "@/hooks/use-course-events";
 
 interface MonthDay {
 	date: Date;

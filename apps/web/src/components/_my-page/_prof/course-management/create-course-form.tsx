@@ -3,7 +3,6 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { useForm } from "@tanstack/react-form";
-import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateCourse } from "@/hooks/courses";
 
@@ -18,10 +17,6 @@ export function CreateCourseForm({
 }: CreateCourseFormProps) {
 	type Requirement = (typeof requirements)[number];
 
-	const { "assignment-id": assignmentId } = useSearch({
-		from: "/_my-page/course-list",
-	});
-
 	const { mutateAsync: createCourse } = useCreateCourse();
 
 	const form = useForm({
@@ -33,11 +28,11 @@ export function CreateCourseForm({
 			credits: 1,
 			requirements: "任意" as Requirement,
 			classRoom: "",
-			departmentId: assignmentId || "",
 		},
 		onSubmit: async ({ value }) => {
 			const res = await createCourse(value);
-			if (res.status === 200) {
+			const isSuccess = "message" in res;
+			if (isSuccess) {
 				onOpenChange(false);
 			} else {
 				return;
@@ -66,7 +61,6 @@ export function CreateCourseForm({
 					error: "履修区分を選択してください。",
 				}),
 				classRoom: z.string(),
-				departmentId: z.string().min(1),
 			}),
 		},
 	});
@@ -83,7 +77,7 @@ export function CreateCourseForm({
 					e.stopPropagation;
 					form.handleSubmit();
 				}}
-				className="form-field"
+				className="form-field p-1"
 			>
 				<form.Field name="name">
 					{(field) => (
@@ -298,19 +292,8 @@ export function CreateCourseForm({
 					)}
 				</form.Field>
 
-				<form.Field name="departmentId">
-					{(field) => (
-						<input
-							type="hidden"
-							name={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
-					)}
-				</form.Field>
-
 				<div className="flex justify-end gap-2">
-					<CancelButton onClick={() => onOpenChange(false)}>
+					<CancelButton onPress={() => onOpenChange(false)}>
 						キャンセル
 					</CancelButton>
 					<form.Subscribe>

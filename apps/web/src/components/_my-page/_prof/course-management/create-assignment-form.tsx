@@ -8,23 +8,21 @@ import {
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateAssignment } from "@/hooks/assignments";
 
 interface CreateAssignmentFormProps {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
+	courseId: string;
 }
 
 export function CreateAssignmentForm({
 	isOpen,
 	onOpenChange,
+	courseId,
 }: CreateAssignmentFormProps) {
 	const dateTime = now(getLocalTimeZone());
-	const { "course-id": courseId } = useSearch({
-		from: "/_my-page/course-list",
-	});
 	const { mutateAsync: createAssignment } = useCreateAssignment();
 	const form = useForm({
 		defaultValues: {
@@ -33,7 +31,7 @@ export function CreateAssignmentForm({
 			points: 0,
 			dueDate: dateTime,
 			format: "text",
-			courseId: courseId || "",
+			courseId,
 		},
 		onSubmit: async ({ value }) => {
 			const { dueDate, ...rest } = value;
@@ -41,7 +39,8 @@ export function CreateAssignmentForm({
 				...rest,
 				dueDate: dueDate.toDate(),
 			});
-			if (res.status === 201) {
+			const isSuccess = "message" in res;
+			if (isSuccess) {
 				onOpenChange(false);
 			} else {
 				return;

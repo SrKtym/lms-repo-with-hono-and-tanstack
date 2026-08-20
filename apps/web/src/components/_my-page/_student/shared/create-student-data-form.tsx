@@ -1,24 +1,12 @@
-import { coursesMaster } from "@lms-repo/db/mock/course-master";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
+import { getDepartmentName } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useRegisterStudentData } from "@/hooks/students";
 
 export function CreateStudentDataForm() {
-	const facultyNames = Object.keys(coursesMaster).filter(
-		(name): name is keyof typeof coursesMaster => name in coursesMaster,
-	);
-
-	const departments: string[] = [];
-
-	facultyNames.forEach((facultyName) => {
-		const departmentData = coursesMaster[facultyName];
-		const filteredDepartments = Object.keys(departmentData).filter(
-			(key) => key !== "全学科",
-		);
-		departments.push(...filteredDepartments);
-	});
+	const departments = getDepartmentName();
 
 	const { mutateAsync: registerStudentData } = useRegisterStudentData();
 

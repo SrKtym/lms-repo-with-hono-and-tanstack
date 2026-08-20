@@ -18,7 +18,7 @@ import {
 
 export function CreateTextSubmissionForm() {
 	const { "assignment-id": assignmentId } = useSearch({
-		from: "/_my-page/course-list",
+		from: "/_my-page/_student/course-list",
 	});
 
 	const { mutateAsync: createTextSubmission } = useCreateTextSubmission();
@@ -190,7 +190,7 @@ export function CreateTextSubmissionForm() {
 											<div className="flex items-center gap-3">
 												{submission.createdAt && (
 													<p className="text-default-500 text-xs">
-														{new Date(submission.createdAt).toLocaleString(
+														{new Date(submission.updatedAt).toLocaleString(
 															"default",
 															dateOptions,
 														)}
@@ -205,7 +205,7 @@ export function CreateTextSubmissionForm() {
 												</CancelButton>
 											</div>
 										</div>
-										<p className="whitespace-pre-wrap text-default-600 dark:text-default-400">
+										<p className="whitespace-pre-wrap text-justify text-default-600 leading-relaxed dark:text-default-400">
 											{submission.description}
 										</p>
 									</m.div>

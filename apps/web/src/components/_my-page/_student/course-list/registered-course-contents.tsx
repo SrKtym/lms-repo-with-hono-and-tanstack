@@ -1,5 +1,5 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import type { FetchSubmissionsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/submissions";
+import type { FetchSubmissionsStateReturnType } from "@lms-repo/db/utils/query/submissions";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
@@ -10,13 +10,13 @@ import { TabsForSubmissions } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useCommentsWithAssignment } from "@/hooks/comments";
-import { CreateCommentForm } from "./create-comment-form";
+import { CreateCommentForm } from "../../shared/create-comment-form";
 import { CreateFileSubmissionForm } from "./create-file-submission-form";
 import { CreateTextSubmissionForm } from "./create-text-submission-form";
 
 interface RegisteredCourseContentsProps {
 	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
-	submission?: FetchSubmissionsFromUserCoursesReturnType[number];
+	submission?: FetchSubmissionsStateReturnType[number];
 	assignmentId: string;
 }
 
@@ -29,6 +29,8 @@ export default function RegisteredCourseContents({
 		throw new Error("課題が見つかりません");
 	}
 	const { data: comments = [] } = useCommentsWithAssignment(assignmentId);
+
+	const score = submission?.score;
 
 	const propaties = {
 		initial: { opacity: 0, y: 10 },
@@ -67,7 +69,10 @@ export default function RegisteredCourseContents({
 					<LazyMotionProvider>
 						{/* 課題の詳細 */}
 						<m.div {...propaties} className="lg:col-span-2">
-							<AssignmentDetailCard targetAssignment={targetAssignment} />
+							<AssignmentDetailCard
+								targetAssignment={targetAssignment}
+								score={score}
+							/>
 						</m.div>
 
 						{/* 提出（学生用） */}
@@ -97,7 +102,7 @@ export default function RegisteredCourseContents({
 							transition={{ ...propaties.transition, delay: 0.2 }}
 						>
 							<CommentsCard comments={comments}>
-								<CreateCommentForm />
+								<CreateCommentForm assignmentId={assignmentId} />
 							</CommentsCard>
 						</m.div>
 					</LazyMotionProvider>
