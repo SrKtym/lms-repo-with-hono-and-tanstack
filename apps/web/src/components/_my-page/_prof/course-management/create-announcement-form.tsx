@@ -3,33 +3,32 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { useForm } from "@tanstack/react-form";
-import { useSearch } from "@tanstack/react-router";
 import { z } from "zod";
 import { useCreateAnnouncement } from "@/hooks/announcements";
 
 interface CreateAnnouncementFormProps {
 	isOpen: boolean;
 	onOpenChange: (open: boolean) => void;
+	courseId: string;
 }
 
 export function CreateAnnouncementForm({
 	isOpen,
 	onOpenChange,
+	courseId,
 }: CreateAnnouncementFormProps) {
-	const { "course-id": courseId } = useSearch({
-		from: "/_my-page/course-list",
-	});
 	const { mutateAsync: createAnnouncement } = useCreateAnnouncement();
 	const form = useForm({
 		defaultValues: {
 			title: "",
 			description: "",
 			type: "資料",
-			courseId: courseId || "",
+			courseId,
 		},
 		onSubmit: async ({ value }) => {
 			const res = await createAnnouncement(value);
-			if (res.status === 201) {
+			const isSuccess = "message" in res;
+			if (isSuccess) {
 				onOpenChange(false);
 			} else {
 				return;

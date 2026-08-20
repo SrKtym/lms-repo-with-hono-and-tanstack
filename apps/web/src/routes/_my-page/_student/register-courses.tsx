@@ -17,12 +17,12 @@ import {
 	useUnregisterCourse,
 } from "@/hooks/courses";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import { fetchRegisteredCoursesQueryFn } from "@/utils/query-utils";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
 
 const searchSchema =
 	z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>();
 
-export const Route = createFileRoute("/_my-page/register-courses")({
+export const Route = createFileRoute("/_my-page/_student/register-courses")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
 	loader: async () => {
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/_my-page/register-courses")({
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: fetchRegisteredCoursesQueryFn,
-			...QUERY_CONFIG.STUDENT_DATA,
+			...QUERY_CONFIG.USER_DATA,
 		});
 		return { initialCourses };
 	},

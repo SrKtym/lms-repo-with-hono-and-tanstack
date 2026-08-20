@@ -8,10 +8,10 @@ import {
 	useLongPress,
 } from "@lms-repo/ui/components/popover";
 import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
+import type { Event } from "@lms-repo/ui/hooks/use-course-events";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import type { Event } from "@/hooks/use-course-events";
 import { CurrentTimeIndicator } from "./current-time-indicator";
 
 interface DayViewProps {

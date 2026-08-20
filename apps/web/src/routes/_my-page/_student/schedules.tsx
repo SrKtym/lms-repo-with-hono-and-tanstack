@@ -2,29 +2,27 @@ import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedule
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
+import { useCourseEvents } from "@lms-repo/ui/hooks/use-course-events";
 import { viewLabels } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { z } from "zod";
-import { CreateScheduleForm } from "@/components/_my-page/schedules/create-schedule-form";
-import { DayView } from "@/components/_my-page/schedules/day-view";
-import { MonthView } from "@/components/_my-page/schedules/month-view";
-import { WeekView } from "@/components/_my-page/schedules/week-view";
+import { CreateScheduleForm } from "@/components/_my-page/_student/schedules/create-schedule-form";
+import { DayView } from "@/components/_my-page/_student/schedules/day-view";
+import { MonthView } from "@/components/_my-page/_student/schedules/month-view";
+import { WeekView } from "@/components/_my-page/_student/schedules/week-view";
 import { useDeleteSchedule, useSchedules } from "@/hooks/schedules";
-import { useCourseEvents } from "@/hooks/use-course-events";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import {
-	fetchRegisteredCoursesQueryFn,
-	fetchSchedulesQueryFn,
-} from "@/utils/query-utils";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
+import { fetchSchedulesQueryFn } from "@/utils/query/schedules";
 
 const views = ["month", "week", "day"] as const;
 const searchSchema = z.object({
 	view: z.enum(views).optional(),
 });
 
-export const Route = createFileRoute("/_my-page/schedules")({
+export const Route = createFileRoute("/_my-page/_student/schedules")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
 	loaderDeps: ({ search: { view } }) => ({ view }),
@@ -34,7 +32,7 @@ export const Route = createFileRoute("/_my-page/schedules")({
 			queryClient.ensureQueryData({
 				queryKey: ["registered-courses"],
 				queryFn: fetchRegisteredCoursesQueryFn,
-				...QUERY_CONFIG.STUDENT_DATA,
+				...QUERY_CONFIG.USER_DATA,
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["schedules"],

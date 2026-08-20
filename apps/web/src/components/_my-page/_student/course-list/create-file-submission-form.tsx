@@ -2,6 +2,7 @@ import {
 	FileUploaderCard,
 	type UploadedFile,
 } from "@lms-repo/ui/components/cards/file-uploader-card";
+import { Loader } from "@lms-repo/ui/components/loader";
 import { toast } from "@lms-repo/ui/components/toast";
 import { useEffect, useState } from "react";
 import {
@@ -128,11 +129,7 @@ export function CreateFileSubmissionForm({
 				onFileDelete={handleFileDelete}
 				disabled={isPending}
 			/>
-			{isPending && (
-				<div className="text-center text-gray-600 dark:text-gray-400">
-					アップロード中...
-				</div>
-			)}
+			{isPending && <Loader text="アップロード中..." />}
 		</div>
 	);
 }

@@ -6,20 +6,17 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {
 	useDeleteNotification,
-	useMarkAllNotificationsAsRead,
 	useMarkNotificationAsRead,
 	useNotifications,
 } from "@/hooks/notifications";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import {
-	fetchAssignmentsQueryFn,
-	fetchNotificationsQueryFn,
-	fetchRegisteredCoursesQueryFn,
-	fetchSchedulesQueryFn,
-	fetchSubmissionsStatusQueryFn,
-} from "@/utils/query-utils";
+import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
+import { fetchNotificationsQueryFn } from "@/utils/query/notifications";
+import { fetchSchedulesQueryFn } from "@/utils/query/schedules";
+import { fetchSubmissionsStatusQueryFn } from "@/utils/query/submissions";
 
-export const Route = createFileRoute("/_my-page/dashboard")({
+export const Route = createFileRoute("/_my-page/_student/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
@@ -28,7 +25,7 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 				queryClient.ensureQueryData({
 					queryKey: ["registered-courses"],
 					queryFn: fetchRegisteredCoursesQueryFn,
-					...QUERY_CONFIG.STUDENT_DATA,
+					...QUERY_CONFIG.USER_DATA,
 				}),
 
 				queryClient.ensureQueryData({
@@ -47,7 +44,7 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 				}),
 				queryClient.ensureQueryData({
 					queryKey: ["submissions-status"],
-					queryFn: fetchSubmissionsStatusQueryFn,
+					queryFn: () => fetchSubmissionsStatusQueryFn(),
 				}),
 			]);
 
@@ -70,6 +67,12 @@ export const Route = createFileRoute("/_my-page/dashboard")({
 
 function RouteComponent() {
 	const date = new Date();
+	const dateOptions: Intl.DateTimeFormatOptions = {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	};
 	const { courses, schedules, assignments, initialNotifications, submissions } =
 		Route.useLoaderData();
 
@@ -83,7 +86,6 @@ function RouteComponent() {
 	const notifications = notificationsData?.pages.flat() || [];
 
 	const { mutate: markAsRead } = useMarkNotificationAsRead();
-	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
 	const { mutate: deleteNotification } = useDeleteNotification();
 
 	// アニメーションの再トリガーを防ぐため、DailySchedulesCardのpropsをメモ化
@@ -108,12 +110,7 @@ function RouteComponent() {
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
-					{date.toLocaleDateString("ja-JP", {
-						weekday: "long",
-						year: "numeric",
-						month: "long",
-						day: "numeric",
-					})}
+					{date.toLocaleDateString("default", dateOptions)}
 				</p>
 			</div>
 
@@ -130,7 +127,6 @@ function RouteComponent() {
 					<NotificationsListCard
 						notifications={notifications}
 						markAsRead={markAsRead}
-						markAllAsRead={markAllAsRead}
 						deleteNotification={deleteNotification}
 						hasNextPage={hasNextPage}
 						fetchNextPage={fetchNextPage}
@@ -149,7 +145,6 @@ function RouteComponent() {
 					<NotificationsListCard
 						notifications={notifications}
 						markAsRead={markAsRead}
-						markAllAsRead={markAllAsRead}
 						deleteNotification={deleteNotification}
 						hasNextPage={hasNextPage}
 						fetchNextPage={fetchNextPage}

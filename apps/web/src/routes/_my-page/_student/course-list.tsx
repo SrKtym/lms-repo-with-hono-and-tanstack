@@ -1,22 +1,20 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { z } from "zod";
-import RegisteredCourseContents from "@/components/_my-page/course-list/registered-course-contents";
-import RegisteredCourseInfos from "@/components/_my-page/course-list/registered-course-infos";
-import RegisteredCourseList from "@/components/_my-page/course-list/registered-course-list";
+import RegisteredCourseContents from "@/components/_my-page/_student/course-list/registered-course-contents";
+import RegisteredCourseInfos from "@/components/_my-page/_student/course-list/registered-course-infos";
+import RegisteredCourseList from "@/components/_my-page/_student/course-list/registered-course-list";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import {
-	fetchAnnouncementsQueryFn,
-	fetchAssignmentsQueryFn,
-	fetchRegisteredCoursesQueryFn,
-	fetchSubmissionByIdQueryFn,
-} from "@/utils/query-utils";
+import { fetchAnnouncementsQueryFn } from "@/utils/query/announcements";
+import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
+import { fetchSubmissionsStatusQueryFn } from "@/utils/query/submissions";
 
 const searchSchema = z.object({
 	"course-id": z.string().optional(),
 	"assignment-id": z.string().optional(),
 });
 
-export const Route = createFileRoute("/_my-page/course-list")({
+export const Route = createFileRoute("/_my-page/_student/course-list")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
 	loaderDeps: ({ search: { "assignment-id": assignmentId } }) => ({
@@ -29,7 +27,7 @@ export const Route = createFileRoute("/_my-page/course-list")({
 				queryClient.ensureQueryData({
 					queryKey: ["registered-courses"],
 					queryFn: fetchRegisteredCoursesQueryFn,
-					...QUERY_CONFIG.STUDENT_DATA,
+					...QUERY_CONFIG.USER_DATA,
 				}),
 				queryClient.ensureQueryData({
 					queryKey: ["announcements-related-courses"],
@@ -40,8 +38,8 @@ export const Route = createFileRoute("/_my-page/course-list")({
 					queryFn: fetchAssignmentsQueryFn,
 				}),
 				queryClient.ensureQueryData({
-					queryKey: ["submissions-related-courses", assignmentId],
-					queryFn: () => fetchSubmissionByIdQueryFn(assignmentId),
+					queryKey: ["submissions-status", assignmentId],
+					queryFn: () => fetchSubmissionsStatusQueryFn(assignmentId),
 				}),
 			],
 		);

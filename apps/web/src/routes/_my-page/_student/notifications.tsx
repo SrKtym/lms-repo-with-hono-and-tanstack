@@ -6,6 +6,7 @@ import { DangerButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { DefaultPagination } from "@lms-repo/ui/components/pagination";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
+import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
@@ -14,13 +15,12 @@ import { useState } from "react";
 import { z } from "zod";
 import {
 	useDeleteNotification,
-	useMarkAllNotificationsAsRead,
 	useMarkNotificationAsRead,
 	useNotificationsCount,
 	useNotificationsPaginated,
 } from "@/hooks/notifications";
 import { queryClient } from "@/lib/query-client";
-import { fetchNotificationsQueryFn } from "@/utils/query-utils";
+import { fetchNotificationsQueryFn } from "@/utils/query/notifications";
 
 const searchSchema = z.object({
 	offset: z.number().optional(),
@@ -29,7 +29,7 @@ const searchSchema = z.object({
 	filter: z.enum(["all", "unread", "read"]).optional(),
 });
 
-export const Route = createFileRoute("/_my-page/notifications")({
+export const Route = createFileRoute("/_my-page/_student/notifications")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
 	loaderDeps: ({ search: { limit, offset, page, filter } }) => ({
@@ -69,9 +69,7 @@ function RouteComponent() {
 	const options = ["all", "unread", "read"] as const;
 	const itemsPerPageOptions = ["10", "20", "50"];
 
-	const [expandedNotifications, setExpandedNotifications] = useState<
-		Set<string>
-	>(new Set());
+	const { expandedId, toggleExpand } = useToggleExpand();
 	const [selectedItemsPerPage, setSelectedItemsPerPage] = useState(
 		limit.toString(),
 	);
@@ -130,20 +128,8 @@ function RouteComponent() {
 		});
 	};
 
-	// 通知の展開/折りたたみ
-	const toggleExpand = (id: string) => {
-		const newExpanded = new Set(expandedNotifications);
-		if (newExpanded.has(id)) {
-			newExpanded.delete(id);
-		} else {
-			newExpanded.add(id);
-		}
-		setExpandedNotifications(newExpanded);
-	};
-
 	// 通知を既読にする
-	const { mutate: markAsRead } = useMarkNotificationAsRead();
-	const { mutate: markAllAsRead } = useMarkAllNotificationsAsRead();
+	const { mutate: markAsRead, isPending } = useMarkNotificationAsRead();
 
 	// 通知を削除
 	const { mutate: deleteNotification } = useDeleteNotification();
@@ -168,15 +154,13 @@ function RouteComponent() {
 					</div>
 					<div className="flex items-center gap-2">
 						{unreadCount > 0 && (
-							<DefaultButton onPress={() => markAllAsRead}>
+							<DefaultButton onPress={() => markAsRead} isPending={isPending}>
 								<MessagesSquareCheck />
 								すべて既読
 							</DefaultButton>
 						)}
 						{notifications.length > 0 && (
-							<DangerButton
-								onPress={() => console.log("delete all notifications")}
-							>
+							<DangerButton onPress={() => deleteNotification}>
 								<Trash />
 								すべて削除
 							</DangerButton>
@@ -240,25 +224,29 @@ function RouteComponent() {
 												? "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
 												: "border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-900/20"
 										}`}
-										onClick={() => {
+										onClick={(e) => {
 											if (!notification.isRead) {
 												markAsRead(notification.id);
 											}
-											toggleExpand(notification.id);
+											toggleExpand(e, notification.id);
 										}}
 									>
 										<div className="flex items-start justify-between">
 											<div className="flex items-start space-x-3">
 												<div className="flex-1">
 													<div className="flex items-center space-x-2">
-														<h3 className="font-semibold text-gray-900 dark:text-white">
+														<h3
+															className={`font-semibold text-gray-900 dark:text-white ${expandedId === notification.id ? "line-clamp-none" : "line-clamp-1"}`}
+														>
 															{notification.title}
 														</h3>
 														{!notification.isRead && (
 															<span className="inline-flex h-2 w-2 rounded-full bg-blue-500" />
 														)}
 													</div>
-													<p className="mt-1 whitespace-pre-wrap text-gray-600 text-sm dark:text-gray-400">
+													<p
+														className={`mt-1 whitespace-pre-wrap text-gray-600 text-sm leading-relaxed dark:text-gray-400 ${expandedId === notification.id ? "line-clamp-none" : "line-clamp-2"}`}
+													>
 														{notification.description}
 													</p>
 													<p className="mt-2 text-gray-500 text-xs dark:text-gray-500">

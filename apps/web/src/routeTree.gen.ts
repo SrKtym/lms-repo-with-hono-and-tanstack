@@ -12,12 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as MyPageRouteRouteImport } from './routes/_my-page/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as MyPageSchedulesRouteImport } from './routes/_my-page/schedules'
-import { Route as MyPageRegisterCoursesRouteImport } from './routes/_my-page/register-courses'
 import { Route as MyPageProfileRouteImport } from './routes/_my-page/profile'
-import { Route as MyPageNotificationsRouteImport } from './routes/_my-page/notifications'
-import { Route as MyPageDashboardRouteImport } from './routes/_my-page/dashboard'
-import { Route as MyPageCourseListRouteImport } from './routes/_my-page/course-list'
 import { Route as AuthVerifyOtpRouteImport } from './routes/_auth/verify-otp'
 import { Route as AuthSignUpRouteImport } from './routes/_auth/sign-up'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
@@ -25,6 +20,14 @@ import { Route as AuthSetTwofactorRouteImport } from './routes/_auth/set-twofact
 import { Route as AuthResetPasswordRouteImport } from './routes/_auth/reset-password'
 import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/request-reset-password'
 import { Route as AuthAddPasskeyRouteImport } from './routes/_auth/add-passkey'
+import { Route as MyPageStudentRouteRouteImport } from './routes/_my-page/_student/route'
+import { Route as MyPageProfRouteRouteImport } from './routes/_my-page/_prof/route'
+import { Route as MyPageStudentSchedulesRouteImport } from './routes/_my-page/_student/schedules'
+import { Route as MyPageStudentRegisterCoursesRouteImport } from './routes/_my-page/_student/register-courses'
+import { Route as MyPageStudentNotificationsRouteImport } from './routes/_my-page/_student/notifications'
+import { Route as MyPageStudentDashboardRouteImport } from './routes/_my-page/_student/dashboard'
+import { Route as MyPageStudentCourseListRouteImport } from './routes/_my-page/_student/course-list'
+import { Route as MyPageProfCourseManagementRouteImport } from './routes/_my-page/_prof/course-management'
 
 const MyPageRouteRoute = MyPageRouteRouteImport.update({
   id: '/_my-page',
@@ -39,34 +42,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MyPageSchedulesRoute = MyPageSchedulesRouteImport.update({
-  id: '/schedules',
-  path: '/schedules',
-  getParentRoute: () => MyPageRouteRoute,
-} as any)
-const MyPageRegisterCoursesRoute = MyPageRegisterCoursesRouteImport.update({
-  id: '/register-courses',
-  path: '/register-courses',
-  getParentRoute: () => MyPageRouteRoute,
-} as any)
 const MyPageProfileRoute = MyPageProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
-  getParentRoute: () => MyPageRouteRoute,
-} as any)
-const MyPageNotificationsRoute = MyPageNotificationsRouteImport.update({
-  id: '/notifications',
-  path: '/notifications',
-  getParentRoute: () => MyPageRouteRoute,
-} as any)
-const MyPageDashboardRoute = MyPageDashboardRouteImport.update({
-  id: '/dashboard',
-  path: '/dashboard',
-  getParentRoute: () => MyPageRouteRoute,
-} as any)
-const MyPageCourseListRoute = MyPageCourseListRouteImport.update({
-  id: '/course-list',
-  path: '/course-list',
   getParentRoute: () => MyPageRouteRoute,
 } as any)
 const AuthVerifyOtpRoute = AuthVerifyOtpRouteImport.update({
@@ -105,6 +83,47 @@ const AuthAddPasskeyRoute = AuthAddPasskeyRouteImport.update({
   path: '/add-passkey',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const MyPageStudentRouteRoute = MyPageStudentRouteRouteImport.update({
+  id: '/_student',
+  getParentRoute: () => MyPageRouteRoute,
+} as any)
+const MyPageProfRouteRoute = MyPageProfRouteRouteImport.update({
+  id: '/_prof',
+  getParentRoute: () => MyPageRouteRoute,
+} as any)
+const MyPageStudentSchedulesRoute = MyPageStudentSchedulesRouteImport.update({
+  id: '/schedules',
+  path: '/schedules',
+  getParentRoute: () => MyPageStudentRouteRoute,
+} as any)
+const MyPageStudentRegisterCoursesRoute =
+  MyPageStudentRegisterCoursesRouteImport.update({
+    id: '/register-courses',
+    path: '/register-courses',
+    getParentRoute: () => MyPageStudentRouteRoute,
+  } as any)
+const MyPageStudentNotificationsRoute =
+  MyPageStudentNotificationsRouteImport.update({
+    id: '/notifications',
+    path: '/notifications',
+    getParentRoute: () => MyPageStudentRouteRoute,
+  } as any)
+const MyPageStudentDashboardRoute = MyPageStudentDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => MyPageStudentRouteRoute,
+} as any)
+const MyPageStudentCourseListRoute = MyPageStudentCourseListRouteImport.update({
+  id: '/course-list',
+  path: '/course-list',
+  getParentRoute: () => MyPageStudentRouteRoute,
+} as any)
+const MyPageProfCourseManagementRoute =
+  MyPageProfCourseManagementRouteImport.update({
+    id: '/course-management',
+    path: '/course-management',
+    getParentRoute: () => MyPageProfRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,12 +134,13 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
-  '/course-list': typeof MyPageCourseListRoute
-  '/dashboard': typeof MyPageDashboardRoute
-  '/notifications': typeof MyPageNotificationsRoute
   '/profile': typeof MyPageProfileRoute
-  '/register-courses': typeof MyPageRegisterCoursesRoute
-  '/schedules': typeof MyPageSchedulesRoute
+  '/course-management': typeof MyPageProfCourseManagementRoute
+  '/course-list': typeof MyPageStudentCourseListRoute
+  '/dashboard': typeof MyPageStudentDashboardRoute
+  '/notifications': typeof MyPageStudentNotificationsRoute
+  '/register-courses': typeof MyPageStudentRegisterCoursesRoute
+  '/schedules': typeof MyPageStudentSchedulesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -131,18 +151,21 @@ export interface FileRoutesByTo {
   '/sign-in': typeof AuthSignInRoute
   '/sign-up': typeof AuthSignUpRoute
   '/verify-otp': typeof AuthVerifyOtpRoute
-  '/course-list': typeof MyPageCourseListRoute
-  '/dashboard': typeof MyPageDashboardRoute
-  '/notifications': typeof MyPageNotificationsRoute
   '/profile': typeof MyPageProfileRoute
-  '/register-courses': typeof MyPageRegisterCoursesRoute
-  '/schedules': typeof MyPageSchedulesRoute
+  '/course-management': typeof MyPageProfCourseManagementRoute
+  '/course-list': typeof MyPageStudentCourseListRoute
+  '/dashboard': typeof MyPageStudentDashboardRoute
+  '/notifications': typeof MyPageStudentNotificationsRoute
+  '/register-courses': typeof MyPageStudentRegisterCoursesRoute
+  '/schedules': typeof MyPageStudentSchedulesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_my-page': typeof MyPageRouteRouteWithChildren
+  '/_my-page/_prof': typeof MyPageProfRouteRouteWithChildren
+  '/_my-page/_student': typeof MyPageStudentRouteRouteWithChildren
   '/_auth/add-passkey': typeof AuthAddPasskeyRoute
   '/_auth/request-reset-password': typeof AuthRequestResetPasswordRoute
   '/_auth/reset-password': typeof AuthResetPasswordRoute
@@ -150,12 +173,13 @@ export interface FileRoutesById {
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_auth/sign-up': typeof AuthSignUpRoute
   '/_auth/verify-otp': typeof AuthVerifyOtpRoute
-  '/_my-page/course-list': typeof MyPageCourseListRoute
-  '/_my-page/dashboard': typeof MyPageDashboardRoute
-  '/_my-page/notifications': typeof MyPageNotificationsRoute
   '/_my-page/profile': typeof MyPageProfileRoute
-  '/_my-page/register-courses': typeof MyPageRegisterCoursesRoute
-  '/_my-page/schedules': typeof MyPageSchedulesRoute
+  '/_my-page/_prof/course-management': typeof MyPageProfCourseManagementRoute
+  '/_my-page/_student/course-list': typeof MyPageStudentCourseListRoute
+  '/_my-page/_student/dashboard': typeof MyPageStudentDashboardRoute
+  '/_my-page/_student/notifications': typeof MyPageStudentNotificationsRoute
+  '/_my-page/_student/register-courses': typeof MyPageStudentRegisterCoursesRoute
+  '/_my-page/_student/schedules': typeof MyPageStudentSchedulesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,10 +192,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
+    | '/profile'
+    | '/course-management'
     | '/course-list'
     | '/dashboard'
     | '/notifications'
-    | '/profile'
     | '/register-courses'
     | '/schedules'
   fileRoutesByTo: FileRoutesByTo
@@ -184,10 +209,11 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/verify-otp'
+    | '/profile'
+    | '/course-management'
     | '/course-list'
     | '/dashboard'
     | '/notifications'
-    | '/profile'
     | '/register-courses'
     | '/schedules'
   id:
@@ -195,6 +221,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_auth'
     | '/_my-page'
+    | '/_my-page/_prof'
+    | '/_my-page/_student'
     | '/_auth/add-passkey'
     | '/_auth/request-reset-password'
     | '/_auth/reset-password'
@@ -202,12 +230,13 @@ export interface FileRouteTypes {
     | '/_auth/sign-in'
     | '/_auth/sign-up'
     | '/_auth/verify-otp'
-    | '/_my-page/course-list'
-    | '/_my-page/dashboard'
-    | '/_my-page/notifications'
     | '/_my-page/profile'
-    | '/_my-page/register-courses'
-    | '/_my-page/schedules'
+    | '/_my-page/_prof/course-management'
+    | '/_my-page/_student/course-list'
+    | '/_my-page/_student/dashboard'
+    | '/_my-page/_student/notifications'
+    | '/_my-page/_student/register-courses'
+    | '/_my-page/_student/schedules'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -239,46 +268,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_my-page/schedules': {
-      id: '/_my-page/schedules'
-      path: '/schedules'
-      fullPath: '/schedules'
-      preLoaderRoute: typeof MyPageSchedulesRouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
-    '/_my-page/register-courses': {
-      id: '/_my-page/register-courses'
-      path: '/register-courses'
-      fullPath: '/register-courses'
-      preLoaderRoute: typeof MyPageRegisterCoursesRouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
     '/_my-page/profile': {
       id: '/_my-page/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof MyPageProfileRouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
-    '/_my-page/notifications': {
-      id: '/_my-page/notifications'
-      path: '/notifications'
-      fullPath: '/notifications'
-      preLoaderRoute: typeof MyPageNotificationsRouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
-    '/_my-page/dashboard': {
-      id: '/_my-page/dashboard'
-      path: '/dashboard'
-      fullPath: '/dashboard'
-      preLoaderRoute: typeof MyPageDashboardRouteImport
-      parentRoute: typeof MyPageRouteRoute
-    }
-    '/_my-page/course-list': {
-      id: '/_my-page/course-list'
-      path: '/course-list'
-      fullPath: '/course-list'
-      preLoaderRoute: typeof MyPageCourseListRouteImport
       parentRoute: typeof MyPageRouteRoute
     }
     '/_auth/verify-otp': {
@@ -330,6 +324,62 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthAddPasskeyRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_my-page/_student': {
+      id: '/_my-page/_student'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MyPageStudentRouteRouteImport
+      parentRoute: typeof MyPageRouteRoute
+    }
+    '/_my-page/_prof': {
+      id: '/_my-page/_prof'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof MyPageProfRouteRouteImport
+      parentRoute: typeof MyPageRouteRoute
+    }
+    '/_my-page/_student/schedules': {
+      id: '/_my-page/_student/schedules'
+      path: '/schedules'
+      fullPath: '/schedules'
+      preLoaderRoute: typeof MyPageStudentSchedulesRouteImport
+      parentRoute: typeof MyPageStudentRouteRoute
+    }
+    '/_my-page/_student/register-courses': {
+      id: '/_my-page/_student/register-courses'
+      path: '/register-courses'
+      fullPath: '/register-courses'
+      preLoaderRoute: typeof MyPageStudentRegisterCoursesRouteImport
+      parentRoute: typeof MyPageStudentRouteRoute
+    }
+    '/_my-page/_student/notifications': {
+      id: '/_my-page/_student/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof MyPageStudentNotificationsRouteImport
+      parentRoute: typeof MyPageStudentRouteRoute
+    }
+    '/_my-page/_student/dashboard': {
+      id: '/_my-page/_student/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof MyPageStudentDashboardRouteImport
+      parentRoute: typeof MyPageStudentRouteRoute
+    }
+    '/_my-page/_student/course-list': {
+      id: '/_my-page/_student/course-list'
+      path: '/course-list'
+      fullPath: '/course-list'
+      preLoaderRoute: typeof MyPageStudentCourseListRouteImport
+      parentRoute: typeof MyPageStudentRouteRoute
+    }
+    '/_my-page/_prof/course-management': {
+      id: '/_my-page/_prof/course-management'
+      path: '/course-management'
+      fullPath: '/course-management'
+      preLoaderRoute: typeof MyPageProfCourseManagementRouteImport
+      parentRoute: typeof MyPageProfRouteRoute
+    }
   }
 }
 
@@ -357,22 +407,47 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface MyPageProfRouteRouteChildren {
+  MyPageProfCourseManagementRoute: typeof MyPageProfCourseManagementRoute
+}
+
+const MyPageProfRouteRouteChildren: MyPageProfRouteRouteChildren = {
+  MyPageProfCourseManagementRoute: MyPageProfCourseManagementRoute,
+}
+
+const MyPageProfRouteRouteWithChildren = MyPageProfRouteRoute._addFileChildren(
+  MyPageProfRouteRouteChildren,
+)
+
+interface MyPageStudentRouteRouteChildren {
+  MyPageStudentCourseListRoute: typeof MyPageStudentCourseListRoute
+  MyPageStudentDashboardRoute: typeof MyPageStudentDashboardRoute
+  MyPageStudentNotificationsRoute: typeof MyPageStudentNotificationsRoute
+  MyPageStudentRegisterCoursesRoute: typeof MyPageStudentRegisterCoursesRoute
+  MyPageStudentSchedulesRoute: typeof MyPageStudentSchedulesRoute
+}
+
+const MyPageStudentRouteRouteChildren: MyPageStudentRouteRouteChildren = {
+  MyPageStudentCourseListRoute: MyPageStudentCourseListRoute,
+  MyPageStudentDashboardRoute: MyPageStudentDashboardRoute,
+  MyPageStudentNotificationsRoute: MyPageStudentNotificationsRoute,
+  MyPageStudentRegisterCoursesRoute: MyPageStudentRegisterCoursesRoute,
+  MyPageStudentSchedulesRoute: MyPageStudentSchedulesRoute,
+}
+
+const MyPageStudentRouteRouteWithChildren =
+  MyPageStudentRouteRoute._addFileChildren(MyPageStudentRouteRouteChildren)
+
 interface MyPageRouteRouteChildren {
-  MyPageCourseListRoute: typeof MyPageCourseListRoute
-  MyPageDashboardRoute: typeof MyPageDashboardRoute
-  MyPageNotificationsRoute: typeof MyPageNotificationsRoute
+  MyPageProfRouteRoute: typeof MyPageProfRouteRouteWithChildren
+  MyPageStudentRouteRoute: typeof MyPageStudentRouteRouteWithChildren
   MyPageProfileRoute: typeof MyPageProfileRoute
-  MyPageRegisterCoursesRoute: typeof MyPageRegisterCoursesRoute
-  MyPageSchedulesRoute: typeof MyPageSchedulesRoute
 }
 
 const MyPageRouteRouteChildren: MyPageRouteRouteChildren = {
-  MyPageCourseListRoute: MyPageCourseListRoute,
-  MyPageDashboardRoute: MyPageDashboardRoute,
-  MyPageNotificationsRoute: MyPageNotificationsRoute,
+  MyPageProfRouteRoute: MyPageProfRouteRouteWithChildren,
+  MyPageStudentRouteRoute: MyPageStudentRouteRouteWithChildren,
   MyPageProfileRoute: MyPageProfileRoute,
-  MyPageRegisterCoursesRoute: MyPageRegisterCoursesRoute,
-  MyPageSchedulesRoute: MyPageSchedulesRoute,
 }
 
 const MyPageRouteRouteWithChildren = MyPageRouteRoute._addFileChildren(
