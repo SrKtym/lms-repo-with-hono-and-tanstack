@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_auth/set-twofactor")({
 	},
 	loader: ({ context }) => {
 		if (!context.session.data?.user) {
-			throw new Error("User not found");
+			throw new Error("ユーザーが見つかりません");
 		}
 		const { twoFactorEnabled } = context.session.data.user;
 		return { twoFactorEnabled };

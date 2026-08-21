@@ -10,13 +10,13 @@ export async function registerStudentData(
 ) {
 	try {
 		await db.transaction(async (tx) => {
-			const departmentId = await tx
+			const [department] = await tx
 				.select({ id: departments.id })
 				.from(departments)
 				.where(eq(departments.name, departmentName))
 				.limit(1);
 
-			if (!departmentId[0]) {
+			if (!department) {
 				return { message: "学科が見つかりません。", status: 404 };
 			}
 
@@ -24,7 +24,7 @@ export async function registerStudentData(
 				.insert(students)
 				.values({
 					id: userId,
-					departmentId: departmentId[0].id,
+					departmentId: department.id,
 					grade,
 				})
 				.onConflictDoNothing();

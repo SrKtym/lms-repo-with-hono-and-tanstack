@@ -25,14 +25,14 @@ interface WeekViewProps {
 	changeWeek: (direction: number) => void;
 	getEventsForDay: (date: Date) => Event[];
 	deleteSchedule: (scheduleId: string) => void;
-	editSchedule?: (scheduleId: string) => void;
+	editSchedule: (scheduleId: string) => void;
 }
 
 interface WeekEventItemProps {
 	event: Event;
 	events: Event[];
 	deleteSchedule: (scheduleId: string) => void;
-	editSchedule?: (scheduleId: string) => void;
+	editSchedule: (scheduleId: string) => void;
 	onLongPress: (event: Event, position: { x: number; y: number }) => void;
 }
 
@@ -93,7 +93,7 @@ function WeekEventItem({
 										type="edit"
 										onClick={(e) => {
 											e?.stopPropagation();
-											editSchedule?.(event.id);
+											editSchedule(event.id);
 										}}
 									/>
 									<MenuActionButton
@@ -296,7 +296,7 @@ export function WeekView({
 					<LongPressPopover
 						position={menuPosition}
 						onEdit={() => {
-							if (editSchedule && selectedEvent.type === "schedule") {
+							if (selectedEvent.type === "schedule") {
 								editSchedule(selectedEvent.id);
 							}
 						}}

@@ -10,7 +10,7 @@ import {
 
 // 学籍情報の取得
 export async function fetchStudentData(userId: string) {
-	const student = await db
+	const [student] = await db
 		.select({
 			department: departments.name,
 			faculty: faculties.name,
