@@ -7,18 +7,16 @@ import {
 	notifications,
 	registration,
 	user,
+	userNotifications,
 } from "../../schema";
 import type { Assignments } from "../../types";
 
 // 課題の作成
-export async function createAssignments(
-	assignmentsData: Assignments,
-	userId: string,
-) {
+export async function createAssignments(assignmentsData: Assignments) {
 	try {
 		const result = await db.transaction(async (tx) => {
 			// 課題の作成と取得
-			const result = await tx
+			const [result] = await tx
 				.insert(assignments)
 				.values(assignmentsData)
 				.returning({
@@ -31,30 +29,48 @@ export async function createAssignments(
 				})
 				.onConflictDoNothing();
 
-			const courseId = result[0]?.courseId;
+			const courseId = result?.courseId;
 
 			if (!courseId) {
 				return { message: "講義が見つかりません", status: 404 };
 			}
 
-			const courseName = await tx
-				.select({ name: courses.name })
+			// 講義名と受講者IDを取得
+			const courseData = await tx
+				.select({
+					name: courses.name,
+					studentId: registration.userId,
+				})
 				.from(courses)
-				.where(eq(courses.id, courseId))
-				.limit(1);
+				.innerJoin(registration, eq(courses.id, registration.courseId))
+				.where(eq(courses.id, courseId));
 
-			const notificationsData = result.map((v) => ({
-				title: `${courseName[0]?.name}に新しい課題: ${v.title}`,
-				description: `提出形式: ${v.format}\n説明: ${v.description}`,
-				sender: userId,
-				receiver: v.courseId,
-			}));
+			// 通知データ
+			const notificationsData = {
+				title: `${courseData[0]?.name}に新しい課題: ${result.title}`,
+				description: `提出形式: ${result.format}\n説明: ${result.description}`,
+				type: "assignment",
+			};
 
 			// 通知の作成
-			await tx
+			const [data] = await tx
 				.insert(notifications)
 				.values(notificationsData)
+				.returning({
+					id: notifications.id,
+				})
 				.onConflictDoNothing();
+
+			if (data) {
+				const userNotificationData = courseData.map((course) => ({
+					userId: course.studentId,
+					notificationId: data.id,
+				}));
+				await tx
+					.insert(userNotifications)
+					.values(userNotificationData)
+					.onConflictDoNothing();
+			}
 
 			// メール通知を有効にしているユーザーのメール一覧
 			const res = await tx
@@ -79,16 +95,9 @@ export async function createAssignments(
 
 			const emails = res.map(({ email }) => email);
 
-			const merged = result.map(
-				({ title, description, points, format, dueDate }) => ({
-					title,
-					description,
-					points,
-					format,
-					dueDate,
-					emails,
-				}),
-			);
+			const { courseId: _, ...rest } = result;
+
+			const merged = { ...rest, emails };
 
 			return merged;
 		});
