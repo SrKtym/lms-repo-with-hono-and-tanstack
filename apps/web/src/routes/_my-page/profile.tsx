@@ -11,35 +11,40 @@ import {
 	useUpdateEmailNotificationSettings,
 } from "@/hooks/settings";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import {
-	fetchCompletedCoursesQueryFn,
-	fetchEmailNotificationSettingsQueryFn,
-	fetchStudentDataQueryFn,
-} from "@/utils/query-utils";
+import { fetchCompletedCoursesQueryFn } from "@/utils/query/courses";
+import { fetchProfDataQueryFn } from "@/utils/query/professors";
+import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query/settings";
+import { fetchStudentDataQueryFn } from "@/utils/query/students";
 
 export const Route = createFileRoute("/_my-page/profile")({
 	component: RouteComponent,
 	loader: async ({ context }) => {
 		if (!context.session.data?.user) {
-			throw new Error("User not found");
+			throw new Error("ユーザーが見つかりません");
 		}
 		const { email, name, image, role } = context.session.data.user;
 
 		const [studentData, completedCourses, initialSettings] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["studentData"],
-				queryFn: fetchStudentDataQueryFn,
-				...QUERY_CONFIG.STUDENT_DATA,
-			}),
+			role === "professor"
+				? queryClient.ensureQueryData({
+						queryKey: ["profData"],
+						queryFn: fetchProfDataQueryFn,
+						...QUERY_CONFIG.USER_DATA,
+					})
+				: queryClient.ensureQueryData({
+						queryKey: ["studentData"],
+						queryFn: fetchStudentDataQueryFn,
+						...QUERY_CONFIG.USER_DATA,
+					}),
 			queryClient.ensureQueryData({
 				queryKey: ["totalCredits"],
 				queryFn: fetchCompletedCoursesQueryFn,
-				...QUERY_CONFIG.STUDENT_DATA,
+				...QUERY_CONFIG.USER_DATA,
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["email-notification-settings"],
 				queryFn: fetchEmailNotificationSettingsQueryFn,
-				...QUERY_CONFIG.STUDENT_DATA,
+				...QUERY_CONFIG.USER_DATA,
 			}),
 		]);
 
@@ -65,7 +70,7 @@ export const Route = createFileRoute("/_my-page/profile")({
 function RouteComponent() {
 	const { studentData, completedCourses, initialSettings, ...userData } =
 		Route.useLoaderData();
-	const user = { ...userData, ...completedCourses[0], ...studentData[0] };
+	const user = { ...userData, ...completedCourses, ...studentData };
 
 	// トースト表示
 	function showToast(error: { status: number }) {
