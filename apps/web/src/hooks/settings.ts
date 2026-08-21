@@ -1,9 +1,8 @@
-import type { EmailNotificationSettings } from "@lms-repo/db/types";
 import type { FetchEmailNotificationSettings } from "@lms-repo/db/utils/query/settings";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query-utils";
+import { updateEmailNotificationSettingsMutationFn } from "@/utils/mutation/settings";
+import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query/settings";
 
 // メール通知設定を取得するカスタムフック
 export const useEmailNotificationSettings = (
@@ -12,7 +11,7 @@ export const useEmailNotificationSettings = (
 	return useQuery({
 		queryKey: ["email-notification-settings"],
 		queryFn: fetchEmailNotificationSettingsQueryFn,
-		...QUERY_CONFIG.STUDENT_DATA,
+		...QUERY_CONFIG.USER_DATA,
 		initialData,
 	});
 };
@@ -20,13 +19,7 @@ export const useEmailNotificationSettings = (
 // メール通知設定を更新するカスタムフック
 export const useUpdateEmailNotificationSettings = () => {
 	return useMutation({
-		mutationFn: async (settings: Omit<EmailNotificationSettings, "userId">) => {
-			const res = await client.api.settings.email_notification.$post({
-				json: settings,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: updateEmailNotificationSettingsMutationFn,
 		onMutate: async (newSettings) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({
