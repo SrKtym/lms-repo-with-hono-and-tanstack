@@ -12,7 +12,7 @@ export const QUERY_CONFIG = {
 		staleTime: 5 * TIME.MINUTE, // 5分
 		gcTime: 10 * TIME.MINUTE, // 10分
 	},
-	STUDENT_DATA: {
+	USER_DATA: {
 		staleTime: TIME.DAY, // 24時間
 		gcTime: 7 * TIME.DAY, // 7日間
 	},

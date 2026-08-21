@@ -35,8 +35,8 @@ const app = new Hono()
 
 		// 対象のパス（メール送信を伴う処理と署名付きURLを取得する処理）
 		const appliedPaths = [
-			"/api/announcements",
-			"/api/assignments",
+			"/api/professors/announcements",
+			"/api/professors/assignments",
 			"/api/notifications/reminder",
 			"/api/submissions/signed_urls",
 		];

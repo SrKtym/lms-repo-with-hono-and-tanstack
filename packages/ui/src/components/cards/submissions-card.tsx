@@ -1,11 +1,11 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import type { FetchSubmissionByIdReturnType } from "@lms-repo/db/utils/query/submissions";
+import type { FetchSubmissionsStateReturnType } from "@lms-repo/db/utils/query/submissions";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
 interface SubmissionsCardProps {
 	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
-	targetSubmission?: FetchSubmissionByIdReturnType[number];
+	targetSubmission?: FetchSubmissionsStateReturnType[number];
 	children?: React.ReactNode;
 }
 
@@ -25,7 +25,7 @@ export function SubmissionsCard({
 						color={
 							targetSubmission?.status === "提出済み"
 								? "success"
-								: targetSubmission?.status === "未提出"
+								: targetSubmission?.status === "未提出" || !targetSubmission
 									? "warning"
 									: "accent"
 						}
