@@ -4,16 +4,17 @@ import { Close } from "@lms-repo/ui/assets/icons/close";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
-import { AnimatePresence, domMax, LazyMotion } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
+import { LazyMotionProvider } from "../lazymotion-provider";
 import { Loader } from "../loader";
 
 interface NotificationsListCardProps {
 	notifications: FetchNotificationsReturnType;
 	markAsRead: (id?: string) => void;
-	deleteNotification: (id: string) => void;
+	deleteNotification: (id?: string) => void;
 	hasNextPage?: boolean;
 	fetchNextPage?: () => void;
 	isFetchingNextPage?: boolean;
@@ -27,9 +28,7 @@ export function NotificationsListCard({
 	fetchNextPage,
 	isFetchingNextPage = false,
 }: NotificationsListCardProps) {
-	const { expandedId, toggleExpand } = useToggleExpand({
-		onExpand: (id) => markAsRead(id),
-	});
+	const { expandedId, toggleExpand } = useToggleExpand();
 
 	const sentinelRef = useInfiniteScroll({
 		hasNextPage,
@@ -40,7 +39,7 @@ export function NotificationsListCard({
 	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
 	return (
-		<LazyMotion features={domMax}>
+		<LazyMotionProvider>
 			<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50/30 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-purple-900/20">
 				{/* Decorative background elements */}
 				<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/10 blur-2xl" />
@@ -59,7 +58,7 @@ export function NotificationsListCard({
 								)}
 							</div>
 							{unreadCount > 0 && (
-								<DefaultButton size="sm" onPress={() => markAsRead}>
+								<DefaultButton size="sm" onPress={() => markAsRead()}>
 									すべて既読
 								</DefaultButton>
 							)}
@@ -101,7 +100,12 @@ export function NotificationsListCard({
 												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
 													!notification.isRead && "font-semibold"
 												} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
-												onClick={(e) => toggleExpand(e, notification.id)}
+												onClick={(e) => {
+													if (!notification.isRead) {
+														markAsRead(notification.id);
+													}
+													toggleExpand(e, notification.id);
+												}}
 											>
 												<div className="flex items-start gap-3">
 													<div className="min-w-0 flex-1">
@@ -158,6 +162,6 @@ export function NotificationsListCard({
 					</div>
 				</div>
 			</BaseCard>
-		</LazyMotion>
+		</LazyMotionProvider>
 	);
 }

@@ -7,42 +7,50 @@ import {
 	notifications,
 	registration,
 	user,
+	userNotifications,
 } from "../../schema";
-import type { Notifications } from "../../types";
 
-export async function createNotifications(notificationsData: Notifications) {
+// 通知を削除
+export async function deleteNotification(
+	userId: string,
+	notificationId?: string,
+) {
 	try {
-		await db.insert(notifications).values(notificationsData);
-		return { message: "通知の作成に成功しました。", status: 201 };
-	} catch {
-		return { message: "通知の作成に失敗しました。", status: 500 };
-	}
-}
+		await db
+			.delete(userNotifications)
+			.where(
+				and(
+					eq(userNotifications.userId, userId),
+					notificationId
+						? eq(userNotifications.notificationId, notificationId)
+						: undefined,
+				),
+			);
 
-export async function deleteNotification(notificationId: string) {
-	try {
-		await db.delete(notifications).where(eq(notifications.id, notificationId));
 		return { message: "通知の削除に成功しました。", status: 200 };
 	} catch {
 		return { message: "通知の削除に失敗しました。", status: 500 };
 	}
 }
 
-export async function markNotificationAsRead(notificationId: string) {
+// 通知を既読にする
+export async function markNotificationAsRead(
+	userId: string,
+	notificationId?: string,
+) {
 	try {
 		await db
-			.update(notifications)
+			.update(userNotifications)
 			.set({ isRead: true })
-			.where(eq(notifications.id, notificationId));
-		return { message: "通知の既読処理に成功しました。", status: 200 };
-	} catch {
-		return { message: "通知の既読処理に失敗しました。", status: 500 };
-	}
-}
+			.where(
+				and(
+					eq(userNotifications.userId, userId),
+					notificationId
+						? eq(userNotifications.notificationId, notificationId)
+						: undefined,
+				),
+			);
 
-export async function markAllNotificationsAsRead() {
-	try {
-		await db.update(notifications).set({ isRead: true });
 		return { message: "通知の既読処理に成功しました。", status: 200 };
 	} catch {
 		return { message: "通知の既読処理に失敗しました。", status: 500 };
@@ -78,6 +86,43 @@ export async function createReminder() {
 
 			const courseIds = tasks.map((v) => v.courseId);
 
+			// 講義名と受講者IDを取得
+			const courseData = await tx
+				.select({
+					studentId: registration.userId,
+				})
+				.from(courses)
+				.innerJoin(registration, eq(courses.id, registration.courseId))
+				.where(inArray(courses.id, courseIds));
+
+			const studentIds = courseData.map((v) => v.studentId);
+
+			// 通知データ
+			const notificationsData = tasks.map((v) => ({
+				title: `リマインダー: 課題（${v.title})`,
+				description: v.description,
+				type: "system",
+			}));
+
+			// リマインダー通知をデータベースに保存
+			const dataList = await tx
+				.insert(notifications)
+				.values(notificationsData)
+				.returning({
+					id: notifications.id,
+				})
+				.onConflictDoNothing();
+
+			if (dataList.length > 0) {
+				const userNotificationData = dataList.flatMap((data) =>
+					studentIds.map((studentId) => ({
+						userId: studentId,
+						notificationId: data.id,
+					})),
+				);
+				await tx.insert(userNotifications).values(userNotificationData);
+			}
+
 			// 各講義を登録しており、かつメール通知を有効にしているユーザーのメールアドレスを取得
 			const userEmailsByCourse = await tx
 				.select({ email: user.email })
@@ -91,20 +136,6 @@ export async function createReminder() {
 					),
 				)
 				.where(inArray(registration.courseId, courseIds));
-
-			// 通知データを生成
-			const notificationsData = tasks.map((v) => ({
-				title: `リマインダー: 課題（${v.title})`,
-				description: v.description,
-				sender: "system",
-				receiver: v.courseId,
-			}));
-
-			// リマインダー通知をデータベースに保存
-			await tx
-				.insert(notifications)
-				.values(notificationsData)
-				.onConflictDoNothing();
 
 			const emails = userEmailsByCourse.map((user) => user.email);
 
