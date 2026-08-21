@@ -114,7 +114,7 @@ export function ScheduleScene() {
 		let typingInterval: NodeJS.Timeout | null = null;
 		const startTypingTimer = setTimeout(() => {
 			// タイピングアニメーション開始
-			const textToType = "スケジュール確認会";
+			const textToType = "新しいスケジュール";
 			let charIndex = 0;
 
 			typingInterval = setInterval(() => {
