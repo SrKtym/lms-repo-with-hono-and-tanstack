@@ -15,11 +15,12 @@ function DailySchedulesCardComponent({
 	courses: FetchRegisteredCoursesReturnType;
 	schedules: FetchSchedulesReturnType;
 }) {
+	const date = new Date();
 	const { periodToTime } = usePeriodTime();
 
 	// 本日の講義を取得
 	const todayCourse = courses
-		.filter((course) => course.weekdays === new Date().getDay())
+		.filter((course) => course.weekdays === date.getDay())
 		.map((course) => {
 			const times = periodToTime(course.period);
 
@@ -32,11 +33,13 @@ function DailySchedulesCardComponent({
 		});
 
 	// 本日のスケジュールを取得
-	const todaySchedule = schedules.map((schedule) => ({
-		...schedule,
-		start: schedule.startTime,
-		end: schedule.endTime,
-	}));
+	const todaySchedule = schedules
+		.filter((schedule) => schedule.startTime.getDate() === date.getDate())
+		.map((schedule) => ({
+			...schedule,
+			start: schedule.startTime,
+			end: schedule.endTime,
+		}));
 
 	// 講義用カードコンポーネント
 	const CourseScheduleCard = ({

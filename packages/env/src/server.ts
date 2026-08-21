@@ -5,6 +5,7 @@ import { z } from "zod";
 // 開発環境のみ.envファイルを読み込む
 if (process.env.NODE_ENV !== "production") {
 	dotenv.config({
+		path: "../../apps/server/.env",
 		encoding: "utf8",
 		debug: true,
 	});

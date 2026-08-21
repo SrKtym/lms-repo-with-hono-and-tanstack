@@ -21,10 +21,7 @@ export function AssignmentCard({
 	);
 
 	return (
-		<BaseCard
-			key={assignment.id}
-			className="border border-gray-200 dark:border-gray-700"
-		>
+		<BaseCard className="border border-gray-200 dark:border-gray-700">
 			<div className="flex gap-3">
 				<div className="mt-1">
 					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
@@ -38,7 +35,7 @@ export function AssignmentCard({
 				<div className="flex-1">
 					<div className="flex items-start justify-between">
 						<div className="flex-1">
-							<h3 className="font-medium text-gray-900 dark:text-gray-100">
+							<h3 className="line-clamp-1 font-medium text-gray-900 dark:text-gray-100">
 								{assignment.title}
 							</h3>
 							<div className="mt-1 flex items-center gap-2 text-gray-500 text-sm dark:text-gray-400">
@@ -67,7 +64,7 @@ export function AssignmentCard({
 
 					{assignment.description && (
 						<div className="mt-3">
-							<p className="text-gray-600 text-sm leading-relaxed dark:text-gray-300">
+							<p className="line-clamp-1 text-gray-600 text-sm leading-relaxed dark:text-gray-300">
 								{assignment.description}
 							</p>
 						</div>
@@ -76,7 +73,7 @@ export function AssignmentCard({
 					{assignment.points >= 0 && (
 						<div className="mt-2 flex items-center gap-2">
 							<span className="text-gray-500 text-sm dark:text-gray-400">
-								得点:
+								配点:
 							</span>
 							<span className="font-medium text-gray-900 dark:text-gray-100">
 								{assignment.points}点
