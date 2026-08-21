@@ -2,7 +2,7 @@ import type { Session } from "@lms-repo/auth/server";
 import { auth } from "@lms-repo/auth/server";
 import { createMiddleware } from "hono/factory";
 
-// 認証ミドルウェア
+// 認証・認可ミドルウェア
 export const authMiddleware = createMiddleware<{
 	Variables: {
 		user: Session["user"];
@@ -11,11 +11,27 @@ export const authMiddleware = createMiddleware<{
 }>(async (c, next) => {
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
+	// 認証チェック
 	if (!session) {
-		return c.json({ message: "not authenticated" }, 401);
+		return c.json({ error: "not authenticated" }, 401);
 	}
 
 	c.set("user", session.user);
 	c.set("session", session.session);
+
+	const { role } = session.user;
+	const path = c.req.path;
+
+	// 認可チェック
+	if (path.startsWith("/api/students")) {
+		if (role === "professor") {
+			return c.json({ error: "not authorized" }, 403);
+		}
+	} else if (path.startsWith("/api/professors")) {
+		if (role === "student") {
+			return c.json({ error: "not authorized" }, 403);
+		}
+	}
+
 	return next();
 });
