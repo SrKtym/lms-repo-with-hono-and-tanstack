@@ -3,6 +3,11 @@ import { DatePicker } from "./date-picker";
 import { DateRangePicker } from "./date-range-picker";
 import { DefaultSelect } from "./select";
 
+// 汎用入力コンポーネント
+export function DefaultInput(props: React.ComponentProps<typeof Input>) {
+	return <Input {...props} />;
+}
+
 interface InputForFormProps {
 	inputProps?: React.ComponentProps<typeof Input>;
 	labelProps: React.ComponentProps<typeof Label>;
