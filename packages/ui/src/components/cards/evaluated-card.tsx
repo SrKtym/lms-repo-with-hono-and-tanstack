@@ -1,58 +1,63 @@
-import type { FetchSubmissionsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/submissions";
-import { BaseCard } from "../cards/base-card";
-import { DefaultChip } from "../chip";
+import type { FetchAllSubmissionsWithStudentsReturnType } from "@lms-repo/db/utils/query/submissions";
+import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
+import { Loader } from "../loader";
+import { SubmissionsTable } from "../table";
+import { BaseCard } from "./base-card";
 
 interface EvaluatedCardProps {
-	submission: FetchSubmissionsFromUserCoursesReturnType[number];
-	isTeacher: boolean;
+	submissions: FetchAllSubmissionsWithStudentsReturnType;
+	isLoading?: boolean;
+	hasNextPage?: boolean;
+	fetchNextPage?: () => void;
+	isFetchingNextPage?: boolean;
+	onViewTextSubmission?: (submissionId: string) => void;
+	onDownloadFile?: (fileId: string) => void;
+	onGrade?: (userId: string, assignmentId: string, score: number) => void;
 }
 
 // EvaluatedCard component
-export function EvaluatedCard({ submission, isTeacher }: EvaluatedCardProps) {
+export function EvaluatedCard({
+	submissions,
+	isLoading = false,
+	hasNextPage = false,
+	fetchNextPage,
+	isFetchingNextPage = false,
+	onViewTextSubmission,
+	onDownloadFile,
+	onGrade,
+}: EvaluatedCardProps) {
+	const sentinelRef = useInfiniteScroll({
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+	});
+
 	return (
-		<BaseCard className="border border-divider">
+		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
 			<div className="p-6">
-				<h2 className="mb-4 font-medium text-lg">
-					{isTeacher ? "評価済みの提出物" : "評価済みの課題"}
-				</h2>
-				<div className="space-y-4">
-					<div className="border-divider border-b pb-4 last:border-b-0">
-						<div className="flex items-start justify-between">
-							<div className="flex-1">
-								<h3 className="font-medium text-gray-900 dark:text-gray-100">
-									{submission.assignmentTitle}
-								</h3>
-								<div className="mt-1 space-y-1">
-									<p className="text-default-500 text-sm">
-										ステータス:{" "}
-										<span className="font-medium">{submission.status}</span>
-									</p>
-									{/* {submission.assignmentDueDate && (
-										<p className="text-default-500 text-sm">
-											提出日:{" "}
-											{submission.assignmentDueDate.toLocaleDateString(
-												"default",
-											)}
-										</p>
-									)} */}
-									{/* {submission.score !== null && (
-										<p className="text-default-500 text-sm">
-											採点日:{" "}
-											{submission.score.toLocaleDateString("default")}
-										</p>
-									)} */}
-								</div>
-							</div>
-							{submission.score !== null && (
-								<div className="text-right">
-									<DefaultChip size="sm" color="success">
-										{submission.score} 点
-									</DefaultChip>
-								</div>
-							)}
-						</div>
+				<h2 className="mb-4 font-medium text-lg">提出状況一覧</h2>
+				{isLoading ? (
+					<div className="py-4 text-center text-gray-500 dark:text-gray-400">
+						データを取得中...
 					</div>
-				</div>
+				) : submissions.length === 0 ? (
+					<div className="py-4 text-center text-gray-500 dark:text-gray-400">
+						提出物はありません
+					</div>
+				) : (
+					<SubmissionsTable
+						submissions={submissions}
+						onViewTextSubmission={onViewTextSubmission}
+						onDownloadFile={onDownloadFile}
+						onGrade={onGrade}
+					>
+						{hasNextPage && (
+							<div ref={sentinelRef} className="py-2">
+								{isFetchingNextPage && <Loader />}
+							</div>
+						)}
+					</SubmissionsTable>
+				)}
 			</div>
 		</BaseCard>
 	);
