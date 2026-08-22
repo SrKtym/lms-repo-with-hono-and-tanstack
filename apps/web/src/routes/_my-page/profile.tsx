@@ -36,11 +36,13 @@ export const Route = createFileRoute("/_my-page/profile")({
 						queryFn: fetchStudentDataQueryFn,
 						...QUERY_CONFIG.USER_DATA,
 					}),
-			queryClient.ensureQueryData({
-				queryKey: ["totalCredits"],
-				queryFn: fetchCompletedCoursesQueryFn,
-				...QUERY_CONFIG.USER_DATA,
-			}),
+			role === "student"
+				? queryClient.ensureQueryData({
+						queryKey: ["totalCredits"],
+						queryFn: fetchCompletedCoursesQueryFn,
+						...QUERY_CONFIG.USER_DATA,
+					})
+				: null,
 			queryClient.ensureQueryData({
 				queryKey: ["email-notification-settings"],
 				queryFn: fetchEmailNotificationSettingsQueryFn,
