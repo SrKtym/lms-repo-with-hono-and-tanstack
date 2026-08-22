@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "../../index";
 import { announcements, courses, registration } from "../../schema";
 
-// ユーザーが登録している講義の担当教員からのお知らせを取得
+// ユーザーが登録している講義の担当教員からのお知らせを取得（教員自身も作成したお知らせを取得）
 export async function fetchAnnouncementsFromUserCourses(userId: string) {
 	const announcementsList = await db
-		.select({
+		.selectDistinct({
 			id: announcements.id,
 			title: announcements.title,
 			description: announcements.description,
@@ -17,8 +17,10 @@ export async function fetchAnnouncementsFromUserCourses(userId: string) {
 		})
 		.from(announcements)
 		.innerJoin(courses, eq(announcements.courseId, courses.id))
-		.innerJoin(registration, eq(courses.id, registration.courseId))
-		.where(eq(registration.userId, userId));
+		.leftJoin(registration, eq(courses.id, registration.courseId))
+		.where(
+			or(eq(registration.userId, userId), eq(courses.professorId, userId)),
+		);
 
 	return announcementsList;
 }
