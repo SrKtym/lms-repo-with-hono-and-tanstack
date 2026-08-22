@@ -1,4 +1,5 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
+import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
 import { FileQuestion } from "../../assets/icons/file-question";
 import { FileText } from "../../assets/icons/file-text";
 import { Info } from "../../assets/icons/info";
@@ -39,10 +40,14 @@ export function AnnouncementCard({
 		day: "numeric",
 	};
 
+	const { expandedId, toggleExpand } = useToggleExpand();
+
 	return (
 		<BaseCard
-			key={announcement.id}
-			className="border border-gray-200 dark:border-gray-700"
+			className="cursor-pointer border border-gray-200 dark:border-gray-700"
+			onClick={(e) => {
+				toggleExpand(e, announcement.id);
+			}}
 		>
 			<div className="flex gap-3">
 				<div className="mt-1">
@@ -57,7 +62,9 @@ export function AnnouncementCard({
 				<div className="flex-1">
 					<div className="flex items-start justify-between">
 						<div className="flex-1">
-							<h3 className="font-medium text-gray-900 dark:text-gray-100">
+							<h3
+								className={`font-medium text-gray-900 dark:text-gray-100 ${expandedId === announcement.id ? "line-clamp-none" : "line-clamp-1"}`}
+							>
 								{announcement.title}
 							</h3>
 							<p className="text-gray-500 text-sm dark:text-gray-400">
@@ -66,7 +73,7 @@ export function AnnouncementCard({
 											"default",
 											dateOptions,
 										)
-									: "日付なし"}
+									: "処理中…"}
 							</p>
 						</div>
 						<DefaultChip size="sm" color={getChipColor(announcement.type)}>
@@ -75,7 +82,9 @@ export function AnnouncementCard({
 					</div>
 
 					<div className="mt-3">
-						<p className="text-gray-700 leading-relaxed dark:text-gray-300">
+						<p
+							className={`text-gray-700 leading-relaxed dark:text-gray-300 ${expandedId === announcement.id ? "line-clamp-none" : "line-clamp-1"}`}
+						>
 							{announcement.description}
 						</p>
 					</div>

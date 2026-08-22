@@ -4,20 +4,17 @@ import { BaseCard } from "../cards/base-card";
 
 interface CommentsCardProps {
 	comments: FetchCommentsWithAssignmentReturnType;
-	dateOptionforAnnouncement?: Intl.DateTimeFormatOptions;
 	children?: React.ReactNode;
 }
 
 // CommentsCard component
-export function CommentsCard({
-	comments,
-	dateOptionforAnnouncement = {
+export function CommentsCard({ comments, children }: CommentsCardProps) {
+	const dateOption: Intl.DateTimeFormatOptions = {
 		year: "numeric",
 		month: "short",
 		day: "numeric",
-	},
-	children,
-}: CommentsCardProps) {
+	};
+
 	return (
 		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
 			<div className="space-y-6 p-2">
@@ -37,10 +34,7 @@ export function CommentsCard({
 									<div className="flex items-center gap-2">
 										<p className="font-medium">{comment.createdBy}</p>
 										<p className="text-default-500 text-xs">
-											{comment.createdAt.toLocaleString(
-												"default",
-												dateOptionforAnnouncement,
-											)}
+											{comment.createdAt.toLocaleString("default", dateOption)}
 										</p>
 									</div>
 									<p className="mt-1">{comment.content}</p>

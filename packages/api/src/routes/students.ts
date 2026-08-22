@@ -1,12 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
 import { registerStudentData } from "@lms-repo/db/utils/mutation/students";
-import {
-	fetchMembersByCourseId,
-	fetchStudentData,
-} from "@lms-repo/db/utils/query/students";
+import { fetchStudentData } from "@lms-repo/db/utils/query/students";
 import { Hono } from "hono";
 import { z } from "zod";
+import { coursesRouteForStudent } from "./courses";
+import { notificationsRouteForStudent } from "./notifications";
+import { schedulesRouteForStudent } from "./schedules";
+import { submissionsRouteForStudent } from "./submissions";
 
 const formSchema = z.object({
 	grade: z
@@ -35,11 +36,12 @@ export const studentsRoute = new Hono<{
 	.get("/data", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchStudentData(userId);
+		if (!result) {
+			return c.json({ message: "学生情報が見つかりません" }, 404);
+		}
 		return c.json(result);
 	})
-	// 講義を登録しているメンバーの取得
-	.get("/:courseId", async (c) => {
-		const { courseId } = c.req.param();
-		const result = await fetchMembersByCourseId(courseId);
-		return c.json(result);
-	});
+	.route("/courses", coursesRouteForStudent)
+	.route("/notifications", notificationsRouteForStudent)
+	.route("/schedules", schedulesRouteForStudent)
+	.route("/submissions", submissionsRouteForStudent);

@@ -6,7 +6,7 @@ import { fetchEmailNotificationSettings } from "@lms-repo/db/utils/query/setting
 import { Hono } from "hono";
 import { z } from "zod";
 
-export const settingsRoute = new Hono<{
+export const settingsRouteForCommon = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];

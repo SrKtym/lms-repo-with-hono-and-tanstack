@@ -10,6 +10,7 @@ import { env } from "@lms-repo/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, twoFactor } from "better-auth/plugins";
+import { ac, roles } from "./permissions";
 
 export const auth = betterAuth({
 	database: drizzleAdapter(db, {
@@ -109,6 +110,8 @@ export const auth = betterAuth({
 	},
 	plugins: [
 		admin({
+			ac,
+			roles,
 			defaultRole: "student",
 		}),
 		twoFactor({

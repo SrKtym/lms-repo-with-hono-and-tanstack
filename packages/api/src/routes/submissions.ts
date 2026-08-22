@@ -7,12 +7,17 @@ import {
 	createTextSubmission,
 	deleteFileSubmissionMetadata,
 	deleteTextSubmission,
+	updateSubmissionScore,
 	updateSubmissionStatus,
 } from "@lms-repo/db/utils/mutation/submissions";
+import { fetchAssignmentPointsById } from "@lms-repo/db/utils/query/assignments";
 import {
+	type FetchFileMetadataByIdReturnType,
+	type FetchFileMetadataByUserIdReturnType,
+	fetchAllSubmissionsWithStudents,
+	fetchFileMetadataById,
 	fetchFileMetadataByUserId,
-	fetchSubmissionById,
-	fetchSubmissionsFromUserCourses,
+	fetchSubmissionsState,
 	fetchTextSubmissionsByUserId,
 } from "@lms-repo/db/utils/query/submissions";
 import { env } from "@lms-repo/env/server";
@@ -94,7 +99,8 @@ const metadataSchema = z.object({
 	assignmentId: z.string(),
 });
 
-export const submissionsRoute = new Hono<{
+// 提出に関するロジック（学生用）
+export const submissionsRouteForStudent = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];
@@ -107,7 +113,7 @@ export const submissionsRoute = new Hono<{
 		const fileName = formData.get("fileName") as string;
 
 		if (!file || !fileName) {
-			return c.json({ error: "Missing file or fileName" }, 400);
+			return c.json({ error: "ファイルが見つかりません" }, 400);
 		}
 
 		// バケットが存在することを確認
@@ -126,57 +132,6 @@ export const submissionsRoute = new Hono<{
 			mimeType: file.type,
 			fileSize: file.size,
 		});
-	})
-	// 署名付きURLの一括発行（複数ファイルアップロード用）
-	.post("/signed_urls", zValidator("json", signedUrlSchema), async (c) => {
-		const files = c.req.valid("json");
-
-		// MIMEタイプの検証
-		for (const file of files) {
-			if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
-				return c.json(
-					{
-						error: `許可されていないファイルタイプです: ${file.fileType}`,
-						allowedTypes: ALLOWED_MIME_TYPES,
-					},
-					400,
-				);
-			}
-		}
-
-		// バケットが存在することを確認
-		await ensureBucketExists();
-
-		const signedUrls = await Promise.all(
-			files.map(async ({ fileName, fileType }) => {
-				let signedUrl: string;
-
-				// エミュレータ環境では署名なしURLを使用
-				if (env.GCS_EMULATOR_HOST) {
-					const gcsHost = env.GCS_EMULATOR_HOST.replace(
-						"fake-gcs",
-						"localhost",
-					);
-					signedUrl = `${gcsHost}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
-				} else {
-					// 本番環境では署名付きURLを使用
-					[signedUrl] = await bucket.file(`uploads/${fileName}`).getSignedUrl({
-						version: "v4",
-						action: "write",
-						expires: Date.now() + 15 * 60 * 1000,
-						contentType: fileType,
-					});
-				}
-
-				return {
-					fileName,
-					signedUrl,
-					objectName: `uploads/${fileName}`,
-				};
-			}),
-		);
-
-		return c.json(signedUrls);
 	})
 	// ファイルメタデータの一括保存（複数ファイルアップロード用）
 	.post("/metadata", zValidator("json", metadataSchema), async (c) => {
@@ -250,88 +205,6 @@ export const submissionsRoute = new Hono<{
 			return c.json(result, 201);
 		},
 	)
-	// 課題提出状況の取得
-	.get("/", async (c) => {
-		const { userId } = c.get("session");
-		const submissions = await fetchSubmissionsFromUserCourses(userId);
-		return c.json(submissions, 200);
-	})
-	// ファイルメタデータの取得
-	.get("/files/:assignmentId", async (c) => {
-		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
-		const fileMetadata = await fetchFileMetadataByUserId(userId, assignmentId);
-		return c.json(fileMetadata, 200);
-	})
-	// テキスト提出の取得
-	.get("/text/:assignmentId", async (c) => {
-		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
-		const textSubmissionsData = await fetchTextSubmissionsByUserId(
-			userId,
-			assignmentId,
-		);
-		return c.json(textSubmissionsData, 200);
-	})
-	// 特定の課題提出状況の取得
-	.get("/:assignmentId", async (c) => {
-		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
-		const submission = await fetchSubmissionById(userId, assignmentId);
-		return c.json(submission, 200);
-	})
-	// ファイルダウンロード用署名付きURLの発行
-	.get("/files/:id/download", async (c) => {
-		const { userId } = c.get("session");
-		const id = c.req.param("id");
-
-		const fileMetadata = await fetchFileMetadataByUserId(userId);
-		const file = fileMetadata?.find((f) => f.id === id);
-
-		if (!file) {
-			return c.json({ error: "ファイルが見つかりません" }, 404);
-		}
-
-		// エミュレータ環境ではプロキシURLを返す
-		if (env.GCS_EMULATOR_HOST) {
-			return c.json(
-				{
-					signedUrl: `/api/submissions/files/${id}/proxy`,
-					fileName: file.originalName,
-				},
-				200,
-			);
-		}
-
-		// 本番環境では署名付きURLを返す
-		const [signedUrl] = await bucket.file(file.objectName).getSignedUrl({
-			version: "v4",
-			action: "read",
-			expires: Date.now() + 15 * 60 * 1000, // 15分有効
-		});
-
-		return c.json({ signedUrl, fileName: file.originalName }, 200);
-	})
-	// ファイルダウンロードプロキシ（エミュレータ環境用）
-	.get("/files/:id/proxy", async (c) => {
-		const { userId } = c.get("session");
-		const id = c.req.param("id");
-
-		const fileMetadata = await fetchFileMetadataByUserId(userId);
-		const file = fileMetadata?.find((f) => f.id === id);
-
-		if (!file) {
-			return c.json({ error: "ファイルが見つかりません" }, 404);
-		}
-
-		// GCSからファイルを取得
-		const [fileData] = await bucket.file(file.objectName).download();
-
-		return c.newResponse(new Uint8Array(fileData), 200, {
-			"Content-Type": file.mimeType,
-			"Content-Disposition": `attachment; filename="${file.originalName}"`,
-		});
-	})
 	// ファイルの削除
 	.delete("/files/:id", async (c) => {
 		const { userId } = c.get("session");
@@ -413,4 +286,219 @@ export const submissionsRoute = new Hono<{
 		}
 
 		return c.json({ message: "テキスト提出物を削除しました" }, 200);
+	});
+
+// 提出に関するロジック（教員用）
+export const submissionsRouteForProf = new Hono<{
+	Variables: {
+		user: Session["user"];
+		session: Session["session"];
+	};
+}>() // 採点（教員用）
+	.post(
+		"/grade",
+		zValidator(
+			"json",
+			z.object({
+				userId: z.string(),
+				assignmentId: z.string(),
+				score: z.number(),
+			}),
+		),
+		async (c) => {
+			const { userId, assignmentId, score } = c.req.valid("json");
+
+			const assignmentPoints = await fetchAssignmentPointsById(assignmentId);
+
+			if (!assignmentPoints) {
+				return c.json({ error: "課題が見つかりません" }, 404);
+			}
+
+			if (score > assignmentPoints) {
+				return c.json({ error: "点数が課題の配点を超えています" }, 400);
+			}
+
+			const result = await updateSubmissionScore(assignmentId, userId, score);
+
+			if (result.status !== 200) {
+				return c.json(result, 500);
+			}
+
+			return c.json(result, 200);
+		},
+	) // 指定された課題のすべての提出状況を取得（教員用、無限スクロールに対応）
+	.get("/status/all", async (c) => {
+		const { assignmentId, limit, offset } = c.req.query();
+
+		if (!assignmentId) {
+			return c.json({ error: "指定された課題がありません" }, 404);
+		}
+
+		const submissions = await fetchAllSubmissionsWithStudents(
+			assignmentId,
+			Number(limit),
+			Number(offset),
+		);
+		return c.json(submissions, 200);
+	});
+
+// 提出に関するロジック(共通)
+export const submissionsRouteForCommon = new Hono<{
+	Variables: {
+		user: Session["user"];
+		session: Session["session"];
+	};
+}>()
+	// 署名付きURLの一括発行（ファイルアップロード・ダウンロード用）
+	.post("/signed_urls", zValidator("json", signedUrlSchema), async (c) => {
+		const files = c.req.valid("json");
+
+		// MIMEタイプの検証
+		for (const file of files) {
+			if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
+				return c.json(
+					{
+						error: `許可されていないファイルタイプです: ${file.fileType}`,
+						allowedTypes: ALLOWED_MIME_TYPES,
+					},
+					400,
+				);
+			}
+		}
+
+		// バケットが存在することを確認
+		await ensureBucketExists();
+
+		const signedUrls = await Promise.all(
+			files.map(async ({ fileName, fileType }) => {
+				let signedUrl: string;
+
+				// エミュレータ環境では署名なしURLを使用
+				if (env.GCS_EMULATOR_HOST) {
+					const gcsHost = env.GCS_EMULATOR_HOST.replace(
+						"fake-gcs",
+						"localhost",
+					);
+					signedUrl = `${gcsHost}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
+				} else {
+					// 本番環境では署名付きURLを使用
+					[signedUrl] = await bucket.file(`uploads/${fileName}`).getSignedUrl({
+						version: "v4",
+						action: "write",
+						expires: Date.now() + 15 * 60 * 1000,
+						contentType: fileType,
+					});
+				}
+
+				return {
+					fileName,
+					signedUrl,
+					objectName: `uploads/${fileName}`,
+				};
+			}),
+		);
+
+		return c.json(signedUrls);
+	})
+	// 課題提出状況の取得
+	.get("/status", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.query("assignmentId");
+		const submissions = await fetchSubmissionsState(userId, assignmentId);
+		return c.json(submissions, 200);
+	})
+	// ファイルメタデータの取得
+	.get("/files/:assignmentId", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.param("assignmentId");
+
+		const fileMetadata = await fetchFileMetadataByUserId(userId, assignmentId);
+		return c.json(fileMetadata, 200);
+	})
+	// テキスト提出物の取得
+	.get("/text/:assignmentId", async (c) => {
+		const { userId } = c.get("session");
+		const assignmentId = c.req.param("assignmentId");
+
+		const textSubmissionsData = await fetchTextSubmissionsByUserId(
+			userId,
+			assignmentId,
+		);
+		return c.json(textSubmissionsData, 200);
+	})
+	// ファイルダウンロード用署名付きURLの発行
+	.get("/files/:id/download", async (c) => {
+		const { userId } = c.get("session");
+		const { role } = c.get("user");
+		const id = c.req.param("id");
+
+		let file:
+			| FetchFileMetadataByIdReturnType
+			| FetchFileMetadataByUserIdReturnType[number]
+			| undefined;
+
+		if (role === "professor") {
+			// 教員はすべてのファイルメタデータにアクセス可能
+			file = await fetchFileMetadataById(id);
+		} else {
+			// 学生は自分のファイルのみアクセス可能
+			const fileMetadata = await fetchFileMetadataByUserId(userId);
+			file = fileMetadata?.find((f) => f.id === id);
+		}
+
+		if (!file) {
+			return c.json({ error: "ファイルが見つかりません" }, 404);
+		}
+
+		// エミュレータ環境ではプロキシURLを返す
+		if (env.GCS_EMULATOR_HOST) {
+			return c.json(
+				{
+					signedUrl: `/api/submissions/files/${id}/proxy`,
+					fileName: file.originalName,
+				},
+				200,
+			);
+		}
+
+		// 本番環境では署名付きURLを返す
+		const [signedUrl] = await bucket.file(file.objectName).getSignedUrl({
+			version: "v4",
+			action: "read",
+			expires: Date.now() + 15 * 60 * 1000, // 15分有効
+		});
+
+		return c.json({ signedUrl, fileName: file.originalName }, 200);
+	})
+	// ファイルダウンロードプロキシ（エミュレータ環境用）
+	.get("/files/:id/proxy", async (c) => {
+		const { userId } = c.get("session");
+		const { role } = c.get("user");
+		const id = c.req.param("id");
+
+		let file:
+			| FetchFileMetadataByIdReturnType
+			| FetchFileMetadataByUserIdReturnType[number]
+			| undefined;
+
+		if (role === "professor") {
+			// 教員はすべてのファイルメタデータにアクセス可能
+			file = await fetchFileMetadataById(id);
+		} else {
+			// 学生は自分のファイルのみアクセス可能
+			const fileMetadata = await fetchFileMetadataByUserId(userId);
+			file = fileMetadata?.find((f) => f.id === id);
+		}
+
+		if (!file) {
+			return c.json({ error: "ファイルが見つかりません" }, 404);
+		}
+
+		// GCSからファイルを取得
+		const [fileData] = await bucket.file(file.objectName).download();
+
+		return c.newResponse(new Uint8Array(fileData), 200, {
+			"Content-Type": file.mimeType,
+			"Content-Disposition": `attachment; filename="${file.originalName}"`,
+		});
 	});

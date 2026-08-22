@@ -1,11 +1,48 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
+import type {
+	FetchFileMetadataByUserIdReturnType,
+	FetchTextSubmissionsByUserIdReturnType,
+} from "@lms-repo/db/utils/query/submissions";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import { queryClient } from "@/lib/query-client";
 import {
+	createTextSubmissionMutationFn,
+	deleteFileMutationFn,
+	deleteTextSubmissionMutationFn,
+	gradeSubmissionMutationFn,
+	submitMultipleFilesMutationFn,
+} from "@/utils/mutation/submissions";
+import {
+	fetchAllSubmissionsWithStudentsQueryFn,
 	fetchDownloadUrlQueryFn,
 	fetchFileMetadataQueryFn,
 	fetchTextSubmissionsQueryFn,
-} from "@/utils/query-utils";
+} from "@/utils/query/submissions";
+
+// 指定された課題のすべての提出状況を取得するフック（教員用、無限スクロール対応）
+export const useAllSubmissionsWithStudents = (assignmentId: string) => {
+	return useInfiniteQuery({
+		queryKey: ["all-submissions-with-students", assignmentId],
+		queryFn: async ({ pageParam = 0 }) => {
+			const data = await fetchAllSubmissionsWithStudentsQueryFn(
+				assignmentId,
+				10,
+				pageParam * 10,
+			);
+
+			if ("error" in data) {
+				return [];
+			}
+			return data;
+		},
+		initialPageParam: 0,
+		getNextPageParam: (lastPage, allPages) => {
+			if (lastPage.length < 10) {
+				return;
+			}
+			return allPages.length;
+		},
+	});
+};
 
 // テキスト提出取得のフック
 export const useTextSubmissions = (assignmentId?: string) => {
@@ -35,14 +72,22 @@ export const useDownloadUrl = (fileId: string) => {
 // ファイル削除のフック
 export const useDeleteFile = () => {
 	return useMutation({
-		mutationFn: async (fileId: string) => {
-			const res = await client.api.submissions.files[":id"].$delete({
-				param: { id: fileId },
-			});
+		mutationFn: deleteFileMutationFn,
+		onMutate: async (fileId) => {
+			// 古いデータの再取得をキャンセルする
+			await queryClient.cancelQueries({ queryKey: ["file-metadata"] });
 
-			const result = await res.json();
+			// 更新前のデータを保存し、エラー発生時のロールバック用に使用
+			const previousMetadata = queryClient.getQueryData(["file-metadata"]);
 
-			return result;
+			// 楽観的更新
+			queryClient.setQueryData(
+				["file-metadata"],
+				(old?: FetchFileMetadataByUserIdReturnType) =>
+					old?.filter((file) => file.id !== fileId) ?? [],
+			);
+
+			return { previousMetadata };
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["file-metadata"] });
@@ -53,18 +98,26 @@ export const useDeleteFile = () => {
 // テキスト提出のフック
 export const useCreateTextSubmission = () => {
 	return useMutation({
-		mutationFn: async (submissionData: {
-			title: string;
-			description: string;
-			assignmentId: string;
-		}) => {
-			const res = await client.api.submissions.text.$post({
-				json: submissionData,
-			});
+		mutationFn: createTextSubmissionMutationFn,
+		onMutate: async (submissionData) => {
+			// 古いデータの再取得をキャンセルする
+			await queryClient.cancelQueries({ queryKey: ["text-submissions"] });
 
-			const result = await res.json();
+			// 更新前のデータを保存し、エラー発生時のロールバック用に使用
+			const previousSubmissions = queryClient.getQueryData([
+				"text-submissions",
+			]);
 
-			return result;
+			// 楽観的更新
+			queryClient.setQueryData(
+				["text-submissions"],
+				(old?: FetchTextSubmissionsByUserIdReturnType) => [
+					...(old ?? []),
+					submissionData,
+				],
+			);
+
+			return { previousSubmissions };
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["text-submissions"] });
@@ -75,14 +128,24 @@ export const useCreateTextSubmission = () => {
 // テキスト提出物削除のフック
 export const useDeleteTextSubmission = () => {
 	return useMutation({
-		mutationFn: async (submissionId: string) => {
-			const res = await client.api.submissions.text[":id"].$delete({
-				param: { id: submissionId },
-			});
+		mutationFn: deleteTextSubmissionMutationFn,
+		onMutate: async (submissionId) => {
+			// 古いデータの再取得をキャンセルする
+			await queryClient.cancelQueries({ queryKey: ["text-submissions"] });
 
-			const result = await res.json();
+			// 更新前のデータを保存し、エラー発生時のロールバック用に使用
+			const previousSubmissions = queryClient.getQueryData([
+				"text-submissions",
+			]);
 
-			return result;
+			// 楽観的更新
+			queryClient.setQueryData(
+				["text-submissions"],
+				(old?: FetchTextSubmissionsByUserIdReturnType) =>
+					old?.filter((submission) => submission.id !== submissionId) ?? [],
+			);
+
+			return { previousSubmissions };
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["text-submissions"] });
@@ -93,108 +156,21 @@ export const useDeleteTextSubmission = () => {
 // 複数ファイルアップロードのフック（n+1問題を回避）
 export const useSubmitMultipleFiles = () => {
 	return useMutation({
-		mutationFn: async ({
-			files,
-			assignmentId,
-		}: {
-			files: File[];
-			assignmentId: string;
-		}) => {
-			// エミュレータ環境かどうかを判定（環境変数などで判断）
-			// 開発環境では直接アップロードエンドポイントを使用
-			const isEmulator = import.meta.env.DEV;
-
-			if (isEmulator) {
-				// エミュレータ環境：直接アップロードエンドポイントを使用
-				const uploadPromises = files.map(async (file) => {
-					const formData = new FormData();
-					formData.append("file", file);
-					formData.append("fileName", file.name);
-
-					const uploadRes = await fetch(
-						"http://localhost:3000/api/submissions/upload",
-						{
-							method: "POST",
-							body: formData,
-							credentials: "include",
-						},
-					);
-
-					if (!uploadRes.ok) {
-						throw new Error(`${file.name}のアップロードに失敗しました`);
-					}
-
-					return uploadRes.json();
-				});
-
-				const uploadedMetadata = await Promise.all(uploadPromises);
-
-				// メタデータを一括保存
-				const metadataRes = await client.api.submissions.metadata.$post({
-					json: {
-						metadataList: uploadedMetadata,
-						assignmentId,
-					},
-				});
-
-				return metadataRes.json();
-			}
-			// 本番環境：署名付きURLを使用
-			// 1. 署名付きURLを一括取得（1回のAPIリクエスト）
-			const signedUrlsRes = await client.api.submissions.signed_urls.$post({
-				json: files.map((file) => ({
-					fileName: file.name,
-					fileType: file.type,
-					fileSize: file.size,
-				})),
-			});
-			const signedUrls = await signedUrlsRes.json();
-
-			if ("error" in signedUrls) {
-				throw new Error(signedUrls.error);
-			}
-
-			// 2. Cloud Storageにファイルを並列アップロード
-			const uploadPromises = signedUrls.map(
-				async ({ fileName, signedUrl, objectName }) => {
-					const file = files.find((f) => f.name === fileName);
-					if (!file) throw new Error(`ファイル ${fileName} が見つかりません`);
-
-					const uploadRes = await fetch(signedUrl, {
-						method: "PUT",
-						body: file,
-						headers: {
-							"Content-Type": file.type,
-						},
-					});
-
-					if (!uploadRes.ok) {
-						throw new Error(`${file.name}のアップロードに失敗しました`);
-					}
-
-					return {
-						objectName,
-						originalName: file.name,
-						mimeType: file.type,
-						fileSize: file.size,
-					};
-				},
-			);
-
-			const uploadedMetadata = await Promise.all(uploadPromises);
-
-			// 3. メタデータを一括保存（1回のAPIリクエスト）
-			const metadataRes = await client.api.submissions.metadata.$post({
-				json: {
-					metadataList: uploadedMetadata,
-					assignmentId,
-				},
-			});
-
-			return metadataRes.json();
-		},
+		mutationFn: submitMultipleFilesMutationFn,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["file-submissions"] });
+		},
+	});
+};
+
+// 採点のフック（教員用）
+export const useGradeSubmission = () => {
+	return useMutation({
+		mutationFn: gradeSubmissionMutationFn,
+		onSuccess: () => {
+			queryClient.invalidateQueries({
+				queryKey: ["all-submissions-with-students"],
+			});
 		},
 	});
 };

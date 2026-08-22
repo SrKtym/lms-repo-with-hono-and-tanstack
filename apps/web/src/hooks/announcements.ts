@@ -1,8 +1,8 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
-import { fetchAnnouncementsQueryFn } from "../utils/query-utils";
+import { createAnnouncementMutationFn } from "@/utils/mutation/announcements";
+import { fetchAnnouncementsQueryFn } from "@/utils/query/announcements";
 
 // 登録済み講義に関連するアナウンスメントを取得するカスタムフック
 export const useAnnouncements = (
@@ -18,18 +18,7 @@ export const useAnnouncements = (
 // アナウンスメントを作成するカスタムフック
 export const useCreateAnnouncement = () => {
 	return useMutation({
-		mutationFn: async (announcementData: {
-			title: string;
-			description: string;
-			type: string;
-			courseId: string;
-		}) => {
-			const res = await client.api.announcements.$post({
-				json: announcementData,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: createAnnouncementMutationFn,
 		onMutate: async (newAnnouncement) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({

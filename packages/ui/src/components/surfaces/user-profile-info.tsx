@@ -14,10 +14,7 @@ interface UserData {
 
 interface UserProfileInfoProps {
 	user: UserData &
-		Partial<
-			FetchStudentDataReturnType[number] &
-				FetchCompletedCoursesReturnType[number]
-		>;
+		Partial<FetchStudentDataReturnType & FetchCompletedCoursesReturnType>;
 	onUpdateName: (name: string) => Promise<void>;
 }
 

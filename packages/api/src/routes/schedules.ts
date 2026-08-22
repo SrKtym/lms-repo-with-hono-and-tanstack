@@ -33,7 +33,7 @@ const formSchema = z
 	});
 
 // スケジュールに関するロジック
-export const schedulesRoute = new Hono<{
+export const schedulesRouteForStudent = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];

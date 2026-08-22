@@ -1,21 +1,25 @@
+import type { Notifications } from "@lms-repo/db/types";
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
+import {
+	deleteNotificationMutationFn,
+	markNotificationAsReadMutationFn,
+} from "@/utils/mutation/notifications";
 import {
 	fetchNotificationsCountQueryFn,
 	fetchNotificationsQueryFn,
-} from "@/utils/query-utils";
+} from "@/utils/query/notifications";
 
 // 通知一覧を取得するカスタムフック（無限スクロール・ポーリング対応）
 export const useNotifications = (
-	limit?: number,
+	limit: number,
 	initialData?: FetchNotificationsReturnType,
 ) => {
 	return useInfiniteQuery({
 		queryKey: ["notifications", limit],
 		queryFn: async ({ pageParam }) => {
-			return fetchNotificationsQueryFn(limit || 10, pageParam * (limit || 10));
+			return fetchNotificationsQueryFn(limit, pageParam * limit);
 		},
 		enabled: true,
 		initialPageParam: 0,
@@ -41,7 +45,7 @@ export const useNotifications = (
 // 通知一覧を取得するカスタムフック（従来のページネーション対応）
 export const useNotificationsPaginated = (
 	page: number,
-	limit = 10,
+	limit: number,
 	initialData?: FetchNotificationsReturnType,
 ) => {
 	const offset = (page - 1) * limit;
@@ -70,32 +74,35 @@ export const useNotificationsCount = (filter?: "all" | "unread" | "read") => {
 	});
 };
 
-// 指定された通知を既読にするカスタムフック
+// 通知を既読にするカスタムフック
 export const useMarkNotificationAsRead = () => {
 	return useMutation({
-		mutationFn: async (notificationId: string) => {
-			const res = await client.api.notifications[":id"].mark_as_read.$patch({
-				param: {
-					id: notificationId,
-				},
-			});
-			const data = await res.json();
-			return data;
-		},
-		onSettled: () => {
-			// ミューテーションの成功時も失敗時も再フェッチする
-			queryClient.invalidateQueries({ queryKey: ["notifications"] });
-		},
-	});
-};
+		mutationFn: markNotificationAsReadMutationFn,
+		onMutate: async (notificationId) => {
+			// 古いデータの再取得をキャンセルする
+			await queryClient.cancelQueries({ queryKey: ["notifications"] });
 
-// 全通知を既読にするカスタムフック
-export const useMarkAllNotificationsAsRead = () => {
-	return useMutation({
-		mutationFn: async () => {
-			const res = await client.api.notifications.mark_all_as_read.$patch();
-			const data = await res.json();
-			return data;
+			// 更新前のデータを保存し、エラー発生時のロールバック用に使用
+			const previousNotifications = queryClient.getQueryData(["notifications"]);
+
+			// 楽観的更新
+			queryClient.setQueryData(
+				["notifications"],
+				(old: Notifications[]) =>
+					old?.filter((notification) => notification.id !== notificationId) ||
+					[],
+			);
+
+			return { previousNotifications };
+		},
+		onError: (_err, _notificationId, context) => {
+			// ミューテーションが失敗した場合, ロールバック用データをコンテキストから受け取る
+			if (context?.previousNotifications) {
+				queryClient.setQueryData(
+					["notifications"],
+					context.previousNotifications,
+				);
+			}
 		},
 		onSettled: () => {
 			// ミューテーションの成功時も失敗時も再フェッチする
@@ -107,14 +114,32 @@ export const useMarkAllNotificationsAsRead = () => {
 // 通知を削除するカスタムフック
 export const useDeleteNotification = () => {
 	return useMutation({
-		mutationFn: async (notificationId: string) => {
-			const res = await client.api.notifications[":id"].$delete({
-				param: {
-					id: notificationId,
-				},
-			});
-			const data = await res.json();
-			return data;
+		mutationFn: deleteNotificationMutationFn,
+		onMutate: async (notificationId) => {
+			// 古いデータの再取得をキャンセルする
+			await queryClient.cancelQueries({ queryKey: ["notifications"] });
+
+			// 更新前のデータを保存し、エラー発生時のロールバック用に使用
+			const previousNotifications = queryClient.getQueryData(["notifications"]);
+
+			// 楽観的更新
+			queryClient.setQueryData(
+				["notifications"],
+				(old: Notifications[]) =>
+					old?.filter((notification) => notification.id !== notificationId) ||
+					[],
+			);
+
+			return { previousNotifications };
+		},
+		onError: (_err, _notificationId, context) => {
+			// ミューテーションが失敗した場合, ロールバック用データをコンテキストから受け取る
+			if (context?.previousNotifications) {
+				queryClient.setQueryData(
+					["notifications"],
+					context.previousNotifications,
+				);
+			}
 		},
 		onSettled: () => {
 			// ミューテーションの成功時も失敗時も再フェッチする

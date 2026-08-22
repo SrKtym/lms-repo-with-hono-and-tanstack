@@ -10,6 +10,7 @@ import {
 	primaryKey,
 	text,
 	timestamp,
+	unique,
 } from "drizzle-orm/pg-core";
 import { user } from "./auth";
 
@@ -24,6 +25,7 @@ export const assignmentFormat = [
 ] as const;
 export const announcementType = ["資料", "アンケート", "その他"] as const;
 const statusList = ["未提出", "提出済み", "評定済み"] as const;
+const notificationType = ["announcement", "assignment", "system"] as const;
 
 // 学生テーブル
 export const students = pgTable(
@@ -257,6 +259,7 @@ export const textSubmissions = pgTable(
 	(t) => [
 		index("text_submissions_created_by_idx").on(t.createdBy),
 		index("text_submissions_assignment_id_idx").on(t.assignmentId),
+		unique("text_submissions_unique").on(t.assignmentId, t.createdBy),
 	],
 );
 
@@ -325,7 +328,7 @@ export const submissionStatus = pgTable(
 	],
 );
 
-// 通知テーブル
+// 通知テーブル（通知本体）
 export const notifications = pgTable(
 	"notifications",
 	{
@@ -334,15 +337,30 @@ export const notifications = pgTable(
 			.$defaultFn(() => crypto.randomUUID()),
 		title: text("title").notNull(),
 		description: text("description").notNull(),
-		sender: text("sender").notNull(),
-		receiver: text("receiver").notNull(),
-		isRead: boolean("is_read").default(false).notNull(),
+		type: text("type").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(t) => [
-		index("notifications_sender_idx").on(t.sender),
-		index("notifications_receiver_is_read_idx").on(t.receiver, t.isRead),
+		check(
+			"type_check",
+			sql`${t.type} IN (${sql.raw([...notificationType].map((t) => `'${t}'`).join(","))})`,
+		),
 	],
+);
+
+// ユーザー通知テーブル（通知の閲覧状況）
+export const userNotifications = pgTable(
+	"user_notifications",
+	{
+		userId: text("user_id")
+			.notNull()
+			.references(() => user.id, { onDelete: "cascade" }),
+		notificationId: text("notification_id")
+			.notNull()
+			.references(() => notifications.id, { onDelete: "cascade" }),
+		isRead: boolean("is_read").default(false).notNull(),
+	},
+	(t) => [primaryKey({ columns: [t.userId, t.notificationId] })],
 );
 
 // メール通知設定テーブル

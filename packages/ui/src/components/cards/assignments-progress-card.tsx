@@ -1,12 +1,12 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import type { FetchSubmissionsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/submissions";
+import type { FetchSubmissionsStateReturnType } from "@lms-repo/db/utils/query/submissions";
 import { TrendingUp } from "@lms-repo/ui/assets/icons/trending-up";
 import { BaseCard } from "../cards/base-card";
 import { DefaultProgressBar } from "../progress-bar";
 
 interface AssignmentsProgressCardProps {
 	assignments: FetchAssignmentsFromUserCoursesReturnType;
-	submissions: FetchSubmissionsFromUserCoursesReturnType;
+	submissions: FetchSubmissionsStateReturnType;
 	overdueAssignments: FetchAssignmentsFromUserCoursesReturnType;
 }
 

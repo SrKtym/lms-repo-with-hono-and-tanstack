@@ -1,9 +1,11 @@
 export const ArrowRight = ({
 	width,
 	height,
+	className,
 }: {
 	width?: number;
 	height?: number;
+	className?: string;
 }) => (
 	<svg
 		width={width ?? 24}
@@ -11,6 +13,7 @@ export const ArrowRight = ({
 		viewBox="0 0 24 24"
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
+		className={className}
 	>
 		<title>Arrow Right</title>
 		<path

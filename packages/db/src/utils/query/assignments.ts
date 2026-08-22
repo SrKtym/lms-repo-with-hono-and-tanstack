@@ -1,11 +1,11 @@
-import { eq } from "drizzle-orm";
+import { eq, or } from "drizzle-orm";
 import { db } from "../../index";
 import { assignments, courses, registration } from "../../schema";
 
-// ユーザーが登録している講義の担当教員からの課題を取得
+// ユーザーが登録している講義の担当教員からの課題を取得（教員自身も作成した課題を取得）
 export async function fetchAssignmentsFromUserCourses(userId: string) {
 	const assignmentsList = await db
-		.select({
+		.selectDistinct({
 			id: assignments.id,
 			title: assignments.title,
 			description: assignments.description,
@@ -17,8 +17,10 @@ export async function fetchAssignmentsFromUserCourses(userId: string) {
 		})
 		.from(assignments)
 		.innerJoin(courses, eq(assignments.courseId, courses.id))
-		.innerJoin(registration, eq(courses.id, registration.courseId))
-		.where(eq(registration.userId, userId));
+		.leftJoin(registration, eq(courses.id, registration.courseId))
+		.where(
+			or(eq(registration.userId, userId), eq(courses.professorId, userId)),
+		);
 
 	return assignmentsList;
 }
@@ -26,3 +28,16 @@ export async function fetchAssignmentsFromUserCourses(userId: string) {
 export type FetchAssignmentsFromUserCoursesReturnType = Awaited<
 	ReturnType<typeof fetchAssignmentsFromUserCourses>
 >;
+
+// 課題の配点を取得
+export async function fetchAssignmentPointsById(assignmentId: string) {
+	const [assignment] = await db
+		.select({
+			points: assignments.points,
+		})
+		.from(assignments)
+		.where(eq(assignments.id, assignmentId))
+		.limit(1);
+
+	return assignment?.points;
+}

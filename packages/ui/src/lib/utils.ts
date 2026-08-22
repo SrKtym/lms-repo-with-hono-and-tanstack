@@ -1,3 +1,4 @@
+import { coursesMaster } from "@lms-repo/db/mock/course-master";
 import { FileText } from "../assets/icons/file-text";
 import { MSExcel } from "../assets/icons/ms-excel";
 import { MSPowerpoint } from "../assets/icons/ms-powerpoint";
@@ -111,4 +112,23 @@ export function formatTimestamp(date: Date) {
 		month: "short",
 		day: "numeric",
 	});
+}
+
+// 学科名の配列を取得
+export function getDepartmentName() {
+	const facultyNames = Object.keys(coursesMaster).filter(
+		(name): name is keyof typeof coursesMaster => name in coursesMaster,
+	);
+
+	const departments: string[] = [];
+
+	facultyNames.forEach((facultyName) => {
+		const departmentData = coursesMaster[facultyName];
+		const filteredDepartments = Object.keys(departmentData).filter(
+			(key) => key !== "全学科",
+		);
+		departments.push(...filteredDepartments);
+	});
+
+	return departments;
 }

@@ -6,16 +6,17 @@ import { DefaultSeparator } from "../separator";
 
 interface AssignmentDetailCardProps {
 	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
-	getFileColor?: (
-		type: string,
-	) => "default" | "success" | "warning" | "danger" | "accent";
+	score?: number | null;
 }
 
 // AssignmentDetailCard component
 export function AssignmentDetailCard({
 	targetAssignment,
+	score,
 }: AssignmentDetailCardProps) {
-	if (!targetAssignment) return null;
+	if (!targetAssignment) {
+		throw new Error("課題が見つかりません");
+	}
 
 	return (
 		<BaseCard className="border border-divider">
@@ -43,32 +44,64 @@ export function AssignmentDetailCard({
 
 				<DefaultSeparator className="my-6" />
 
-				<div className="mb-6">
-					<div className="mb-1 flex items-center gap-2">
-						<span className="font-medium">期限</span>
-					</div>
-					<p className="ml-6 text-default-600">
-						{targetAssignment.dueDate.toLocaleDateString()}
-					</p>
-				</div>
+				<div className="flex items-start gap-4 max-md:flex-col">
+					{/* 課題の概要 */}
+					<div className="flex-1">
+						<div className="mb-6">
+							<div className="mb-1 flex items-center gap-2">
+								<span className="font-medium">期限</span>
+							</div>
+							<p className="ml-6 text-default-600">
+								{targetAssignment.dueDate.toLocaleDateString()}
+							</p>
+						</div>
 
-				<div className="mb-6">
-					<div className="mb-2 flex items-center gap-2">
-						<span className="font-medium">説明</span>
-					</div>
-					<p className="ml-6 text-default-600">
-						{targetAssignment.description}
-					</p>
-				</div>
+						<div className="mb-6">
+							<div className="mb-2 flex items-center gap-2">
+								<span className="font-medium">説明</span>
+							</div>
+							<p className="ml-6 text-default-600 leading-relaxed">
+								{targetAssignment.description}
+							</p>
+						</div>
 
-				<div className="mb-6">
-					<div className="mb-2 flex items-center gap-2">
-						<span className="font-medium">添付ファイル</span>
+						<div className="mb-6">
+							<div className="mb-2 flex items-center gap-2">
+								<span className="font-medium">添付ファイル</span>
+							</div>
+							<p className="ml-6 text-default-600">
+								{/* ここに添付ファイルをダウンロードする機能を実装 */}
+								なし
+							</p>
+						</div>
 					</div>
-					<p className="ml-6 text-default-600">
-						{/* ここに添付ファイルをダウンロードする機能を実装 */}
-						なし
-					</p>
+
+					{score && (
+						<>
+							<DefaultSeparator
+								orientation="vertical"
+								className="hidden md:block"
+							/>
+							<DefaultSeparator
+								orientation="horizontal"
+								className="md:hidden"
+							/>
+
+							{/* 採点の結果 */}
+							<div className="flex-1">
+								<div className="mb-6">
+									<div className="mb-2 flex items-center gap-2">
+										<span className="font-medium">採点の結果</span>
+									</div>
+									<p className="ml-6 text-default-600">
+										{score !== null
+											? `${score}/${targetAssignment.points} 点`
+											: "まだ採点されていません"}
+									</p>
+								</div>
+							</div>
+						</>
+					)}
 				</div>
 			</div>
 		</BaseCard>

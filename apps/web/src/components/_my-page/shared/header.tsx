@@ -1,6 +1,7 @@
 import type { UserData } from "@lms-repo/auth/web";
 import { authClient } from "@lms-repo/auth/web";
 import { Books } from "@lms-repo/ui/assets/icons/books";
+import { List } from "@lms-repo/ui/assets/icons/list";
 import { DropdownMenuForAccount } from "@lms-repo/ui/components/dropdown-menus/account-dropdown";
 import {
 	DropdownMenuForNavLink,
@@ -11,7 +12,12 @@ import { ThemeSwitch } from "@lms-repo/ui/components/switch";
 import { toast } from "@lms-repo/ui/components/toast";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
-export function Header({ email, name, image }: UserData) {
+export function Header({
+	email,
+	name,
+	image,
+	role,
+}: UserData & { role?: string | null }) {
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -47,25 +53,38 @@ export function Header({ email, name, image }: UserData) {
 		<div className="sticky inset-x-0 top-0 z-50 backdrop-blur-lg">
 			<div className="flex flex-row items-center justify-between px-3 py-2">
 				<nav className="flex items-center gap-4 text-lg">
-					<DropdownMenuForNavLink LinkComponent={Link} />
+					{role === "student" && (
+						<DropdownMenuForNavLink LinkComponent={Link} />
+					)}
 					<div className="flex items-center gap-2">
 						<Books />
 						<h1 className="font-bold text-3xl">LMS</h1>
 					</div>
 					<DefaultSeparator orientation="vertical" className="max-md:hidden" />
-					{links.map(({ icon, to, label }) => {
-						return (
-							<Link
-								key={to}
-								to={to}
-								className={`nav-link nav-link-shrink ${location.pathname === to && "nav-link-active"}
+					{role === "student" &&
+						links.map(({ icon, to, label }) => {
+							return (
+								<Link
+									key={to}
+									to={to}
+									className={`nav-link nav-link-shrink ${location.pathname === to && "nav-link-active"}
 								`}
-							>
-								<span>{icon}</span>
-								<p>{label}</p>
-							</Link>
-						);
-					})}
+								>
+									<span>{icon}</span>
+									<p>{label}</p>
+								</Link>
+							);
+						})}
+					{role === "professor" && (
+						<Link
+							to="/course-management"
+							className={`nav-link ${location.pathname === "/course-management" && "nav-link-active"}
+								`}
+						>
+							<List />
+							<p>講義の管理</p>
+						</Link>
+					)}
 				</nav>
 				<div className="flex items-center gap-2">
 					<ThemeSwitch />

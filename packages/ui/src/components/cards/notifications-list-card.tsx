@@ -2,21 +2,19 @@ import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/noti
 import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
+import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
 import { formatTimestamp } from "@lms-repo/ui/lib/utils";
-import { AnimatePresence, LayoutGroup } from "motion/react";
+import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { useState } from "react";
 import { DefaultButton } from "../button";
 import { BaseCard } from "../cards/base-card";
 import { LazyMotionProvider } from "../lazymotion-provider";
 import { Loader } from "../loader";
-import { NotificationsModal } from "../modals/notifications-modal";
 
 interface NotificationsListCardProps {
 	notifications: FetchNotificationsReturnType;
-	markAsRead: (id: string) => void;
-	markAllAsRead: () => void;
-	deleteNotification: (id: string) => void;
+	markAsRead: (id?: string) => void;
+	deleteNotification: (id?: string) => void;
 	hasNextPage?: boolean;
 	fetchNextPage?: () => void;
 	isFetchingNextPage?: boolean;
@@ -25,15 +23,13 @@ interface NotificationsListCardProps {
 export function NotificationsListCard({
 	notifications,
 	markAsRead,
-	markAllAsRead,
 	deleteNotification,
 	hasNextPage = false,
 	fetchNextPage,
 	isFetchingNextPage = false,
 }: NotificationsListCardProps) {
-	const [selectedNotification, setSelectedNotification] = useState<
-		string | null
-	>(null);
+	const { expandedId, toggleExpand } = useToggleExpand();
+
 	const sentinelRef = useInfiniteScroll({
 		hasNextPage,
 		isFetchingNextPage,
@@ -44,130 +40,128 @@ export function NotificationsListCard({
 
 	return (
 		<LazyMotionProvider>
-			<LayoutGroup>
-				<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50/30 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-purple-900/20">
-					{/* Decorative background elements */}
-					<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/10 blur-2xl" />
-					<div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-gradient-to-tr from-pink-400/10 to-purple-400/10 blur-xl" />
+			<BaseCard className="relative overflow-hidden border-0 bg-gradient-to-br from-white to-purple-50/30 shadow-lg backdrop-blur-sm dark:from-gray-800 dark:to-purple-900/20">
+				{/* Decorative background elements */}
+				<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-purple-400/10 to-pink-400/10 blur-2xl" />
+				<div className="absolute -bottom-8 -left-8 h-24 w-24 rounded-full bg-gradient-to-tr from-pink-400/10 to-purple-400/10 blur-xl" />
 
-					<div className="relative z-10">
-						<div className="sticky top-0 z-10 border-b p-3">
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-2">
-									<BellAnimation width={24} height={24} />
-									<h1 className="font-semibold text-lg">通知</h1>
-									{unreadCount > 0 && (
-										<span className="rounded-full bg-red-500 px-2 py-1 font-medium text-white text-xs">
-											{unreadCount}
-										</span>
-									)}
-								</div>
+				<div className="relative z-10">
+					<div className="sticky top-0 z-10 border-b p-3">
+						<div className="flex items-center justify-between">
+							<div className="flex items-center gap-2">
+								<BellAnimation width={24} height={24} />
+								<h1 className="font-semibold text-lg">通知</h1>
 								{unreadCount > 0 && (
-									<DefaultButton size="sm" onPress={markAllAsRead}>
-										すべて既読
-									</DefaultButton>
+									<span className="rounded-full bg-red-500 px-2 py-1 font-medium text-white text-xs">
+										{unreadCount}
+									</span>
 								)}
 							</div>
+							{unreadCount > 0 && (
+								<DefaultButton size="sm" onPress={() => markAsRead()}>
+									すべて既読
+								</DefaultButton>
+							)}
 						</div>
+					</div>
 
-						<div className="max-h-[480px] overflow-y-auto">
-							{notifications.length === 0 ? (
-								<m.div
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ duration: 0.3 }}
-									className="relative flex h-full flex-col items-center justify-center p-12 text-gray-500 dark:text-gray-400"
-								>
-									<div className="relative z-10">
-										<p className="font-medium">通知はありません</p>
-										<p className="mt-1 text-sm">
-											新しい通知がここに表示されます
-										</p>
-									</div>
-								</m.div>
-							) : (
-								<m.div
-									className="space-y-3 p-4"
-									initial={{ opacity: 0 }}
-									animate={{ opacity: 1 }}
-									transition={{ duration: 0.3 }}
-								>
+					<div className="max-h-[480px] overflow-y-auto">
+						{notifications.length === 0 ? (
+							<m.div
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.3 }}
+								className="relative flex h-full flex-col items-center justify-center p-12 text-gray-500 dark:text-gray-400"
+							>
+								<div className="relative z-10">
+									<p className="font-medium">通知はありません</p>
+									<p className="mt-1 text-sm">新しい通知がここに表示されます</p>
+								</div>
+							</m.div>
+						) : (
+							<m.div
+								className="space-y-3 p-4"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								transition={{ duration: 0.3 }}
+							>
+								<ul className="space-y-3">
 									<AnimatePresence initial={false} mode="popLayout">
-										<ul className="space-y-3">
-											{notifications.map((notification) => (
-												<m.li
-													key={notification.id}
-													layoutId={notification.id}
-													initial={{ opacity: 0, y: 50, scale: 0.3 }}
-													animate={{ opacity: 1, y: 0, scale: 1 }}
-													transition={{ duration: 0.3 }}
-													exit={{
-														opacity: 0,
-														scale: 0.5,
-													}}
-													whileHover={{ scale: 1.02 }}
-													className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
-														!notification.isRead ? "font-semibold" : ""
-													} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
-													onClick={() => {
+										{notifications.map((notification) => (
+											<m.li
+												key={notification.id}
+												initial={{ opacity: 0, y: 50, scale: 0.3 }}
+												animate={{ opacity: 1, y: 0, scale: 1 }}
+												exit={{
+													opacity: 0,
+													scale: 0.5,
+												}}
+												whileHover={{ scale: 1.02 }}
+												className={`relative cursor-pointer rounded-lg border p-3 transition-all dark:border-gray-700 ${
+													!notification.isRead && "font-semibold"
+												} bg-gradient-to-r from-white to-purple-50/50 hover:shadow-md dark:from-gray-800 dark:to-purple-900/30`}
+												onClick={(e) => {
+													if (!notification.isRead) {
 														markAsRead(notification.id);
-														setSelectedNotification(notification.id);
-													}}
-												>
-													<div className="flex items-start gap-3">
-														<div className="min-w-0 flex-1">
-															<div className="mb-1 flex items-center justify-between gap-2">
-																<h3 className="truncate font-medium text-gray-900 text-xs dark:text-gray-100">
-																	{notification.title}
-																</h3>
-																<p className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
-																	{formatTimestamp(notification.createdAt)}
-																</p>
-															</div>
-															<p className="line-clamp-2 whitespace-pre-wrap text-gray-600 text-xs dark:text-gray-400">
+													}
+													toggleExpand(e, notification.id);
+												}}
+											>
+												<div className="flex items-start gap-3">
+													<div className="min-w-0 flex-1">
+														<div className="mb-1 flex items-center justify-between gap-2">
+															<h3
+																className={`font-medium text-gray-900 text-xs dark:text-gray-100 ${expandedId !== notification.id && "truncate"}`}
+															>
+																{notification.title}
+															</h3>
+															<p className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
+																{formatTimestamp(notification.createdAt)}
+															</p>
+														</div>
+														<div className="text-left">
+															<p
+																className={`whitespace-pre-wrap text-gray-600 text-xs leading-relaxed transition-all dark:text-gray-400 ${
+																	expandedId === notification.id
+																		? "line-clamp-none"
+																		: "line-clamp-2"
+																}`}
+															>
 																{notification.description}
 															</p>
 														</div>
 													</div>
+												</div>
 
-													{!notification.isRead && (
-														<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
-													)}
-													<m.button
-														whileHover={{ scale: 1.1 }}
-														whileTap={{ scale: 0.9 }}
-														onClick={(e) => {
-															e.stopPropagation();
-															deleteNotification(notification.id);
-														}}
-														className="absolute right-1 bottom-1 rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
-													>
-														<Close width={18} height={18} />
-													</m.button>
-												</m.li>
-											))}
-										</ul>
+												{!notification.isRead && (
+													<div className="absolute top-1 right-1 h-2 w-2 rounded-full bg-blue-500" />
+												)}
+												<m.button
+													whileHover={{ scale: 1.1 }}
+													whileTap={{ scale: 0.9 }}
+													onClick={(e) => {
+														e.stopPropagation();
+														deleteNotification(notification.id);
+													}}
+													className="absolute right-1 bottom-1 rounded-full p-1 text-gray-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
+												>
+													<Close width={18} height={18} />
+												</m.button>
+											</m.li>
+										))}
 									</AnimatePresence>
-									{hasNextPage && (
-										<div ref={sentinelRef} className="py-2">
-											{isFetchingNextPage && <Loader />}
-										</div>
-									)}
-								</m.div>
-							)}
-						</div>
-					</div>
-				</BaseCard>
+								</ul>
 
-				{/* Notification Modal */}
-				<NotificationsModal
-					notification={
-						notifications.find((n) => n.id === selectedNotification) || null
-					}
-					onClose={() => setSelectedNotification(null)}
-					onDelete={deleteNotification}
-				/>
-			</LayoutGroup>
+								{hasNextPage && (
+									<div ref={sentinelRef} className="py-2">
+										{isFetchingNextPage && <Loader />}
+									</div>
+								)}
+							</m.div>
+						)}
+					</div>
+				</div>
+			</BaseCard>
 		</LazyMotionProvider>
 	);
 }
