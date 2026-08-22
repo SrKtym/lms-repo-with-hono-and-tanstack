@@ -1,24 +1,24 @@
 import { Hono } from "hono";
-import { announcementsRoute } from "./routes/announcements";
-import { assignmentsRoute } from "./routes/assignments";
-import { commentsRoute } from "./routes/comments";
-import { coursesRoute } from "./routes/courses";
-import { notificationsRoute } from "./routes/notifications";
-import { schedulesRoute } from "./routes/schedules";
-import { settingsRoute } from "./routes/settings";
+import { announcementsRouteForCommon } from "./routes/announcements";
+import { assignmentsRouteForCommon } from "./routes/assignments";
+import { commentsRouteForCommon } from "./routes/comments";
+import { coursesRouteForCommon } from "./routes/courses";
+import { notificationsRouteForCommon } from "./routes/notifications";
+import { professorsRoute } from "./routes/professors";
+import { settingsRouteForCommon } from "./routes/settings";
 import { studentsRoute } from "./routes/students";
-import { submissionsRoute } from "./routes/submissions";
+import { submissionsRouteForCommon } from "./routes/submissions";
 
 export const fullRoutes = new Hono()
 	.basePath("/api")
-	.route("/courses", coursesRoute)
-	.route("/schedules", schedulesRoute)
-	.route("/assignments", assignmentsRoute)
-	.route("/announcements", announcementsRoute)
-	.route("/submissions", submissionsRoute)
-	.route("/notifications", notificationsRoute)
+	.route("/assignments", assignmentsRouteForCommon)
+	.route("/announcements", announcementsRouteForCommon)
+	.route("/comments", commentsRouteForCommon)
+	.route("/courses", coursesRouteForCommon)
+	.route("/notifications", notificationsRouteForCommon)
+	.route("/professors", professorsRoute)
+	.route("/settings", settingsRouteForCommon)
 	.route("/students", studentsRoute)
-	.route("/comments", commentsRoute)
-	.route("/settings", settingsRoute);
+	.route("/submissions", submissionsRouteForCommon);
 
 export type FullRoutes = typeof fullRoutes;
