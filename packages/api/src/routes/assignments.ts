@@ -23,8 +23,8 @@ const formSchema = z.object({
 	courseId: z.string().min(1),
 });
 
-// 課題に関するロジック
-export const assignmentsRoute = new Hono<{
+// 課題に関するロジック（教員用）
+export const assignmentsRouteForProf = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];
@@ -32,22 +32,21 @@ export const assignmentsRoute = new Hono<{
 }>()
 	// 課題作成
 	.post("/", zValidator("json", formSchema), async (c) => {
-		const { userId } = c.get("session");
 		const assignmentData = c.req.valid("json");
-		const result = await createAssignments(assignmentData, userId);
+		const result = await createAssignments(assignmentData);
 
 		if ("message" in result) {
 			return c.json(result);
 		}
 
-		if (result[0]) {
+		if (result) {
 			const dateOptions: Intl.DateTimeFormatOptions = {
 				year: "numeric",
 				month: "short",
 				day: "numeric",
 			};
 
-			const { emails, title, description, dueDate } = result[0];
+			const { emails, title, description, dueDate } = result;
 
 			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
@@ -64,8 +63,16 @@ export const assignmentsRoute = new Hono<{
 			});
 		}
 
-		return c.json({ message: "課題を作成しました", status: 201 });
-	})
+		return c.json({ message: "課題を作成しました" }, 201);
+	});
+
+// 課題に関するロジック（共通）
+export const assignmentsRouteForCommon = new Hono<{
+	Variables: {
+		user: Session["user"];
+		session: Session["session"];
+	};
+}>()
 	// 課題一覧取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");

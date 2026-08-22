@@ -6,7 +6,7 @@ import { fetchCommentsWithAssignment } from "@lms-repo/db/utils/query/comments";
 import { Hono } from "hono";
 import { z } from "zod";
 
-export const commentsRoute = new Hono<{
+export const commentsRouteForCommon = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];
