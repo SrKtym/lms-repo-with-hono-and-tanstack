@@ -1,6 +1,6 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { Courses } from "@lms-repo/db/types";
+import type { Courses, CoursesOptional } from "@lms-repo/db/types";
 import {
 	checkCourse,
 	createCourses,
@@ -10,32 +10,21 @@ import {
 import {
 	fetchCompletedCourses,
 	fetchCourses,
+	fetchCreatedCourses,
 	fetchRegisteredCourses,
 } from "@lms-repo/db/utils/query/courses";
+import { fetchProfData } from "@lms-repo/db/utils/query/professors";
+import { fetchMembersByCourseId } from "@lms-repo/db/utils/query/students";
 import { Hono } from "hono";
 import { z } from "zod";
 
-// 講義に関するロジック
-export const coursesRoute = new Hono<{
+// 講義に関するロジック（学生用）
+export const coursesRouteForStudent = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];
 	};
 }>()
-	// 講義作成
-	.post(
-		"/",
-		zValidator("json", z.custom<Omit<Courses, "professorId">>()),
-		async (c) => {
-			const { userId } = c.get("session");
-			const courseData = c.req.valid("json");
-			const result = await createCourses({
-				...courseData,
-				professorId: userId,
-			});
-			return c.json(result);
-		},
-	)
 	// 講義検索
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
@@ -94,3 +83,51 @@ export const coursesRoute = new Hono<{
 			return c.json(result);
 		},
 	);
+
+// 講義に関するロジック（教員用）
+export const coursesRouteForProf = new Hono<{
+	Variables: {
+		user: Session["user"];
+		session: Session["session"];
+	};
+}>() // 講義作成
+	.post(
+		"/",
+		zValidator("json", z.custom<Omit<Courses, CoursesOptional>>()),
+		async (c) => {
+			const { userId } = c.get("session");
+			const courseData = c.req.valid("json");
+			const department = await fetchProfData(userId);
+
+			if (!department) {
+				return c.json({ message: "学科が見つかりません" }, 404);
+			}
+
+			const result = await createCourses({
+				...courseData,
+				departmentId: department.departmentId,
+				professorId: userId,
+			});
+			return c.json(result);
+		},
+	)
+	// 作成した講義を取得
+	.get("/created", async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchCreatedCourses(userId);
+		return c.json(result, 200);
+	});
+
+// 講義に関連するロジック（共通用）
+export const coursesRouteForCommon = new Hono<{
+	Variables: {
+		user: Session["user"];
+		session: Session["session"];
+	};
+}>()
+	// 講義を登録しているメンバーの取得
+	.get("/:courseId", async (c) => {
+		const { courseId } = c.req.param();
+		const result = await fetchMembersByCourseId(courseId);
+		return c.json(result);
+	});
