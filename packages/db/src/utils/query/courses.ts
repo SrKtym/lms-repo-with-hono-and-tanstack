@@ -17,7 +17,7 @@ export async function fetchCourses(
 	offset = 0,
 ) {
 	// ユーザーの学科情報を取得
-	const studentInfo = await db
+	const [studentInfo] = await db
 		.select({
 			departmentId: students.departmentId,
 			grade: students.grade,
@@ -26,11 +26,11 @@ export async function fetchCourses(
 		.where(eq(students.id, userId))
 		.limit(1);
 
-	if (!studentInfo[0]) {
+	if (!studentInfo) {
 		return [];
 	}
 
-	const { departmentId, grade } = studentInfo[0];
+	const { departmentId, grade } = studentInfo;
 
 	// 登録可能な講義を取得
 	const courseList = await db
@@ -102,7 +102,7 @@ export type FetchRegisteredCoursesReturnType = Awaited<
 
 // 学生が修了した講義の単位数の合計を取得する
 export async function fetchCompletedCourses(userId: string) {
-	const completedCoursesCredits = await db
+	const [completedCoursesCredits] = await db
 		.select({
 			totalCredits: sql<number>`sum(${courses.credits})`,
 		})
@@ -110,11 +110,37 @@ export async function fetchCompletedCourses(userId: string) {
 		.innerJoin(registration, eq(courses.id, registration.courseId))
 		.where(
 			and(eq(registration.userId, userId), eq(registration.isCompleted, true)),
-		);
+		)
+		.limit(1);
 
 	return completedCoursesCredits;
 }
 
 export type FetchCompletedCoursesReturnType = Awaited<
 	ReturnType<typeof fetchCompletedCourses>
+>;
+
+// 作成した講義を取得する（教員用）
+export async function fetchCreatedCourses(userId: string) {
+	const createdCourseList = await db
+		.select({
+			id: courses.id,
+			name: courses.name,
+			weekdays: courses.weekdays,
+			period: courses.period,
+			credits: courses.credits,
+			targetGrade: courses.targetGrade,
+			requirements: courses.requirements,
+			classRoom: courses.classRoom,
+			professor: user.name,
+		})
+		.from(courses)
+		.innerJoin(user, eq(courses.professorId, user.id))
+		.where(eq(courses.professorId, userId));
+
+	return createdCourseList;
+}
+
+export type FetchCreatedCoursesReturnType = Awaited<
+	ReturnType<typeof fetchCreatedCourses>
 >;
