@@ -6,6 +6,7 @@ import {
 	notifications,
 	registration,
 	students,
+	userNotifications,
 } from "../../schema";
 import type { Courses } from "../../types";
 
@@ -24,7 +25,7 @@ export async function registerCourses(courseId: string, userId: string) {
 	try {
 		const result = await db.transaction(async (tx) => {
 			// 登録しようとする講義の曜日・時限・単位数を取得
-			const targetCourse = await tx
+			const [targetCourse] = await tx
 				.select({
 					weekdays: courses.weekdays,
 					period: courses.period,
@@ -34,14 +35,14 @@ export async function registerCourses(courseId: string, userId: string) {
 				.where(eq(courses.id, courseId))
 				.limit(1);
 
-			if (targetCourse.length === 0 || !targetCourse[0]) {
+			if (!targetCourse) {
 				return { message: "指定された講義が見つかりません。", status: 404 };
 			}
 
-			const { weekdays, period, credits } = targetCourse[0];
+			const { weekdays, period, credits } = targetCourse;
 
 			// ユーザーの学科情報を取得
-			const studentInfo = await tx
+			const [studentInfo] = await tx
 				.select({
 					departmentId: students.departmentId,
 					grade: students.grade,
@@ -50,11 +51,11 @@ export async function registerCourses(courseId: string, userId: string) {
 				.where(eq(students.id, userId))
 				.limit(1);
 
-			if (!studentInfo[0]) {
+			if (!studentInfo) {
 				return { message: "学生情報が見つかりません。", status: 404 };
 			}
 
-			const { departmentId, grade } = studentInfo[0];
+			const { departmentId, grade } = studentInfo;
 
 			// 1. 同じ曜日・時限に必修の講義があるか確認する
 			const requiredCourses = await tx
@@ -141,7 +142,7 @@ export async function registerCourses(courseId: string, userId: string) {
 			}
 
 			// 3. ユーザーが既に同じ曜日・時限の講義を登録していないかチェック
-			const conflictingCourse = await tx
+			const [conflictingCourse] = await tx
 				.select({
 					courseId: courses.id,
 				})
@@ -157,32 +158,29 @@ export async function registerCourses(courseId: string, userId: string) {
 				.limit(1);
 
 			// 3-1. 重複がある場合、登録講義を更新する
-			if (conflictingCourse.length > 0) {
-				const existingCourse = conflictingCourse[0];
-				if (existingCourse?.courseId === courseId) {
+			if (conflictingCourse) {
+				if (conflictingCourse.courseId === courseId) {
 					return {
 						message: "既に同じ講義を登録しています。",
 						status: 400,
 					};
 				}
-				if (existingCourse) {
-					await tx
-						.update(registration)
-						.set({
-							courseId,
-						})
-						.where(
-							and(
-								eq(registration.courseId, existingCourse.courseId),
-								eq(registration.userId, userId),
-							),
-						);
+				await tx
+					.update(registration)
+					.set({
+						courseId,
+					})
+					.where(
+						and(
+							eq(registration.courseId, conflictingCourse.courseId),
+							eq(registration.userId, userId),
+						),
+					);
 
-					return {
-						message: "登録講義の更新に成功しました。",
-						status: 200,
-					};
-				}
+				return {
+					message: "登録講義の更新に成功しました。",
+					status: 200,
+				};
 			}
 
 			// 重複がなければ講義を登録
@@ -214,15 +212,27 @@ export async function checkCourse(userId: string) {
 				.where(eq(registration.userId, userId));
 
 			// 通知の作成
-			await tx
+			const [notification] = await tx
 				.insert(notifications)
 				.values({
 					title: "履修登録が完了しました。",
 					description: "指定された期日まで登録内容を編集することができます。",
-					sender: "system",
-					receiver: "students",
+					type: "system",
+				})
+				.returning({
+					id: notifications.id,
 				})
 				.onConflictDoNothing();
+
+			if (notification) {
+				await tx
+					.insert(userNotifications)
+					.values({
+						userId,
+						notificationId: notification.id,
+					})
+					.onConflictDoNothing();
+			}
 		});
 
 		return { message: "登録講義の確定に成功しました。", status: 200 };
