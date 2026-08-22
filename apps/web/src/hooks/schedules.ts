@@ -1,9 +1,12 @@
 import type { Schedules } from "@lms-repo/db/types";
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
-import { fetchSchedulesQueryFn } from "@/utils/query-utils";
+import {
+	createScheduleMutationFn,
+	deleteScheduleMutationFn,
+} from "@/utils/mutation/schedules";
+import { fetchSchedulesQueryFn } from "@/utils/query/schedules";
 
 // スケジュールを取得するカスタムフック
 export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
@@ -17,13 +20,7 @@ export const useSchedules = (initialData?: FetchSchedulesReturnType) => {
 // スケジュールを作成するカスタムフック
 export const useCreateSchedule = () => {
 	return useMutation({
-		mutationFn: async (scheduleData: Omit<Schedules, "createdBy">) => {
-			const res = await client.api.schedules.$post({
-				json: scheduleData,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: createScheduleMutationFn,
 		onMutate: async (scheduleData) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["schedules"] });
@@ -55,13 +52,7 @@ export const useCreateSchedule = () => {
 // スケジュールを削除するカスタムフック
 export const useDeleteSchedule = () => {
 	return useMutation({
-		mutationFn: async (scheduleId: string) => {
-			const res = await client.api.schedules.$delete({
-				json: { scheduleId },
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: deleteScheduleMutationFn,
 		onMutate: async (scheduleId) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["schedules"] });

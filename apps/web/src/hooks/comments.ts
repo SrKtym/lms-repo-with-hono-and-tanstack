@@ -1,29 +1,22 @@
-import type { Comments } from "@lms-repo/db/types";
 import type { FetchCommentsWithAssignmentReturnType } from "@lms-repo/db/utils/query/comments";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import { fetchCommentsWithAssignmentQueryFn } from "../utils/query-utils";
+import { createCommentMutationFn } from "@/utils/mutation/comments";
+import { fetchCommentsWithAssignmentQueryFn } from "@/utils/query/comments";
 
 // 課題についてのコメントを取得するカスタムフック
 export const useCommentsWithAssignment = (assignmentId: string) => {
 	return useQuery({
 		queryKey: ["comments-with-assignment", assignmentId],
 		queryFn: () => fetchCommentsWithAssignmentQueryFn(assignmentId),
-		...QUERY_CONFIG.STUDENT_DATA,
+		...QUERY_CONFIG.USER_DATA,
 	});
 };
 
 // コメントを作成するカスタムフック
 export const useCreateComment = () => {
 	return useMutation({
-		mutationFn: async (comment: Omit<Comments, "createdBy">) => {
-			const res = await client.api.comments.$post({
-				json: comment,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: createCommentMutationFn,
 		onMutate: async (newComment) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({

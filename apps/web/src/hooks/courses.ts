@@ -1,16 +1,20 @@
-import type { Courses } from "@lms-repo/db/types";
 import type {
 	FetchCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
 import { toast } from "@lms-repo/ui/components/toast";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import {
+	checkCourseMutationFn,
+	createCourseMutationFn,
+	registerCourseMutationFn,
+	unregisterCourseMutationFn,
+} from "@/utils/mutation/courses";
 import {
 	fetchCoursesByWeekdayAndPeriodQueryFn,
 	fetchRegisteredCoursesQueryFn,
-} from "@/utils/query-utils";
+} from "@/utils/query/courses";
 
 // トースト表示
 function showToast(error: { status: number; message: string }) {
@@ -33,7 +37,7 @@ export const useRegisteredCourses = (
 	return useQuery({
 		queryKey: ["registered-courses"],
 		queryFn: fetchRegisteredCoursesQueryFn,
-		...QUERY_CONFIG.STUDENT_DATA,
+		...QUERY_CONFIG.USER_DATA,
 		initialData,
 	});
 };
@@ -52,7 +56,7 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 		},
 		initialPageParam: 0,
 		enabled: !!weekdays && !!period,
-		...QUERY_CONFIG.STUDENT_DATA,
+		...QUERY_CONFIG.USER_DATA,
 		getNextPageParam: (lastPage, allPages) => {
 			if (lastPage.length < 10) {
 				return; // データが10件未満の場合はこれ以上データがない
@@ -65,16 +69,10 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 // 講義を作成するカスタムフック
 export const useCreateCourse = () => {
 	return useMutation({
-		mutationFn: async (courseData: Omit<Courses, "professorId">) => {
-			const res = await client.api.courses.$post({
-				json: courseData,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: createCourseMutationFn,
 		onSettled: () => {
 			// ミューテーションの成功時も失敗時も再フェッチする
-			queryClient.invalidateQueries({ queryKey: ["announcements"] });
+			queryClient.invalidateQueries({ queryKey: ["created-courses"] });
 		},
 	});
 };
@@ -82,13 +80,7 @@ export const useCreateCourse = () => {
 // 講義を登録するカスタムフック
 export const useRegisterCourse = (searchCourses?: FetchCoursesReturnType) => {
 	return useMutation({
-		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.registered.$post({
-				json: { courseId },
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: registerCourseMutationFn,
 		onMutate: async (courseId) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
@@ -129,13 +121,7 @@ export const useRegisterCourse = (searchCourses?: FetchCoursesReturnType) => {
 // 講義を登録解除するカスタムフック
 export const useUnregisterCourse = () => {
 	return useMutation({
-		mutationFn: async (courseId: string) => {
-			const res = await client.api.courses.registered.$delete({
-				json: { courseId },
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: unregisterCourseMutationFn,
 		onMutate: async (courseId) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["registered-courses"] });
@@ -172,11 +158,7 @@ export const useUnregisterCourse = () => {
 // 登録講義を確定するカスタムフック
 export const useCheckCourse = () => {
 	return useMutation({
-		mutationFn: async () => {
-			const res = await client.api.courses.registered.$patch();
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: checkCourseMutationFn,
 		onSuccess: (data) => showToast(data),
 		onSettled: () => {
 			// ミューテーションの成功時も失敗時も再フェッチする

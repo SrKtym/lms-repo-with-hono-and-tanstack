@@ -1,9 +1,8 @@
-import type { Assignments } from "@lms-repo/db/types";
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { client } from "@/lib/hono-client";
 import { queryClient } from "@/lib/query-client";
-import { fetchAssignmentsQueryFn } from "../utils/query-utils";
+import { createAssignmentMutationFn } from "@/utils/mutation/assignments";
+import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
 
 // 登録済み講義に関連する課題を取得するカスタムフック
 export const useAssignments = (
@@ -19,13 +18,7 @@ export const useAssignments = (
 // 課題を作成するカスタムフック
 export const useCreateAssignment = () => {
 	return useMutation({
-		mutationFn: async (assignmentData: Assignments) => {
-			const res = await client.api.assignments.$post({
-				json: assignmentData,
-			});
-			const data = await res.json();
-			return data;
-		},
+		mutationFn: createAssignmentMutationFn,
 		onMutate: async (newAssignment) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({
