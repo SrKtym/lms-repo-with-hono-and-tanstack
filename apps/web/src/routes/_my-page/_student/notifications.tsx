@@ -57,17 +57,29 @@ export const Route = createFileRoute("/_my-page/_student/notifications")({
 });
 
 function RouteComponent() {
+	const options = ["all", "unread", "read"] as const;
+	const itemsPerPageOptions = ["10", "20", "50"];
+
 	const { initialNotifications, limit, page, filter } = Route.useLoaderData();
 	const navigate = useNavigate();
+
+	// 通知の取得
 	const { data: notifications = [] } = useNotificationsPaginated(
 		page,
 		limit,
 		initialNotifications,
 	);
+
+	// 通知の総数を取得
 	const { data: totalItems = 0 } = useNotificationsCount(filter);
 
-	const options = ["all", "unread", "read"] as const;
-	const itemsPerPageOptions = ["10", "20", "50"];
+	// 通知を既読にする
+	const { mutate: markAsRead, isPending: isMarking } =
+		useMarkNotificationAsRead();
+
+	// 通知を削除
+	const { mutate: deleteNotification, isPending: isDeleting } =
+		useDeleteNotification();
 
 	const { expandedId, toggleExpand } = useToggleExpand();
 	const [selectedItemsPerPage, setSelectedItemsPerPage] = useState(
@@ -128,12 +140,6 @@ function RouteComponent() {
 		});
 	};
 
-	// 通知を既読にする
-	const { mutate: markAsRead, isPending } = useMarkNotificationAsRead();
-
-	// 通知を削除
-	const { mutate: deleteNotification } = useDeleteNotification();
-
 	return (
 		<div className="space-y-6 p-3">
 			<LazyMotionProvider>
@@ -154,13 +160,19 @@ function RouteComponent() {
 					</div>
 					<div className="flex items-center gap-2">
 						{unreadCount > 0 && (
-							<DefaultButton onPress={() => markAsRead} isPending={isPending}>
+							<DefaultButton
+								onPress={() => markAsRead(undefined)}
+								isPending={isMarking}
+							>
 								<MessagesSquareCheck />
 								すべて既読
 							</DefaultButton>
 						)}
 						{notifications.length > 0 && (
-							<DangerButton onPress={() => deleteNotification}>
+							<DangerButton
+								onPress={() => deleteNotification(undefined)}
+								isPending={isDeleting}
+							>
 								<Trash />
 								すべて削除
 							</DangerButton>

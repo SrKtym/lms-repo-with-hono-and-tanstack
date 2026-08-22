@@ -3,7 +3,6 @@ import type { Session } from "@lms-repo/auth/server";
 import {
 	createReminder,
 	deleteNotification,
-	markAllNotificationsAsRead,
 	markNotificationAsRead,
 } from "@lms-repo/db/utils/mutation/notifications";
 import {
@@ -16,35 +15,25 @@ import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { z } from "zod";
 
-// 通知に関するロジック
-export const notificationsRoute = new Hono<{
+// 通知に関するロジック(学生用)
+export const notificationsRouteForStudent = new Hono<{
 	Variables: {
 		user: Session["user"];
 		session: Session["session"];
 	};
 }>()
 	// 通知取得
-	.get(
-		"/",
-		zValidator(
-			"query",
-			z.object({
-				limit: z.coerce.number().int().positive().default(10),
-				offset: z.coerce.number().int().nonnegative().default(0),
-			}),
-		),
-		async (c) => {
-			const { userId } = c.get("session");
-			const { limit, offset } = c.req.valid("query");
+	.get("/", async (c) => {
+		const { userId } = c.get("session");
+		const { limit, offset } = c.req.query();
 
-			const notificationList = await fetchNotifications(
-				userId,
-				Number(limit),
-				Number(offset),
-			);
-			return c.json(notificationList, 200);
-		},
-	)
+		const notificationList = await fetchNotifications(
+			userId,
+			Number(limit),
+			Number(offset),
+		);
+		return c.json(notificationList, 200);
+	})
 	// 通知総数取得
 	.get(
 		"/count",
@@ -61,25 +50,41 @@ export const notificationsRoute = new Hono<{
 	)
 	// 通知既読
 	.patch(
-		"/:id/mark_as_read",
-		zValidator("param", z.object({ id: z.string() })),
+		"/mark_as_read",
+		zValidator("json", z.object({ notificationId: z.string() })),
 		async (c) => {
-			const id = c.req.param("id");
-			const result = await markNotificationAsRead(id);
+			const { notificationId } = c.req.valid("json");
+			const { userId } = c.get("session");
+			const result = await markNotificationAsRead(userId, notificationId);
 			return c.json(result);
 		},
 	)
-	// すべての通知を既読
+	// すべての通知を既読にする
 	.patch("/mark_all_as_read", async (c) => {
-		const result = await markAllNotificationsAsRead();
+		const { userId } = c.get("session");
+		const result = await markNotificationAsRead(userId);
 		return c.json(result);
 	})
 	// 通知削除
-	.delete("/:id", async (c) => {
-		const id = c.req.param("id");
-		const result = await deleteNotification(id);
+	.delete(
+		"/",
+		zValidator("json", z.object({ notificationId: z.string() })),
+		async (c) => {
+			const { notificationId } = c.req.valid("json");
+			const { userId } = c.get("session");
+			const result = await deleteNotification(userId, notificationId);
+			return c.json(result);
+		},
+	)
+	// すべての通知を削除する
+	.delete("/all", async (c) => {
+		const { userId } = c.get("session");
+		const result = await deleteNotification(userId);
 		return c.json(result);
-	})
+	});
+
+// 通知に関するロジック(公開API)
+export const notificationsRouteForCommon = new Hono()
 	// リマインダーの作成（Cloud Schedulerによって定期実行される）
 	.post("/reminder", async (c) => {
 		const result = await createReminder();
@@ -116,5 +121,5 @@ export const notificationsRoute = new Hono<{
 			});
 		}
 
-		return c.json({ message: "リマインダーを作成しました", status: 201 });
+		return c.json({ message: "リマインダーを作成しました" }, 201);
 	});
