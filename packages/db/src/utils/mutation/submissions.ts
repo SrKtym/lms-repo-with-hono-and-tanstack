@@ -10,7 +10,16 @@ import type { FileSubmissionsMetadata, TextSubmissions } from "../../types";
 // テキスト形式の提出
 export const createTextSubmission = async (submission: TextSubmissions) => {
 	try {
-		await db.insert(textSubmissions).values(submission);
+		await db
+			.insert(textSubmissions)
+			.values(submission)
+			.onConflictDoUpdate({
+				target: [textSubmissions.assignmentId, textSubmissions.createdBy],
+				set: {
+					title: submission.title,
+					description: submission.description,
+				},
+			});
 		return { message: "テキスト提出に成功しました", status: 200 };
 	} catch {
 		return { message: "テキスト提出に失敗しました", status: 500 };
@@ -43,7 +52,7 @@ export const createFileSubmissionMetadata = async (
 export const updateSubmissionStatus = async (
 	assignmentId: string,
 	userId: string,
-	status: "未提出" | "提出済み" | "評定済み",
+	status: "未提出" | "提出済み",
 ) => {
 	try {
 		await db
@@ -60,6 +69,31 @@ export const updateSubmissionStatus = async (
 		return { message: "提出状況の更新に成功しました", status: 200 };
 	} catch {
 		return { message: "提出状況の更新に失敗しました", status: 500 };
+	}
+};
+
+// 採点（スコアとステータスの更新）
+export const updateSubmissionScore = async (
+	assignmentId: string,
+	userId: string,
+	score: number,
+) => {
+	try {
+		await db
+			.insert(submissionStatus)
+			.values({
+				assignmentId,
+				userId,
+				score,
+				status: "評定済み",
+			})
+			.onConflictDoUpdate({
+				target: [submissionStatus.assignmentId, submissionStatus.userId],
+				set: { score, status: "評定済み" },
+			});
+		return { message: "採点に成功しました", status: 200 };
+	} catch {
+		return { message: "採点に失敗しました", status: 500 };
 	}
 };
 
