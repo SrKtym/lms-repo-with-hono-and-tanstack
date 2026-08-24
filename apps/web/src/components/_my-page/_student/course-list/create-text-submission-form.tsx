@@ -4,6 +4,7 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultDisclosure } from "@lms-repo/ui/components/disclosure";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { toast } from "@lms-repo/ui/components/toast";
+import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { useSearch } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
@@ -59,14 +60,6 @@ export function CreateTextSubmissionForm() {
 			}),
 		},
 	});
-
-	const dateOptions: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-	};
 
 	return (
 		<form
@@ -192,7 +185,7 @@ export function CreateTextSubmissionForm() {
 													<p className="text-default-500 text-xs">
 														{new Date(submission.updatedAt).toLocaleString(
 															"default",
-															dateOptions,
+															DATE_FORMAT_CONFIG.TEXT_SUBMISSION,
 														)}
 													</p>
 												)}

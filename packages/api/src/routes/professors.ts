@@ -31,7 +31,7 @@ export const professorsRoute = new Hono<{
 		const { userId } = c.get("session");
 		const result = await fetchProfData(userId);
 		if (!result) {
-			return c.json({ message: "教員情報が見つかりません" }, 404);
+			return c.json({ error: "教員情報が見つかりません" }, 404);
 		}
 		return c.json(result);
 	})

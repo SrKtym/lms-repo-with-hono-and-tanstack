@@ -13,7 +13,7 @@ export async function registerProfData(userId: string, departmentName: string) {
 				.limit(1);
 
 			if (!department) {
-				return { message: "学科が見つかりません。", status: 404 };
+				return { error: "学科が見つかりません。", status: 404 };
 			}
 
 			await tx
@@ -26,6 +26,6 @@ export async function registerProfData(userId: string, departmentName: string) {
 		});
 		return { message: "学生の所属登録に成功しました。", status: 201 };
 	} catch {
-		return { message: "学生の所属登録に失敗しました。", status: 500 };
+		return { error: "学生の所属登録に失敗しました。", status: 500 };
 	}
 }

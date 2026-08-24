@@ -12,7 +12,7 @@ export async function createSchedules(schedulesData: Schedules) {
 		});
 		return { message: "スケジュールの作成に成功しました。", status: 200 };
 	} catch {
-		return { message: "スケジュールの作成に失敗しました。", status: 500 };
+		return { error: "スケジュールの作成に失敗しました。", status: 500 };
 	}
 }
 
@@ -22,6 +22,6 @@ export async function deleteSchedules(scheduleId: string) {
 		await db.delete(schedules).where(eq(schedules.id, scheduleId));
 		return { message: "スケジュールの削除に成功しました。", status: 200 };
 	} catch {
-		return { message: "スケジュールの削除に失敗しました。", status: 500 };
+		return { error: "スケジュールの削除に失敗しました。", status: 500 };
 	}
 }

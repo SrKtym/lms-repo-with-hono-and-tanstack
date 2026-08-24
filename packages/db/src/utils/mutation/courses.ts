@@ -1,14 +1,8 @@
 import { and, eq, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
-import {
-	courses,
-	departments,
-	notifications,
-	registration,
-	students,
-	userNotifications,
-} from "../../schema";
+import { courses, departments, registration, students } from "../../schema";
 import type { Courses } from "../../types";
+import { createNotificationForUser } from "./helpers";
 
 // 講義を作成する
 export async function createCourses(coursesData: Courses) {
@@ -16,7 +10,7 @@ export async function createCourses(coursesData: Courses) {
 		await db.insert(courses).values(coursesData).onConflictDoNothing();
 		return { message: "講義の作成に成功しました。", status: 201 };
 	} catch {
-		return { message: "講義の作成に失敗しました。", status: 500 };
+		return { error: "講義の作成に失敗しました。", status: 500 };
 	}
 }
 
@@ -36,7 +30,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				.limit(1);
 
 			if (!targetCourse) {
-				return { message: "指定された講義が見つかりません。", status: 404 };
+				return { error: "指定された講義が見つかりません。", status: 404 };
 			}
 
 			const { weekdays, period, credits } = targetCourse;
@@ -52,7 +46,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				.limit(1);
 
 			if (!studentInfo) {
-				return { message: "学生情報が見つかりません。", status: 404 };
+				return { error: "学生情報が見つかりません。", status: 404 };
 			}
 
 			const { departmentId, grade } = studentInfo;
@@ -87,7 +81,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				);
 				if (requiredCourseName && selectedIsNotRequied) {
 					return {
-						message: `同じ曜日・時限に必修の講義「${requiredCourseName}」が存在するため、登録できません。`,
+						error: `同じ曜日・時限に必修の講義「${requiredCourseName}」が存在するため、登録できません。`,
 						status: 400,
 					};
 				}
@@ -108,14 +102,14 @@ export async function registerCourses(courseId: string, userId: string) {
 
 				if (!selectedIsRequired) {
 					return {
-						message:
+						error:
 							"同じ曜日・時限に複数の必修の講義が存在するため、登録できません。",
 						status: 400,
 					};
 				}
 				if (selectedIsRequired && !selectedIsLowest) {
 					return {
-						message:
+						error:
 							"必修講義が複数存在する場合は、対象学年がより低い方を優先して登録してください。",
 						status: 400,
 					};
@@ -136,7 +130,7 @@ export async function registerCourses(courseId: string, userId: string) {
 
 			if (totalCredits >= 50) {
 				return {
-					message: `登録できる講義の単位数の上限に達しています。（現在: ${currentValue}単位 + 登録予定: ${credits}単位）`,
+					error: `登録できる講義の単位数の上限に達しています。（現在: ${currentValue}単位 + 登録予定: ${credits}単位）`,
 					status: 400,
 				};
 			}
@@ -161,7 +155,7 @@ export async function registerCourses(courseId: string, userId: string) {
 			if (conflictingCourse) {
 				if (conflictingCourse.courseId === courseId) {
 					return {
-						message: "既に同じ講義を登録しています。",
+						error: "既に同じ講義を登録しています。",
 						status: 400,
 					};
 				}
@@ -197,7 +191,7 @@ export async function registerCourses(courseId: string, userId: string) {
 
 		return result;
 	} catch {
-		return { message: "講義の登録に失敗しました。", status: 500 };
+		return { error: "講義の登録に失敗しました。", status: 500 };
 	}
 }
 
@@ -212,32 +206,20 @@ export async function checkCourse(userId: string) {
 				.where(eq(registration.userId, userId));
 
 			// 通知の作成
-			const [notification] = await tx
-				.insert(notifications)
-				.values({
+			await createNotificationForUser(
+				tx,
+				{
 					title: "履修登録が完了しました。",
 					description: "指定された期日まで登録内容を編集することができます。",
 					type: "system",
-				})
-				.returning({
-					id: notifications.id,
-				})
-				.onConflictDoNothing();
-
-			if (notification) {
-				await tx
-					.insert(userNotifications)
-					.values({
-						userId,
-						notificationId: notification.id,
-					})
-					.onConflictDoNothing();
-			}
+				},
+				userId,
+			);
 		});
 
 		return { message: "登録講義の確定に成功しました。", status: 200 };
 	} catch {
-		return { message: "登録講義の確定に失敗しました。", status: 500 };
+		return { error: "登録講義の確定に失敗しました。", status: 500 };
 	}
 }
 
@@ -254,6 +236,6 @@ export async function unregisterCourse(courseId: string, userId: string) {
 			);
 		return { message: "講義の登録解除に成功しました。", status: 200 };
 	} catch {
-		return { message: "講義の登録解除に失敗しました。", status: 500 };
+		return { error: "講義の登録解除に失敗しました。", status: 500 };
 	}
 }

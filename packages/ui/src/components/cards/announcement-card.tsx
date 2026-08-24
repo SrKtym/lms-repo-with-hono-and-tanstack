@@ -1,5 +1,6 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
+import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { FileQuestion } from "../../assets/icons/file-question";
 import { FileText } from "../../assets/icons/file-text";
 import { Info } from "../../assets/icons/info";
@@ -34,12 +35,6 @@ export function AnnouncementCard({
 		}
 	}
 
-	const dateOptions: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	};
-
 	const { expandedId, toggleExpand } = useToggleExpand();
 
 	return (
@@ -71,7 +66,7 @@ export function AnnouncementCard({
 								{announcement.createdAt
 									? announcement.createdAt.toLocaleDateString(
 											"default",
-											dateOptions,
+											DATE_FORMAT_CONFIG.DEFAULT,
 										)
 									: "処理中…"}
 							</p>

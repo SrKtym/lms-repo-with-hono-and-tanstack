@@ -1,3 +1,4 @@
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const TIME = {
@@ -30,6 +31,14 @@ export const queryClient = new QueryClient({
 	defaultOptions: {
 		queries: QUERY_CONFIG.DEFAULT,
 	},
+});
+
+// Queryキャッシュの永続化（ブラウザのlocalStorageに保存）設定
+export const asyncStoragePersister = createAsyncStoragePersister({
+	storage: localStorage,
+	key: "react-query-cache", // キャッシュのキーを明示的に指定
+	serialize: (data) => JSON.stringify(data), // シリアライズ方法を明示
+	deserialize: (data) => JSON.parse(data), // デシリアライズ方法を明示
 });
 
 export { QueryClientProvider };

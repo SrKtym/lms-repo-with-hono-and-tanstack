@@ -8,6 +8,7 @@ import {
 	type ZonedDateTime,
 } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
+import { useState } from "react";
 import { z } from "zod";
 import { useCreateAssignment } from "@/hooks/assignments";
 
@@ -23,6 +24,7 @@ export function CreateAssignmentForm({
 	courseId,
 }: CreateAssignmentFormProps) {
 	const dateTime = now(getLocalTimeZone());
+	const [error, setError] = useState<string>("");
 	const { mutateAsync: createAssignment } = useCreateAssignment();
 	const form = useForm({
 		defaultValues: {
@@ -43,7 +45,7 @@ export function CreateAssignmentForm({
 			if (isSuccess) {
 				onOpenChange(false);
 			} else {
-				return;
+				setError(res.error);
 			}
 		},
 		validators: {
@@ -71,6 +73,7 @@ export function CreateAssignmentForm({
 					form.handleSubmit();
 				}}
 				className="form-field p-1"
+				aria-describedby="create-assignment-error"
 			>
 				<form.Field name="title">
 					{(field) => (
@@ -238,6 +241,15 @@ export function CreateAssignmentForm({
 						/>
 					)}
 				</form.Field>
+
+				{/* エラーメッセージ */}
+				{error && (
+					<div className="alert-error">
+						<p id="create-assignment-error" className="alert-error-text">
+							{error}
+						</p>
+					</div>
+				)}
 
 				<div className="flex justify-end gap-2">
 					<CancelButton onClick={() => onOpenChange(false)}>

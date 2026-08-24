@@ -2,6 +2,7 @@ import { requirements } from "@lms-repo/db/schema/service";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
+import { DAYS } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useCreateCourse } from "@/hooks/courses";
@@ -17,21 +18,41 @@ export function CreateCourseForm({
 }: CreateCourseFormProps) {
 	type Requirement = (typeof requirements)[number];
 
+	// 土曜日と日曜日を除外
+	const DAYS_EXCEPT_WEEKEND = DAYS.filter(
+		(day) => day !== "土" && day !== "日",
+	);
+	// 曜日と数字のマッピング
+	const daysMap: Record<string, number> = Object.fromEntries(
+		DAYS_EXCEPT_WEEKEND.map((day, i) => [day, i + 1]),
+	);
+
 	const { mutateAsync: createCourse } = useCreateCourse();
 
 	const form = useForm({
 		defaultValues: {
 			name: "",
 			targetGrade: 1,
-			weekdays: 1,
+			weekdays: "月",
 			period: 1,
 			credits: 1,
 			requirements: "任意" as Requirement,
 			classRoom: "",
 		},
 		onSubmit: async ({ value }) => {
-			const res = await createCourse(value);
+			const weekdays = daysMap[value.weekdays];
+
+			if (!weekdays) {
+				return;
+			}
+
+			const transformedValue = {
+				...value,
+				weekdays,
+			};
+			const res = await createCourse(transformedValue);
 			const isSuccess = "message" in res;
+
 			if (isSuccess) {
 				onOpenChange(false);
 			} else {
@@ -46,7 +67,7 @@ export function CreateCourseForm({
 					.int("対象学年は整数で入力してください")
 					.min(1, "対象学年は1から4の間で入力してください")
 					.max(4, "対象学年は1から4の間で入力してください"),
-				weekdays: z.number().min(1, "曜日は必須です"),
+				weekdays: z.enum(DAYS_EXCEPT_WEEKEND),
 				period: z
 					.number()
 					.int("時限は整数で入力してください")
@@ -127,6 +148,7 @@ export function CreateCourseForm({
 									onChange: (e) => field.handleChange(Number(e.target.value)),
 								}}
 								labelProps={{
+									htmlFor: field.name,
 									children: "対象学年",
 								}}
 							/>
@@ -147,16 +169,18 @@ export function CreateCourseForm({
 					{(field) => (
 						<div className="space-y-2">
 							<InputForForm
-								inputProps={{
-									id: field.name,
-									name: field.name,
-									type: "text",
+								selectProps={{
 									value: field.state.value,
-									"aria-describedby": "weekdays-error",
-									onBlur: field.handleBlur,
-									onChange: (e) => field.handleChange(Number(e.target.value)),
+									onChange: (value) => {
+										if (value) {
+											field.handleChange(value.toString());
+										}
+									},
+									items: DAYS_EXCEPT_WEEKEND,
+									ariaLabel: "select weekdays",
 								}}
 								labelProps={{
+									htmlFor: field.name,
 									children: "曜日",
 								}}
 							/>
@@ -190,6 +214,7 @@ export function CreateCourseForm({
 									onChange: (e) => field.handleChange(Number(e.target.value)),
 								}}
 								labelProps={{
+									htmlFor: field.name,
 									children: "時限",
 								}}
 							/>
@@ -223,6 +248,7 @@ export function CreateCourseForm({
 									onChange: (e) => field.handleChange(Number(e.target.value)),
 								}}
 								labelProps={{
+									htmlFor: field.name,
 									children: "単位数",
 								}}
 							/>
@@ -267,6 +293,7 @@ export function CreateCourseForm({
 						<div className="space-y-2">
 							<InputForForm
 								labelProps={{
+									htmlFor: field.name,
 									children: "教室",
 								}}
 								inputProps={{

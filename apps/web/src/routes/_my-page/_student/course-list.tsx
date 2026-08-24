@@ -17,10 +17,13 @@ const searchSchema = z.object({
 export const Route = createFileRoute("/_my-page/_student/course-list")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
-	loaderDeps: ({ search: { "assignment-id": assignmentId } }) => ({
+	loaderDeps: ({
+		search: { "course-id": courseId, "assignment-id": assignmentId },
+	}) => ({
+		courseId,
 		assignmentId,
 	}),
-	loader: async ({ deps: { assignmentId } }) => {
+	loader: async ({ deps: { courseId, assignmentId } }) => {
 		// キャッシュからデータ取得
 		const [courses, announcements, assignments, submission] = await Promise.all(
 			[
@@ -29,18 +32,24 @@ export const Route = createFileRoute("/_my-page/_student/course-list")({
 					queryFn: fetchRegisteredCoursesQueryFn,
 					...QUERY_CONFIG.USER_DATA,
 				}),
-				queryClient.ensureQueryData({
-					queryKey: ["announcements-related-courses"],
-					queryFn: fetchAnnouncementsQueryFn,
-				}),
-				queryClient.ensureQueryData({
-					queryKey: ["assignments-related-courses"],
-					queryFn: fetchAssignmentsQueryFn,
-				}),
-				queryClient.ensureQueryData({
-					queryKey: ["submissions-status", assignmentId],
-					queryFn: () => fetchSubmissionsStatusQueryFn(assignmentId),
-				}),
+				courseId
+					? queryClient.ensureQueryData({
+							queryKey: ["announcements-related-courses"],
+							queryFn: () => fetchAnnouncementsQueryFn(courseId),
+						})
+					: Promise.resolve([]),
+				courseId
+					? queryClient.ensureQueryData({
+							queryKey: ["assignments-related-courses"],
+							queryFn: () => fetchAssignmentsQueryFn(courseId),
+						})
+					: Promise.resolve([]),
+				assignmentId
+					? queryClient.ensureQueryData({
+							queryKey: ["submissions-status", assignmentId],
+							queryFn: () => fetchSubmissionsStatusQueryFn(assignmentId),
+						})
+					: Promise.resolve([]),
 			],
 		);
 
@@ -96,17 +105,11 @@ function RouteComponent() {
 		const targetCourse = coursesWithCoverImage.find(
 			(course) => course.id === courseId,
 		);
-		const targetAnnouncements = announcements.filter(
-			(announcement) => announcement.courseId === courseId,
-		);
-		const targetAssignments = assignments.filter(
-			(assignment) => assignment.courseId === courseId,
-		);
 		return (
 			<RegisteredCourseInfos
 				courseWithCoverImage={targetCourse}
-				announcements={targetAnnouncements}
-				assignments={targetAssignments}
+				announcements={announcements}
+				assignments={assignments}
 				courseId={courseId}
 			/>
 		);

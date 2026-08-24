@@ -30,7 +30,7 @@ export const announcementsRouteForProf = new Hono<{
 		const announcementData = c.req.valid("json");
 		const result = await createAnnouncements(announcementData);
 
-		if ("message" in result) {
+		if ("error" in result) {
 			return c.json(result);
 		}
 
@@ -64,6 +64,10 @@ export const announcementsRouteForCommon = new Hono<{
 	// アナウンスメントの取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
-		const announcements = await fetchAnnouncementsFromUserCourses(userId);
+		const { courseId } = c.req.query();
+		const announcements = await fetchAnnouncementsFromUserCourses(
+			userId,
+			courseId,
+		);
 		return c.json(announcements);
 	});

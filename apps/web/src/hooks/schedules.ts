@@ -61,10 +61,8 @@ export const useDeleteSchedule = () => {
 			const previousSchedules = queryClient.getQueryData(["schedules"]);
 
 			// 楽観的更新
-			queryClient.setQueryData(
-				["schedules"],
-				(old: Schedules[]) =>
-					old?.filter((schedule) => schedule.id !== scheduleId) || [],
+			queryClient.setQueryData(["schedules"], (old: Schedules[]) =>
+				old.filter((schedule) => schedule.id !== scheduleId),
 			);
 
 			return { previousSchedules };

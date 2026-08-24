@@ -1,5 +1,9 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import { getFileColor, getIconByFormat } from "../../lib/utils";
+import {
+	DATE_FORMAT_CONFIG,
+	getFileColor,
+	getIconByFormat,
+} from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
@@ -9,12 +13,6 @@ export function AssignmentCard({
 }: {
 	assignment: FetchAssignmentsFromUserCoursesReturnType[number];
 }) {
-	const dateOptions: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	};
-
 	const isOverdue = assignment.dueDate < new Date();
 	const daysUntilDue = Math.ceil(
 		(assignment.dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
@@ -43,7 +41,7 @@ export function AssignmentCard({
 									期限:{" "}
 									{assignment.dueDate.toLocaleDateString(
 										"default",
-										dateOptions,
+										DATE_FORMAT_CONFIG.DEFAULT,
 									)}
 								</span>
 								{isOverdue && (

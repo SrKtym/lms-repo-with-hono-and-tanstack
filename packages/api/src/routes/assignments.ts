@@ -35,7 +35,7 @@ export const assignmentsRouteForProf = new Hono<{
 		const assignmentData = c.req.valid("json");
 		const result = await createAssignments(assignmentData);
 
-		if ("message" in result) {
+		if ("error" in result) {
 			return c.json(result);
 		}
 
@@ -76,6 +76,7 @@ export const assignmentsRouteForCommon = new Hono<{
 	// 課題一覧取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
-		const assignments = await fetchAssignmentsFromUserCourses(userId);
+		const { courseId } = c.req.query();
+		const assignments = await fetchAssignmentsFromUserCourses(userId, courseId);
 		return c.json(assignments, 200);
 	});

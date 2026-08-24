@@ -22,7 +22,7 @@ export const createTextSubmission = async (submission: TextSubmissions) => {
 			});
 		return { message: "テキスト提出に成功しました", status: 200 };
 	} catch {
-		return { message: "テキスト提出に失敗しました", status: 500 };
+		return { error: "テキスト提出に失敗しました", status: 500 };
 	}
 };
 
@@ -44,7 +44,7 @@ export const createFileSubmissionMetadata = async (
 			});
 		return result;
 	} catch {
-		return { message: "ファイルメタデータの作成に失敗しました", status: 500 };
+		return { error: "ファイルメタデータの作成に失敗しました", status: 500 };
 	}
 };
 
@@ -68,7 +68,7 @@ export const updateSubmissionStatus = async (
 			});
 		return { message: "提出状況の更新に成功しました", status: 200 };
 	} catch {
-		return { message: "提出状況の更新に失敗しました", status: 500 };
+		return { error: "提出状況の更新に失敗しました", status: 500 };
 	}
 };
 
@@ -93,7 +93,7 @@ export const updateSubmissionScore = async (
 			});
 		return { message: "採点に成功しました", status: 200 };
 	} catch {
-		return { message: "採点に失敗しました", status: 500 };
+		return { error: "採点に失敗しました", status: 500 };
 	}
 };
 
@@ -105,7 +105,7 @@ export const deleteFileSubmissionMetadata = async (id: string) => {
 			.where(eq(fileSubmissionsMetadata.id, id));
 		return { message: "ファイルメタデータの削除に成功しました", status: 200 };
 	} catch {
-		return { message: "ファイルメタデータの削除に失敗しました", status: 500 };
+		return { error: "ファイルメタデータの削除に失敗しました", status: 500 };
 	}
 };
 
@@ -115,6 +115,6 @@ export const deleteTextSubmission = async (id: string) => {
 		await db.delete(textSubmissions).where(eq(textSubmissions.id, id));
 		return { message: "テキスト提出物の削除に成功しました", status: 200 };
 	} catch {
-		return { message: "テキスト提出物の削除に失敗しました", status: 500 };
+		return { error: "テキスト提出物の削除に失敗しました", status: 500 };
 	}
 };

@@ -100,7 +100,7 @@ export const coursesRouteForProf = new Hono<{
 			const department = await fetchProfData(userId);
 
 			if (!department) {
-				return c.json({ message: "学科が見つかりません" }, 404);
+				return c.json({ error: "学科が見つかりません" }, 404);
 			}
 
 			const result = await createCourses({

@@ -3,7 +3,10 @@ import { db } from "../../index";
 import { announcements, courses, registration } from "../../schema";
 
 // ユーザーが登録している講義の担当教員からのお知らせを取得（教員自身も作成したお知らせを取得）
-export async function fetchAnnouncementsFromUserCourses(userId: string) {
+export async function fetchAnnouncementsFromUserCourses(
+	userId: string,
+	courseId?: string,
+) {
 	const announcementsList = await db
 		.selectDistinct({
 			id: announcements.id,
@@ -19,7 +22,11 @@ export async function fetchAnnouncementsFromUserCourses(userId: string) {
 		.innerJoin(courses, eq(announcements.courseId, courses.id))
 		.leftJoin(registration, eq(courses.id, registration.courseId))
 		.where(
-			or(eq(registration.userId, userId), eq(courses.professorId, userId)),
+			or(
+				eq(registration.userId, userId),
+				eq(courses.professorId, userId),
+				courseId ? eq(announcements.courseId, courseId) : undefined,
+			),
 		);
 
 	return announcementsList;
