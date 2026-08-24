@@ -25,14 +25,16 @@ export const Route = createFileRoute("/_my-page")({
 			});
 		}
 
-		return { session };
-	},
-	loader: async ({ context }) => {
-		if (!context.session.data?.user) {
+		if (!session.data?.user) {
 			throw new Error("ユーザーが見つかりません");
 		}
-		const { email, name, image, role } = context.session.data.user;
 
+		const { email, name, image, role } = session.data.user;
+
+		return { email, name, image, role };
+	},
+	loader: async ({ context }) => {
+		const { email, name, image, role } = context;
 		return { email, name, image, role };
 	},
 });

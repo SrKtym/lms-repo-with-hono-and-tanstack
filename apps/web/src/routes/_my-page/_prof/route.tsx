@@ -4,25 +4,25 @@ import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { CreateProfDataForm } from "@/components/_my-page/_prof/shared/create-prof-data-form";
-import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import {
+	asyncStoragePersister,
+	QUERY_CONFIG,
+	queryClient,
+} from "@/lib/query-client";
 import { fetchProfDataQueryFn } from "@/utils/query/professors";
-import { asyncStoragePersister } from "../_student/route";
 
 export const Route = createFileRoute("/_my-page/_prof")({
 	component: ProfLayoutComponent,
-	loader: async ({ context }) => {
-		if (!context.session.data?.user) {
-			throw new Error("ユーザーが見つかりません");
-		}
-		const { role } = context.session.data.user;
-
+	beforeLoad: ({ context }) => {
+		const { role } = context;
 		if (role === "student") {
 			redirect({
 				to: "/",
 				throw: true,
 			});
 		}
-
+	},
+	loader: async ({ context: { role } }) => {
 		const profData = await queryClient.ensureQueryData({
 			queryKey: ["profData"],
 			queryFn: async () => {
