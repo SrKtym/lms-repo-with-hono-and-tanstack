@@ -64,6 +64,10 @@ export const announcementsRouteForCommon = new Hono<{
 	// アナウンスメントの取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
-		const announcements = await fetchAnnouncementsFromUserCourses(userId);
+		const { courseId } = c.req.query();
+		const announcements = await fetchAnnouncementsFromUserCourses(
+			userId,
+			courseId,
+		);
 		return c.json(announcements);
 	});

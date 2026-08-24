@@ -76,6 +76,7 @@ export const assignmentsRouteForCommon = new Hono<{
 	// 課題一覧取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
-		const assignments = await fetchAssignmentsFromUserCourses(userId);
+		const { courseId } = c.req.query();
+		const assignments = await fetchAssignmentsFromUserCourses(userId, courseId);
 		return c.json(assignments, 200);
 	});
