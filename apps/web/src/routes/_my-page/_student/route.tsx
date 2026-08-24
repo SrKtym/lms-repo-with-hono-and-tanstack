@@ -1,28 +1,18 @@
 // 学生用レイアウト
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
-import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { CreateStudentDataForm } from "@/components/_my-page/_student/shared/create-student-data-form";
-import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import {
+	asyncStoragePersister,
+	QUERY_CONFIG,
+	queryClient,
+} from "@/lib/query-client";
 import { fetchStudentDataQueryFn } from "@/utils/query/students";
-
-// Queryキャッシュの永続化（ブラウザのlocalStorageに保存）設定
-export const asyncStoragePersister = createAsyncStoragePersister({
-	storage: localStorage,
-	key: "react-query-cache", // キャッシュのキーを明示的に指定
-	serialize: (data) => JSON.stringify(data), // シリアライズ方法を明示
-	deserialize: (data) => JSON.parse(data), // デシリアライズ方法を明示
-});
 
 export const Route = createFileRoute("/_my-page/_student")({
 	component: StudentLayoutComponent,
-	beforeLoad: ({ context }) => {
-		if (!context.session.data?.user) {
-			throw new Error("ユーザーが見つかりません");
-		}
-		const { role } = context.session.data.user;
-
+	beforeLoad: ({ context: { role } }) => {
 		if (role === "professor") {
 			redirect({
 				to: "/course-management",
