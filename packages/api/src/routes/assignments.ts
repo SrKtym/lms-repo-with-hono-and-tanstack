@@ -35,7 +35,7 @@ export const assignmentsRouteForProf = new Hono<{
 		const assignmentData = c.req.valid("json");
 		const result = await createAssignments(assignmentData);
 
-		if ("message" in result) {
+		if ("error" in result) {
 			return c.json(result);
 		}
 

@@ -3,6 +3,7 @@ import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { useForm } from "@tanstack/react-form";
+import { useState } from "react";
 import { z } from "zod";
 import { useCreateAnnouncement } from "@/hooks/announcements";
 
@@ -17,6 +18,7 @@ export function CreateAnnouncementForm({
 	onOpenChange,
 	courseId,
 }: CreateAnnouncementFormProps) {
+	const [error, setError] = useState<string>("");
 	const { mutateAsync: createAnnouncement } = useCreateAnnouncement();
 	const form = useForm({
 		defaultValues: {
@@ -31,7 +33,7 @@ export function CreateAnnouncementForm({
 			if (isSuccess) {
 				onOpenChange(false);
 			} else {
-				return;
+				setError(res.error);
 			}
 		},
 		validators: {
@@ -57,6 +59,7 @@ export function CreateAnnouncementForm({
 					form.handleSubmit();
 				}}
 				className="form-field p-1"
+				aria-describedby="create-announcement-error"
 			>
 				<form.Field name="title">
 					{(field) => (
@@ -164,6 +167,15 @@ export function CreateAnnouncementForm({
 						/>
 					)}
 				</form.Field>
+
+				{/* エラーメッセージ */}
+				{error && (
+					<div className="alert-error">
+						<p id="create-announcement-error" className="alert-error-text">
+							{error}
+						</p>
+					</div>
+				)}
 
 				<div className="flex justify-end gap-2">
 					<CancelButton onClick={() => onOpenChange(false)}>

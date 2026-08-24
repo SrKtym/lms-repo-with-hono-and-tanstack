@@ -106,8 +106,6 @@ export function CreateFileSubmissionForm({
 				toast.danger("ファイルの提出に失敗しました", {
 					description: res.error,
 				});
-			} else if ("message" in res) {
-				toast.danger(res.message);
 			} else {
 				// アップロード完了したファイル名を記録
 				setUploadedFiles((prev) => [...prev, ...newFiles]);

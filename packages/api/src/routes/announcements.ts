@@ -30,7 +30,7 @@ export const announcementsRouteForProf = new Hono<{
 		const announcementData = c.req.valid("json");
 		const result = await createAnnouncements(announcementData);
 
-		if ("message" in result) {
+		if ("error" in result) {
 			return c.json(result);
 		}
 

@@ -31,9 +31,6 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 export const fetchRegisteredCoursesQueryFn = async () => {
 	const res = await client.api.students.courses.registered.$get();
 	const data = await res.json();
-	if ("message" in data) {
-		return [];
-	}
 	return data;
 };
 
@@ -48,9 +45,6 @@ export const fetchCompletedCoursesQueryFn = async () => {
 export const fetchCreatedCoursesQueryFn = async () => {
 	const res = await client.api.professors.courses.created.$get();
 	const data = await res.json();
-	if ("message" in data) {
-		return [];
-	}
 	return data;
 };
 

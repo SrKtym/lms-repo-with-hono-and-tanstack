@@ -17,16 +17,30 @@ import {
 } from "@/utils/query/courses";
 
 // トースト表示
-function showToast(error: { status: number; message: string }) {
-	switch (error.status) {
+function showToast(
+	res:
+		| {
+				message: string;
+				status: number;
+		  }
+		| {
+				error: string;
+				status: number;
+		  },
+) {
+	if ("message" in res) {
+		return;
+	}
+
+	switch (res.status) {
 		case 400:
 		case 404:
 			toast.danger("講義の登録に失敗しました", {
-				description: error.message,
+				description: res.error,
 			});
 			break;
 		case 500:
-			toast.danger(error.message);
+			toast.danger(res.error);
 	}
 }
 
