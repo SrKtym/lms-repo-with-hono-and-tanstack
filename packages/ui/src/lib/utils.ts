@@ -29,6 +29,28 @@ export const viewLabels = ["月", "週", "日"] as const;
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
+// 日付フォーマット設定
+export const DATE_FORMAT_CONFIG: Record<string, Intl.DateTimeFormatOptions> = {
+	DEFAULT: {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+	},
+	DASHBOARD: {
+		weekday: "long",
+		year: "numeric",
+		month: "long",
+		day: "numeric",
+	},
+	TEXT_SUBMISSION: {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		hour: "2-digit",
+		minute: "2-digit",
+	},
+};
+
 // イベントが現在進行中であるかどうかを判定
 export const isProgressingOrUpcoming = (start: Date, end: Date) => {
 	const now = new Date();

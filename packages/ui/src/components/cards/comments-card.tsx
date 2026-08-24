@@ -1,4 +1,5 @@
 import type { FetchCommentsWithAssignmentReturnType } from "@lms-repo/db/utils/query/comments";
+import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 
@@ -9,12 +10,6 @@ interface CommentsCardProps {
 
 // CommentsCard component
 export function CommentsCard({ comments, children }: CommentsCardProps) {
-	const dateOption: Intl.DateTimeFormatOptions = {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-	};
-
 	return (
 		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
 			<div className="space-y-6 p-2">
@@ -34,7 +29,10 @@ export function CommentsCard({ comments, children }: CommentsCardProps) {
 									<div className="flex items-center gap-2">
 										<p className="font-medium">{comment.createdBy}</p>
 										<p className="text-default-500 text-xs">
-											{comment.createdAt.toLocaleString("default", dateOption)}
+											{comment.createdAt.toLocaleString(
+												"default",
+												DATE_FORMAT_CONFIG.DEFAULT,
+											)}
 										</p>
 									</div>
 									<p className="mt-1">{comment.content}</p>

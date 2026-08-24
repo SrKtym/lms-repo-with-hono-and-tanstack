@@ -2,6 +2,7 @@ import { AssignmentsProgressCard } from "@lms-repo/ui/components/cards/assignmen
 import { DailySchedulesCard } from "@lms-repo/ui/components/cards/daily-schedules-card";
 import { NotificationsListCard } from "@lms-repo/ui/components/cards/notifications-list-card";
 import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-assignments-card";
+import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/_my-page/_student/dashboard")({
 
 				queryClient.ensureQueryData({
 					queryKey: ["assignments-related-courses"],
-					queryFn: fetchAssignmentsQueryFn,
+					queryFn: () => fetchAssignmentsQueryFn(),
 				}),
 
 				queryClient.ensureQueryData({
@@ -67,12 +68,6 @@ export const Route = createFileRoute("/_my-page/_student/dashboard")({
 
 function RouteComponent() {
 	const date = new Date();
-	const dateOptions: Intl.DateTimeFormatOptions = {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
-	};
 	const { courses, schedules, assignments, initialNotifications, submissions } =
 		Route.useLoaderData();
 
@@ -110,7 +105,7 @@ function RouteComponent() {
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
-					{date.toLocaleDateString("default", dateOptions)}
+					{date.toLocaleDateString("default", DATE_FORMAT_CONFIG.DASHBOARD)}
 				</p>
 			</div>
 
