@@ -86,11 +86,8 @@ export const useMarkNotificationAsRead = () => {
 			const previousNotifications = queryClient.getQueryData(["notifications"]);
 
 			// 楽観的更新
-			queryClient.setQueryData(
-				["notifications"],
-				(old: Notifications[]) =>
-					old?.filter((notification) => notification.id !== notificationId) ||
-					[],
+			queryClient.setQueryData(["notifications"], (old: Notifications[]) =>
+				old.filter((notification) => notification.id !== notificationId),
 			);
 
 			return { previousNotifications };
@@ -123,11 +120,8 @@ export const useDeleteNotification = () => {
 			const previousNotifications = queryClient.getQueryData(["notifications"]);
 
 			// 楽観的更新
-			queryClient.setQueryData(
-				["notifications"],
-				(old: Notifications[]) =>
-					old?.filter((notification) => notification.id !== notificationId) ||
-					[],
+			queryClient.setQueryData(["notifications"], (old: Notifications[]) =>
+				old.filter((notification) => notification.id !== notificationId),
 			);
 
 			return { previousNotifications };

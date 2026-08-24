@@ -127,7 +127,7 @@ export function FileUploaderCard({
 						isDragOver
 							? "border-blue-500 bg-blue-50 dark:bg-blue-950"
 							: "border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
-					} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+					} ${disabled && "cursor-not-allowed opacity-50"}`}
 					onDragOver={handleDragOver}
 					onDragLeave={handleDragLeave}
 					onDrop={handleDrop}
@@ -221,20 +221,6 @@ export function FileUploaderCard({
 						</m.div>
 					)}
 				</AnimatePresence>
-
-				{/* Actions */}
-				{uploadedFiles.length > 0 && (
-					<m.div
-						initial={{ opacity: 0, y: 10 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.3, delay: 0.1 }}
-						className="mt-4 flex justify-end gap-2"
-					>
-						<CancelButton onPress={() => onFilesChange([])}>
-							すべて削除
-						</CancelButton>
-					</m.div>
-				)}
 			</m.div>
 		</LazyMotionProvider>
 	);
