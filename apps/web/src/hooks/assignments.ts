@@ -7,10 +7,11 @@ import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
 // 登録済み講義に関連する課題を取得するカスタムフック
 export const useAssignments = (
 	initialData?: FetchAssignmentsFromUserCoursesReturnType,
+	courseId?: string,
 ) => {
 	return useQuery({
-		queryKey: ["assignments"],
-		queryFn: fetchAssignmentsQueryFn,
+		queryKey: ["assignments", courseId],
+		queryFn: () => fetchAssignmentsQueryFn(courseId),
 		initialData,
 	});
 };

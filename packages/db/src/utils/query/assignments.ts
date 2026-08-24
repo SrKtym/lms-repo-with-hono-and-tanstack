@@ -3,7 +3,10 @@ import { db } from "../../index";
 import { assignments, courses, registration } from "../../schema";
 
 // ユーザーが登録している講義の担当教員からの課題を取得（教員自身も作成した課題を取得）
-export async function fetchAssignmentsFromUserCourses(userId: string) {
+export async function fetchAssignmentsFromUserCourses(
+	userId: string,
+	courseId?: string,
+) {
 	const assignmentsList = await db
 		.selectDistinct({
 			id: assignments.id,
@@ -19,7 +22,11 @@ export async function fetchAssignmentsFromUserCourses(userId: string) {
 		.innerJoin(courses, eq(assignments.courseId, courses.id))
 		.leftJoin(registration, eq(courses.id, registration.courseId))
 		.where(
-			or(eq(registration.userId, userId), eq(courses.professorId, userId)),
+			or(
+				eq(registration.userId, userId),
+				eq(courses.professorId, userId),
+				courseId ? eq(assignments.courseId, courseId) : undefined,
+			),
 		);
 
 	return assignmentsList;
