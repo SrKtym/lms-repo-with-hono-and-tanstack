@@ -26,8 +26,6 @@ export function CreateCourseForm({
 	const daysMap: Record<string, number> = Object.fromEntries(
 		DAYS_EXCEPT_WEEKEND.map((day, i) => [day, i + 1]),
 	);
-	// 曜日の配列
-	const days = Object.keys(daysMap);
 
 	const { mutateAsync: createCourse } = useCreateCourse();
 
@@ -178,7 +176,7 @@ export function CreateCourseForm({
 											field.handleChange(value.toString());
 										}
 									},
-									items: days,
+									items: DAYS_EXCEPT_WEEKEND,
 									ariaLabel: "select weekdays",
 								}}
 								labelProps={{
