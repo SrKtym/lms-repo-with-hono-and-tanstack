@@ -1,15 +1,12 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../../index";
-import {
-	announcements,
-	courses,
-	emailNotificationSettings,
-	notifications,
-	registration,
-	user,
-	userNotifications,
-} from "../../schema";
+import { announcements } from "../../schema";
 import type { Announcements } from "../../types";
+import {
+	createNotification,
+	fetchCourseData,
+	fetchEmailsForNotification,
+} from "./helpers";
 
 // アナウンスメント作成
 export async function createAnnouncements(announcementsData: Announcements) {
@@ -30,68 +27,29 @@ export async function createAnnouncements(announcementsData: Announcements) {
 			const courseId = result?.courseId;
 
 			if (!courseId) {
-				return { message: "講義が見つかりません", status: 404 };
+				return { error: "講義が見つかりません", status: 404 };
 			}
 
 			// 講義名と受講者IDを取得
-			const courseData = await tx
-				.select({
-					name: courses.name,
-					studentId: registration.userId,
-				})
-				.from(courses)
-				.innerJoin(registration, eq(courses.id, registration.courseId))
-				.where(eq(courses.id, courseId));
-
-			// 通知データ
-			const notificationsData = {
-				title: `${courseData[0]?.name}に新しいお知らせ: ${result.title}`,
-				description: `${result.type}: ${result.description}`,
-				type: "announcement",
-			};
+			const courseData = await fetchCourseData(tx, courseId);
 
 			// 通知の作成
-			const [data] = await tx
-				.insert(notifications)
-				.values(notificationsData)
-				.returning({
-					id: notifications.id,
-				})
-				.onConflictDoNothing();
-
-			if (data) {
-				const userNotificationData = courseData.map((course) => ({
-					userId: course.studentId,
-					notificationId: data.id,
-				}));
-				await tx
-					.insert(userNotifications)
-					.values(userNotificationData)
-					.onConflictDoNothing();
-			}
+			await createNotification(
+				tx,
+				{
+					title: `${courseData[0]?.name}に新しいお知らせ: ${result.title}`,
+					description: `${result.type}: ${result.description}`,
+					type: "announcement",
+				},
+				courseData,
+			);
 
 			// メール通知を有効にしているユーザーのメール一覧
-			const res = await tx
-				.select({
-					email: user.email,
-				})
-				.from(user)
-				.innerJoin(
-					emailNotificationSettings,
-					eq(user.id, emailNotificationSettings.userId),
-				)
-				.innerJoin(
-					registration,
-					eq(emailNotificationSettings.userId, registration.userId),
-				)
-				.where(
-					and(
-						eq(registration.courseId, courseId),
-						eq(emailNotificationSettings.announcementsEmail, true),
-					),
-				);
-
-			const emails = res.map(({ email }) => email);
+			const emails = await fetchEmailsForNotification(
+				tx,
+				courseId,
+				"announcementsEmail",
+			);
 
 			const { courseId: _, ...rest } = result;
 
@@ -101,7 +59,7 @@ export async function createAnnouncements(announcementsData: Announcements) {
 		});
 		return result;
 	} catch {
-		return { message: "アナウンスメントの作成に失敗しました。", status: 500 };
+		return { error: "アナウンスメントの作成に失敗しました。", status: 500 };
 	}
 }
 
@@ -111,7 +69,7 @@ export async function updateAnnouncements(announcementsData: Announcements) {
 		await db.update(announcements).set(announcementsData);
 		return { message: "アナウンスメントの更新に成功しました。", status: 200 };
 	} catch {
-		return { message: "アナウンスメントの更新に失敗しました。", status: 500 };
+		return { error: "アナウンスメントの更新に失敗しました。", status: 500 };
 	}
 }
 
@@ -121,6 +79,6 @@ export async function deleteAnnouncements(id: string) {
 		await db.delete(announcements).where(eq(announcements.id, id));
 		return { message: "アナウンスメントの削除に成功しました。", status: 200 };
 	} catch {
-		return { message: "アナウンスメントの削除に失敗しました。", status: 500 };
+		return { error: "アナウンスメントの削除に失敗しました。", status: 500 };
 	}
 }
