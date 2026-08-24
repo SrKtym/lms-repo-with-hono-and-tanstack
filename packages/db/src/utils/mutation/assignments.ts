@@ -1,15 +1,12 @@
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { db } from "../../index";
-import {
-	assignments,
-	courses,
-	emailNotificationSettings,
-	notifications,
-	registration,
-	user,
-	userNotifications,
-} from "../../schema";
+import { assignments } from "../../schema";
 import type { Assignments } from "../../types";
+import {
+	createNotification,
+	fetchCourseData,
+	fetchEmailsForNotification,
+} from "./helpers";
 
 // 課題の作成
 export async function createAssignments(assignmentsData: Assignments) {
@@ -32,68 +29,29 @@ export async function createAssignments(assignmentsData: Assignments) {
 			const courseId = result?.courseId;
 
 			if (!courseId) {
-				return { message: "講義が見つかりません", status: 404 };
+				return { error: "講義が見つかりません", status: 404 };
 			}
 
 			// 講義名と受講者IDを取得
-			const courseData = await tx
-				.select({
-					name: courses.name,
-					studentId: registration.userId,
-				})
-				.from(courses)
-				.innerJoin(registration, eq(courses.id, registration.courseId))
-				.where(eq(courses.id, courseId));
-
-			// 通知データ
-			const notificationsData = {
-				title: `${courseData[0]?.name}に新しい課題: ${result.title}`,
-				description: `提出形式: ${result.format}\n説明: ${result.description}`,
-				type: "assignment",
-			};
+			const courseData = await fetchCourseData(tx, courseId);
 
 			// 通知の作成
-			const [data] = await tx
-				.insert(notifications)
-				.values(notificationsData)
-				.returning({
-					id: notifications.id,
-				})
-				.onConflictDoNothing();
-
-			if (data) {
-				const userNotificationData = courseData.map((course) => ({
-					userId: course.studentId,
-					notificationId: data.id,
-				}));
-				await tx
-					.insert(userNotifications)
-					.values(userNotificationData)
-					.onConflictDoNothing();
-			}
+			await createNotification(
+				tx,
+				{
+					title: `${courseData[0]?.name}に新しい課題: ${result.title}`,
+					description: `提出形式: ${result.format}\n説明: ${result.description}`,
+					type: "assignment",
+				},
+				courseData,
+			);
 
 			// メール通知を有効にしているユーザーのメール一覧
-			const res = await tx
-				.select({
-					email: user.email,
-				})
-				.from(user)
-				.innerJoin(
-					emailNotificationSettings,
-					eq(user.id, emailNotificationSettings.userId),
-				)
-				.innerJoin(
-					registration,
-					eq(emailNotificationSettings.userId, registration.userId),
-				)
-				.where(
-					and(
-						eq(registration.courseId, courseId),
-						eq(emailNotificationSettings.assignmentsEmail, true),
-					),
-				);
-
-			const emails = res.map(({ email }) => email);
+			const emails = await fetchEmailsForNotification(
+				tx,
+				courseId,
+				"assignmentsEmail",
+			);
 
 			const { courseId: _, ...rest } = result;
 
@@ -103,7 +61,7 @@ export async function createAssignments(assignmentsData: Assignments) {
 		});
 		return result;
 	} catch {
-		return { message: "課題の作成に失敗しました。", status: 500 };
+		return { error: "課題の作成に失敗しました。", status: 500 };
 	}
 }
 
@@ -113,7 +71,7 @@ export async function updateAssignments(assignmentsData: Assignments) {
 		await db.update(assignments).set(assignmentsData);
 		return { message: "課題の更新に成功しました。", status: 200 };
 	} catch {
-		return { message: "課題の更新に失敗しました。", status: 500 };
+		return { error: "課題の更新に失敗しました。", status: 500 };
 	}
 }
 
@@ -123,6 +81,6 @@ export async function deleteAssignments(assignmentId: string) {
 		await db.delete(assignments).where(eq(assignments.id, assignmentId));
 		return { message: "課題の削除に成功しました。", status: 200 };
 	} catch {
-		return { message: "課題の削除に失敗しました。", status: 500 };
+		return { error: "課題の削除に失敗しました。", status: 500 };
 	}
 }
