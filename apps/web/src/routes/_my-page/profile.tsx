@@ -19,10 +19,7 @@ import { fetchStudentDataQueryFn } from "@/utils/query/students";
 export const Route = createFileRoute("/_my-page/profile")({
 	component: RouteComponent,
 	loader: async ({ context }) => {
-		if (!context.session.data?.user) {
-			throw new Error("ユーザーが見つかりません");
-		}
-		const { email, name, image, role } = context.session.data.user;
+		const { email, name, image, role } = context;
 
 		const [studentData, completedCourses, initialSettings] = await Promise.all([
 			role === "professor"
