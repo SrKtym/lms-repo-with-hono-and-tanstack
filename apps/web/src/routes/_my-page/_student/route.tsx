@@ -45,7 +45,7 @@ export const Route = createFileRoute("/_my-page/_student")({
 
 function StudentLayoutComponent() {
 	const { studentData } = Route.useLoaderData();
-	const noData = "message" in studentData;
+	const noData = "error" in studentData;
 
 	return (
 		<>

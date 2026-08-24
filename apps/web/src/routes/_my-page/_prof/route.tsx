@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_my-page/_prof")({
 
 function ProfLayoutComponent() {
 	const { profData } = Route.useLoaderData();
-	const noData = "message" in profData;
+	const noData = "error" in profData;
 
 	return (
 		<PersistQueryClientProvider

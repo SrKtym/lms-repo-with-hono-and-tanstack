@@ -89,7 +89,7 @@ export const notificationsRouteForCommon = new Hono()
 	.post("/reminder", async (c) => {
 		const result = await createReminder();
 
-		if ("message" in result) {
+		if ("error" in result) {
 			return c.json(result);
 		}
 

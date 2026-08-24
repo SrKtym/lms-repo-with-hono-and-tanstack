@@ -37,7 +37,7 @@ export const studentsRoute = new Hono<{
 		const { userId } = c.get("session");
 		const result = await fetchStudentData(userId);
 		if (!result) {
-			return c.json({ message: "学生情報が見つかりません" }, 404);
+			return c.json({ error: "学生情報が見つかりません" }, 404);
 		}
 		return c.json(result);
 	})

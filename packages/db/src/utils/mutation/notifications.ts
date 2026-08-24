@@ -29,7 +29,7 @@ export async function deleteNotification(
 
 		return { message: "通知の削除に成功しました。", status: 200 };
 	} catch {
-		return { message: "通知の削除に失敗しました。", status: 500 };
+		return { error: "通知の削除に失敗しました。", status: 500 };
 	}
 }
 
@@ -53,7 +53,7 @@ export async function markNotificationAsRead(
 
 		return { message: "通知の既読処理に成功しました。", status: 200 };
 	} catch {
-		return { message: "通知の既読処理に失敗しました。", status: 500 };
+		return { error: "通知の既読処理に失敗しました。", status: 500 };
 	}
 }
 
@@ -81,7 +81,7 @@ export async function createReminder() {
 				);
 
 			if (tasks.length === 0) {
-				return { message: "該当する課題が見つかりません。", status: 404 };
+				return { error: "該当する課題が見つかりません。", status: 404 };
 			}
 
 			const courseIds = tasks.map((v) => v.courseId);
@@ -149,6 +149,6 @@ export async function createReminder() {
 
 		return result;
 	} catch {
-		return { message: "リマインダーの作成に失敗しました。", status: 500 };
+		return { error: "リマインダーの作成に失敗しました。", status: 500 };
 	}
 }
