@@ -67,7 +67,7 @@ export const Route = createFileRoute("/_my-page/_student/dashboard")({
 });
 
 function RouteComponent() {
-	const date = new Date();
+	const now = new Date();
 	const { courses, schedules, assignments, initialNotifications, submissions } =
 		Route.useLoaderData();
 
@@ -94,7 +94,7 @@ function RouteComponent() {
 
 	// 期限切れの課題
 	const overdueAssignments = assignments.filter(
-		(assignment) => assignment.dueDate < date,
+		(assignment) => assignment.dueDate < now,
 	);
 
 	return (
@@ -105,7 +105,7 @@ function RouteComponent() {
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
-					{date.toLocaleDateString("default", DATE_FORMAT_CONFIG.DASHBOARD)}
+					{now.toLocaleDateString("default", DATE_FORMAT_CONFIG.DASHBOARD)}
 				</p>
 			</div>
 

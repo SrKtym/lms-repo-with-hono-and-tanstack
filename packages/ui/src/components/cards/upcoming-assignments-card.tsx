@@ -13,9 +13,10 @@ export function UpcomingAssignmentsCard({
 	const [selectedPeriod, setSelectedPeriod] = useState("7日以内");
 
 	const periodOptions = ["3日以内", "7日以内", "すべて"];
+	const now = new Date();
 	const filteredAssignments = assignments.filter(
 		(assignment) =>
-			assignment.dueDate.getTime() - Date.now() <=
+			assignment.dueDate.getTime() - now.getTime() <=
 			(selectedPeriod === "3日以内"
 				? 3
 				: selectedPeriod === "7日以内"
@@ -29,7 +30,7 @@ export function UpcomingAssignmentsCard({
 
 	// 締切までの日数を計算
 	const getDaysUntilDue = (dueDate: Date) => {
-		const diffTime = dueDate.getTime() - Date.now();
+		const diffTime = dueDate.getTime() - now.getTime();
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
 		if (diffDays < 0) {

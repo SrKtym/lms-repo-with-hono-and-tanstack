@@ -38,7 +38,7 @@ export function TypewriterText({ texts }: { texts: string[] }) {
 	}, [currentIndex, isDeleting, currentStringIndex, texts]);
 
 	return (
-		<div className="block">
+		<div>
 			LMS <span className="text-primary">{displayedText}</span>
 			<span className="animate-blink">|</span>
 		</div>

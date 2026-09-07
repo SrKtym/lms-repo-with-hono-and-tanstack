@@ -27,10 +27,6 @@ export default function CreatedCourseContents({
 	targetAssignment,
 	assignmentId,
 }: CreatedCourseContentsProps) {
-	if (!targetAssignment) {
-		throw new Error("課題が見つかりません");
-	}
-
 	const propaties = {
 		initial: { opacity: 0, y: 10 },
 		animate: { opacity: 1, y: 0 },

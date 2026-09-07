@@ -8,6 +8,7 @@ import {
 	type TimeValue,
 } from "@heroui/react";
 import {
+	DATE_FORMAT_CONFIG,
 	DateFormatter,
 	type DateValue,
 	getLocalTimeZone,
@@ -16,7 +17,7 @@ import {
 
 interface DateRangePickerProps {
 	defaultValue: { start: ZonedDateTime; end: ZonedDateTime };
-	onChange: (
+	onChange?: (
 		value: { start: ZonedDateTime; end: ZonedDateTime } | null,
 	) => void;
 }
@@ -26,12 +27,10 @@ export function DateRangePicker({
 	onChange,
 }: DateRangePickerProps) {
 	const localTimeZone = getLocalTimeZone();
-	const dateFormatter = new DateFormatter("ja-JP", {
-		day: "numeric",
-		month: "short",
-		year: "numeric",
-		timeZone: localTimeZone,
-	});
+	const dateFormatter = new DateFormatter(
+		"default",
+		DATE_FORMAT_CONFIG.DEFAULT,
+	);
 
 	const formatDate = (date: { start: DateValue; end: DateValue }) => {
 		const startDate = date.start.toDate(localTimeZone);

@@ -3,7 +3,7 @@ import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { useCourseEvents } from "@lms-repo/ui/hooks/use-course-events";
-import { viewLabels } from "@lms-repo/ui/lib/utils";
+import { isSameDay, viewLabels } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -176,16 +176,6 @@ function RouteComponent() {
 		});
 
 		return weekData;
-	};
-
-	// 同じ日かどうかを判定
-	const isSameDay = (date1: Date, date2: Date) => {
-		if (!date1 || !date2) return false;
-		return (
-			date1.getFullYear() === date2.getFullYear() &&
-			date1.getMonth() === date2.getMonth() &&
-			date1.getDate() === date2.getDate()
-		);
 	};
 
 	// 月を変更

@@ -34,6 +34,8 @@ export function AssignmentScene() {
 		},
 	];
 
+	const Icon = getIconByFormat(mockAssignment.format);
+
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
@@ -110,10 +112,7 @@ export function AssignmentScene() {
 										<div className="flex gap-4">
 											<div className="mt-1">
 												<div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-													{(() => {
-														const Icon = getIconByFormat(mockAssignment.format);
-														return <Icon width={32} height={32} />;
-													})()}
+													<Icon width={32} height={32} />
 												</div>
 											</div>
 											<div className="space-y-2">
@@ -183,8 +182,6 @@ export function AssignmentScene() {
 															maxLength: 100,
 															value: "",
 															"aria-describedby": "title-error",
-															onBlur: () => {},
-															onChange: () => {},
 															placeholder: "タイトルを入力してください",
 														}}
 														labelProps={{
@@ -202,8 +199,6 @@ export function AssignmentScene() {
 															maxLength: 2000,
 															value: "",
 															"aria-describedby": "description-error",
-															onBlur: () => {},
-															onChange: () => {},
 															placeholder: "最大2000文字まで入力できます",
 															rows: 12,
 														}}
@@ -238,8 +233,6 @@ export function AssignmentScene() {
 												maxLength: 200,
 												placeholder: "最大200文字まで入力できます。",
 												"aria-describedby": "comment-error",
-												onBlur: () => {},
-												onChange: () => {},
 												className: "shadow-lg dark:shadow-gray-800",
 											}}
 											labelProps={{

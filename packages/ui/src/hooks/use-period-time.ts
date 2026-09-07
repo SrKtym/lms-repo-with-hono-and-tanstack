@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export interface TimeSlot {
+interface TimeSlot {
 	start: Date;
 	end: Date;
 }

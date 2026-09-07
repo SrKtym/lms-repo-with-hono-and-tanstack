@@ -5,7 +5,7 @@ import { DefaultChip } from "../chip";
 import { DefaultSeparator } from "../separator";
 
 interface AssignmentDetailCardProps {
-	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
+	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
 	score?: number | null;
 }
 
@@ -14,9 +14,7 @@ export function AssignmentDetailCard({
 	targetAssignment,
 	score,
 }: AssignmentDetailCardProps) {
-	if (!targetAssignment) {
-		throw new Error("課題が見つかりません");
-	}
+	const Icon = getIconByFormat(targetAssignment?.format);
 
 	return (
 		<BaseCard className="border border-divider">
@@ -25,17 +23,16 @@ export function AssignmentDetailCard({
 					<div className="flex gap-4">
 						<div className="mt-1">
 							<div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-								{(() => {
-									const Icon = getIconByFormat(targetAssignment.format);
-									return <Icon width={32} height={32} />;
-								})()}
+								<Icon width={32} height={32} />
 							</div>
 						</div>
 						<div className="space-y-2">
-							<h1 className="font-medium text-2xl">{targetAssignment.title}</h1>
+							<h1 className="font-medium text-2xl">
+								{targetAssignment?.title}
+							</h1>
 							<div className="mt-2">
 								<DefaultChip color="accent">
-									{targetAssignment.points || 0} 点
+									{targetAssignment?.points || 0} 点
 								</DefaultChip>
 							</div>
 						</div>
@@ -52,7 +49,7 @@ export function AssignmentDetailCard({
 								<span className="font-medium">期限</span>
 							</div>
 							<p className="ml-6 text-default-600">
-								{targetAssignment.dueDate.toLocaleDateString()}
+								{targetAssignment?.dueDate.toLocaleDateString()}
 							</p>
 						</div>
 
@@ -61,7 +58,7 @@ export function AssignmentDetailCard({
 								<span className="font-medium">説明</span>
 							</div>
 							<p className="ml-6 text-default-600 leading-relaxed">
-								{targetAssignment.description}
+								{targetAssignment?.description}
 							</p>
 						</div>
 
@@ -95,7 +92,7 @@ export function AssignmentDetailCard({
 									</div>
 									<p className="ml-6 text-default-600">
 										{score !== null
-											? `${score}/${targetAssignment.points} 点`
+											? `${score}/${targetAssignment?.points} 点`
 											: "まだ採点されていません"}
 									</p>
 								</div>

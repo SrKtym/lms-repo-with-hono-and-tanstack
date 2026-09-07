@@ -33,15 +33,22 @@ export async function createAnnouncements(announcementsData: Announcements) {
 			// 講義名と受講者IDを取得
 			const courseData = await fetchCourseData(tx, courseId);
 
+			if (!courseData?.studentId) {
+				return {
+					error: "受講者がいないため通知を作成できませんでした。",
+					status: 404,
+				};
+			}
+
 			// 通知の作成
 			await createNotification(
 				tx,
 				{
-					title: `${courseData[0]?.name}に新しいお知らせ: ${result.title}`,
+					title: `${courseData.name}に新しいお知らせ: ${result.title}`,
 					description: `${result.type}: ${result.description}`,
 					type: "announcement",
 				},
-				courseData,
+				[courseData],
 			);
 
 			// メール通知を有効にしているユーザーのメール一覧
@@ -59,7 +66,10 @@ export async function createAnnouncements(announcementsData: Announcements) {
 		});
 		return result;
 	} catch {
-		return { error: "アナウンスメントの作成に失敗しました。", status: 500 };
+		return {
+			error: "アナウンスメントの作成に失敗しました。",
+			status: 500,
+		};
 	}
 }
 
