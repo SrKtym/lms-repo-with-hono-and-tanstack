@@ -6,6 +6,7 @@ import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
 import { authMiddleware } from "./middleware/auth";
+import { oidcMiddleware } from "./middleware/oidc";
 import { securityMiddleware } from "./middleware/security";
 
 const app = new Hono()
@@ -23,6 +24,8 @@ const app = new Hono()
 	)
 	// クライアントからの/api/authへのリクエストに対する処理
 	.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw))
+	// OIDC認証ミドルウェア（Cloud Scheduler用）
+	.post("/api/notifications/reminder", oidcMiddleware)
 	// 認証ミドルウェア
 	.use("*", authMiddleware)
 	// レート制限、ボット検出
@@ -42,10 +45,10 @@ const app = new Hono()
 		];
 
 		// レスポンス速度に影響するので、特定のメソッド、パスのみに適用
-		if (
-			!allowMethods.includes(method) &&
-			appliedPaths.some((p) => path.startsWith(p))
-		) {
+		const isTargetMethod = !allowMethods.includes(method);
+		const isTargetPath = appliedPaths.some((p) => path.startsWith(p));
+
+		if (isTargetMethod && isTargetPath) {
 			return securityMiddleware(c, next);
 		}
 

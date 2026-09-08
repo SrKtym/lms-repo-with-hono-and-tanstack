@@ -9,6 +9,14 @@ export const authMiddleware = createMiddleware<{
 		session: Session["session"];
 	};
 }>(async (c, next) => {
+	const path = c.req.path;
+	const method = c.req.method;
+
+	// Cloud Scheduler用のOIDC認証済みルートはバイパス
+	if (path === "/api/notifications/reminder" && method === "POST") {
+		return next();
+	}
+
 	const session = await auth.api.getSession({ headers: c.req.raw.headers });
 
 	// 認証チェック
@@ -20,7 +28,6 @@ export const authMiddleware = createMiddleware<{
 	c.set("session", session.session);
 
 	const { role } = session.user;
-	const path = c.req.path;
 
 	// 認可チェック
 	if (path.startsWith("/api/students")) {
