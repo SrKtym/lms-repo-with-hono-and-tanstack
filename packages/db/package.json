@@ -14,7 +14,9 @@
 		"db:generate": "drizzle-kit generate",
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate",
-		"db:seed": "bunx tsx src/seed.ts"
+		"db:seed": "bunx tsx src/seed/index.ts",
+		"test:unit": "bun test src/utils/mutation/submissions.test.ts",
+		"test:integration": "bun test src/integration/auth-flow.test.ts"
 	},
 	"dependencies": {
 		"@lms-repo/env": "workspace:*",

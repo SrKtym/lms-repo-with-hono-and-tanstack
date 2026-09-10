@@ -13,25 +13,37 @@
 		"check-types": {
 			"dependsOn": ["^check-types"]
 		},
+		"test:unit": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": []
+		},
+		"test:integration": {
+			"dependsOn": ["^build"],
+			"inputs": ["$TURBO_DEFAULT$", ".env*"],
+			"outputs": []
+		},
 		"dev": {
 			"cache": false,
 			"persistent": true
 		},
 		"db:push": {
-			"cache": false
+			"cache": false,
+			"interactive": true
 		},
 		"db:generate": {
-			"cache": false
+			"cache": false,
+			"interactive": true
 		},
 		"db:migrate": {
 			"cache": false,
-			"persistent": true
-		},
-		"db:studio": {
-			"cache": false,
-			"persistent": true
+			"interactive": true
 		},
 		"db:seed": {
+			"cache": false,
+			"interactive": true
+		},
+		"db:studio": {
 			"cache": false,
 			"persistent": true
 		},
