@@ -47,7 +47,6 @@ export function MockScheduleModal({
 								name: "schedule-title",
 								type: "text",
 								value: scheduleTitle,
-								onBlur: () => {},
 								onChange: handleTitleChange,
 								placeholder: "タイトルを入力",
 								ref: inputRef,
@@ -66,8 +65,6 @@ export function MockScheduleModal({
 							textAreaProps={{
 								id: "schedule-description",
 								name: "schedule-description",
-								onBlur: () => {},
-								onChange: () => {},
 								placeholder: "説明を入力",
 								rows: 3,
 							}}
@@ -86,7 +83,6 @@ export function MockScheduleModal({
 									start: dateTime,
 									end: dateTime,
 								},
-								onChange: () => {},
 							}}
 							labelProps={{
 								children: "期間",

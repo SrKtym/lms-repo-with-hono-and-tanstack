@@ -4,7 +4,7 @@ import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
 interface SubmissionsCardProps {
-	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
+	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
 	targetSubmission?: FetchSubmissionsStateReturnType[number];
 	children?: React.ReactNode;
 }
@@ -19,7 +19,7 @@ export function SubmissionsCard({
 			<div className="overflow-y-auto p-2">
 				<div className="flex items-center justify-between">
 					<h2 className="font-medium text-lg">
-						課題（{targetAssignment.title}）の提出
+						課題（{targetAssignment?.title}）の提出
 					</h2>
 					<DefaultChip
 						color={

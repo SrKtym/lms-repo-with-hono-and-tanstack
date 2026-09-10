@@ -2,15 +2,38 @@
 node_modules
 .pnp
 .pnp.js
+.pnp.*
+.yarn/
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # Build outputs
 dist
 build
+out
 *.tsbuildinfo
+next-env.d.ts
+.vinxi
+.output
+.react-router/
+.tanstack/
+.nitro/
+dev-dist
+.open-next
 
 # Environment variables
 .env
 .env*.local
+.env.production
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+!.env.example
+.dev.vars
+.dev.vars*
 
 # IDEs and editors
 .vscode/*
@@ -18,11 +41,19 @@ build
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/*.code-snippets
+!.vscode/extensions.json
 .idea
+.idea/workspace.xml
+.idea/usage.statistics.xml
+.idea/shelf
 *.swp
 *.swo
 *~
 .DS_Store
+*.pem
+*.local
 
 # Logs
 logs
@@ -32,6 +63,8 @@ yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+_.log
+report.[0-9]_[0-9]_[0-9]_[0-9]_.json
 
 # Turbo
 .turbo
@@ -39,17 +72,27 @@ lerna-debug.log*
 
 # Better-T-Stack
 .alchemy
+.wrangler
 
 # Testing
 coverage
 .nyc_output
+*.lcov
 
 # Misc
 *.tgz
 .cache
 tmp
 temp
+.eslintcache
+
+# Database
+*.db*
+/prisma/generated
 
 # Mock data
-# mockdata.ts
+packages/db/src/mock/
+packages/db/src/mock-data.ts
+packages/db/src/seed/
+seed/
 

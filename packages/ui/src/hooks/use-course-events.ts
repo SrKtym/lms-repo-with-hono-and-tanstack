@@ -1,7 +1,8 @@
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
 import { useMemo } from "react";
+import { isSameDay } from "../lib/utils";
 
-export interface Course {
+interface Course {
 	id: string;
 	name: string;
 	classRoom: string;
@@ -9,7 +10,7 @@ export interface Course {
 	period: number;
 }
 
-export interface Schedule {
+interface Schedule {
 	id: string;
 	title: string;
 	description?: string;
@@ -18,7 +19,7 @@ export interface Schedule {
 	theme: string;
 }
 
-export interface Event {
+interface Event {
 	id: string;
 	title: string;
 	description: string;
@@ -35,14 +36,15 @@ export const useCourseEvents = (courses: Course[], schedules: Schedule[]) => {
 		return (date: Date): Event[] => {
 			const events: Event[] = [];
 
-			// Process courses
+			// events配列に講義を追加
 			courses.forEach((course) => {
-				// Check if course matches the day of week
-				if (
+				// 講義の曜日と日付が一致するかチェック
+				const isMatch =
 					course.weekdays === date.getDay() ||
-					(course.weekdays === 7 && date.getDay() === 0)
-				) {
-					// Use the periodToTime function from usePeriodTime hook
+					(course.weekdays === 7 && date.getDay() === 0);
+
+				if (isMatch) {
+					// periodToTime関数を使って時間帯を取得
 					const timeSlot = periodToTime(course.period);
 
 					const eventStart = new Date(date);
@@ -73,7 +75,7 @@ export const useCourseEvents = (courses: Course[], schedules: Schedule[]) => {
 				}
 			});
 
-			// Process schedules
+			// events配列にスケジュールを追加
 			schedules.forEach((schedule) => {
 				if (isSameDay(new Date(schedule.startTime), date)) {
 					events.push({
@@ -88,7 +90,7 @@ export const useCourseEvents = (courses: Course[], schedules: Schedule[]) => {
 				}
 			});
 
-			// Sort events by start time
+			// eventsを開始時間でソート
 			return events.sort((a, b) => {
 				return a.startTime.getTime() - b.startTime.getTime();
 			});
@@ -96,14 +98,4 @@ export const useCourseEvents = (courses: Course[], schedules: Schedule[]) => {
 	}, [courses, schedules, periodToTime]);
 
 	return { getEventsForDay };
-};
-
-// Helper function to check if two dates are the same day
-const isSameDay = (date1: Date, date2: Date): boolean => {
-	if (!date1 || !date2) return false;
-	return (
-		date1.getFullYear() === date2.getFullYear() &&
-		date1.getMonth() === date2.getMonth() &&
-		date1.getDate() === date2.getDate()
-	);
 };

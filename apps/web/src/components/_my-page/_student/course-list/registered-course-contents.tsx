@@ -25,9 +25,6 @@ export default function RegisteredCourseContents({
 	submission,
 	assignmentId,
 }: RegisteredCourseContentsProps) {
-	if (!targetAssignment) {
-		throw new Error("課題が見つかりません");
-	}
 	const { data: comments = [] } = useCommentsWithAssignment(assignmentId);
 
 	const score = submission?.score;
