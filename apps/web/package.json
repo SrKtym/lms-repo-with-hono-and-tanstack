@@ -37,7 +37,6 @@
 		"@types/react": "catalog:",
 		"@types/react-dom": "catalog:",
 		"@vitejs/plugin-react": "^4.3.4",
-		"postcss": "^8.5.3",
 		"tailwindcss": "catalog:",
 		"typescript": "catalog:",
 		"vite": "^8.0.8"
