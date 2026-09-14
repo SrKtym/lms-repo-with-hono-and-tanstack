@@ -171,10 +171,9 @@ CREATE TABLE "notifications" (
 	"id" text PRIMARY KEY NOT NULL,
 	"title" text NOT NULL,
 	"description" text NOT NULL,
-	"sender" text NOT NULL,
-	"receiver" text NOT NULL,
-	"is_read" boolean DEFAULT false NOT NULL,
-	"created_at" timestamp DEFAULT now() NOT NULL
+	"type" text NOT NULL,
+	"created_at" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "type_check" CHECK ("notifications"."type" IN ('announcement','assignment','system'))
 );
 --> statement-breakpoint
 CREATE TABLE "professors" (
@@ -231,7 +230,15 @@ CREATE TABLE "text_submissions" (
 	"description" text DEFAULT '' NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"created_by" text NOT NULL
+	"created_by" text NOT NULL,
+	CONSTRAINT "text_submissions_unique" UNIQUE("assignment_id","created_by")
+);
+--> statement-breakpoint
+CREATE TABLE "user_notifications" (
+	"user_id" text NOT NULL,
+	"notification_id" text NOT NULL,
+	"is_read" boolean DEFAULT false NOT NULL,
+	CONSTRAINT "user_notifications_user_id_notification_id_pk" PRIMARY KEY("user_id","notification_id")
 );
 --> statement-breakpoint
 ALTER TABLE "better_auth"."account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -259,6 +266,8 @@ ALTER TABLE "submission_status" ADD CONSTRAINT "submission_status_user_id_user_i
 ALTER TABLE "submission_status" ADD CONSTRAINT "submission_status_assignment_id_assignments_id_fk" FOREIGN KEY ("assignment_id") REFERENCES "public"."assignments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "text_submissions" ADD CONSTRAINT "text_submissions_assignment_id_assignments_id_fk" FOREIGN KEY ("assignment_id") REFERENCES "public"."assignments"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "text_submissions" ADD CONSTRAINT "text_submissions_created_by_user_id_fk" FOREIGN KEY ("created_by") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_notifications" ADD CONSTRAINT "user_notifications_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "better_auth"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "user_notifications" ADD CONSTRAINT "user_notifications_notification_id_notifications_id_fk" FOREIGN KEY ("notification_id") REFERENCES "public"."notifications"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "account_userId_idx" ON "better_auth"."account" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "session_userId_idx" ON "better_auth"."session" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "better_auth"."verification" USING btree ("identifier");--> statement-breakpoint
@@ -272,8 +281,6 @@ CREATE INDEX "courses_weekdays_period_idx" ON "courses" USING btree ("weekdays",
 CREATE INDEX "departments_faculty_id_idx" ON "departments" USING btree ("faculty_id");--> statement-breakpoint
 CREATE INDEX "file_submissions_metadata_created_by_idx" ON "file_submissions_metadata" USING btree ("created_by");--> statement-breakpoint
 CREATE INDEX "file_submissions_metadata_assignment_id_idx" ON "file_submissions_metadata" USING btree ("assignment_id");--> statement-breakpoint
-CREATE INDEX "notifications_sender_idx" ON "notifications" USING btree ("sender");--> statement-breakpoint
-CREATE INDEX "notifications_receiver_is_read_idx" ON "notifications" USING btree ("receiver","is_read");--> statement-breakpoint
 CREATE INDEX "professors_department_id_idx" ON "professors" USING btree ("department_id");--> statement-breakpoint
 CREATE INDEX "registration_user_id_course_id_idx" ON "registration" USING btree ("user_id","course_id");--> statement-breakpoint
 CREATE INDEX "schedules_created_by_idx" ON "schedules" USING btree ("created_by");--> statement-breakpoint
