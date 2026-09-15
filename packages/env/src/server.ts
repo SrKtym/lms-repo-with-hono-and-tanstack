@@ -2,10 +2,14 @@ import { createEnv } from "@t3-oss/env-core";
 import dotenv from "dotenv";
 import { z } from "zod";
 
-// 開発環境のみ.envファイルを読み込む
+// 開発環境とテスト環境で.envファイルを読み込む
 if (process.env.NODE_ENV !== "production") {
+	const envFile = process.env.NODE_ENV === "test" 
+		? "../../apps/server/.env.test"
+		: "../../apps/server/.env";
+	
 	dotenv.config({
-		path: "../../apps/server/.env",
+		path: envFile,
 		encoding: "utf8",
 		debug: true,
 	});
@@ -29,6 +33,8 @@ export const env = createEnv({
 		GCS_EMULATOR_HOST: z.string().min(1).optional(),
 		GCS_BUCKET_NAME: z.string().min(1),
 		CORS_ORIGIN: z.url(),
+		SCHEDULER_SERVICE_ACCOUNT_EMAIL: z.email().optional(),
+		GOOGLE_CLOUD_PROJECT: z.string().min(1).optional(),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
 			.default("development"),
