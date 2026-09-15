@@ -17,5 +17,6 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true,
 		"types": ["bun"]
-	}
+	},
+	"exclude": ["**/*.test.ts", "**/*.spec.ts", "**/node_modules", "**/dist"]
 }
