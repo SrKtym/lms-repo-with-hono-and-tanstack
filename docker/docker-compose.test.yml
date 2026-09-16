@@ -1,0 +1,40 @@
+services:
+  # テスト用データベース
+  test-db:
+    container_name: lms-test-db
+    image: postgres:17.6
+    env_file:
+      - ../packages/db/.env.db.test
+    ports:
+      - 5433:5432  # 開発用と競合しないようにポートを変更
+    volumes:
+      - test_postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # テスト用GCSエミュレーター
+  test-fake-gcs:
+    container_name: lms-test-fake-gcs
+    image: fsouza/fake-gcs-server
+    ports:
+      - 4444:4443  # 開発用と競合しないようにポートを変更
+      - 8001:8000
+    volumes:
+      - test_gcs_data:/data
+    command: ["-scheme", "both", "-backend", "memory"]
+
+  # テスト用GCSバケット作成
+  test-gcs-init:
+    container_name: lms-test-gcs-init
+    image: curlimages/curl:8.22.0
+    depends_on:
+      - test-fake-gcs
+    command: >
+      sh -c "sleep 5 && curl -X PUT http://test-fake-gcs:8000/test-storage-bucket && echo 'Test bucket created successfully'"
+
+volumes:
+  test_postgres_data:
+  test_gcs_data:
