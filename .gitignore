@@ -22,6 +22,9 @@ next-env.d.ts
 .nitro/
 dev-dist
 .open-next
+/.next/
+.vercel
+.netlify
 
 # Environment variables
 .env
@@ -31,7 +34,11 @@ dev-dist
 .env.test.local
 .env.production.local
 .env.local
+.env.test
 !.env.example
+!.env.test.example
+!.env.db.dev.example
+!.env.db.test.example
 .dev.vars
 .dev.vars*
 
@@ -41,9 +48,7 @@ dev-dist
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-!.vscode/launch.json
 !.vscode/*.code-snippets
-!.vscode/extensions.json
 .idea
 .idea/workspace.xml
 .idea/usage.statistics.xml
@@ -88,4 +93,15 @@ temp
 
 # Database
 *.db*
+!/packages/db/.env.db.dev.example
+!/packages/db/.env.db.test.example
 /prisma/generated
+
+# Mock data
+packages/db/src/mock/course-data/
+packages/db/src/mock/mock-prof-data.ts
+packages/db/src/mock-data.ts
+packages/db/src/mock/
+packages/db/src/seed/
+seed/
+seed.ts
