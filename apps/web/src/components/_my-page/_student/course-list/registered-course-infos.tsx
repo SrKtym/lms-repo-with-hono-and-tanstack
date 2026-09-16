@@ -29,10 +29,6 @@ export default function RegisteredCourseInfos({
 	assignments,
 	courseId,
 }: RegisteredCourseInfosProps) {
-	if (!courseWithCoverImage) {
-		throw new Error("講義が見つかりません");
-	}
-
 	const { data: announcementsData = [] } = useAnnouncements(announcements);
 	const { data: assignmentsData = [] } = useAssignments(assignments);
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
@@ -50,7 +46,7 @@ export default function RegisteredCourseInfos({
 			<div className="relative flex h-48 items-end md:h-64">
 				<div className="absolute inset-0">
 					<Image
-						src={courseWithCoverImage.coverImage || ""}
+						src={courseWithCoverImage?.coverImage || ""}
 						layout="fullWidth"
 						sizes="100vw"
 						className="h-full w-full object-cover"
@@ -72,12 +68,12 @@ export default function RegisteredCourseInfos({
 				<div className="container relative z-10 mx-auto max-w-screen-xl p-6">
 					<div className="text-white">
 						<h1 className="font-medium text-2xl md:text-3xl">
-							{courseWithCoverImage.name}
+							{courseWithCoverImage?.name}
 						</h1>
 						<p className="mt-1 text-white/80">
-							{courseWithCoverImage.classRoom}
+							{courseWithCoverImage?.classRoom}
 						</p>
-						<p className="text-white/80">{courseWithCoverImage.professor}</p>
+						<p className="text-white/80">{courseWithCoverImage?.professor}</p>
 					</div>
 				</div>
 			</div>

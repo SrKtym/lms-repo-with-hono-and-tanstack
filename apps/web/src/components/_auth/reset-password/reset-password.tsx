@@ -24,7 +24,7 @@ export default function ResetPassword({ token }: { token: string }) {
 
 				await authClient.resetPassword(
 					{
-						token: token,
+						token,
 						newPassword: value.password,
 					},
 					{

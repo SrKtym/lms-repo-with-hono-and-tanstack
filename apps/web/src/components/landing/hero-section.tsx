@@ -14,6 +14,12 @@ export function HeroSection({ children }: HeroSectionProps) {
 		"マルチデバイス",
 	] as const;
 
+	const typewriterText = [
+		"manages enrolled courses",
+		"manages your schedules",
+		"manages your assignments",
+	];
+
 	return (
 		<section className="relative flex min-h-screen items-center justify-center overflow-hidden">
 			{/* Main Content */}
@@ -36,13 +42,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						transition={{ duration: 0.5, delay: 0.1 }}
 						className="mb-6 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl md:text-6xl dark:text-white"
 					>
-						<TypewriterText
-							texts={[
-								"manages enrolled courses",
-								"manages your schedules",
-								"manages your assignments",
-							]}
-						/>
+						<TypewriterText texts={typewriterText} />
 					</motion.h1>
 
 					<motion.p

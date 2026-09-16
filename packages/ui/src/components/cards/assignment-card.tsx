@@ -13,20 +13,20 @@ export function AssignmentCard({
 }: {
 	assignment: FetchAssignmentsFromUserCoursesReturnType[number];
 }) {
-	const isOverdue = assignment.dueDate < new Date();
+	const now = new Date();
+	const isOverdue = assignment.dueDate < now;
 	const daysUntilDue = Math.ceil(
-		(assignment.dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24),
+		(assignment.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
 	);
+
+	const Icon = getIconByFormat(assignment.format);
 
 	return (
 		<BaseCard className="border border-gray-200 dark:border-gray-700">
 			<div className="flex gap-3">
 				<div className="mt-1">
 					<div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-						{(() => {
-							const Icon = getIconByFormat(assignment.format);
-							return <Icon />;
-						})()}
+						<Icon />
 					</div>
 				</div>
 

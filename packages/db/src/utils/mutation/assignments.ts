@@ -35,15 +35,22 @@ export async function createAssignments(assignmentsData: Assignments) {
 			// 講義名と受講者IDを取得
 			const courseData = await fetchCourseData(tx, courseId);
 
+			if (!courseData?.studentId) {
+				return {
+					error: "受講者がいないため通知を作成できませんでした。",
+					status: 404,
+				};
+			}
+
 			// 通知の作成
 			await createNotification(
 				tx,
 				{
-					title: `${courseData[0]?.name}に新しい課題: ${result.title}`,
+					title: `${courseData.name}に新しい課題: ${result.title}`,
 					description: `提出形式: ${result.format}\n説明: ${result.description}`,
 					type: "assignment",
 				},
-				courseData,
+				[courseData],
 			);
 
 			// メール通知を有効にしているユーザーのメール一覧

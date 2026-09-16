@@ -12,7 +12,9 @@
 			"default": "./src/utils/*.ts"
 		}
 	},
-	"scripts": {},
+	"scripts": {
+		"test": "bun test src/permissions.test.ts"
+	},
 	"dependencies": {
 		"@lms-repo/emails": "workspace:*",
 		"@lms-repo/db": "workspace:*",

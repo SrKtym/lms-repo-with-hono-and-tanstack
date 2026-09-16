@@ -1,5 +1,5 @@
 {
-	"id": "9076af50-285f-44fa-97d8-b4a04f4b98b2",
+	"id": "df89dc59-0a11-4216-b1ca-ddae962981af",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -1316,24 +1316,11 @@
 					"primaryKey": false,
 					"notNull": true
 				},
-				"sender": {
-					"name": "sender",
+				"type": {
+					"name": "type",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true
-				},
-				"receiver": {
-					"name": "receiver",
-					"type": "text",
-					"primaryKey": false,
-					"notNull": true
-				},
-				"is_read": {
-					"name": "is_read",
-					"type": "boolean",
-					"primaryKey": false,
-					"notNull": true,
-					"default": false
 				},
 				"created_at": {
 					"name": "created_at",
@@ -1343,49 +1330,17 @@
 					"default": "now()"
 				}
 			},
-			"indexes": {
-				"notifications_sender_idx": {
-					"name": "notifications_sender_idx",
-					"columns": [
-						{
-							"expression": "sender",
-							"isExpression": false,
-							"asc": true,
-							"nulls": "last"
-						}
-					],
-					"isUnique": false,
-					"concurrently": false,
-					"method": "btree",
-					"with": {}
-				},
-				"notifications_receiver_is_read_idx": {
-					"name": "notifications_receiver_is_read_idx",
-					"columns": [
-						{
-							"expression": "receiver",
-							"isExpression": false,
-							"asc": true,
-							"nulls": "last"
-						},
-						{
-							"expression": "is_read",
-							"isExpression": false,
-							"asc": true,
-							"nulls": "last"
-						}
-					],
-					"isUnique": false,
-					"concurrently": false,
-					"method": "btree",
-					"with": {}
-				}
-			},
+			"indexes": {},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"type_check": {
+					"name": "type_check",
+					"value": "\"notifications\".\"type\" IN ('announcement','assignment','system')"
+				}
+			},
 			"isRLSEnabled": false
 		},
 		"public.professors": {
@@ -1882,6 +1837,69 @@
 				}
 			},
 			"compositePrimaryKeys": {},
+			"uniqueConstraints": {
+				"text_submissions_unique": {
+					"name": "text_submissions_unique",
+					"nullsNotDistinct": false,
+					"columns": ["assignment_id", "created_by"]
+				}
+			},
+			"policies": {},
+			"checkConstraints": {},
+			"isRLSEnabled": false
+		},
+		"public.user_notifications": {
+			"name": "user_notifications",
+			"schema": "",
+			"columns": {
+				"user_id": {
+					"name": "user_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"notification_id": {
+					"name": "notification_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true
+				},
+				"is_read": {
+					"name": "is_read",
+					"type": "boolean",
+					"primaryKey": false,
+					"notNull": true,
+					"default": false
+				}
+			},
+			"indexes": {},
+			"foreignKeys": {
+				"user_notifications_user_id_user_id_fk": {
+					"name": "user_notifications_user_id_user_id_fk",
+					"tableFrom": "user_notifications",
+					"tableTo": "user",
+					"schemaTo": "better_auth",
+					"columnsFrom": ["user_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				},
+				"user_notifications_notification_id_notifications_id_fk": {
+					"name": "user_notifications_notification_id_notifications_id_fk",
+					"tableFrom": "user_notifications",
+					"tableTo": "notifications",
+					"columnsFrom": ["notification_id"],
+					"columnsTo": ["id"],
+					"onDelete": "cascade",
+					"onUpdate": "no action"
+				}
+			},
+			"compositePrimaryKeys": {
+				"user_notifications_user_id_notification_id_pk": {
+					"name": "user_notifications_user_id_notification_id_pk",
+					"columns": ["user_id", "notification_id"]
+				}
+			},
 			"uniqueConstraints": {},
 			"policies": {},
 			"checkConstraints": {},

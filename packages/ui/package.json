@@ -18,7 +18,8 @@
 		"./postcss.config": "./postcss.config.mjs"
 	},
 	"scripts": {
-		"check-types": "tsc --noEmit"
+		"check-types": "tsc --noEmit",
+		"test": "bun test src/lib/utils.test.ts"
 	},
 	"dependencies": {
 		"@heroui/react": "^3.0.1",

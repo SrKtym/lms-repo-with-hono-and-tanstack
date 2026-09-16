@@ -29,6 +29,7 @@
 		"dev:server": "turbo -F server dev",
 		"start:server": "turbo -F server start",
 		"start:web": "turbo -F web serve",
+		"email:dev": "turbo -F @lms-repo/emails email:dev",
 		"db:push": "turbo -F @lms-repo/db db:push",
 		"db:studio": "turbo -F @lms-repo/db db:studio",
 		"db:generate": "turbo -F @lms-repo/db db:generate",
@@ -41,7 +42,10 @@
 		"docker:restart": "docker-compose -f docker/docker-compose.dev.yml restart",
 		"docker:exec:web": "docker-compose -f docker/docker-compose.dev.yml exec web /bin/bash",
 		"docker:exec:server": "docker-compose -f docker/docker-compose.dev.yml exec server /bin/bash",
-		"email:dev": "turbo -F @lms-repo/emails email:dev",
+		"test:env:up": "docker-compose -f docker/docker-compose.test.yml up -d",
+		"test:env:down": "docker-compose -f docker/docker-compose.test.yml down",
+		"test:unit": "turbo test:unit",
+		"test:integration": "turbo -F @lms-repo/db test:integration",
 		"check": "biome check --write ."
 	},
 	"dependencies": {
@@ -56,5 +60,5 @@
 		"turbo": "^2.9.3",
 		"typescript": "catalog:"
 	},
-	"packageManager": "bun@1.3.12"
+	"packageManager": "bun@1.3.11"
 }

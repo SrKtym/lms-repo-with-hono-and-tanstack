@@ -83,7 +83,7 @@ export function getFileColor(type: string) {
 }
 
 // ファイルの形式に基づくアイコン
-export function getIconByFormat(format: string) {
+export function getIconByFormat(format?: string) {
 	switch (format) {
 		case "pdf":
 			return PDFFile;
@@ -153,4 +153,14 @@ export function getDepartmentName() {
 	});
 
 	return departments;
+}
+
+// 同じ日かどうかを判定
+export function isSameDay(date1: Date, date2: Date) {
+	if (!date1 || !date2) return false;
+	return (
+		date1.getFullYear() === date2.getFullYear() &&
+		date1.getMonth() === date2.getMonth() &&
+		date1.getDate() === date2.getDate()
+	);
 }

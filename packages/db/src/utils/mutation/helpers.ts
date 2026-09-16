@@ -25,18 +25,18 @@ interface NotificationData {
 /**
  * コースデータ（講義名と受講者ID）を取得
  */
-export async function fetchCourseData(
-	tx: Transaction,
-	courseId: string,
-): Promise<CourseData[]> {
-	return tx
+export async function fetchCourseData(tx: Transaction, courseId: string) {
+	const [data] = await tx
 		.select({
 			name: courses.name,
 			studentId: registration.userId,
 		})
 		.from(courses)
 		.innerJoin(registration, eq(courses.id, registration.courseId))
-		.where(eq(courses.id, courseId));
+		.where(eq(courses.id, courseId))
+		.limit(1);
+
+	return data;
 }
 
 /**
@@ -105,7 +105,7 @@ export async function fetchEmailsForNotification(
 	tx: Transaction,
 	courseId: string,
 	emailField: "assignmentsEmail" | "announcementsEmail",
-): Promise<string[]> {
+) {
 	const res = await tx
 		.select({
 			email: user.email,

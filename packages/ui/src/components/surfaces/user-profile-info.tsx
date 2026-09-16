@@ -50,7 +50,7 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 						{/* 属性表示 */}
 						<div className={style}>
 							<span className="font-medium">属性:</span>
-							<span className="capitalize">
+							<span>
 								{isStudent ? "学生" : isProfessor ? "教授" : "一般ユーザー"}
 							</span>
 						</div>
