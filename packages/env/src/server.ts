@@ -4,10 +4,11 @@ import { z } from "zod";
 
 // 開発環境とテスト環境で.envファイルを読み込む
 if (process.env.NODE_ENV !== "production") {
-	const envFile = process.env.NODE_ENV === "test" 
-		? "../../apps/server/.env.test"
-		: "../../apps/server/.env";
-	
+	const envFile =
+		process.env.NODE_ENV === "test"
+			? "../../apps/server/.env.test"
+			: "../../apps/server/.env";
+
 	dotenv.config({
 		path: envFile,
 		encoding: "utf8",
