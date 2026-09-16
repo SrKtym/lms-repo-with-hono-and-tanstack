@@ -7,17 +7,13 @@ services:
       # このブロックに限りカレントディレクトリはルートディレクトリを指す
       dockerfile: apps/server/Dockerfile.dev
     ports:
+      # ポートマッピング（ホスト:コンテナ）
       - 3000:3000
     volumes:
       # ホストのルートディレクトリをコンテナにマウント
       - ..:/lms-repo
       # node_modulesをホストと分離してコンテナにマウント
       - node_modules:/lms-repo/node_modules
-    environment:
-      DATABASE_URL: postgresql://postgres:password@db:5432/lmsdb
-      NODE_ENV: development
-      GCS_EMULATOR_HOST: http://fake-gcs:8000
-      GCS_BUCKET_NAME: dummy-storage-bucket
     depends_on:
       - db
       - fake-gcs
@@ -30,24 +26,21 @@ services:
       # このブロックに限りカレントディレクトリはルートディレクトリを指す
       dockerfile: apps/web/Dockerfile.dev
     ports:
+      # ポートマッピング（ホスト:コンテナ）
       - 3001:3001
     volumes:
       # ホストのルートディレクトリをコンテナにマウント
       - ..:/lms-repo
       # node_modulesをホストと分離してコンテナにマウント
       - node_modules:/lms-repo/node_modules
-    environment:
-      NODE_ENV: development
     depends_on:
       - server
 
   db:
     container_name: lms-db
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: lmsdb
+    image: postgres:17.6
+    env_file:
+      - ../packages/db/.env.db.dev
     ports:
       - 5432:5432
     volumes:
@@ -68,7 +61,7 @@ services:
   # GCSバケット作成
   gcs-init:
     container_name: lms-gcs-init
-    image: curlimages/curl:latest
+    image: curlimages/curl:8.22.0
     depends_on:
       fake-gcs:
         condition: service_started
