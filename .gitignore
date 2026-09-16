@@ -89,10 +89,3 @@ temp
 # Database
 *.db*
 /prisma/generated
-
-# Mock data
-packages/db/src/mock/
-packages/db/src/mock-data.ts
-packages/db/src/seed/
-seed/
-

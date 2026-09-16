@@ -1,1 +1,0 @@
-ALTER TABLE "text_submissions" ADD CONSTRAINT "text_submissions_unique" UNIQUE("assignment_id","created_by");
