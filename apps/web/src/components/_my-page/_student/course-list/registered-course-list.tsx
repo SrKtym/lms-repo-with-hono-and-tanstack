@@ -3,7 +3,6 @@ import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { BookOpen } from "@lms-repo/ui/assets/icons/book-open";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { CourseCard } from "@lms-repo/ui/components/cards/course-card";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { DefaultSearchField } from "@lms-repo/ui/components/search-field";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { Link } from "@tanstack/react-router";
@@ -73,53 +72,51 @@ export default function RegisteredCourseList({
 						</div>
 					</div>
 
-					<LazyMotionProvider>
-						<m.div
-							className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-							variants={{
-								hidden: { opacity: 0 },
-								visible: { opacity: 1 },
-							}}
-							transition={{
-								staggerChildren: 0.1,
-							}}
-							initial="hidden"
-							animate="visible"
-						>
-							{sortedCourses.map((currentCourseData) => (
-								<m.div
-									key={currentCourseData.id}
-									variants={{
-										hidden: { opacity: 0, y: 20 },
-										visible: {
-											opacity: 1,
-											y: 0,
-										},
-									}}
-									transition={{ duration: 0.3 }}
-								>
-									<m.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
-										<CourseCard
-											course={currentCourseData}
-											LinkComponent={
-												<Link
-													to="/course-list"
-													search={{
-														"course-id": currentCourseData.id,
-													}}
-												>
-													<DefaultButton size="sm">
-														詳細を見る
-														<ArrowRight />
-													</DefaultButton>
-												</Link>
-											}
-										/>
-									</m.div>
+					<m.div
+						className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+						variants={{
+							hidden: { opacity: 0 },
+							visible: { opacity: 1 },
+						}}
+						transition={{
+							staggerChildren: 0.1,
+						}}
+						initial="hidden"
+						animate="visible"
+					>
+						{sortedCourses.map((currentCourseData) => (
+							<m.div
+								key={currentCourseData.id}
+								variants={{
+									hidden: { opacity: 0, y: 20 },
+									visible: {
+										opacity: 1,
+										y: 0,
+									},
+								}}
+								transition={{ duration: 0.3 }}
+							>
+								<m.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
+									<CourseCard
+										course={currentCourseData}
+										LinkComponent={
+											<Link
+												to="/course-list"
+												search={{
+													"course-id": currentCourseData.id,
+												}}
+											>
+												<DefaultButton size="sm">
+													詳細を見る
+													<ArrowRight />
+												</DefaultButton>
+											</Link>
+										}
+									/>
 								</m.div>
-							))}
-						</m.div>
-					</LazyMotionProvider>
+							</m.div>
+						))}
+					</m.div>
 				</div>
 			) : (
 				<div className="flex flex-col items-center justify-center py-16">

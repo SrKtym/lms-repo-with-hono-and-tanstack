@@ -1,5 +1,5 @@
 import { ArrowDown } from "@lms-repo/ui/assets/icons/arrow-down";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 import { TypewriterText } from "./typewriter-text";
 
 interface HeroSectionProps {
@@ -25,7 +25,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 			{/* Main Content */}
 			<div className="container relative z-10 mx-auto px-4 py-20">
 				<div className="mx-auto max-w-4xl text-center">
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 30 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
@@ -34,18 +34,18 @@ export function HeroSection({ children }: HeroSectionProps) {
 						<div className="mb-8 inline-flex items-center rounded-full bg-blue-100 px-4 py-2 font-medium text-blue-800 text-sm dark:bg-blue-900 dark:text-blue-200">
 							新しい学習体験へ
 						</div>
-					</motion.div>
+					</m.div>
 
-					<motion.h1
+					<m.h1
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.1 }}
 						className="mb-6 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl md:text-6xl dark:text-white"
 					>
 						<TypewriterText texts={typewriterText} />
-					</motion.h1>
+					</m.h1>
 
-					<motion.p
+					<m.p
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.2 }}
@@ -53,19 +53,19 @@ export function HeroSection({ children }: HeroSectionProps) {
 					>
 						このアプリは大学生の学習をサポートすることを目的として開発されました。
 						時間割の作成やスケジュールの管理、課題の管理をこれ一つで実現できます。
-					</motion.p>
+					</m.p>
 
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.3 }}
 						className="flex items-center justify-center"
 					>
 						{children}
-					</motion.div>
+					</m.div>
 
 					{/* Feature Pills */}
-					<motion.div
+					<m.div
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.4 }}
@@ -79,12 +79,12 @@ export function HeroSection({ children }: HeroSectionProps) {
 								{feature}
 							</div>
 						))}
-					</motion.div>
+					</m.div>
 				</div>
 			</div>
 
 			{/* Scroll Indicator */}
-			<motion.div
+			<m.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 0.5, delay: 0.8 }}
@@ -93,7 +93,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 				<div className="animate-bounce">
 					<ArrowDown className="text-gray-400" />
 				</div>
-			</motion.div>
+			</m.div>
 		</section>
 	);
 }

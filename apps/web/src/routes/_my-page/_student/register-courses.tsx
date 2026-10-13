@@ -3,7 +3,6 @@ import { Check } from "@lms-repo/ui/assets/icons/check";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
 import { DefaultChip } from "@lms-repo/ui/components/chip";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import * as m from "motion/react-m";
@@ -86,153 +85,151 @@ function RouteComponent() {
 
 	return (
 		<div className="space-y-6 p-3">
-			<LazyMotionProvider>
-				<m.div
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.5 }}
-					className="flex items-center justify-between"
-				>
-					<h2 className="font-bold text-xl">履修登録</h2>
-				</m.div>
+			<m.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.5 }}
+				className="flex items-center justify-between"
+			>
+				<h2 className="font-bold text-xl">履修登録</h2>
+			</m.div>
 
+			<m.div
+				className="grid grid-cols-1 gap-6"
+				layout
+				transition={{ duration: 0.5, ease: "easeInOut" }}
+			>
 				<m.div
-					className="grid grid-cols-1 gap-6"
+					className="space-y-6"
 					layout
-					transition={{ duration: 0.5, ease: "easeInOut" }}
+					transition={{
+						duration: 0.5,
+						ease: "easeInOut",
+					}}
 				>
-					<m.div
-						className="space-y-6"
-						layout
-						transition={{
-							duration: 0.5,
-							ease: "easeInOut",
-						}}
-					>
-						<div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+					<div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+						<m.div
+							initial={{ opacity: 0, y: -20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.3 }}
+							className="mb-2 flex items-center justify-between"
+						>
+							<h2 className="font-bold text-xl">時間割</h2>
 							<m.div
-								initial={{ opacity: 0, y: -20 }}
-								animate={{ opacity: 1, y: 0 }}
-								transition={{ duration: 0.3 }}
-								className="mb-2 flex items-center justify-between"
-							>
-								<h2 className="font-bold text-xl">時間割</h2>
-								<m.div
-									key={courses.length}
-									initial={{ scale: 0.8, opacity: 0 }}
-									animate={{ opacity: 1, scale: 1 }}
-									transition={{ duration: 0.2 }}
-									className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400"
-								>
-									<p>取得予定の単位数: {totalCredits}</p>
-									{courses.length > 0 && (
-										<>
-											<DefaultButton
-												size="sm"
-												onPress={() => setIsConfirmModalOpen(true)}
-											>
-												<Check />
-												<p className="max-sm:hidden">登録を確定する</p>
-											</DefaultButton>
-											<ControlledModal
-												isOpen={isConfirmModalOpen}
-												onOpenChange={setIsConfirmModalOpen}
-												heading="登録講義の確認"
-											>
-												<div className="space-y-4">
-													<p className="text-gray-700 dark:text-gray-300">
-														以下の講義を登録してもよろしいですか？
-													</p>
-													<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
-														<table className="w-full">
-															<thead>
-																<tr className="border-gray-200 border-b dark:border-gray-600">
-																	<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
-																		講義名
-																	</th>
-																	<th className="pb-2 text-right font-semibold text-gray-900 dark:text-white">
-																		単位数
-																	</th>
-																</tr>
-															</thead>
-															<tbody>
-																{courses.map((course, index) => (
-																	<tr
-																		key={course.id}
-																		className={
-																			index < courses.length - 1
-																				? "border-gray-100 border-b dark:border-gray-600"
-																				: ""
-																		}
-																	>
-																		<td className="py-2 text-gray-900 dark:text-white">
-																			{course.name}
-																		</td>
-																		<td className="py-2 text-right text-gray-900 dark:text-white">
-																			{course.credits}
-																		</td>
-																	</tr>
-																))}
-																<tr className="border-gray-300 border-t-2 dark:border-gray-500">
-																	<td className="py-2 font-bold text-gray-900 dark:text-white">
-																		合計単位数
-																	</td>
-																	<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
-																		{totalCredits}
-																	</td>
-																</tr>
-															</tbody>
-														</table>
-													</div>
-													<div className="flex justify-end gap-2">
-														<CancelButton
-															onPress={() => setIsConfirmModalOpen(false)}
-														>
-															キャンセル
-														</CancelButton>
-														<DefaultButton
-															onPress={() => {
-																handleCheckCourse();
-																setIsConfirmModalOpen(false);
-															}}
-														>
-															確定
-														</DefaultButton>
-													</div>
-												</div>
-											</ControlledModal>
-										</>
-									)}
-									{courses.length > 0 && everyCourseIsChecked && (
-										<DefaultChip color="success">
-											<Check />
-											登録完了
-										</DefaultChip>
-									)}
-								</m.div>
-							</m.div>
-
-							<m.div
-								initial={{ opacity: 0, scale: 0.95 }}
+								key={courses.length}
+								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
-								transition={{ duration: 0.3, delay: 0.1 }}
+								transition={{ duration: 0.2 }}
+								className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400"
 							>
-								<TimeTableCard
-									courses={courses}
-									onDeleteCourse={handleDeleteCourse}
-									onCourseSelect={handleRegisterCourses}
-									onCellClick={handleCellClick}
-									isPending={isPending}
-									availableCourses={searchCourses}
-									hasNextPage={hasNextPage}
-									fetchNextPage={fetchNextPage}
-									isFetchingNextPage={isFetchingNextPage}
-								/>
+								<p>取得予定の単位数: {totalCredits}</p>
+								{courses.length > 0 && (
+									<>
+										<DefaultButton
+											size="sm"
+											onPress={() => setIsConfirmModalOpen(true)}
+										>
+											<Check />
+											<p className="max-sm:hidden">登録を確定する</p>
+										</DefaultButton>
+										<ControlledModal
+											isOpen={isConfirmModalOpen}
+											onOpenChange={setIsConfirmModalOpen}
+											heading="登録講義の確認"
+										>
+											<div className="space-y-4">
+												<p className="text-gray-700 dark:text-gray-300">
+													以下の講義を登録してもよろしいですか？
+												</p>
+												<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
+													<table className="w-full">
+														<thead>
+															<tr className="border-gray-200 border-b dark:border-gray-600">
+																<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
+																	講義名
+																</th>
+																<th className="pb-2 text-right font-semibold text-gray-900 dark:text-white">
+																	単位数
+																</th>
+															</tr>
+														</thead>
+														<tbody>
+															{courses.map((course, index) => (
+																<tr
+																	key={course.id}
+																	className={
+																		index < courses.length - 1
+																			? "border-gray-100 border-b dark:border-gray-600"
+																			: ""
+																	}
+																>
+																	<td className="py-2 text-gray-900 dark:text-white">
+																		{course.name}
+																	</td>
+																	<td className="py-2 text-right text-gray-900 dark:text-white">
+																		{course.credits}
+																	</td>
+																</tr>
+															))}
+															<tr className="border-gray-300 border-t-2 dark:border-gray-500">
+																<td className="py-2 font-bold text-gray-900 dark:text-white">
+																	合計単位数
+																</td>
+																<td className="py-2 text-right font-bold text-gray-900 dark:text-white">
+																	{totalCredits}
+																</td>
+															</tr>
+														</tbody>
+													</table>
+												</div>
+												<div className="flex justify-end gap-2">
+													<CancelButton
+														onPress={() => setIsConfirmModalOpen(false)}
+													>
+														キャンセル
+													</CancelButton>
+													<DefaultButton
+														onPress={() => {
+															handleCheckCourse();
+															setIsConfirmModalOpen(false);
+														}}
+													>
+														確定
+													</DefaultButton>
+												</div>
+											</div>
+										</ControlledModal>
+									</>
+								)}
+								{courses.length > 0 && everyCourseIsChecked && (
+									<DefaultChip color="success">
+										<Check />
+										登録完了
+									</DefaultChip>
+								)}
 							</m.div>
-						</div>
-					</m.div>
+						</m.div>
+
+						<m.div
+							initial={{ opacity: 0, scale: 0.95 }}
+							animate={{ opacity: 1, scale: 1 }}
+							transition={{ duration: 0.3, delay: 0.1 }}
+						>
+							<TimeTableCard
+								courses={courses}
+								onDeleteCourse={handleDeleteCourse}
+								onCourseSelect={handleRegisterCourses}
+								onCellClick={handleCellClick}
+								isPending={isPending}
+								availableCourses={searchCourses}
+								hasNextPage={hasNextPage}
+								fetchNextPage={fetchNextPage}
+								isFetchingNextPage={isFetchingNextPage}
+							/>
+						</m.div>
+					</div>
 				</m.div>
-			</LazyMotionProvider>
+			</m.div>
 		</div>
 	);
 }

@@ -6,7 +6,6 @@ import * as m from "motion/react-m";
 import { memo } from "react";
 import { isProgressingOrUpcoming } from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
-import { LazyMotionProvider } from "../lazymotion-provider";
 
 function DailySchedulesCardComponent({
 	courses,
@@ -222,53 +221,51 @@ function DailySchedulesCardComponent({
 					</div>
 				) : (
 					<div className="space-y-6">
-						<LazyMotionProvider>
-							{/* 講義セクション */}
-							{todayCourse.length > 0 && (
-								<m.div
-									initial={{ opacity: 0, y: 20 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{ duration: 0.5, ease: "easeOut" }}
-								>
-									<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
-										<span className="h-2 w-2 rounded-full bg-blue-500" />
-										講義
-									</h2>
-									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
-										{todayCourse.map((item, index) => (
-											<CourseScheduleCard
-												key={item.id}
-												item={item}
-												index={index}
-											/>
-										))}
-									</div>
-								</m.div>
-							)}
+						{/* 講義セクション */}
+						{todayCourse.length > 0 && (
+							<m.div
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{ duration: 0.5, ease: "easeOut" }}
+							>
+								<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
+									<span className="h-2 w-2 rounded-full bg-blue-500" />
+									講義
+								</h2>
+								<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
+									{todayCourse.map((item, index) => (
+										<CourseScheduleCard
+											key={item.id}
+											item={item}
+											index={index}
+										/>
+									))}
+								</div>
+							</m.div>
+						)}
 
-							{/* 個人スケジュールセクション */}
-							{todaySchedule.length > 0 && (
-								<m.div
-									initial={{ opacity: 0, y: 20 }}
-									animate={{ opacity: 1, y: 0 }}
-									transition={{
-										duration: 0.5,
-										delay: 0.2,
-										ease: "easeOut",
-									}}
-								>
-									<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
-										<span className="h-2 w-2 rounded-full bg-green-500" />
-										個人スケジュール
-									</h2>
-									<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
-										{todaySchedule.map((item, index) => (
-											<ScheduleCard key={item.id} item={item} index={index} />
-										))}
-									</div>
-								</m.div>
-							)}
-						</LazyMotionProvider>
+						{/* 個人スケジュールセクション */}
+						{todaySchedule.length > 0 && (
+							<m.div
+								initial={{ opacity: 0, y: 20 }}
+								animate={{ opacity: 1, y: 0 }}
+								transition={{
+									duration: 0.5,
+									delay: 0.2,
+									ease: "easeOut",
+								}}
+							>
+								<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
+									<span className="h-2 w-2 rounded-full bg-green-500" />
+									個人スケジュール
+								</h2>
+								<div className="space-y-3 p-1 lg:max-h-[240px] lg:overflow-y-auto">
+									{todaySchedule.map((item, index) => (
+										<ScheduleCard key={item.id} item={item} index={index} />
+									))}
+								</div>
+							</m.div>
+						)}
 					</div>
 				)}
 			</div>
