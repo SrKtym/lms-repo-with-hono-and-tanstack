@@ -1,7 +1,6 @@
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { useCourseEvents } from "@lms-repo/ui/hooks/use-course-events";
 import { isSameDay, viewLabels } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
@@ -235,70 +234,68 @@ function RouteComponent() {
 
 	return (
 		<div className="space-y-6 p-3">
-			<LazyMotionProvider>
-				{/* ヘッダー */}
-				<m.div
-					initial={{ opacity: 0, y: -20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3 }}
-					className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-				>
-					<div>
-						<h1 className="font-bold text-2xl text-gray-900 dark:text-white">
-							スケジュール
-						</h1>
-						<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
-							登録済み講義とスケジュールの管理
-						</p>
-					</div>
+			{/* ヘッダー */}
+			<m.div
+				initial={{ opacity: 0, y: -20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.3 }}
+				className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+			>
+				<div>
+					<h1 className="font-bold text-2xl text-gray-900 dark:text-white">
+						スケジュール
+					</h1>
+					<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+						登録済み講義とスケジュールの管理
+					</p>
+				</div>
 
-					<div className="flex items-center space-x-3">
-						<div className="flex items-center space-x-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
-							{views.map((view) => (
-								<m.button
-									key={view}
-									whileHover={{ scale: 1.05 }}
-									whileTap={{ scale: 0.95 }}
-									onClick={() => {
-										setSelectedView(view);
-										handleViewChange(view);
-									}}
-									className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
-										selectedView === view
-											? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
-											: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-									}
+				<div className="flex items-center space-x-3">
+					<div className="flex items-center space-x-2 rounded-lg bg-gray-100 p-1 dark:bg-gray-800">
+						{views.map((view) => (
+							<m.button
+								key={view}
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+								onClick={() => {
+									setSelectedView(view);
+									handleViewChange(view);
+								}}
+								className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
+									selectedView === view
+										? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
+										: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+								}
 								`}
-								>
-									{viewMapping[view]}
-								</m.button>
-							))}
-							<DefaultButton onPress={handleCreateSchedule}>
-								<CalendarClock />
-								スケジュールを追加
-							</DefaultButton>
-						</div>
+							>
+								{viewMapping[view]}
+							</m.button>
+						))}
+						<DefaultButton onPress={handleCreateSchedule}>
+							<CalendarClock />
+							スケジュールを追加
+						</DefaultButton>
 					</div>
-				</m.div>
+				</div>
+			</m.div>
 
-				{/* スケジュール作成・編集モーダル */}
-				<CreateScheduleForm
-					initialData={editingSchedule}
-					isOpen={isModalOpen}
-					onOpenChange={setIsModalOpen}
-				/>
+			{/* スケジュール作成・編集モーダル */}
+			<CreateScheduleForm
+				initialData={editingSchedule}
+				isOpen={isModalOpen}
+				onOpenChange={setIsModalOpen}
+			/>
 
-				{/* スケジュールビュー */}
-				<m.div
-					initial={{ opacity: 0, y: 20 }}
-					animate={{ opacity: 1, y: 0 }}
-					transition={{ duration: 0.3, delay: 0.1 }}
-				>
-					{selectedView === "month" && renderMonthView()}
-					{selectedView === "week" && renderWeekView()}
-					{selectedView === "day" && renderDayView()}
-				</m.div>
-			</LazyMotionProvider>
+			{/* スケジュールビュー */}
+			<m.div
+				initial={{ opacity: 0, y: 20 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.3, delay: 0.1 }}
+			>
+				{selectedView === "month" && renderMonthView()}
+				{selectedView === "week" && renderWeekView()}
+				{selectedView === "day" && renderDayView()}
+			</m.div>
 		</div>
 	);
 }

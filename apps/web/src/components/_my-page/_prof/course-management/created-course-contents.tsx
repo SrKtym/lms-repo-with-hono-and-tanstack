@@ -4,12 +4,11 @@ import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
 import { CommentsCard } from "@lms-repo/ui/components/cards/comments-card";
 import { EvaluatedCard } from "@lms-repo/ui/components/cards/evaluated-card";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { toast } from "@lms-repo/ui/components/toast";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CreateCommentForm } from "@/components/_my-page/shared/create-comment-form";
 import { useCommentsWithAssignment } from "@/hooks/comments";
 import {
@@ -129,40 +128,38 @@ export default function CreatedCourseContents({
 
 			<div className="assignment-detail-content">
 				<div className="grid grid-cols-1 gap-6">
-					<LazyMotionProvider>
-						{/* 課題の詳細 */}
-						<m.div {...propaties}>
-							<AssignmentDetailCard targetAssignment={targetAssignment} />
-						</m.div>
+					{/* 課題の詳細 */}
+					<m.div {...propaties}>
+						<AssignmentDetailCard targetAssignment={targetAssignment} />
+					</m.div>
 
-						{/* 提出（教員用 - 学生の提出物を表示） */}
-						<m.div
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.3, delay: 0.1 }}
-						>
-							<EvaluatedCard
-								submissions={allSubmissions}
-								isLoading={isLoading}
-								hasNextPage={hasNextPage}
-								fetchNextPage={() => fetchNextPage()}
-								isFetchingNextPage={isFetchingNextPage}
-								onViewTextSubmission={handleViewTextSubmission}
-								onDownloadFile={handleDownloadFile}
-								onGrade={handleGradeSubmission}
-							/>
-						</m.div>
+					{/* 提出（教員用 - 学生の提出物を表示） */}
+					<m.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, delay: 0.1 }}
+					>
+						<EvaluatedCard
+							submissions={allSubmissions}
+							isLoading={isLoading}
+							hasNextPage={hasNextPage}
+							fetchNextPage={() => fetchNextPage()}
+							isFetchingNextPage={isFetchingNextPage}
+							onViewTextSubmission={handleViewTextSubmission}
+							onDownloadFile={handleDownloadFile}
+							onGrade={handleGradeSubmission}
+						/>
+					</m.div>
 
-						{/* コメント */}
-						<m.div
-							{...propaties}
-							transition={{ ...propaties.transition, delay: 0.2 }}
-						>
-							<CommentsCard comments={comments}>
-								<CreateCommentForm assignmentId={assignmentId} />
-							</CommentsCard>
-						</m.div>
-					</LazyMotionProvider>
+					{/* コメント */}
+					<m.div
+						{...propaties}
+						transition={{ ...propaties.transition, delay: 0.2 }}
+					>
+						<CommentsCard comments={comments}>
+							<CreateCommentForm assignmentId={assignmentId} />
+						</CommentsCard>
+					</m.div>
 				</div>
 			</div>
 
@@ -187,7 +184,7 @@ export default function CreatedCourseContents({
 							);
 						}
 						return (
-							<Fragment>
+							<>
 								<div>
 									<h3 className="font-medium text-gray-900 dark:text-gray-100">
 										タイトル
@@ -204,7 +201,7 @@ export default function CreatedCourseContents({
 										{selectedSubmission.textSubmission.description}
 									</p>
 								</div>
-							</Fragment>
+							</>
 						);
 					})()}
 				</div>

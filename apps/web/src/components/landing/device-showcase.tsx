@@ -1,27 +1,6 @@
-import { motion, useAnimation, useScroll } from "motion/react";
-import { useEffect, useRef } from "react";
+import * as m from "motion/react-m";
 
 export function DeviceShowcase() {
-	const controls = useAnimation();
-	const ref = useRef<HTMLDivElement>(null);
-	const { scrollYProgress } = useScroll({
-		// 対象の要素（DeviceShowcaseコンポーネント自体）のスクロール進捗を監視
-		target: ref,
-		// 要素が画面に完全に表示された時点で開始、完全に消えたら終了
-		offset: ["start end", "end start"],
-	});
-
-	useEffect(() => {
-		const unsubscribe = scrollYProgress.on("change", (latest) => {
-			// スクロール進捗が0.1より大きくなったらアニメーションを開始
-			if (latest > 0.1) {
-				controls.start("visible");
-			}
-		});
-		// アンマウント時にリスナーを解除
-		return unsubscribe;
-	}, [controls, scrollYProgress]);
-
 	const containerVariants = {
 		hidden: { opacity: 0 },
 		visible: {
@@ -38,9 +17,9 @@ export function DeviceShowcase() {
 	};
 
 	return (
-		<section ref={ref} className="bg-gray-50 px-4 py-20 dark:bg-gray-900">
+		<section className="bg-gray-50 px-4 py-20 dark:bg-gray-900">
 			<div className="landing-container">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 20 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.5 }}
@@ -51,12 +30,13 @@ export function DeviceShowcase() {
 					<p className="landing-sections-description">
 						スマートフォン、タブレット、デスクトップなど、お使いのデバイスで最適な体験を提供します
 					</p>
-				</motion.div>
+				</m.div>
 
-				<motion.div
+				<m.div
 					variants={containerVariants}
 					initial="hidden"
-					animate={controls}
+					whileInView="visible"
+					viewport={{ once: true, amount: 0.1 }}
 					transition={{
 						duration: 0.8,
 						staggerChildren: 0.2,
@@ -64,7 +44,7 @@ export function DeviceShowcase() {
 					className="grid grid-cols-1 gap-8 md:grid-cols-3"
 				>
 					{/* Smartphone */}
-					<motion.div
+					<m.div
 						variants={itemVariants}
 						transition={{ duration: 0.6 }}
 						className="text-center"
@@ -107,10 +87,10 @@ export function DeviceShowcase() {
 						<p className="landing-inner-content-description">
 							移動中でも手軽に確認
 						</p>
-					</motion.div>
+					</m.div>
 
 					{/* Tablet */}
-					<motion.div
+					<m.div
 						variants={itemVariants}
 						transition={{ duration: 0.6 }}
 						className="text-center"
@@ -155,10 +135,10 @@ export function DeviceShowcase() {
 						<p className="landing-inner-content-description">
 							勉強に最適なサイズ
 						</p>
-					</motion.div>
+					</m.div>
 
 					{/* Desktop */}
-					<motion.div
+					<m.div
 						variants={itemVariants}
 						transition={{ duration: 0.6 }}
 						className="text-center"
@@ -214,8 +194,8 @@ export function DeviceShowcase() {
 						<p className="landing-inner-content-description">
 							充実した機能で効率的に
 						</p>
-					</motion.div>
-				</motion.div>
+					</m.div>
+				</m.div>
 			</div>
 		</section>
 	);

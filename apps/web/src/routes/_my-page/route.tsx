@@ -1,6 +1,7 @@
 // マイページレイアウト
 
 import { authClient } from "@lms-repo/auth/web";
+import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { Toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { Header } from "@/components/_my-page/shared/header";
@@ -50,7 +51,9 @@ function MyPageLayoutComponent() {
 			<div className="relative z-10 flex flex-col">
 				<Header role={role} {...userData} />
 				<div className="flex-1">
-					<Outlet />
+					<LazyMotionProvider>
+						<Outlet />
+					</LazyMotionProvider>
 				</div>
 				{/* Footer */}
 				<div className="mt-8 text-center">

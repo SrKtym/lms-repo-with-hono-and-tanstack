@@ -5,7 +5,6 @@ import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
 import { CommentsCard } from "@lms-repo/ui/components/cards/comments-card";
 import { SubmissionsCard } from "@lms-repo/ui/components/cards/submissions-card";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import { TabsForSubmissions } from "@lms-repo/ui/components/tabs";
 import { Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
@@ -63,46 +62,44 @@ export default function RegisteredCourseContents({
 
 			<div className="assignment-detail-content">
 				<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-					<LazyMotionProvider>
-						{/* 課題の詳細 */}
-						<m.div {...propaties} className="lg:col-span-2">
-							<AssignmentDetailCard
-								targetAssignment={targetAssignment}
-								score={score}
-							/>
-						</m.div>
+					{/* 課題の詳細 */}
+					<m.div {...propaties} className="lg:col-span-2">
+						<AssignmentDetailCard
+							targetAssignment={targetAssignment}
+							score={score}
+						/>
+					</m.div>
 
-						{/* 提出（学生用） */}
-						<m.div
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							transition={{ duration: 0.3, delay: 0.1 }}
+					{/* 提出（学生用） */}
+					<m.div
+						initial={{ opacity: 0, y: 10 }}
+						animate={{ opacity: 1, y: 0 }}
+						transition={{ duration: 0.3, delay: 0.1 }}
+					>
+						<SubmissionsCard
+							targetAssignment={targetAssignment}
+							targetSubmission={submission}
 						>
-							<SubmissionsCard
-								targetAssignment={targetAssignment}
-								targetSubmission={submission}
-							>
-								<div className="space-y-2">
-									<TabsForSubmissions
-										textTab={<CreateTextSubmissionForm />}
-										attachmentsTab={
-											<CreateFileSubmissionForm assignmentId={assignmentId} />
-										}
-									/>
-								</div>
-							</SubmissionsCard>
-						</m.div>
+							<div className="space-y-2">
+								<TabsForSubmissions
+									textTab={<CreateTextSubmissionForm />}
+									attachmentsTab={
+										<CreateFileSubmissionForm assignmentId={assignmentId} />
+									}
+								/>
+							</div>
+						</SubmissionsCard>
+					</m.div>
 
-						{/* コメント */}
-						<m.div
-							{...propaties}
-							transition={{ ...propaties.transition, delay: 0.2 }}
-						>
-							<CommentsCard comments={comments}>
-								<CreateCommentForm assignmentId={assignmentId} />
-							</CommentsCard>
-						</m.div>
-					</LazyMotionProvider>
+					{/* コメント */}
+					<m.div
+						{...propaties}
+						transition={{ ...propaties.transition, delay: 0.2 }}
+					>
+						<CommentsCard comments={comments}>
+							<CreateCommentForm assignmentId={assignmentId} />
+						</CommentsCard>
+					</m.div>
 				</div>
 			</div>
 		</div>
