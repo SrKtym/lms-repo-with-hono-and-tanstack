@@ -15,6 +15,7 @@
 		"db:studio": "drizzle-kit studio",
 		"db:migrate": "drizzle-kit migrate",
 		"db:seed": "bunx tsx src/seed/index.ts",
+		"test:db:migrate": "bunx drizzle-kit migrate --config=drizzle.config.test.ts",
 		"test:unit": "bun test src/utils/mutation/submissions.test.ts",
 		"test:integration": "bun test src/integration/auth-flow.test.ts"
 	},

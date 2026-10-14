@@ -2,7 +2,6 @@ import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { MenuActionButton } from "@lms-repo/ui/components/button";
-import { LazyMotionProvider } from "@lms-repo/ui/components/lazymotion-provider";
 import {
 	LongPressPopover,
 	useLongPress,
@@ -160,107 +159,105 @@ export function DayView({
 	};
 
 	return (
-		<LazyMotionProvider>
-			<div className="schedule-view-container">
-				{/* ヘッダー */}
-				<div className="schedule-view-header">
-					<m.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={() => changeDay(-1)}
-						className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-					>
-						<ArrowLeft />
-					</m.button>
+		<div className="schedule-view-container">
+			{/* ヘッダー */}
+			<div className="schedule-view-header">
+				<m.button
+					whileHover={{ scale: 1.1 }}
+					whileTap={{ scale: 0.9 }}
+					onClick={() => changeDay(-1)}
+					className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+				>
+					<ArrowLeft />
+				</m.button>
 
-					<m.h2
-						initial={{ opacity: 0, y: -10 }}
-						animate={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.3 }}
-						className="font-semibold text-gray-900 text-lg dark:text-white"
-					>
-						{currentDate.toLocaleDateString("ja-JP", {
-							year: "numeric",
-							month: "long",
-							day: "numeric",
-							weekday: "long",
-						})}
-					</m.h2>
+				<m.h2
+					initial={{ opacity: 0, y: -10 }}
+					animate={{ opacity: 1, y: 0 }}
+					transition={{ duration: 0.3 }}
+					className="font-semibold text-gray-900 text-lg dark:text-white"
+				>
+					{currentDate.toLocaleDateString("ja-JP", {
+						year: "numeric",
+						month: "long",
+						day: "numeric",
+						weekday: "long",
+					})}
+				</m.h2>
 
-					<m.button
-						whileHover={{ scale: 1.1 }}
-						whileTap={{ scale: 0.9 }}
-						onClick={() => changeDay(1)}
-						className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
-					>
-						<ArrowRight />
-					</m.button>
-				</div>
-
-				{/* 日カレンダー */}
-				<div className="flex min-h-[600px]">
-					{/* 時間列 */}
-					<div className="w-20 border-gray-200 border-r dark:border-gray-700">
-						{hours.map((hour) => (
-							<div
-								key={hour}
-								className="h-20 border-gray-100 border-b p-2 dark:border-gray-700"
-							>
-								<div className="text-gray-500 text-sm dark:text-gray-400">
-									{hour.toString().padStart(2, "0")}:00
-								</div>
-							</div>
-						))}
-					</div>
-
-					{/* 時間枠 */}
-					<div className="relative flex-1">
-						{hours.map((hour, index) => (
-							<m.div
-								key={hour}
-								initial={{ opacity: 0, x: -10 }}
-								animate={{ opacity: 1, x: 0 }}
-								transition={{ delay: index * 0.02 }}
-								className="h-20 border-gray-100 border-b dark:border-gray-700"
-							/>
-						))}
-
-						{/* 現在時刻インジケーター */}
-						{currentDate.toDateString() === new Date().toDateString() && (
-							<CurrentTimeIndicator pixelsPerHour={80} />
-						)}
-
-						{events.map((event) => (
-							<DayEventItem
-								key={event.id}
-								event={event}
-								events={events}
-								deleteSchedule={deleteSchedule}
-								editSchedule={editSchedule}
-								onLongPress={handleLongPress}
-							/>
-						))}
-					</div>
-
-					{/* 長押しポップオーバー */}
-					{selectedEvent && menuPosition && (
-						<LongPressPopover
-							position={menuPosition}
-							onEdit={() => {
-								if (selectedEvent.type === "schedule") {
-									editSchedule(selectedEvent.id);
-								}
-							}}
-							onDelete={() => {
-								if (selectedEvent.type === "schedule") {
-									deleteSchedule(selectedEvent.id);
-								}
-							}}
-							onClose={closeMenu}
-						/>
-					)}
-				</div>
+				<m.button
+					whileHover={{ scale: 1.1 }}
+					whileTap={{ scale: 0.9 }}
+					onClick={() => changeDay(1)}
+					className="rounded-lg p-2 hover:bg-gray-100 dark:hover:bg-gray-700"
+				>
+					<ArrowRight />
+				</m.button>
 			</div>
-		</LazyMotionProvider>
+
+			{/* 日カレンダー */}
+			<div className="flex min-h-[600px]">
+				{/* 時間列 */}
+				<div className="w-20 border-gray-200 border-r dark:border-gray-700">
+					{hours.map((hour) => (
+						<div
+							key={hour}
+							className="h-20 border-gray-100 border-b p-2 dark:border-gray-700"
+						>
+							<div className="text-gray-500 text-sm dark:text-gray-400">
+								{hour.toString().padStart(2, "0")}:00
+							</div>
+						</div>
+					))}
+				</div>
+
+				{/* 時間枠 */}
+				<div className="relative flex-1">
+					{hours.map((hour, index) => (
+						<m.div
+							key={hour}
+							initial={{ opacity: 0, x: -10 }}
+							animate={{ opacity: 1, x: 0 }}
+							transition={{ delay: index * 0.02 }}
+							className="h-20 border-gray-100 border-b dark:border-gray-700"
+						/>
+					))}
+
+					{/* 現在時刻インジケーター */}
+					{currentDate.toDateString() === new Date().toDateString() && (
+						<CurrentTimeIndicator pixelsPerHour={80} />
+					)}
+
+					{events.map((event) => (
+						<DayEventItem
+							key={event.id}
+							event={event}
+							events={events}
+							deleteSchedule={deleteSchedule}
+							editSchedule={editSchedule}
+							onLongPress={handleLongPress}
+						/>
+					))}
+				</div>
+
+				{/* 長押しポップオーバー */}
+				{selectedEvent && menuPosition && (
+					<LongPressPopover
+						position={menuPosition}
+						onEdit={() => {
+							if (selectedEvent.type === "schedule") {
+								editSchedule(selectedEvent.id);
+							}
+						}}
+						onDelete={() => {
+							if (selectedEvent.type === "schedule") {
+								deleteSchedule(selectedEvent.id);
+							}
+						}}
+						onClose={closeMenu}
+					/>
+				)}
+			</div>
+		</div>
 	);
 }

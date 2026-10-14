@@ -178,7 +178,7 @@ export function CreateAnnouncementForm({
 				)}
 
 				<div className="flex justify-end gap-2">
-					<CancelButton onClick={() => onOpenChange(false)}>
+					<CancelButton onPress={() => onOpenChange(false)}>
 						キャンセル
 					</CancelButton>
 					<form.Subscribe>

@@ -19,7 +19,7 @@ interface Schedule {
 	theme: string;
 }
 
-interface Event {
+export interface Event {
 	id: string;
 	title: string;
 	description: string;

@@ -8,7 +8,6 @@ import { useCallback, useState } from "react";
 import { DefaultAvatar } from "../avatar";
 import { CancelButton } from "../button";
 import { BaseCard } from "../cards/base-card";
-import { LazyMotionProvider } from "../lazymotion-provider";
 
 export interface UploadedFile {
 	id: string;
@@ -115,113 +114,111 @@ export function FileUploaderCard({
 	);
 
 	return (
-		<LazyMotionProvider>
-			<m.div
-				initial={{ opacity: 0, y: 20 }}
-				animate={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.3 }}
+		<m.div
+			initial={{ opacity: 0, y: 20 }}
+			animate={{ opacity: 1, y: 0 }}
+			transition={{ duration: 0.3 }}
+		>
+			<button
+				type="button"
+				className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed bg-transparent p-0 transition-colors ${
+					isDragOver
+						? "border-blue-500 bg-blue-50 dark:bg-blue-950"
+						: "border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
+				} ${disabled && "cursor-not-allowed opacity-50"}`}
+				onDragOver={handleDragOver}
+				onDragLeave={handleDragLeave}
+				onDrop={handleDrop}
+				onClick={() =>
+					!disabled && document.getElementById("file-input")?.click()
+				}
 			>
-				<button
-					type="button"
-					className={`relative w-full cursor-pointer rounded-lg border-2 border-dashed bg-transparent p-0 transition-colors ${
-						isDragOver
-							? "border-blue-500 bg-blue-50 dark:bg-blue-950"
-							: "border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
-					} ${disabled && "cursor-not-allowed opacity-50"}`}
-					onDragOver={handleDragOver}
-					onDragLeave={handleDragLeave}
-					onDrop={handleDrop}
-					onClick={() =>
-						!disabled && document.getElementById("file-input")?.click()
-					}
-				>
-					<BaseCard className="pointer-events-none border-0">
-						<Input
-							id="file-input"
-							type="file"
-							multiple
-							max={maxFiles}
-							size={maxSize}
-							accept={accept}
-							onChange={(e) => handleFileSelect(e.target.files)}
-							disabled={disabled}
-							className="hidden"
-						/>
-						<div className="p-8 text-center">
-							<div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
-								<CloudUpload />
-							</div>
-							<p className="mb-2 font-medium text-gray-900 text-lg dark:text-gray-100">
-								{isDragOver
-									? "ここにファイルをドロップ"
-									: "ファイルのアップロード"}
-							</p>
-							<p className="text-gray-600 text-sm dark:text-gray-400">
-								クリックまたはドラッグしてファイルをアップロードしてください
-							</p>
-							<p className="text-gray-500 text-xs dark:text-gray-500">
-								・最大 {maxFiles} ファイルまで
-								<br />
-								・ファイルサイズ {maxSize}MB まで
-								<br />
-								・PDF, DOC, XLS, PPTファイルのみ
-							</p>
+				<BaseCard className="pointer-events-none border-0">
+					<Input
+						id="file-input"
+						type="file"
+						multiple
+						max={maxFiles}
+						size={maxSize}
+						accept={accept}
+						onChange={(e) => handleFileSelect(e.target.files)}
+						disabled={disabled}
+						className="hidden"
+					/>
+					<div className="p-8 text-center">
+						<div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
+							<CloudUpload />
 						</div>
-					</BaseCard>
-				</button>
+						<p className="mb-2 font-medium text-gray-900 text-lg dark:text-gray-100">
+							{isDragOver
+								? "ここにファイルをドロップ"
+								: "ファイルのアップロード"}
+						</p>
+						<p className="text-gray-600 text-sm dark:text-gray-400">
+							クリックまたはドラッグしてファイルをアップロードしてください
+						</p>
+						<p className="text-gray-500 text-xs dark:text-gray-500">
+							・最大 {maxFiles} ファイルまで
+							<br />
+							・ファイルサイズ {maxSize}MB まで
+							<br />
+							・PDF, DOC, XLS, PPTファイルのみ
+						</p>
+					</div>
+				</BaseCard>
+			</button>
 
-				{/* File list */}
-				<AnimatePresence>
-					{uploadedFiles.length > 0 && (
-						<m.div
-							initial={{ opacity: 0, height: 0 }}
-							animate={{ opacity: 1, height: "auto" }}
-							exit={{ opacity: 0, height: 0 }}
-							transition={{ duration: 0.3 }}
-							className="mt-4 space-y-2"
-						>
-							{uploadedFiles.map((file) => (
-								<m.div
-									key={file.id}
-									initial={{ opacity: 0, x: -20 }}
-									animate={{ opacity: 1, x: 0 }}
-									exit={{ opacity: 0, x: 20 }}
-									className="flex items-center gap-3 rounded-lg border p-3 dark:border-gray-700"
-								>
-									<DefaultAvatar />
-									<div className="min-w-0 flex-1">
-										<p className="truncate font-medium text-gray-900 dark:text-gray-100">
-											{file.name}
-										</p>
-										<p className="text-gray-600 text-sm dark:text-gray-400">
-											{formatFileSize(file.size)}
-										</p>
-									</div>
-									<div className="flex items-center gap-2">
-										{onFileDownload && (
-											<CancelButton
-												isIconOnly
-												onPress={() => onFileDownload(file.id)}
-												className="rounded bg-transparent p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
-												aria-label="ダウンロード"
-											>
-												<Download />
-											</CancelButton>
-										)}
+			{/* File list */}
+			<AnimatePresence>
+				{uploadedFiles.length > 0 && (
+					<m.div
+						initial={{ opacity: 0, height: 0 }}
+						animate={{ opacity: 1, height: "auto" }}
+						exit={{ opacity: 0, height: 0 }}
+						transition={{ duration: 0.3 }}
+						className="mt-4 space-y-2"
+					>
+						{uploadedFiles.map((file) => (
+							<m.div
+								key={file.id}
+								initial={{ opacity: 0, x: -20 }}
+								animate={{ opacity: 1, x: 0 }}
+								exit={{ opacity: 0, x: 20 }}
+								className="flex items-center gap-3 rounded-lg border p-3 dark:border-gray-700"
+							>
+								<DefaultAvatar />
+								<div className="min-w-0 flex-1">
+									<p className="truncate font-medium text-gray-900 dark:text-gray-100">
+										{file.name}
+									</p>
+									<p className="text-gray-600 text-sm dark:text-gray-400">
+										{formatFileSize(file.size)}
+									</p>
+								</div>
+								<div className="flex items-center gap-2">
+									{onFileDownload && (
 										<CancelButton
 											isIconOnly
-											onPress={() => removeFile(file.id)}
+											onPress={() => onFileDownload(file.id)}
 											className="rounded bg-transparent p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+											aria-label="ダウンロード"
 										>
-											<Close />
+											<Download />
 										</CancelButton>
-									</div>
-								</m.div>
-							))}
-						</m.div>
-					)}
-				</AnimatePresence>
-			</m.div>
-		</LazyMotionProvider>
+									)}
+									<CancelButton
+										isIconOnly
+										onPress={() => removeFile(file.id)}
+										className="rounded bg-transparent p-1 text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+									>
+										<Close />
+									</CancelButton>
+								</div>
+							</m.div>
+						))}
+					</m.div>
+				)}
+			</AnimatePresence>
+		</m.div>
 	);
 }

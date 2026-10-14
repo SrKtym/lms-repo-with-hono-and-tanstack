@@ -42,6 +42,7 @@
 		"docker:restart": "docker-compose -f docker/docker-compose.dev.yml restart",
 		"docker:exec:web": "docker-compose -f docker/docker-compose.dev.yml exec web /bin/bash",
 		"docker:exec:server": "docker-compose -f docker/docker-compose.dev.yml exec server /bin/bash",
+		"test:db:migrate": "turbo -F @lms-repo/db test:db:migrate",
 		"test:env:up": "docker-compose -f docker/docker-compose.test.yml up -d",
 		"test:env:down": "docker-compose -f docker/docker-compose.test.yml down",
 		"test:unit": "turbo test:unit",

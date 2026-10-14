@@ -13,6 +13,10 @@
 		"check-types": {
 			"dependsOn": ["^check-types"]
 		},
+		"test:db:migrate": {
+			"cache": false,
+			"persistent": true
+		},
 		"test:unit": {
 			"dependsOn": ["^build"],
 			"inputs": ["$TURBO_DEFAULT$", ".env*"],

@@ -3,7 +3,7 @@ import { MessagesSquare } from "@lms-repo/ui/assets/icons/messages-square";
 import { NotebookPen } from "@lms-repo/ui/assets/icons/notebook-pen";
 import { SquarePlus } from "@lms-repo/ui/assets/icons/square-plus";
 import { BaseCard } from "@lms-repo/ui/components/cards/base-card";
-import { motion } from "motion/react";
+import * as m from "motion/react-m";
 
 export function FeaturesSection() {
 	const features = [
@@ -31,7 +31,7 @@ export function FeaturesSection() {
 		},
 	];
 
-	const propaties = {
+	const properties = {
 		initial: { opacity: 0, y: 20 },
 		transition: { duration: 0.5 },
 		whileInView: { opacity: 1, y: 0 },
@@ -44,12 +44,12 @@ export function FeaturesSection() {
 	return (
 		<section className="px-4 py-20" id="features">
 			<div className="landing-container">
-				<motion.div className="mb-16 text-center" {...propaties}>
+				<m.div className="mb-16 text-center" {...properties}>
 					<h2 className="landing-sections-head">このアプリの特徴</h2>
-				</motion.div>
-				<motion.div
+				</m.div>
+				<m.div
 					className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4"
-					{...propaties}
+					{...properties}
 				>
 					{features.map((feature) => (
 						<BaseCard key={feature.title}>
@@ -66,7 +66,7 @@ export function FeaturesSection() {
 							</div>
 						</BaseCard>
 					))}
-				</motion.div>
+				</m.div>
 			</div>
 		</section>
 	);
