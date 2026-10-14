@@ -17,7 +17,7 @@ export const oidcMiddleware = createMiddleware(async (c, next) => {
 		const client = new OAuth2Client();
 		const ticket = await client.verifyIdToken({
 			idToken: token,
-			audience: env.GOOGLE_CLOUD_PROJECT,
+			audience: env.GCP_PROJECT_ID,
 		});
 
 		const payload = ticket.getPayload();

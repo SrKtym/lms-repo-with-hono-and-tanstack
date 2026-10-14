@@ -46,7 +46,7 @@ export function TwoFactorSettingForm({
 				);
 				break;
 			default:
-				setError("メールアドレスまたはパスワードが正しくありません。");
+				setError("パスワードが正しくありません。");
 		}
 	};
 

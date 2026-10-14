@@ -35,7 +35,7 @@ export const env = createEnv({
 		GCS_BUCKET_NAME: z.string().min(1),
 		CORS_ORIGIN: z.url(),
 		SCHEDULER_SERVICE_ACCOUNT_EMAIL: z.email().optional(),
-		GOOGLE_CLOUD_PROJECT: z.string().min(1).optional(),
+		GCP_PROJECT_ID: z.string().min(1).optional(),
 		NODE_ENV: z
 			.enum(["development", "production", "test"])
 			.default("development"),
