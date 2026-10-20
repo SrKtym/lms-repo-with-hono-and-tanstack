@@ -11,6 +11,7 @@ interface ControlledModalProps {
 	footer?: React.ReactNode;
 }
 
+// 汎用コントロールモーダル
 export function ControlledModal({
 	heading,
 	children,

@@ -7,7 +7,7 @@ import { Info } from "../../assets/icons/info";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
-// AnnouncementCard component
+// お知らせを表示するカードコンポーネント
 export function AnnouncementCard({
 	announcement,
 }: {

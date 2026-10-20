@@ -13,6 +13,7 @@ interface DatePickerProps {
 	onChange: (value: ZonedDateTime | null) => void;
 }
 
+// 汎用日付選択コンポーネント
 export function DatePicker({ defaultValue, onChange }: DatePickerProps) {
 	return (
 		<Picker

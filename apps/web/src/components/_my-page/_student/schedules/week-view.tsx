@@ -2,13 +2,11 @@ import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { MenuActionButton } from "@lms-repo/ui/components/button";
-import {
-	LongPressPopover,
-	useLongPress,
-} from "@lms-repo/ui/components/popover";
+import { LongPressPopover } from "@lms-repo/ui/components/popover";
 import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
 import type { Event } from "@lms-repo/ui/hooks/use-course-events";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
+import { useLongPress } from "@lms-repo/ui/hooks/use-long-press";
 import { DAYS } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useState } from "react";
