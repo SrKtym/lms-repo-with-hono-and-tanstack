@@ -7,7 +7,7 @@ import {
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
-// AssignmentCard component
+// 課題を表示するカードコンポーネント（詳細へのリンク付き）
 export function AssignmentCard({
 	assignment,
 }: {

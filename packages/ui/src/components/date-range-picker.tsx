@@ -22,6 +22,7 @@ interface DateRangePickerProps {
 	) => void;
 }
 
+// 汎用日付範囲選択コンポーネント
 export function DateRangePicker({
 	defaultValue,
 	onChange,

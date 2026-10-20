@@ -19,6 +19,7 @@ interface NotificationsListCardProps {
 	isFetchingNextPage?: boolean;
 }
 
+// 通知一覧を表示するカードコンポーネント
 export function NotificationsListCard({
 	notifications,
 	markAsRead,

@@ -103,7 +103,9 @@ export const submitMultipleFilesMutationFn = async ({
 	const uploadPromises = signedUrls.map(
 		async ({ fileName, signedUrl, objectName }) => {
 			const file = files.find((f) => f.name === fileName);
-			if (!file) throw new Error(`ファイル ${fileName} が見つかりません`);
+			if (!file) {
+				throw new Error(`ファイル ${fileName} が見つかりません`);
+			}
 
 			const uploadRes = await fetch(signedUrl, {
 				method: "PUT",

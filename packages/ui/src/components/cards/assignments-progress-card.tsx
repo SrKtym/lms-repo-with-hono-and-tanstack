@@ -10,6 +10,7 @@ interface AssignmentsProgressCardProps {
 	overdueAssignments: FetchAssignmentsFromUserCoursesReturnType;
 }
 
+// 課題の進行状況を表示するカードコンポーネント
 export function AssignmentsProgressCard({
 	assignments,
 	submissions,

@@ -63,6 +63,7 @@ export function TabsForCourseInfo({
 	);
 }
 
+// プロフィール用タブ
 export function TabsForProfile({
 	profileTab,
 	accountSettingsTab,

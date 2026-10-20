@@ -5,6 +5,7 @@ import { useState } from "react";
 import { DefaultSelect } from "../select";
 import { BaseCard } from "./base-card";
 
+// 直近の課題を表示するカードコンポーネント
 export function UpcomingAssignmentsCard({
 	assignments,
 }: {

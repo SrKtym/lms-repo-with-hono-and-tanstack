@@ -25,6 +25,7 @@ interface FileUploaderCardProps {
 	disabled?: boolean;
 }
 
+// ファイルアップロードカードコンポーネント
 export function FileUploaderCard({
 	uploadedFiles = [],
 	onFilesChange,

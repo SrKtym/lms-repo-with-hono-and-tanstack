@@ -3,22 +3,22 @@ import { Edit } from "@lms-repo/ui/assets/icons/edit";
 import { Trash } from "@lms-repo/ui/assets/icons/trash";
 import * as m from "motion/react-m";
 
-// Default button component
+// 汎用ボタン
 export function DefaultButton(props: React.ComponentProps<typeof Button>) {
 	return <Button variant="primary" {...props} />;
 }
 
-// Cancel button
+// キャンセルボタン
 export function CancelButton(props: React.ComponentProps<typeof Button>) {
 	return <Button variant="tertiary" {...props} />;
 }
 
-// Danger button for critical actions
+// 危険ボタン（重要アクション用）
 export function DangerButton(props: React.ComponentProps<typeof Button>) {
 	return <Button variant="danger" {...props} />;
 }
 
-// Outline button
+// アウトラインボタン
 export function OutlineButton(props: React.ComponentProps<typeof Button>) {
 	return (
 		<Button fullWidth variant="outline" {...props}>
@@ -27,7 +27,7 @@ export function OutlineButton(props: React.ComponentProps<typeof Button>) {
 	);
 }
 
-// Dropdown button
+// ドロップダウンボタン
 export function DropdownButton(props: React.ComponentProps<typeof Button>) {
 	return <Button className="h-auto p-2" variant="secondary" {...props} />;
 }
@@ -39,6 +39,7 @@ interface MenuActionButtonProps {
 	onClick: (e?: React.MouseEvent) => void;
 }
 
+// メニューアクションボタン
 export function MenuActionButton({ type, onClick }: MenuActionButtonProps) {
 	const isEdit = type === "edit";
 	const Icon = isEdit ? Edit : Trash;
