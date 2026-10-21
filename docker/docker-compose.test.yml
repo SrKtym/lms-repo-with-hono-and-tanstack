@@ -1,3 +1,5 @@
+name: lms-test
+
 services:
   # テスト用データベース
   test-db:
@@ -38,3 +40,7 @@ services:
 volumes:
   test_postgres_data:
   test_gcs_data:
+
+networks:
+  default:
+    name: lms-test-network
