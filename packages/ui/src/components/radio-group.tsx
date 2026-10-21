@@ -30,7 +30,7 @@ export function RadioGroupFor2fa({
 				</Radio.Control>
 				<Radio.Content className="flex flex-col gap-2">
 					<Label>TOTPまたはOTPによる認証を有効にする</Label>
-					<Description>
+					<Description className="leading-relaxed">
 						TOTP:
 						一定時間ごとに更新されるコードを生成し、ログイン時にそのコードを入力することで認証を行います。
 						Google Authenticatorなどのアプリが必要です。
@@ -46,7 +46,7 @@ export function RadioGroupFor2fa({
 				</Radio.Control>
 				<Radio.Content className="flex flex-col gap-2">
 					<Label>2要素認証を無効にする</Label>
-					<Description>
+					<Description className="leading-relaxed">
 						メールアドレスとパスワードのみでサインインします。
 					</Description>
 				</Radio.Content>
