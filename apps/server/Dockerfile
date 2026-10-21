@@ -1,5 +1,5 @@
 ### Prune ステージ
-FROM oven/bun:1.3.12-slim AS prune
+FROM oven/bun:1.4.3-slim AS prune
 WORKDIR /lms-repo
 
 # 1.turboをインストール
@@ -10,7 +10,7 @@ COPY . .
 RUN turbo prune server --docker
 
 ### Installer ステージ
-FROM oven/bun:1.3.12-slim AS installer
+FROM oven/bun:1.4.3-slim AS installer
 WORKDIR /lms-repo
 
 # 1.プルーンされたlockfileを使用して依存関係をインストール
@@ -18,7 +18,7 @@ COPY --from=prune /lms-repo/out/json/ .
 RUN bun install --frozen-lockfile
 
 ### Build ステージ
-FROM oven/bun:1.3.12-slim AS builder
+FROM oven/bun:1.4.3-slim AS builder
 WORKDIR /lms-repo
 
 # 1.インストールされた依存関係とプルーンされたソースをコピー
@@ -29,7 +29,7 @@ COPY --from=prune /lms-repo/out/full/ .
 RUN cd apps/server && bun run compile
 
 ### Runner ステージ（DistrolessにはシェルがないためRUN命令は実行できない）
-FROM gcr.io/distroless/base-debian12 AS runner
+FROM gcr.io/distroless/base-debian13 AS runner
 WORKDIR /lms-repo
 
 # 1.Standaloneバイナリ（server-bytecode）をコピー
