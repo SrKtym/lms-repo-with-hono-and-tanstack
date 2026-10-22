@@ -40,18 +40,18 @@ export function NotificationSettings({
 	};
 
 	return (
-		<Surface className="mx-auto w-full max-w-2xl rounded-2xl p-6 shadow-surface">
-			<h2 className="mb-6 font-bold text-foreground text-xl">通知設定</h2>
+		<Surface className="shadow-surface mx-auto w-full max-w-2xl rounded-2xl p-6">
+			<h2 className="text-foreground mb-6 text-xl font-bold">通知設定</h2>
 
 			<div className="space-y-6">
 				{/* メール通知 */}
 				<div>
-					<h3 className="mb-4 font-medium text-foreground">メール通知</h3>
+					<h3 className="text-foreground mb-4 font-medium">メール通知</h3>
 					<div className="space-y-3">
 						{Object.entries(currentSettings).map(([key, value]) => (
 							<div
 								key={key}
-								className="flex items-center justify-between rounded-lg border border-divider p-3"
+								className="border-divider flex items-center justify-between rounded-lg border p-3"
 							>
 								<span className="text-sm">
 									{key === "announcementsEmail" && "お知らせの投稿・更新"}

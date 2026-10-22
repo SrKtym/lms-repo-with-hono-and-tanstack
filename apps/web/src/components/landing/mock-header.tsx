@@ -11,7 +11,7 @@ export function MockHeader() {
 				<nav className="flex items-center gap-4 text-lg">
 					<div className="flex items-center gap-2">
 						<Books />
-						<h1 className="font-bold text-3xl">LMS</h1>
+						<h1 className="text-3xl font-bold">LMS</h1>
 					</div>
 					<DefaultSeparator orientation="vertical" className="max-md:hidden" />
 					{links.map(({ icon, to, label }) => (

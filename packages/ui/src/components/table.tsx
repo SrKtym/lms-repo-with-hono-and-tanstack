@@ -85,7 +85,7 @@ export function SubmissionsTable({
 									variant="ghost"
 								>
 									<ArrowRight
-										className={`size-4 text-muted transition-transform duration-150 ${isExpanded ? "rotate-90" : "rtl:rotate-180"}`}
+										className={`text-muted size-4 transition-transform duration-150 ${isExpanded ? "rotate-90" : "rtl:rotate-180"}`}
 									/>
 								</Button>
 							) : null}

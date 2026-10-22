@@ -242,10 +242,10 @@ function RouteComponent() {
 				className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
 			>
 				<div>
-					<h1 className="font-bold text-2xl text-gray-900 dark:text-white">
+					<h1 className="text-2xl font-bold text-gray-900 dark:text-white">
 						スケジュール
 					</h1>
-					<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+					<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
 						登録済み講義とスケジュールの管理
 					</p>
 				</div>
@@ -261,7 +261,7 @@ function RouteComponent() {
 									setSelectedView(view);
 									handleViewChange(view);
 								}}
-								className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
+								className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
 									selectedView === view
 										? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
 										: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"

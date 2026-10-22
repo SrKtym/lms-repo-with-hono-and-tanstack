@@ -151,10 +151,10 @@ export function ScheduleScene() {
 			<div ref={sceneContainerRef} className="relative space-y-6 p-3">
 				<div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
 					<div>
-						<h1 className="font-bold text-2xl text-gray-900 dark:text-white">
+						<h1 className="text-2xl font-bold text-gray-900 dark:text-white">
 							スケジュール
 						</h1>
-						<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+						<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
 							登録済み講義とスケジュールの管理
 						</p>
 					</div>
@@ -165,7 +165,7 @@ export function ScheduleScene() {
 								<button
 									type="button"
 									key={viewLabel}
-									className={`rounded-md px-4 py-2 font-medium text-sm transition-colors ${
+									className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
 										viewLabel === "月"
 											? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
 											: "text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
@@ -195,7 +195,7 @@ export function ScheduleScene() {
 							<ArrowLeft />
 						</button>
 
-						<h2 className="font-semibold text-gray-900 text-lg dark:text-white">
+						<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
 							2026年7月
 						</h2>
 
@@ -207,11 +207,11 @@ export function ScheduleScene() {
 						</button>
 					</div>
 
-					<div className="grid grid-cols-7 border-gray-200 border-b dark:border-gray-700">
+					<div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
 						{DAYS.map((day, index) => (
 							<div
 								key={day}
-								className={`p-2 text-center font-medium text-sm ${
+								className={`p-2 text-center text-sm font-medium ${
 									index === 0
 										? "text-red-500"
 										: index === 6
@@ -234,12 +234,12 @@ export function ScheduleScene() {
 								return (
 									<div
 										key={`${weekIndex}-${dayIndex}`}
-										className={`min-h-[80px] border-gray-200 border-r border-b p-1 dark:border-gray-700 ${!isCurrentMonth ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}
+										className={`min-h-[80px] border-r border-b border-gray-200 p-1 dark:border-gray-700 ${!isCurrentMonth ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}
 										${isToday && "bg-blue-50 dark:bg-blue-900/20"}
 									`}
 									>
 										<div
-											className={`mb-1 font-medium text-sm ${
+											className={`mb-1 text-sm font-medium ${
 												isToday
 													? "text-blue-600 dark:text-blue-400"
 													: isCurrentMonth
@@ -254,7 +254,7 @@ export function ScheduleScene() {
 											{events.slice(0, 3).map((event, _index) => (
 												<div
 													key={event?.id}
-													className="truncate rounded p-1 text-white text-xs"
+													className="truncate rounded p-1 text-xs text-white"
 													style={{ backgroundColor: event?.theme }}
 												>
 													{event?.title}

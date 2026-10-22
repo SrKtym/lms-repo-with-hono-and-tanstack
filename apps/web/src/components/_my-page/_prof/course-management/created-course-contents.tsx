@@ -197,7 +197,7 @@ export default function CreatedCourseContents({
 									<h3 className="font-medium text-gray-900 dark:text-gray-100">
 										説明
 									</h3>
-									<p className="mt-1 whitespace-pre-wrap text-gray-700 leading-relaxed dark:text-gray-300">
+									<p className="mt-1 leading-relaxed whitespace-pre-wrap text-gray-700 dark:text-gray-300">
 										{selectedSubmission.textSubmission.description}
 									</p>
 								</div>

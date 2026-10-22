@@ -36,7 +36,7 @@ export function MockScheduleModal({
 				className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800"
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h3 className="mb-4 font-bold text-gray-900 text-lg dark:text-white">
+				<h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
 					スケジュールの追加
 				</h3>
 				<div className="form-field">

@@ -149,10 +149,10 @@ function RouteComponent() {
 				className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
 			>
 				<div>
-					<h2 className="font-bold text-2xl text-gray-900 dark:text-white">
+					<h2 className="text-2xl font-bold text-gray-900 dark:text-white">
 						通知
 					</h2>
-					<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+					<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
 						{unreadCount > 0 && `${unreadCount}件の未読通知`}
 					</p>
 				</div>
@@ -192,7 +192,7 @@ function RouteComponent() {
 							whileHover={{ scale: 1.05 }}
 							whileTap={{ scale: 0.95 }}
 							onClick={() => handleFilterChange(filterType)}
-							className={`rounded-lg px-4 py-2 font-medium text-sm transition-colors ${
+							className={`rounded-lg px-4 py-2 text-sm font-medium transition-colors ${
 								filter === filterType
 									? "bg-blue-500 text-white"
 									: "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
@@ -255,11 +255,11 @@ function RouteComponent() {
 													)}
 												</div>
 												<p
-													className={`mt-1 whitespace-pre-wrap text-gray-600 text-sm leading-relaxed dark:text-gray-400 ${expandedId === notification.id ? "line-clamp-none" : "line-clamp-2"}`}
+													className={`mt-1 text-sm leading-relaxed whitespace-pre-wrap text-gray-600 dark:text-gray-400 ${expandedId === notification.id ? "line-clamp-none" : "line-clamp-2"}`}
 												>
 													{notification.description}
 												</p>
-												<p className="mt-2 text-gray-500 text-xs dark:text-gray-500">
+												<p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
 													{formatTimestamp(notification.createdAt)}
 												</p>
 											</div>
@@ -305,7 +305,7 @@ function RouteComponent() {
 												? "既読通知がありません"
 												: "通知がありません"}
 									</h3>
-									<p className="mt-1 text-gray-600 text-sm dark:text-gray-400">
+									<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
 										{filter === "unread"
 											? "新しい通知はありません"
 											: filter === "read"

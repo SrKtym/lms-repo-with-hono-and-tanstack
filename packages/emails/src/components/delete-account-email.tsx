@@ -14,17 +14,17 @@ export default function DeleteAccountEmail({
 			title="アカウントを削除する"
 			email={email}
 		>
-			<Text className="text-base text-gray-700 leading-relaxed">
+			<Text className="text-base leading-relaxed text-gray-700">
 				アカウント削除のリクエストを受け取りました。このリクエストを送信した場合、
 				下のリンクをクリックして確認してください。
 			</Text>
-			<Text className="break-all font-medium text-base text-blue-600">
+			<Text className="text-base font-medium break-all text-blue-600">
 				{url}
 			</Text>
-			<Text className="mt-4 font-medium text-red-600 text-sm">
+			<Text className="mt-4 text-sm font-medium text-red-600">
 				注意：この操作は元に戻せません。すべてのデータが完全に削除されます。
 			</Text>
-			<Text className="mt-4 text-gray-600 text-sm">
+			<Text className="mt-4 text-sm text-gray-600">
 				この削除リクエストを送信していない場合は、すぐにアカウントを保護してください。
 			</Text>
 		</BaseEmailTemplate>

@@ -34,7 +34,7 @@ function RouteComponent() {
 							<DangerIcon width={32} height={32} />
 						</div>
 					</div>
-					<h3 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
+					<h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">
 						リンクが無効です。
 					</h3>
 					<p className="text-gray-600 dark:text-gray-400">

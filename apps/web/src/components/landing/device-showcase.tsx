@@ -56,7 +56,7 @@ export function DeviceShowcase() {
 									{/* Status bar */}
 									<div className="absolute top-0 right-0 left-0 h-6 bg-black/10 backdrop-blur-sm">
 										<div className="flex h-full items-center justify-between px-3">
-											<span className="font-medium text-xs">9:41</span>
+											<span className="text-xs font-medium">9:41</span>
 											<div className="h-1 w-1 rounded-full bg-gray-600" />
 										</div>
 									</div>
@@ -102,7 +102,7 @@ export function DeviceShowcase() {
 									{/* Status bar */}
 									<div className="absolute top-0 right-0 left-0 h-6 bg-black/10 backdrop-blur-sm">
 										<div className="flex h-full items-center justify-between px-4">
-											<span className="font-medium text-xs">9:41</span>
+											<span className="text-xs font-medium">9:41</span>
 											<div className="h-1 w-1 rounded-full bg-gray-600" />
 										</div>
 									</div>
@@ -150,7 +150,7 @@ export function DeviceShowcase() {
 									{/* Screen */}
 									<div className="relative h-full w-full overflow-hidden rounded bg-gradient-to-br from-orange-50 to-red-50">
 										{/* Browser chrome */}
-										<div className="absolute top-0 right-0 left-0 h-8 border-gray-200 border-b bg-white/90 backdrop-blur-sm">
+										<div className="absolute top-0 right-0 left-0 h-8 border-b border-gray-200 bg-white/90 backdrop-blur-sm">
 											<div className="flex h-full items-center justify-between px-3">
 												<div className="flex items-center gap-2">
 													<div className="h-3 w-3 rounded-full bg-red-500" />

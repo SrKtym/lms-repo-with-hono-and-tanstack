@@ -80,7 +80,7 @@ function RouteComponent() {
 						/>
 					</div>
 				</div>
-				<h3 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
+				<h3 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">
 					パスワードリセットの申請
 				</h3>
 				<p className="text-gray-600 dark:text-gray-400">
@@ -181,7 +181,7 @@ function RouteComponent() {
 			{/* Success State - Additional Info */}
 			{isSuccess && (
 				<div className="text-center">
-					<p className="text-gray-500 text-sm dark:text-gray-400">
+					<p className="text-sm text-gray-500 dark:text-gray-400">
 						メールが届かない場合は、スパムフォルダを確認するか、もう一度お試しください
 					</p>
 				</div>

@@ -74,7 +74,7 @@ export function CourseSelectionModal({
 												<p className="font-medium text-gray-900 dark:text-white">
 													{course.name}
 												</p>
-												<p className="text-gray-600 text-sm dark:text-gray-400">
+												<p className="text-sm text-gray-600 dark:text-gray-400">
 													{course.targetGrade}年・{course.requirements}
 												</p>
 											</OutlineButton>

@@ -50,7 +50,7 @@ function EventItem({
 			initial={{ opacity: 0, x: -10 }}
 			animate={{ opacity: 1, x: 0 }}
 			transition={{ delay: index * 0.05 }}
-			className="group relative truncate rounded p-1 text-white text-xs"
+			className="group relative truncate rounded p-1 text-xs text-white"
 			style={{ backgroundColor: event.theme }}
 			whileHover={{ scale: 1.05 }}
 			whileTap={!isHoverCapable ? { scale: 0.9 } : undefined}
@@ -146,7 +146,7 @@ export function MonthView({
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.3 }}
-					className="font-semibold text-gray-900 text-lg dark:text-white"
+					className="text-lg font-semibold text-gray-900 dark:text-white"
 				>
 					{firstDay.toLocaleDateString("ja-JP", {
 						year: "numeric",
@@ -165,11 +165,11 @@ export function MonthView({
 			</div>
 
 			{/* 曜日ヘッダー */}
-			<div className="grid grid-cols-7 border-gray-200 border-b dark:border-gray-700">
+			<div className="grid grid-cols-7 border-b border-gray-200 dark:border-gray-700">
 				{DAYS.map((day, index) => (
 					<div
 						key={day}
-						className={`p-2 text-center font-medium text-sm ${
+						className={`p-2 text-center text-sm font-medium ${
 							index === 0
 								? "text-red-500"
 								: index === 6
@@ -196,12 +196,12 @@ export function MonthView({
 								initial={{ opacity: 0, scale: 0.8 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ delay: (weekIndex * 7 + dayIndex) * 0.01 }}
-								className={`min-h-[80px] border-gray-200 border-r border-b p-1 dark:border-gray-700 ${!isCurrentMonth ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}
+								className={`min-h-[80px] border-r border-b border-gray-200 p-1 dark:border-gray-700 ${!isCurrentMonth ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-800"}
 									${isToday ? "bg-blue-50 dark:bg-blue-900/20" : ""}
 								`}
 							>
 								<div
-									className={`mb-1 font-medium text-sm ${
+									className={`mb-1 text-sm font-medium ${
 										isToday
 											? "text-blue-600 dark:text-blue-400"
 											: isCurrentMonth
@@ -224,7 +224,7 @@ export function MonthView({
 										/>
 									))}
 									{events.length > 3 && (
-										<div className="text-gray-500 text-xs dark:text-gray-400">
+										<div className="text-xs text-gray-500 dark:text-gray-400">
 											+{events.length - 3}件
 										</div>
 									)}

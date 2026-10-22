@@ -24,7 +24,7 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 	const style = "flex items-center gap-2";
 
 	return (
-		<Surface className="mx-auto w-full max-w-2xl rounded-2xl p-6 shadow-surface">
+		<Surface className="shadow-surface mx-auto w-full max-w-2xl rounded-2xl p-6">
 			<div className="relative flex flex-col gap-6 sm:flex-row">
 				{/* プロフィール画像 */}
 				<div className="flex-shrink-0">
@@ -38,10 +38,10 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 
 				{/* 基本情報 */}
 				<div className="flex-grow">
-					<h1 className="mb-2 font-bold text-2xl text-foreground">
+					<h1 className="text-foreground mb-2 text-2xl font-bold">
 						{user.name}
 					</h1>
-					<div className="space-y-2 text-foreground-600">
+					<div className="text-foreground-600 space-y-2">
 						<div className={style}>
 							<span className="font-medium">メールアドレス:</span>
 							<span>{user.email}</span>
@@ -57,8 +57,8 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 
 						{/* 学生情報 */}
 						{isStudent && user && (
-							<div className="mt-3 space-y-1 border-divider border-t pt-3">
-								<h3 className="font-medium text-foreground">学籍情報</h3>
+							<div className="border-divider mt-3 space-y-1 border-t pt-3">
+								<h3 className="text-foreground font-medium">学籍情報</h3>
 								<div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
 									<div className={style}>
 										<p className="font-medium">学年:</p>
@@ -86,8 +86,8 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 
 						{/* 教授情報 */}
 						{isProfessor && user && (
-							<div className="mt-3 space-y-1 border-divider border-t pt-3">
-								<h3 className="font-medium text-foreground">所属情報</h3>
+							<div className="border-divider mt-3 space-y-1 border-t pt-3">
+								<h3 className="text-foreground font-medium">所属情報</h3>
 								<div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-2">
 									<div className={style}>
 										<span className="font-medium">学部:</span>

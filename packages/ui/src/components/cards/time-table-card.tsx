@@ -81,7 +81,7 @@ function CourseCell({
 			}}
 			{...(isEditable ? handlers : {})}
 		>
-			<p className="truncate font-semibold text-xs">{course.name}</p>
+			<p className="truncate text-xs font-semibold">{course.name}</p>
 			<p className="mt-1 truncate text-gray-600 dark:text-gray-300">
 				{course.professor}
 			</p>
@@ -97,7 +97,7 @@ function CourseCell({
 								<MoreVertical
 									width={28}
 									height={28}
-									className="rounded-full p-1 text-foreground"
+									className="text-foreground rounded-full p-1"
 								/>
 							}
 							content={
@@ -248,7 +248,7 @@ export function TimeTableCard({
 				transition={{ duration: 0.3, delay: 0.4 }}
 				className="mt-6 space-y-3"
 			>
-				<h3 className="font-semibold text-sm">登録済み講義一覧</h3>
+				<h3 className="text-sm font-semibold">登録済み講義一覧</h3>
 				<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 					<AnimatePresence>
 						{courses.map((course, index) => (
@@ -261,8 +261,8 @@ export function TimeTableCard({
 								className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800"
 							>
 								<div className="flex-1">
-									<div className="font-medium text-sm">{course.name}</div>
-									<div className="mt-1 text-gray-600 text-xs dark:text-gray-400">
+									<div className="text-sm font-medium">{course.name}</div>
+									<div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
 										{course.professor} • {course.classRoom} • {course.credits}
 										単位
 									</div>

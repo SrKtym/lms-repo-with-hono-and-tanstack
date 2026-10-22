@@ -98,7 +98,7 @@ function RouteComponent() {
 				transition={{ duration: 0.5 }}
 				className="flex items-center justify-between"
 			>
-				<h2 className="font-bold text-xl">履修登録</h2>
+				<h2 className="text-xl font-bold">履修登録</h2>
 			</m.div>
 
 			<m.div
@@ -121,13 +121,13 @@ function RouteComponent() {
 							transition={{ duration: 0.3 }}
 							className="mb-2 flex items-center justify-between"
 						>
-							<h2 className="font-bold text-xl">時間割</h2>
+							<h2 className="text-xl font-bold">時間割</h2>
 							<m.div
 								key={courses.length}
 								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.2 }}
-								className="flex items-center gap-3 text-gray-600 text-sm dark:text-gray-400"
+								className="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400"
 							>
 								<p>取得予定の単位数: {totalCredits}</p>
 
@@ -166,7 +166,7 @@ function RouteComponent() {
 												<div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-700">
 													<table className="w-full">
 														<thead>
-															<tr className="border-gray-200 border-b dark:border-gray-600">
+															<tr className="border-b border-gray-200 dark:border-gray-600">
 																<th className="pb-2 text-left font-semibold text-gray-900 dark:text-white">
 																	講義名
 																</th>
@@ -181,7 +181,7 @@ function RouteComponent() {
 																	key={course.id}
 																	className={
 																		index < courses.length - 1
-																			? "border-gray-100 border-b dark:border-gray-600"
+																			? "border-b border-gray-100 dark:border-gray-600"
 																			: ""
 																	}
 																>
@@ -193,7 +193,7 @@ function RouteComponent() {
 																	</td>
 																</tr>
 															))}
-															<tr className="border-gray-300 border-t-2 dark:border-gray-500">
+															<tr className="border-t-2 border-gray-300 dark:border-gray-500">
 																<td className="py-2 font-bold text-gray-900 dark:text-white">
 																	合計単位数
 																</td>
