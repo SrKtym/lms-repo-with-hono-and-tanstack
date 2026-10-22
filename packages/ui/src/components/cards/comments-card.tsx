@@ -8,7 +8,7 @@ interface CommentsCardProps {
 	children?: React.ReactNode;
 }
 
-// CommentsCard component
+// コメント入力フォームをラップするカードコンポーネント
 export function CommentsCard({ comments, children }: CommentsCardProps) {
 	return (
 		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">

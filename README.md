@@ -1,112 +1,78 @@
 このプロジェクトは進行中です。
 
-# LMS-repo
+# LMS-repoの概要
 
-このプロジェクトは、[Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack)をベースに構築されています。 以下に、使用されている主要な技術スタックを示します。
+- このプロジェクトは、[Better-T-Stack](https://github.com/AmanVarshney01/create-better-t-stack)をベースに構築されています。
+- LMS-repoは、大学生と教員が利用することを想定した学習管理システムです。
+- 学生は履修可能な講義を選んで登録し、時間割を作成することができます。講義に関連する教員からの通知を受け取ったり、指定されたファイル形式で提出物を提出したりすることもできます。また、アプリ内で学生個人のスケジュールを作成・編集することもできます。
+- 一方、教員は講義の作成や課題の作成、学生の提出物の採点などを行うことができます。
+- デフォルトでは、新規登録時にユーザーは学生として登録されます。教員用の登録機能は未実装です。
+- アプリの使用例を確認したい場合は、ホームページの「チュートリアル」をご確認ください。
 
-## 技術スタック
+## 主要な使用技術
 
-- **TypeScript** - For type safety and improved developer experience
-- **TanStack Router** - File-based routing with full type safety
-- **TailwindCSS** - Utility-first CSS for rapid UI development
-- **Hero UI package** - Hero UI primitives live in `packages/ui`
-- **Hono** - Lightweight, performant server framework
-- **Bun** - Runtime environment
-- **Drizzle** - TypeScript-first ORM
-- **PostgreSQL** - Database engine
-- **Authentication** - Better-Auth
-- **Turborepo** - Optimized monorepo build system
-- **Biome** - Linting and formatting
+- **TypeScript** - 型安全なJavaScript拡張言語で、開発体験を向上させます
+- **React** - ユーザーインターフェースを構築するためのJavaScriptライブラリ
+- **TanStack Router** - ファイルベースのルーティングで、完全な型安全性を提供します
+- **TailwindCSS** - ユーティリティファーストのCSSで、迅速なUI開発を可能にします
+- **Hero UI** - TailwindCSSとReact AriaをベースにしたUIコンポーネントライブラリ
+- **Hono** - 軽量で高性能なWebフレームワーク
+- **Bun** - JavaScriptランタイム環境、パッケージマネージャー
+- **Drizzle** - TypeScript向けのORM
+- **PostgreSQL** - リレーショナルデータベース
+- **Better-Auth** - 認証・認可ライブラリ
+- **Turborepo** - 最適化されたモノレポビルドシステム
+- **Biome** - リンター、フォーマッター
 
-## 始め方
+使用技術の詳細は以下のページを参照してください。
 
-はじめに、依存関係をインストールします:
+- [使用技術の詳細](https://docs.google.com/spreadsheets/d/1ulwv8rPPF7eSvMoAQ4dYs8eY2HbrgR318JS1peeHCcM/edit?gid=0#gid=0)
 
-```bash
-npm install
-```
+## システム構成図
 
-または
+## プロジェクトの構成とデプロイフロー
 
-```bash
-pnpm install
-```
-
-または
-
-```bash
-bun install
-```
-
-dockerを使用する場合(任意)
-
-```bash
-docker compose -f docker/docker-compose.dev.yml up -d
-```
-
-その後、開発サーバーを起動します（dockerを使用する場合は以下のコマンドは不要）:
-
-```bash
-bun run dev
-```
-
-フロントエンドアプリケーションは、ブラウザ上の[http://localhost:3001](http://localhost:3001)で開きます。
-バックエンドアプリケーションは、[http://localhost:3000](http://localhost:3000)で実行されます。
-
-## データベースのセットアップ
-
-このプロジェクトではPostgreSQLとDrizzle ORMを使用します。
-
-1. PostgreSQLデータベースのセットアップを行います。
-2. プロジェクト内に `apps/server/.env` ファイルを作成し、PostgreSQLに接続するために必要な環境変数を設定します。
-
-3. Drizzle ORMを使ってTypeScriptで記述されたデータベースのスキーマから、 SQLマイグレーションファイルを生成します。:
-
-```bash
-bun run db:generate
-```
-4. 生成されたSQLマイグレーションファイルをPostgreSQLデータベースに適用します。:
-
-```bash
-bun run db:migrate
-```
-
-## UIのカスタマイズ
-
-- Hero UIベースのものや再利用性のあるコンポーネントは `packages/ui/src/components/*`に集約されます。
-- SVGアイコンのような静的アセットはReactコンポーネントとして`packages/ui/src/assets/icons`に集約されます。
-- 各コンポーネントに適用するCSSの共通設定は `packages/ui/src/styles/globals.css`内で行います。
-
-## フォーマットとリント
-
-- Biomeによるコードのフォーマットとリントを実行します:
-`bun run check`
-
-## プロジェクトの構成
+このプロジェクトの構成は、フロントエンドとバックエンドが1つのリポジトリにまとめられるモノレポ構成となっております。
 
 ```
-lms-repo/
+lms-repo-with-hono-and-tanstack/
+├──.github/
+|   └── workflows/   # GitHub Actionsのワークフロー
 ├── apps/
-│   ├── web/         # フロントエンドアプリケーション (React + TanStack Router)
-│   └── server/      # バックエンドアプリケーション (Hono)
+|   ├── web/         # フロントエンドアプリケーション (React + TanStack Router)
+|   └── server/      # バックエンドアプリケーション (Hono)
 ├── packages/
 |   |── api/         # APIルート（Hono）
-|   |── auth/        # 認証ロジック（Better Auth）
+|   |── auth/        # 認証・認可ロジック（Better Auth）
 |   |── config/      # packages/の共通設定
 |   |── db/          # データベース（postgres）のスキーマとクエリ
-|   |── emails/      # メールテンプレート
-│   ├── ui/          # Hero UIベースのコンポーネント
+|   |── emails/      # メールテンプレートとResendのインスタンス生成
+|   └── ui/          # Hero UIベースのコンポーネント
+├── docker/
+|   ├── docker-compose.dev.yml  # Docker Composeの開発環境設定ファイル
+|   └── docker-compose.test.yml  # Docker Composeのテスト環境設定ファイル
+|   ...
+|   ...
+|
+├── biome.json       # Biomeの設定ファイル
+├── bun.lock         # Bunの依存関係ロックファイル
+├── package.json     # ルートのパッケージ設定
+├── turbo.json       # Turborepoの設定ファイル
+└── wrangler.jsonc   # Cloudflare Pagesの設定ファイル
 ```
 
-## 利用可能なスクリプト
+## 画面構成図
 
-- `bun run dev`: 開発モードですべてのアプリケーションを実行
-- `bun run build`: すべてのアプリケーションをビルド
-- `bun run dev:web`: フロントエンドアプリケーションのみ実行
-- `bun run dev:server`: バックエンドアプリケーションのみ実行
-- `bun run check-types`: すべてのアプリケーションをまたいだ型チェック
-- `bun run db:push`: スキーマの変更を直接データベースに反映
-- `bun run db:generate`: マイグレーションファイルの生成
-- `bun run db:migrate`: データベースへのマイグレーションを実行
-- `bun run db:studio`: Drizzle Studioの起動
-- `bun run check`: Biomeによるフォーマットとリント
+このWebアプリケーションの画面構成図は以下のようになります。
+
+## ER図
+
+データベースの論理設計について説明します。packages/db内にはこのWebアプリケーションで使用するデータベースのスキーマが定義されています。drizzle ORMを使って、TypeScriptで2つのスキーマ「better_auth」、「public」が記述されています。「better_auth」は認証情報（ユーザー、セッション、トークンなど）を格納するスキーマで、「public」はアプリケーションの主要な業務データ（講義、課題、スケジュールなど）を格納するデフォルトのスキーマです。前者は認証・認可ライブラリのBetter-Authが提供するスキーマであり、以下のコマンドで生成されます（Better-Auth公式ドキュメント参照: https://better-auth.com/docs/concepts/cli）。
+
+```bash
+bun x auth@latest generate
+```
+
+開発者が自らテーブルの設計をする必要はありません。以下に「better_auth」スキーマのER図を示します。
+
+

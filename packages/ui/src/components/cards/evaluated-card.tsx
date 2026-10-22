@@ -15,7 +15,7 @@ interface EvaluatedCardProps {
 	onGrade?: (userId: string, assignmentId: string, score: number) => void;
 }
 
-// EvaluatedCard component
+// 学生の提出物テーブルをラップするカードコンポーネント
 export function EvaluatedCard({
 	submissions,
 	isLoading = false,

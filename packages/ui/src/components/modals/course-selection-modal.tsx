@@ -21,7 +21,7 @@ interface CourseSelectionModalProps {
 	onOpenChange?: (open: boolean) => void;
 }
 
-// Course selection modal
+// コース選択モーダル
 export function CourseSelectionModal({
 	onCourseSelect,
 	selectedCell,

@@ -2,7 +2,7 @@
 # 1. biome ciでリント
 # 2. docker buildでバックエンドアプリケーション（Hono API Server）のビルド
 # 3. artifact registryにバックエンドイメージをプッシュ(roles/artifactregistry.writerが必要）
-# 4. gcloud run deployでバックエンドサービスをデプロイ(roles/run.adminが必要）
+# 4. gcloud run deployでバックエンドサービスをデプロイ(roles/run.adminまたはroles/run.developer（推奨）が必要）
 
 name: Deploy Server to Cloud Run
 

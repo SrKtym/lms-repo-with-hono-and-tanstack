@@ -9,7 +9,7 @@ interface AssignmentDetailCardProps {
 	score?: number | null;
 }
 
-// AssignmentDetailCard component
+// 課題の詳細情報を表示するカードコンポーネント
 export function AssignmentDetailCard({
 	targetAssignment,
 	score,

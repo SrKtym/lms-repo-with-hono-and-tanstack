@@ -2,7 +2,11 @@ import { and, eq, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
 import { courses, departments, registration, students } from "../../schema";
 import type { Courses } from "../../types";
-import { createNotificationForUser } from "./helpers";
+import {
+	createNotificationForUser,
+	EDIT_PERIOD_DAYS,
+	isWithinEditPeriod,
+} from "./helpers";
 
 // 講義を作成する
 export async function createCourses(coursesData: Courses) {
@@ -18,6 +22,15 @@ export async function createCourses(coursesData: Courses) {
 export async function registerCourses(courseId: string, userId: string) {
 	try {
 		const result = await db.transaction(async (tx) => {
+			// 編集期限内かチェック
+			const isEditable = await isWithinEditPeriod(tx, userId);
+			if (!isEditable) {
+				return {
+					error: `編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の登録・変更はできません。`,
+					status: 403,
+				};
+			}
+
 			// 登録しようとする講義の曜日・時限・単位数を取得
 			const [targetCourse] = await tx
 				.select({
@@ -117,15 +130,16 @@ export async function registerCourses(courseId: string, userId: string) {
 			}
 
 			// 2. ユーザーが登録する講義の総単位数が50以上になる場合、登録を中止する
-			const total = await tx
+			const [total] = await tx
 				.select({
 					totalCredits: sql<number>`sum(${courses.credits})`,
 				})
 				.from(courses)
 				.innerJoin(registration, eq(courses.id, registration.courseId))
-				.where(eq(registration.userId, userId));
+				.where(eq(registration.userId, userId))
+				.limit(1);
 
-			const currentValue = Number(total[0]?.totalCredits ?? 0);
+			const currentValue = Number(total?.totalCredits || 0);
 			const totalCredits = currentValue + credits;
 
 			if (totalCredits >= 50) {
@@ -226,15 +240,29 @@ export async function checkCourse(userId: string) {
 // 講義を登録解除する
 export async function unregisterCourse(courseId: string, userId: string) {
 	try {
-		await db
-			.delete(registration)
-			.where(
-				and(
-					eq(registration.courseId, courseId),
-					eq(registration.userId, userId),
-				),
-			);
-		return { message: "講義の登録解除に成功しました。", status: 200 };
+		const result = await db.transaction(async (tx) => {
+			// 編集期限内かチェック
+			const isEditable = await isWithinEditPeriod(tx, userId);
+			if (!isEditable) {
+				return {
+					error: `編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の削除はできません。`,
+					status: 403,
+				};
+			}
+
+			await tx
+				.delete(registration)
+				.where(
+					and(
+						eq(registration.courseId, courseId),
+						eq(registration.userId, userId),
+					),
+				);
+
+			return { message: "講義の登録解除に成功しました。", status: 200 };
+		});
+
+		return result;
 	} catch {
 		return { error: "講義の登録解除に失敗しました。", status: 500 };
 	}

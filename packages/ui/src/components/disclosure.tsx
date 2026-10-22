@@ -6,6 +6,7 @@ interface DefaultDisclosureProps {
 	children: React.ReactNode;
 }
 
+// 汎用折りたたみコンポーネント
 export function DefaultDisclosure({ title, children }: DefaultDisclosureProps) {
 	return (
 		<Disclosure>

@@ -9,6 +9,7 @@ interface SubmissionsCardProps {
 	children?: React.ReactNode;
 }
 
+// 課題提出フォームをラップするカードコンポーネント
 export function SubmissionsCard({
 	targetAssignment,
 	targetSubmission,
