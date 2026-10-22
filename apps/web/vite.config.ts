@@ -41,5 +41,4 @@ export default defineConfig({
 		port: 3001,
 		strictPort: true,
 	},
-	envDir: "../../apps/web/.env",
 });
