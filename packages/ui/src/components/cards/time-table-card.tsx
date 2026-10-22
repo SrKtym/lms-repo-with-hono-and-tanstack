@@ -4,11 +4,9 @@ import type {
 } from "@lms-repo/db/utils/query/courses";
 import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { Plus } from "@lms-repo/ui/assets/icons/plus";
-import {
-	LongPressPopover,
-	useLongPress,
-} from "@lms-repo/ui/components/popover";
+import { LongPressPopover } from "@lms-repo/ui/components/popover";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
+import { useLongPress } from "@lms-repo/ui/hooks/use-long-press";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -28,6 +26,7 @@ interface TimeTableCardProps {
 	hasNextPage?: boolean;
 	fetchNextPage?: () => void;
 	isFetchingNextPage?: boolean;
+	isEditable?: boolean;
 }
 
 interface CourseCellProps {
@@ -45,6 +44,7 @@ interface CourseCellProps {
 		} | null,
 	) => void;
 	isHoverCapable: boolean;
+	isEditable?: boolean;
 }
 
 // 時間割上の講義セル
@@ -57,9 +57,12 @@ function CourseCell({
 	setCurrentCell,
 	setLongPressMenu,
 	isHoverCapable,
+	isEditable = true,
 }: CourseCellProps) {
 	const { handlers } = useLongPress((position) => {
-		setLongPressMenu({ position, day, period });
+		if (isEditable) {
+			setLongPressMenu({ position, day, period });
+		}
 	});
 
 	return (
@@ -68,13 +71,15 @@ function CourseCell({
 			animate={{ opacity: 1, scale: 1 }}
 			exit={{ opacity: 0, scale: 0.8 }}
 			transition={{ duration: 0.2 }}
-			className={`${getColorbyRequirements(course.requirements)} group relative h-full rounded border p-2 text-xs hover:shadow-md`}
-			whileTap={!isHoverCapable ? { scale: 0.95 } : undefined}
+			className={`${getColorbyRequirements(course.requirements)} group relative h-full rounded border p-2 text-xs ${isEditable && "hover:shadow-md"}`}
+			whileTap={!isHoverCapable && isEditable ? { scale: 0.95 } : undefined}
 			onContextMenu={(e) => {
-				e.preventDefault();
-				onCellClick(day, period);
+				if (isEditable) {
+					e.preventDefault();
+					onCellClick(day, period);
+				}
 			}}
-			{...handlers}
+			{...(isEditable ? handlers : {})}
 		>
 			<p className="truncate font-semibold text-xs">{course.name}</p>
 			<p className="mt-1 truncate text-gray-600 dark:text-gray-300">
@@ -84,42 +89,45 @@ function CourseCell({
 				{course.credits}単位
 			</p>
 			{/* メニューボタン */}
-			<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
-				<div className="flex flex-col gap-1">
-					<DefaultTooltip
-						triggerElement={
-							<MoreVertical
-								width={28}
-								height={28}
-								className="rounded-full p-1 text-foreground"
-							/>
-						}
-						content={
-							<div className="flex flex-col gap-1">
-								<MenuActionButton
-									type="edit"
-									onClick={(e) => {
-										e?.stopPropagation();
-										onCellClick?.(day, period);
-										setCurrentCell({ day, period });
-									}}
+			{isEditable && (
+				<div className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100">
+					<div className="flex flex-col gap-1">
+						<DefaultTooltip
+							triggerElement={
+								<MoreVertical
+									width={28}
+									height={28}
+									className="rounded-full p-1 text-foreground"
 								/>
-								<MenuActionButton
-									type="delete"
-									onClick={(e) => {
-										e?.stopPropagation();
-										onDeleteCourse(course.id);
-									}}
-								/>
-							</div>
-						}
-					/>
+							}
+							content={
+								<div className="flex flex-col gap-1">
+									<MenuActionButton
+										type="edit"
+										onClick={(e) => {
+											e?.stopPropagation();
+											onCellClick?.(day, period);
+											setCurrentCell({ day, period });
+										}}
+									/>
+									<MenuActionButton
+										type="delete"
+										onClick={(e) => {
+											e?.stopPropagation();
+											onDeleteCourse(course.id);
+										}}
+									/>
+								</div>
+							}
+						/>
+					</div>
 				</div>
-			</div>
+			)}
 		</m.div>
 	);
 }
 
+// 時間割カードコンポーネント
 export function TimeTableCard({
 	courses,
 	onDeleteCourse,
@@ -130,6 +138,7 @@ export function TimeTableCard({
 	hasNextPage = false,
 	fetchNextPage,
 	isFetchingNextPage = false,
+	isEditable = true,
 }: TimeTableCardProps) {
 	// タイムスロットの生成と重複の削除
 	const timeSlots = Array.from({ length: 5 }, (_, dayIndex) =>
@@ -210,8 +219,9 @@ export function TimeTableCard({
 														setCurrentCell={setCurrentCell}
 														setLongPressMenu={setLongPressMenu}
 														isHoverCapable={isHoverCapable}
+														isEditable={isEditable}
 													/>
-												) : (
+												) : isEditable ? (
 													<OutlineButton
 														className="h-full rounded-lg"
 														onPress={() => {
@@ -221,7 +231,7 @@ export function TimeTableCard({
 													>
 														<Plus />
 													</OutlineButton>
-												)}
+												) : null}
 											</AnimatePresence>
 										</m.td>
 									);
