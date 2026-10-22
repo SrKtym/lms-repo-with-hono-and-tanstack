@@ -273,4 +273,5 @@ function DailySchedulesCardComponent({
 	);
 }
 
+// 本日のスケジュール（講義とプライベートスケジュール）を表示するカードコンポーネント
 export const DailySchedulesCard = memo(DailySchedulesCardComponent);
