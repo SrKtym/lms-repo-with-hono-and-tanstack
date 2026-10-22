@@ -1,3 +1,4 @@
+import { EDIT_PERIOD_DAYS } from "@lms-repo/db/utils/mutation/helpers";
 import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
@@ -24,14 +25,14 @@ const searchSchema =
 export const Route = createFileRoute("/_my-page/_student/register-courses")({
 	component: RouteComponent,
 	validateSearch: (search) => searchSchema.parse(search),
-	loader: async () => {
+	loader: async ({ context: { createdAt } }) => {
 		// キャッシュがあればキャッシュからデータ取得
 		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["registered-courses"],
 			queryFn: fetchRegisteredCoursesQueryFn,
 			...QUERY_CONFIG.USER_DATA,
 		});
-		return { initialCourses };
+		return { initialCourses, createdAt };
 	},
 	head: () => ({
 		meta: [
@@ -43,7 +44,7 @@ export const Route = createFileRoute("/_my-page/_student/register-courses")({
 });
 
 function RouteComponent() {
-	const { initialCourses } = Route.useLoaderData();
+	const { initialCourses, createdAt } = Route.useLoaderData();
 	const { weekdays, period } = Route.useSearch();
 	const navigate = useNavigate();
 	const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
@@ -81,7 +82,13 @@ function RouteComponent() {
 	};
 
 	const totalCredits = courses.reduce((acc, course) => acc + course.credits, 0);
-	const everyCourseIsChecked = courses.every((course) => course.isChecked);
+
+	// 編集期限の計算
+	const daysSinceCreation = createdAt
+		? Math.floor((Date.now() - createdAt.getTime()) / (1000 * 60 * 60 * 24))
+		: 0;
+	const remainingDays = Math.max(0, EDIT_PERIOD_DAYS - daysSinceCreation);
+	const isEditable = daysSinceCreation <= EDIT_PERIOD_DAYS;
 
 	return (
 		<div className="space-y-6 p-3">
@@ -120,10 +127,25 @@ function RouteComponent() {
 								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ opacity: 1, scale: 1 }}
 								transition={{ duration: 0.2 }}
-								className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400"
+								className="flex items-center gap-3 text-gray-600 text-sm dark:text-gray-400"
 							>
 								<p>取得予定の単位数: {totalCredits}</p>
-								{courses.length > 0 && (
+
+								{/* 編集期限の表示 */}
+								{courses.length > 0 &&
+									(isEditable ? (
+										<DefaultChip color="warning">
+											編集可（残り{remainingDays}日）
+										</DefaultChip>
+									) : (
+										<DefaultChip color="success">
+											<Check />
+											登録完了
+										</DefaultChip>
+									))}
+
+								{/* 登録ボタンとモーダル（編集期限内のみ表示） */}
+								{courses.length > 0 && isEditable && (
 									<>
 										<DefaultButton
 											size="sm"
@@ -201,12 +223,6 @@ function RouteComponent() {
 										</ControlledModal>
 									</>
 								)}
-								{courses.length > 0 && everyCourseIsChecked && (
-									<DefaultChip color="success">
-										<Check />
-										登録完了
-									</DefaultChip>
-								)}
 							</m.div>
 						</m.div>
 
@@ -225,6 +241,7 @@ function RouteComponent() {
 								hasNextPage={hasNextPage}
 								fetchNextPage={fetchNextPage}
 								isFetchingNextPage={isFetchingNextPage}
+								isEditable={isEditable}
 							/>
 						</m.div>
 					</div>

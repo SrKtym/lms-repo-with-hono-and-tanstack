@@ -30,9 +30,9 @@ export const Route = createFileRoute("/_my-page")({
 			throw new Error("ユーザーが見つかりません");
 		}
 
-		const { email, name, image, role } = session.data.user;
+		const { email, name, image, role, createdAt } = session.data.user;
 
-		return { email, name, image, role };
+		return { email, name, image, role, createdAt };
 	},
 	loader: async ({ context }) => {
 		const { email, name, image, role } = context;

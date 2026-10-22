@@ -22,9 +22,32 @@ interface NotificationData {
 	type: string;
 }
 
-/**
- * コースデータ（講義名と受講者ID）を取得
- */
+// 編集期限（2週間）
+export const EDIT_PERIOD_DAYS = 14;
+
+// 履修登録について編集期限内かチェック
+export async function isWithinEditPeriod(tx: Transaction, userId: string) {
+	const [userInfo] = await tx
+		.select({
+			createdAt: user.createdAt,
+		})
+		.from(user)
+		.where(eq(user.id, userId))
+		.limit(1);
+
+	if (!userInfo) {
+		return false;
+	}
+
+	const now = new Date();
+	const daysSinceCreation = Math.floor(
+		(now.getTime() - userInfo.createdAt.getTime()) / (1000 * 60 * 60 * 24),
+	);
+
+	return daysSinceCreation <= EDIT_PERIOD_DAYS;
+}
+
+// コースデータ（講義名と受講者ID）を取得
 export async function fetchCourseData(tx: Transaction, courseId: string) {
 	const [data] = await tx
 		.select({
@@ -39,9 +62,7 @@ export async function fetchCourseData(tx: Transaction, courseId: string) {
 	return data;
 }
 
-/**
- * 通知を作成し、ユーザー通知を登録（複数ユーザー向け）
- */
+// 通知を作成し、ユーザー通知を登録（複数ユーザー向け）
 export async function createNotification(
 	tx: Transaction,
 	notificationsData: NotificationData,
@@ -69,9 +90,7 @@ export async function createNotification(
 	return data;
 }
 
-/**
- * 通知を作成し、ユーザー通知を登録（単一ユーザー向け）
- */
+// 通知を作成し、ユーザー通知を登録（単一ユーザー向け）
 export async function createNotificationForUser(
 	tx: Transaction,
 	notificationsData: NotificationData,
@@ -98,9 +117,7 @@ export async function createNotificationForUser(
 	return data;
 }
 
-/**
- * メール通知を有効にしているユーザーのメール一覧を取得
- */
+// メール通知を有効にしているユーザーのメール一覧を取得
 export async function fetchEmailsForNotification(
 	tx: Transaction,
 	courseId: string,
