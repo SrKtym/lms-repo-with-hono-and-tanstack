@@ -61,7 +61,7 @@ function WeekEventItem({
 				delay: events.indexOf(event) * 0.1,
 				duration: 0.3,
 			}}
-			className="group absolute right-1 left-1 rounded p-1 text-white text-xs"
+			className="group absolute right-1 left-1 rounded p-1 text-xs text-white"
 			style={{
 				top: `${top}px`,
 				height: `${height}px`,
@@ -172,7 +172,7 @@ export function WeekView({
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.3 }}
-					className="font-semibold text-gray-900 text-lg dark:text-white"
+					className="text-lg font-semibold text-gray-900 dark:text-white"
 				>
 					{weekData[0]?.date.toLocaleDateString("ja-JP", {
 						month: "long",
@@ -198,15 +198,15 @@ export function WeekView({
 			{/* 週カレンダー */}
 			<div className="flex">
 				{/* 時間列 */}
-				<div className="w-16 border-gray-200 border-r dark:border-gray-700">
+				<div className="w-16 border-r border-gray-200 dark:border-gray-700">
 					{/* 曜日ヘッダー用のスペース */}
-					<div className="h-16 border-gray-200 border-b dark:border-gray-700" />
+					<div className="h-16 border-b border-gray-200 dark:border-gray-700" />
 					{hours.map((hour) => (
 						<div
 							key={hour}
-							className="h-16 border-gray-100 border-b p-1 dark:border-gray-700"
+							className="h-16 border-b border-gray-100 p-1 dark:border-gray-700"
 						>
-							<div className="text-gray-500 text-xs dark:text-gray-400">
+							<div className="text-xs text-gray-500 dark:text-gray-400">
 								{hour.toString().padStart(2, "0")}:00
 							</div>
 						</div>
@@ -225,18 +225,18 @@ export function WeekView({
 								initial={{ opacity: 0, x: 20 }}
 								animate={{ opacity: 1, x: 0 }}
 								transition={{ delay: dayIndex * 0.05 }}
-								className="border-gray-200 border-r dark:border-gray-700"
+								className="border-r border-gray-200 dark:border-gray-700"
 							>
 								{/* 日付ヘッダー */}
 								<div
-									className={`h-16 border-gray-200 border-b p-2 text-center dark:border-gray-700 ${
+									className={`h-16 border-b border-gray-200 p-2 text-center dark:border-gray-700 ${
 										isToday
 											? "bg-blue-50 dark:bg-blue-900/20"
 											: "bg-gray-50 dark:bg-gray-800"
 									}`}
 								>
 									<div
-										className={`font-medium text-xs ${
+										className={`text-xs font-medium ${
 											day.date.getDay() === 0
 												? "text-red-500 dark:text-red-400"
 												: day.date.getDay() === 6
@@ -247,7 +247,7 @@ export function WeekView({
 										{DAYS[day.date.getDay()]}
 									</div>
 									<div
-										className={`font-bold text-sm ${
+										className={`text-sm font-bold ${
 											isToday
 												? "text-blue-600 dark:text-blue-400"
 												: "text-gray-900 dark:text-white"
@@ -262,7 +262,7 @@ export function WeekView({
 									{hours.map((hour) => (
 										<div
 											key={hour}
-											className="h-16 border-gray-100 border-b dark:border-gray-700"
+											className="h-16 border-b border-gray-100 dark:border-gray-700"
 										/>
 									))}
 

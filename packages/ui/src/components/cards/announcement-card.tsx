@@ -62,7 +62,7 @@ export function AnnouncementCard({
 							>
 								{announcement.title}
 							</h3>
-							<p className="text-gray-500 text-sm dark:text-gray-400">
+							<p className="text-sm text-gray-500 dark:text-gray-400">
 								{announcement.createdAt
 									? announcement.createdAt.toLocaleDateString(
 											"default",
@@ -78,7 +78,7 @@ export function AnnouncementCard({
 
 					<div className="mt-3">
 						<p
-							className={`text-gray-700 leading-relaxed dark:text-gray-300 ${expandedId === announcement.id ? "line-clamp-none" : "line-clamp-1"}`}
+							className={`leading-relaxed text-gray-700 dark:text-gray-300 ${expandedId === announcement.id ? "line-clamp-none" : "line-clamp-1"}`}
 						>
 							{announcement.description}
 						</p>

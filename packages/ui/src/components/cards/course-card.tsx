@@ -14,7 +14,7 @@ interface CourseCardProps {
 // 講義情報をカバー画像付きで表示するカードコンポーネント
 export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 	return (
-		<BaseCard key={course.id} className="border border-divider px-0 pt-0">
+		<BaseCard key={course.id} className="border-divider border px-0 pt-0">
 			<Image
 				src={course.coverImage ?? ""}
 				alt={course.name}
@@ -24,8 +24,8 @@ export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 				<div className="flex gap-3">
 					<DefaultAvatar userName={course.professor} />
 					<div className="flex-1">
-						<h3 className="font-medium text-lg">{course.name}</h3>
-						<div className="flex flex-col text-gray-600 text-sm dark:text-gray-400">
+						<h3 className="text-lg font-medium">{course.name}</h3>
+						<div className="flex flex-col text-sm text-gray-600 dark:text-gray-400">
 							<p className="leading-relaxed">
 								{DAYS[course.weekdays]}曜 {course.period}限
 								<br />

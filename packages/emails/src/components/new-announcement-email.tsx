@@ -15,13 +15,13 @@ export default function NewAnnouncementEmail({
 			preview="新しいお知らせが投稿されました"
 			title="新しいお知らせ"
 		>
-			<Text className="text-base text-gray-700 leading-relaxed">
+			<Text className="text-base leading-relaxed text-gray-700">
 				新しいお知らせが投稿されました。
 			</Text>
-			<Text className="mt-4 font-bold text-gray-900 text-lg">
+			<Text className="mt-4 text-lg font-bold text-gray-900">
 				{announcementTitle}
 			</Text>
-			<Text className="mt-2 whitespace-pre-line text-base text-gray-700 leading-relaxed">
+			<Text className="mt-2 text-base leading-relaxed whitespace-pre-line text-gray-700">
 				{announcementContent}
 			</Text>
 			<Button

@@ -106,7 +106,7 @@ export function AssignmentScene() {
 							transition={{ duration: 0.3 }}
 							className="lg:col-span-2"
 						>
-							<BaseCard className="border border-divider">
+							<BaseCard className="border-divider border">
 								<div className="p-6">
 									<div className="flex items-start justify-between">
 										<div className="flex gap-4">
@@ -116,7 +116,7 @@ export function AssignmentScene() {
 												</div>
 											</div>
 											<div className="space-y-2">
-												<h1 className="font-medium text-2xl">
+												<h1 className="text-2xl font-medium">
 													{mockAssignment.title}
 												</h1>
 												<div className="mt-2">
@@ -134,7 +134,7 @@ export function AssignmentScene() {
 										<div className="mb-1 flex items-center gap-2">
 											<span className="font-medium">期限</span>
 										</div>
-										<p className="ml-6 text-default-600">
+										<p className="text-default-600 ml-6">
 											{mockAssignment.dueDate.toLocaleDateString("ja-JP")}
 										</p>
 									</div>
@@ -143,7 +143,7 @@ export function AssignmentScene() {
 										<div className="mb-2 flex items-center gap-2">
 											<span className="font-medium">説明</span>
 										</div>
-										<p className="ml-6 text-default-600">
+										<p className="text-default-600 ml-6">
 											{mockAssignment.description}
 										</p>
 									</div>
@@ -152,7 +152,7 @@ export function AssignmentScene() {
 										<div className="mb-2 flex items-center gap-2">
 											<span className="font-medium">添付ファイル</span>
 										</div>
-										<p className="ml-6 text-default-600">
+										<p className="text-default-600 ml-6">
 											{/* ここに添付ファイルをダウンロードする機能を実装 */}
 											なし
 										</p>

@@ -56,9 +56,9 @@ export function UpcomingAssignmentsCard({
 				<div className="mb-5 flex items-center justify-between">
 					<div className="flex items-center gap-2">
 						<FileDocument width={24} height={24} />
-						<h1 className="font-semibold text-lg">直近の課題</h1>
+						<h1 className="text-lg font-semibold">直近の課題</h1>
 						{assignments.length > 0 && (
-							<span className="rounded bg-blue-100 px-2.5 py-0.5 font-medium text-blue-800 text-xs dark:bg-blue-900 dark:text-blue-200">
+							<span className="rounded bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
 								{assignments.length}件
 							</span>
 						)}
@@ -91,18 +91,18 @@ export function UpcomingAssignmentsCard({
 													return <Icon width={20} height={20} />;
 												})()}
 											</span>
-											<h3 className="font-semibold text-gray-900 text-sm dark:text-gray-100">
+											<h3 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
 												{assignment.title}
 											</h3>
 										</div>
 
 										{assignment.description && (
-											<p className="mb-1 line-clamp-2 text-gray-600 text-xs dark:text-gray-400">
+											<p className="mb-1 line-clamp-2 text-xs text-gray-600 dark:text-gray-400">
 												{assignment.description}
 											</p>
 										)}
 
-										<div className="flex items-center gap-3 text-gray-500 text-xs dark:text-gray-400">
+										<div className="flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
 											<span>{assignment.courseName}</span>
 											<span>•</span>
 											<span
@@ -127,7 +127,7 @@ export function UpcomingAssignmentsCard({
 							<p className="font-medium text-gray-500 dark:text-gray-400">
 								直近の課題はありません
 							</p>
-							<p className="mt-1 text-gray-400 text-sm dark:text-gray-500">
+							<p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
 								他の期間を選択してみてください
 							</p>
 						</div>

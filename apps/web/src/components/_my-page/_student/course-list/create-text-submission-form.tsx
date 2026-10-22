@@ -170,14 +170,14 @@ export function CreateTextSubmissionForm() {
 								{textSubmissions.map((submission) => (
 									<m.div
 										key={submission.id}
-										className="rounded-lg border border-divider bg-default-50 p-4 dark:bg-default-100/50"
+										className="border-divider bg-default-50 dark:bg-default-100/50 rounded-lg border p-4"
 										initial={{ opacity: 0, y: 20 }}
 										animate={{ opacity: 1, y: 0 }}
 										exit={{ opacity: 0, y: -20 }}
 										transition={{ duration: 0.3 }}
 									>
 										<div className="mb-2 flex items-center justify-between">
-											<h3 className="font-medium text-lg">
+											<h3 className="text-lg font-medium">
 												{submission.title}
 											</h3>
 											<div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ export function CreateTextSubmissionForm() {
 												</CancelButton>
 											</div>
 										</div>
-										<p className="whitespace-pre-wrap text-justify text-default-600 leading-relaxed dark:text-default-400">
+										<p className="text-default-600 dark:text-default-400 text-justify leading-relaxed whitespace-pre-wrap">
 											{submission.description}
 										</p>
 									</m.div>

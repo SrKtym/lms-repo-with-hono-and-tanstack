@@ -36,9 +36,9 @@ export default function RegisteredCourseList({
 	});
 
 	return (
-		<div className="container relative z-10 mx-auto max-w-screen-xl px-4 py-6">
+		<div className="relative z-10 container mx-auto max-w-screen-xl px-4 py-6">
 			<div className="mb-6 items-center justify-between space-y-3 sm:flex">
-				<h1 className="font-medium text-2xl text-gray-900 dark:text-gray-100">
+				<h1 className="text-2xl font-medium text-gray-900 dark:text-gray-100">
 					登録済みの講義
 				</h1>
 				<div className="flex items-center gap-4">
@@ -53,10 +53,10 @@ export default function RegisteredCourseList({
 			{sortedCourses.length > 0 ? (
 				<div className="mb-8">
 					<div className="mb-4 flex items-center justify-between">
-						<h2 className="font-medium text-gray-800 text-lg dark:text-gray-200">
+						<h2 className="text-lg font-medium text-gray-800 dark:text-gray-200">
 							すべての講義 ({sortedCourses.length}件)
 						</h2>
-						<div className="flex items-center gap-2 text-gray-600 text-sm dark:text-gray-400">
+						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
 							<p>並び替え:</p>
 							<DefaultSelect
 								aria-label="options"
@@ -124,7 +124,7 @@ export default function RegisteredCourseList({
 						<div className="absolute -top-16 -right-16 h-32 w-32 rounded-full bg-gradient-to-br from-blue-400/10 to-purple-400/10 blur-2xl" />
 						<BookOpen width={48} height={48} />
 					</div>
-					<h2 className="mb-2 font-medium text-gray-900 text-xl dark:text-gray-100">
+					<h2 className="mb-2 text-xl font-medium text-gray-900 dark:text-gray-100">
 						{searchQuery
 							? "該当する講義がありません"
 							: "履修する講義がありません"}

@@ -34,9 +34,9 @@ export function DropdownMenuForAccount({
 			<Dropdown>
 				<DropdownButton>
 					<DefaultAvatar src={image} userName={name} />
-					<div className="flex flex-col text-start text-foreground max-sm:hidden">
+					<div className="text-foreground flex flex-col text-start max-sm:hidden">
 						<h3>{name}</h3>
-						<p className="text-gray-500 text-sm dark:text-gray-400">{email}</p>
+						<p className="text-sm text-gray-500 dark:text-gray-400">{email}</p>
 					</div>
 				</DropdownButton>
 				<Dropdown.Popover placement="bottom end">

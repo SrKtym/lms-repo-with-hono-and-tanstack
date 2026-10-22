@@ -16,7 +16,7 @@ function AuthLayoutComponent() {
 
 			{/* Footer */}
 			<div className="mt-8 text-center">
-				<p className="p-4 text-gray-500 text-sm dark:text-gray-400">
+				<p className="p-4 text-sm text-gray-500 dark:text-gray-400">
 					&copy; 2026 LMS. All rights reserved.
 				</p>
 			</div>

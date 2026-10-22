@@ -75,12 +75,12 @@ export function VideoTutorial() {
 						transition={{ duration: 0.5, delay: 0.1 }}
 						className="relative overflow-hidden rounded-[32px] border border-slate-200 bg-slate-50 shadow-[0_40px_120px_-60px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-slate-950"
 					>
-						<div className="border-slate-200 border-b px-5 py-4 dark:border-slate-800">
-							<div className="flex items-center gap-2 text-slate-500 text-sm dark:text-slate-400">
+						<div className="border-b border-slate-200 px-5 py-4 dark:border-slate-800">
+							<div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
 								<div className="h-3 w-3 rounded-full bg-red-500" />
 								<div className="h-3 w-3 rounded-full bg-yellow-500" />
 								<div className="h-3 w-3 rounded-full bg-green-500" />
-								<p className="ml-4 flex-1 overflow-hidden rounded-full border border-slate-200 bg-white px-3 py-1 text-slate-500 text-xs shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+								<p className="ml-4 flex-1 overflow-hidden rounded-full border border-slate-200 bg-white px-3 py-1 text-xs text-slate-500 shadow-sm dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
 									https://lms-repo.com{path}
 								</p>
 							</div>
@@ -160,7 +160,7 @@ export function VideoTutorial() {
 						transition={{ duration: 0.5, delay: 0.2 }}
 						className="space-y-6"
 					>
-						<h3 className="font-bold text-2xl text-foreground">
+						<h3 className="text-foreground text-2xl font-bold">
 							各シーンの説明
 						</h3>
 						<div className="space-y-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
@@ -179,15 +179,15 @@ export function VideoTutorial() {
 								>
 									<div className="flex items-center justify-between gap-3">
 										<div>
-											<p className="font-semibold text-slate-900 text-sm dark:text-white">
+											<p className="text-sm font-semibold text-slate-900 dark:text-white">
 												{card.title}
 											</p>
-											<p className="mt-1 text-slate-500 text-sm dark:text-slate-400">
+											<p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
 												{card.description}
 											</p>
 										</div>
 										<div
-											className={`flex h-9 w-9 items-center justify-center rounded-full p-4 font-bold text-xs ${activeStep === card.id ? "bg-primary text-background" : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"}`}
+											className={`flex h-9 w-9 items-center justify-center rounded-full p-4 text-xs font-bold ${activeStep === card.id ? "bg-primary text-background" : "bg-slate-200 text-slate-500 dark:bg-slate-800 dark:text-slate-400"}`}
 										>
 											{card.id + 1}
 										</div>

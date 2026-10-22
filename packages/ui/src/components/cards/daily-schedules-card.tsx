@@ -71,7 +71,7 @@ function DailySchedulesCardComponent({
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={`rounded-full px-2 py-1 font-medium text-xs ${
+								className={`rounded-full px-2 py-1 text-xs font-medium ${
 									isProgressing
 										? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300"
 										: isPast
@@ -142,7 +142,7 @@ function DailySchedulesCardComponent({
 					<div className="flex-1">
 						<div className="mb-2 flex items-center gap-3">
 							<span
-								className={`rounded-full px-2 py-1 font-medium text-xs ${
+								className={`rounded-full px-2 py-1 text-xs font-medium ${
 									isProgressing
 										? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300"
 										: isPast
@@ -166,7 +166,7 @@ function DailySchedulesCardComponent({
 							{item.title}
 						</h3>
 						{item.description && (
-							<p className="mb-2 text-gray-600 text-sm dark:text-gray-400">
+							<p className="mb-2 text-sm text-gray-600 dark:text-gray-400">
 								{item.description}
 							</p>
 						)}
@@ -193,10 +193,10 @@ function DailySchedulesCardComponent({
 				<div className="mb-6 flex items-center gap-3">
 					<CalendarAnimation width={24} height={24} />
 					<div>
-						<h1 className="font-semibold text-gray-900 text-xl dark:text-gray-100">
+						<h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
 							本日の予定
 						</h1>
-						<p className="text-gray-600 text-sm dark:text-gray-400">
+						<p className="text-sm text-gray-600 dark:text-gray-400">
 							{new Date().toLocaleDateString("ja-JP", {
 								weekday: "long",
 								year: "numeric",
@@ -214,7 +214,7 @@ function DailySchedulesCardComponent({
 							<p className="mt-4 font-medium text-gray-500 dark:text-gray-400">
 								本日の予定はありません
 							</p>
-							<p className="mt-2 text-gray-400 text-sm dark:text-gray-500">
+							<p className="mt-2 text-sm text-gray-400 dark:text-gray-500">
 								リラックスしてお過ごしください
 							</p>
 						</div>
@@ -228,7 +228,7 @@ function DailySchedulesCardComponent({
 								animate={{ opacity: 1, y: 0 }}
 								transition={{ duration: 0.5, ease: "easeOut" }}
 							>
-								<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
+								<h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
 									<span className="h-2 w-2 rounded-full bg-blue-500" />
 									講義
 								</h2>
@@ -255,7 +255,7 @@ function DailySchedulesCardComponent({
 									ease: "easeOut",
 								}}
 							>
-								<h2 className="mb-4 flex items-center gap-2 font-semibold text-gray-800 text-lg dark:text-gray-200">
+								<h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-gray-800 dark:text-gray-200">
 									<span className="h-2 w-2 rounded-full bg-green-500" />
 									個人スケジュール
 								</h2>

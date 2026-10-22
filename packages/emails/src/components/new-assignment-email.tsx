@@ -14,17 +14,17 @@ export default function NewAssignmentEmail({
 }) {
 	return (
 		<BaseEmailTemplate preview="新しい課題が投稿されました" title="新しい課題">
-			<Text className="text-base text-gray-700 leading-relaxed">
+			<Text className="text-base leading-relaxed text-gray-700">
 				新しい課題が投稿されました。
 			</Text>
-			<Text className="mt-4 font-bold text-gray-900 text-lg">
+			<Text className="mt-4 text-lg font-bold text-gray-900">
 				{assignmentTitle}
 			</Text>
-			<Text className="mt-2 whitespace-pre-line text-base text-gray-700 leading-relaxed">
+			<Text className="mt-2 text-base leading-relaxed whitespace-pre-line text-gray-700">
 				{assignmentDescription}
 			</Text>
 			{dueDate && (
-				<Text className="mt-2 text-gray-600 text-sm">提出期限: {dueDate}</Text>
+				<Text className="mt-2 text-sm text-gray-600">提出期限: {dueDate}</Text>
 			)}
 			<Button
 				href={viewUrl}

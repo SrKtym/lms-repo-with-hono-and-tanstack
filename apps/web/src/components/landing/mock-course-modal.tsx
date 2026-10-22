@@ -45,7 +45,7 @@ export function CourseModal({
 				className="w-full max-w-md rounded-lg border border-gray-200 bg-white p-6 shadow-lg dark:border-gray-700 dark:bg-gray-800"
 				onClick={(e) => e.stopPropagation()}
 			>
-				<h3 className="mb-4 font-bold text-gray-900 text-lg dark:text-white">
+				<h3 className="mb-4 text-lg font-bold text-gray-900 dark:text-white">
 					月曜 3限の講義を選択
 				</h3>
 				<div className="space-y-2">
@@ -55,10 +55,10 @@ export function CourseModal({
 							onPress={() => onSelectCourse(course.name)}
 							ref={course.id === "1" ? courseRef : undefined}
 						>
-							<p className="font-medium text-gray-900 text-sm dark:text-white">
+							<p className="text-sm font-medium text-gray-900 dark:text-white">
 								{course.name}
 							</p>
-							<p className="text-gray-600 text-xs dark:text-gray-400">
+							<p className="text-xs text-gray-600 dark:text-gray-400">
 								{course.professor} • {course.credits}単位
 							</p>
 						</OutlineButton>

@@ -174,7 +174,7 @@ export function DateRangePicker({
 						</div>
 
 						{/* 選択された期間を表示 */}
-						<span className="mt-1 text-muted text-xs dark:text-gray-400">
+						<span className="text-muted mt-1 text-xs dark:text-gray-400">
 							期間:{" "}
 							{state.value.start && state.value.end
 								? formatDate({ end: state.value.end, start: state.value.start })

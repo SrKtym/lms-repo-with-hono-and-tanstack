@@ -72,7 +72,7 @@ function DayEventItem({
 			whileTap={!isHoverCapable ? { scale: 0.95 } : undefined}
 			{...handlers}
 		>
-			<div className="mb-1 font-bold text-sm">
+			<div className="mb-1 text-sm font-bold">
 				{event.title}
 				{event.type === "schedule" && (
 					<div className="absolute top-1 right-[-5px] opacity-0 transition-opacity group-hover:opacity-100">
@@ -173,7 +173,7 @@ export function DayView({
 					initial={{ opacity: 0, y: -10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.3 }}
-					className="font-semibold text-gray-900 text-lg dark:text-white"
+					className="text-lg font-semibold text-gray-900 dark:text-white"
 				>
 					{currentDate.toLocaleDateString("ja-JP", {
 						year: "numeric",
@@ -196,13 +196,13 @@ export function DayView({
 			{/* 日カレンダー */}
 			<div className="flex min-h-[600px]">
 				{/* 時間列 */}
-				<div className="w-20 border-gray-200 border-r dark:border-gray-700">
+				<div className="w-20 border-r border-gray-200 dark:border-gray-700">
 					{hours.map((hour) => (
 						<div
 							key={hour}
-							className="h-20 border-gray-100 border-b p-2 dark:border-gray-700"
+							className="h-20 border-b border-gray-100 p-2 dark:border-gray-700"
 						>
-							<div className="text-gray-500 text-sm dark:text-gray-400">
+							<div className="text-sm text-gray-500 dark:text-gray-400">
 								{hour.toString().padStart(2, "0")}:00
 							</div>
 						</div>
@@ -217,7 +217,7 @@ export function DayView({
 							initial={{ opacity: 0, x: -10 }}
 							animate={{ opacity: 1, x: 0 }}
 							transition={{ delay: index * 0.02 }}
-							className="h-20 border-gray-100 border-b dark:border-gray-700"
+							className="h-20 border-b border-gray-100 dark:border-gray-700"
 						/>
 					))}
 

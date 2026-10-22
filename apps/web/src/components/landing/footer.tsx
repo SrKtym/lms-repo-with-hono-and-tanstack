@@ -9,11 +9,11 @@ export function Footer() {
 					{/* App Info */}
 					<div className="col-span-1 md:col-span-2 lg:col-span-2">
 						<div className="mb-6">
-							<h3 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text font-bold text-2xl text-transparent">
+							<h3 className="mb-4 flex items-center gap-2 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent">
 								<Books width={32} height={32} />
 								<p>LMS</p>
 							</h3>
-							<p className="mb-4 text-gray-400 leading-relaxed">
+							<p className="mb-4 leading-relaxed text-gray-400">
 								大学生のための学習管理アプリケーション。
 								時間割の作成、スケジュール・課題の管理機能を提供します。
 							</p>
@@ -40,8 +40,8 @@ export function Footer() {
 				</div>
 
 				{/* Bottom Bar */}
-				<div className="mt-8 border-gray-800 border-t pt-8">
-					<p className="text-center text-gray-400 text-sm">
+				<div className="mt-8 border-t border-gray-800 pt-8">
+					<p className="text-center text-sm text-gray-400">
 						&copy; 2026 LMS. All rights reserved.
 					</p>
 				</div>

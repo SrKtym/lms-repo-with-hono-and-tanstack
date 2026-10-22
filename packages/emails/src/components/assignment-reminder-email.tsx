@@ -17,19 +17,19 @@ export default function AssignmentReminderEmail({
 			preview="課題の提出期限が近づいています"
 			title="リマインダー: 課題の提出"
 		>
-			<Text className="text-base text-gray-700 leading-relaxed">
+			<Text className="text-base leading-relaxed text-gray-700">
 				課題の提出期限が近づいています。
 			</Text>
 			{assignmentsDetail.map((assignment) => (
 				<>
-					<Text className="mt-4 font-bold text-gray-900 text-lg">
+					<Text className="mt-4 text-lg font-bold text-gray-900">
 						{assignment.title}
 					</Text>
-					<Text className="mt-2 whitespace-pre-line text-base text-gray-700 leading-relaxed">
+					<Text className="mt-2 text-base leading-relaxed whitespace-pre-line text-gray-700">
 						{assignment.description}
 					</Text>
 					{assignment.dueDate && (
-						<Text className="mt-2 text-gray-600 text-sm">
+						<Text className="mt-2 text-sm text-gray-600">
 							提出期限: {assignment.dueDate}
 						</Text>
 					)}

@@ -24,7 +24,7 @@ function RouteComponent() {
 	return (
 		<div className="w-full max-w-md p-6">
 			<div className="mb-8 text-center">
-				<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-gray-100">
+				<h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-gray-100">
 					2要素認証
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">

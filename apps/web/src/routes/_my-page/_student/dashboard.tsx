@@ -101,7 +101,7 @@ function RouteComponent() {
 		<div className="p-3">
 			{/* Dashboard Header */}
 			<div className="mb-6 lg:mb-8">
-				<h1 className="mb-2 font-bold text-2xl text-gray-900 lg:text-3xl dark:text-gray-100">
+				<h1 className="mb-2 text-2xl font-bold text-gray-900 lg:text-3xl dark:text-gray-100">
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">

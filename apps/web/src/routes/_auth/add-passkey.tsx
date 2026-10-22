@@ -74,7 +74,7 @@ function RouteComponent() {
 						<PasskeyLogo className="text-white" />
 					</div>
 				</div>
-				<h1 className="mb-3 font-bold text-2xl text-gray-900 dark:text-gray-100">
+				<h1 className="mb-3 text-2xl font-bold text-gray-900 dark:text-gray-100">
 					パスキー登録
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
@@ -93,7 +93,7 @@ function RouteComponent() {
 								<h3 className="font-medium text-green-800 dark:text-green-200">
 									登録が成功しました
 								</h3>
-								<p className="text-green-600 text-sm dark:text-green-400">
+								<p className="text-sm text-green-600 dark:text-green-400">
 									パスキーが正常に登録されました。これで、安全なログインに使用できます。
 								</p>
 							</div>
@@ -110,7 +110,7 @@ function RouteComponent() {
 								<h3 className="font-medium text-red-800 dark:text-red-200">
 									登録に失敗しました
 								</h3>
-								<p className="text-red-600 text-sm dark:text-red-400">
+								<p className="text-sm text-red-600 dark:text-red-400">
 									{error}
 								</p>
 							</div>
@@ -130,7 +130,7 @@ function RouteComponent() {
 								/>
 							</div>
 							<div className="flex-1">
-								<p className="text-gray-700 text-sm dark:text-gray-300">
+								<p className="text-sm text-gray-700 dark:text-gray-300">
 									<span className="font-medium">パスワードレスログイン:</span>{" "}
 									パスワードではなく、パスキーを使用して安全に認証します
 								</p>
@@ -146,7 +146,7 @@ function RouteComponent() {
 								/>
 							</div>
 							<div className="flex-1">
-								<p className="text-gray-700 text-sm dark:text-gray-300">
+								<p className="text-sm text-gray-700 dark:text-gray-300">
 									<span className="font-medium">生体認証:</span>
 									パスワードではなく、指紋や顔認証、デバイスのPINを使用して認証します
 								</p>
@@ -162,7 +162,7 @@ function RouteComponent() {
 								/>
 							</div>
 							<div className="flex-1">
-								<p className="text-gray-700 text-sm dark:text-gray-300">
+								<p className="text-sm text-gray-700 dark:text-gray-300">
 									<span className="font-medium">クイックアクセス:</span>
 									パスワードを覚える必要なく、ワンタップでログインできます
 								</p>
@@ -199,7 +199,7 @@ function RouteComponent() {
 
 			{/* Footer Help Text */}
 			<div className="text-center">
-				<p className="text-gray-500 text-xs dark:text-gray-400">
+				<p className="text-xs text-gray-500 dark:text-gray-400">
 					アカウント設定から、後からでもパスキーを登録できます
 				</p>
 			</div>

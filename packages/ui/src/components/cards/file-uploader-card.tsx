@@ -150,15 +150,15 @@ export function FileUploaderCard({
 						<div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900">
 							<CloudUpload />
 						</div>
-						<p className="mb-2 font-medium text-gray-900 text-lg dark:text-gray-100">
+						<p className="mb-2 text-lg font-medium text-gray-900 dark:text-gray-100">
 							{isDragOver
 								? "ここにファイルをドロップ"
 								: "ファイルのアップロード"}
 						</p>
-						<p className="text-gray-600 text-sm dark:text-gray-400">
+						<p className="text-sm text-gray-600 dark:text-gray-400">
 							クリックまたはドラッグしてファイルをアップロードしてください
 						</p>
-						<p className="text-gray-500 text-xs dark:text-gray-500">
+						<p className="text-xs text-gray-500 dark:text-gray-500">
 							・最大 {maxFiles} ファイルまで
 							<br />
 							・ファイルサイズ {maxSize}MB まで
@@ -192,7 +192,7 @@ export function FileUploaderCard({
 									<p className="truncate font-medium text-gray-900 dark:text-gray-100">
 										{file.name}
 									</p>
-									<p className="text-gray-600 text-sm dark:text-gray-400">
+									<p className="text-sm text-gray-600 dark:text-gray-400">
 										{formatFileSize(file.size)}
 									</p>
 								</div>

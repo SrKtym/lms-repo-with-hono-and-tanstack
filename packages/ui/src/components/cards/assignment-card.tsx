@@ -36,7 +36,7 @@ export function AssignmentCard({
 							<h3 className="line-clamp-1 font-medium text-gray-900 dark:text-gray-100">
 								{assignment.title}
 							</h3>
-							<div className="mt-1 flex items-center gap-2 text-gray-500 text-sm dark:text-gray-400">
+							<div className="mt-1 flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
 								<span>
 									期限:{" "}
 									{assignment.dueDate.toLocaleDateString(
@@ -45,10 +45,10 @@ export function AssignmentCard({
 									)}
 								</span>
 								{isOverdue && (
-									<span className="font-medium text-danger">期限切れ</span>
+									<span className="text-danger font-medium">期限切れ</span>
 								)}
 								{!isOverdue && daysUntilDue <= 3 && (
-									<span className="font-medium text-warning">
+									<span className="text-warning font-medium">
 										{daysUntilDue === 0 ? "今日まで" : `残り${daysUntilDue}日`}
 									</span>
 								)}
@@ -62,7 +62,7 @@ export function AssignmentCard({
 
 					{assignment.description && (
 						<div className="mt-3">
-							<p className="line-clamp-1 text-gray-600 text-sm leading-relaxed dark:text-gray-300">
+							<p className="line-clamp-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
 								{assignment.description}
 							</p>
 						</div>
@@ -70,7 +70,7 @@ export function AssignmentCard({
 
 					{assignment.points >= 0 && (
 						<div className="mt-2 flex items-center gap-2">
-							<span className="text-gray-500 text-sm dark:text-gray-400">
+							<span className="text-sm text-gray-500 dark:text-gray-400">
 								配点:
 							</span>
 							<span className="font-medium text-gray-900 dark:text-gray-100">

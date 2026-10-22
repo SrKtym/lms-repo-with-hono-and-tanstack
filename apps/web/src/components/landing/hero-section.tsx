@@ -23,7 +23,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 	return (
 		<section className="relative flex min-h-screen items-center justify-center overflow-hidden">
 			{/* Main Content */}
-			<div className="container relative z-10 mx-auto px-4 py-20">
+			<div className="relative z-10 container mx-auto px-4 py-20">
 				<div className="mx-auto max-w-4xl text-center">
 					<m.div
 						initial={{ opacity: 0, y: 30 }}
@@ -31,7 +31,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						transition={{ duration: 0.6 }}
 						className="mb-8"
 					>
-						<div className="mb-8 inline-flex items-center rounded-full bg-blue-100 px-4 py-2 font-medium text-blue-800 text-sm dark:bg-blue-900 dark:text-blue-200">
+						<div className="mb-8 inline-flex items-center rounded-full bg-blue-100 px-4 py-2 text-sm font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
 							新しい学習体験へ
 						</div>
 					</m.div>
@@ -40,7 +40,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.1 }}
-						className="mb-6 font-bold text-4xl text-gray-900 tracking-tight sm:text-5xl md:text-6xl dark:text-white"
+						className="mb-6 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl md:text-6xl dark:text-white"
 					>
 						<TypewriterText texts={typewriterText} />
 					</m.h1>
@@ -49,7 +49,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						initial={{ opacity: 0, y: 20 }}
 						animate={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 0.2 }}
-						className="mx-auto mb-10 max-w-3xl text-gray-600 text-lg sm:text-xl dark:text-gray-300"
+						className="mx-auto mb-10 max-w-3xl text-lg text-gray-600 sm:text-xl dark:text-gray-300"
 					>
 						このアプリは大学生の学習をサポートすることを目的として開発されました。
 						時間割の作成やスケジュールの管理、課題の管理をこれ一つで実現できます。
@@ -74,7 +74,7 @@ export function HeroSection({ children }: HeroSectionProps) {
 						{features.map((feature) => (
 							<div
 								key={feature}
-								className="rounded-full bg-white px-4 py-2 font-medium text-gray-700 text-sm shadow-md dark:bg-gray-800 dark:text-gray-300"
+								className="rounded-full bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-md dark:bg-gray-800 dark:text-gray-300"
 							>
 								{feature}
 							</div>

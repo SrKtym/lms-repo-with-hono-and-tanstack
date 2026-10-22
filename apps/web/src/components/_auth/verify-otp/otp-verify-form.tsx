@@ -121,7 +121,7 @@ export default function OtpVerifyForm({
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
 					SMS/メール認証
 				</h3>
-				<p className="text-gray-600 text-sm dark:text-gray-400">
+				<p className="text-sm text-gray-600 dark:text-gray-400">
 					登録済みの電話番号またはメールアドレスに送信された6桁のコードを入力してください
 				</p>
 			</div>
@@ -181,7 +181,7 @@ export default function OtpVerifyForm({
 									<p
 										id="otpCode-error"
 										key={error?.message}
-										className="text-red-500 text-sm"
+										className="text-sm text-red-500"
 									>
 										{error?.message}
 									</p>
@@ -227,7 +227,7 @@ export default function OtpVerifyForm({
 
 			{/* ヘルプセクション */}
 			<div className="text-center">
-				<p className="text-gray-500 text-xs dark:text-gray-400">
+				<p className="text-xs text-gray-500 dark:text-gray-400">
 					コードが届かない場合は、迷惑メールフォルダもご確認ください
 				</p>
 			</div>

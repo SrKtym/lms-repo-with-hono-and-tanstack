@@ -12,14 +12,14 @@ on:
     branches:
       - main
     paths:
-      - 'apps/web/**'
-      - 'packages/emails/**'
-      - 'packages/ui/**'
-      - 'packages/env/**'
-      - 'packages/config/**'
-      - 'package.json'
-      - 'turbo.json'
-      - '.github/workflows/deploy-cloudflare.yml'
+      - "apps/web/**"
+      - "packages/emails/**"
+      - "packages/ui/**"
+      - "packages/env/**"
+      - "packages/config/**"
+      - "package.json"
+      - "turbo.json"
+      - ".github/workflows/deploy-cloudflare.yml"
 
 env:
   # Cloudflare Pagesのプロジェクト名
