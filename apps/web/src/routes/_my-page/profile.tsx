@@ -121,7 +121,7 @@ function RouteComponent() {
 		<div className="container mx-auto max-w-6xl px-4 py-8">
 			{/* ページタイトル */}
 			<div className="mb-8">
-				<h1 className="mb-2 font-bold text-3xl text-foreground">
+				<h1 className="text-foreground mb-2 text-3xl font-bold">
 					プロフィール
 				</h1>
 				<p className="text-foreground-600">

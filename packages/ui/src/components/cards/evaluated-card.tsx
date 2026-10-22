@@ -33,9 +33,9 @@ export function EvaluatedCard({
 	});
 
 	return (
-		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
+		<BaseCard className="border-divider border lg:h-full lg:max-h-[600px]">
 			<div className="p-6">
-				<h2 className="mb-4 font-medium text-lg">提出状況一覧</h2>
+				<h2 className="mb-4 text-lg font-medium">提出状況一覧</h2>
 				{isLoading ? (
 					<div className="py-4 text-center text-gray-500 dark:text-gray-400">
 						データを取得中...

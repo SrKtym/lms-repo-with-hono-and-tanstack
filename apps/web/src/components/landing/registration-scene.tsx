@@ -104,7 +104,7 @@ export function RegistrationScene() {
 		<div className="space-y-6">
 			<div className="space-y-6 p-3">
 				<div className="flex items-center justify-between">
-					<h2 className="font-bold text-gray-900 text-xl dark:text-white">
+					<h2 className="text-xl font-bold text-gray-900 dark:text-white">
 						履修登録
 					</h2>
 				</div>
@@ -114,10 +114,10 @@ export function RegistrationScene() {
 					className="relative rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800"
 				>
 					<div className="mb-2 flex items-center justify-between">
-						<h2 className="font-bold text-gray-900 text-xl dark:text-white">
+						<h2 className="text-xl font-bold text-gray-900 dark:text-white">
 							時間割
 						</h2>
-						<div className="flex items-center gap-4 text-gray-600 text-sm dark:text-gray-400">
+						<div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
 							<p>取得予定の単位数: {selectedCourse ? 2 : 0}</p>
 							<DefaultButton size="sm">
 								<Check />
@@ -155,7 +155,7 @@ export function RegistrationScene() {
 															transition={{ duration: 0.3, ease: "easeOut" }}
 															className="h-full rounded border bg-blue-500/30 p-2 text-xs"
 														>
-															<p className="truncate font-semibold text-gray-900 text-xs dark:text-white">
+															<p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
 																{selectedCourse || mockCourse.name}
 															</p>
 															<p className="mt-1 truncate text-gray-600 dark:text-gray-300">
@@ -197,16 +197,16 @@ export function RegistrationScene() {
 					)}
 
 					<div className="mt-6 space-y-3">
-						<h3 className="font-semibold text-gray-900 text-sm dark:text-white">
+						<h3 className="text-sm font-semibold text-gray-900 dark:text-white">
 							登録済み講義一覧
 						</h3>
 						<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
 							<div className="flex items-center justify-between rounded-lg bg-gray-50 p-3 dark:bg-gray-800">
 								<div className="flex-1">
-									<div className="font-medium text-gray-900 text-sm dark:text-white">
+									<div className="text-sm font-medium text-gray-900 dark:text-white">
 										{mockCourse.name}
 									</div>
-									<div className="mt-1 text-gray-600 text-xs dark:text-gray-400">
+									<div className="mt-1 text-xs text-gray-600 dark:text-gray-400">
 										{mockCourse.professor} • {mockCourse.classRoom} •{" "}
 										{mockCourse.credits}
 										単位

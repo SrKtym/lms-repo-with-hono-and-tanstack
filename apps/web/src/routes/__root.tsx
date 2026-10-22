@@ -79,13 +79,13 @@ function NotFoundComponent() {
 					<div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900">
 						<NotFoundFace className="text-yellow-600 dark:text-yellow-400" />
 					</div>
-					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
+					<h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
 						ページが見つかりません
 					</h1>
 					<p className="mb-4 text-gray-600 dark:text-gray-400">
 						申し訳ありません。指定されたページが見つかりませんでした。
 					</p>
-					<p className="mb-6 text-gray-500 text-sm dark:text-gray-400">
+					<p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
 						URLが正しいか、またはページが移動または削除されていないか確認してください。
 					</p>
 				</div>
@@ -117,14 +117,14 @@ function ErrorComponent({ error }: ErrorComponentProps) {
 							className="text-red-600 dark:text-red-400"
 						/>
 					</div>
-					<h1 className="mb-2 font-bold text-2xl text-gray-900 dark:text-white">
+					<h1 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
 						エラーが発生しました
 					</h1>
 					<p className="mb-4 text-gray-600 dark:text-gray-400">
 						申し訳ありません。予期しないエラーが発生しました。
 					</p>
 					{error && (
-						<div className="mb-6 rounded-md bg-red-50 p-3 text-red-800 text-sm dark:bg-red-900/20 dark:text-red-400">
+						<div className="mb-6 rounded-md bg-red-50 p-3 text-sm text-red-800 dark:bg-red-900/20 dark:text-red-400">
 							{error.message || "不明なエラー"}
 						</div>
 					)}

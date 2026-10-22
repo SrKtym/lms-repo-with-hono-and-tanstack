@@ -27,9 +27,9 @@ export function SocialLoginField({
 	return (
 		<>
 			<div className="grid grid-cols-3 items-center">
-				<div className="w-auto max-w-[250px] border-gray-500 border-b-1" />
+				<div className="w-auto max-w-[250px] border-b-1 border-gray-500" />
 				<p className="text-center">または</p>
-				<div className="w-auto max-w-[250px] border-gray-500 border-b-1" />
+				<div className="w-auto max-w-[250px] border-b-1 border-gray-500" />
 			</div>
 
 			<div className="flex flex-col items-center gap-4">

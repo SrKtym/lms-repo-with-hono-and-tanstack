@@ -11,9 +11,9 @@ interface CommentsCardProps {
 // コメント入力フォームをラップするカードコンポーネント
 export function CommentsCard({ comments, children }: CommentsCardProps) {
 	return (
-		<BaseCard className="border border-divider lg:h-full lg:max-h-[600px]">
+		<BaseCard className="border-divider border lg:h-full lg:max-h-[600px]">
 			<div className="space-y-6 p-2">
-				<h2 className="mb-4 font-medium text-lg">コメント</h2>
+				<h2 className="mb-4 text-lg font-medium">コメント</h2>
 				{children}
 				<div className="space-y-6 lg:max-h-[300px] lg:overflow-y-auto">
 					{comments.length > 0 ? (

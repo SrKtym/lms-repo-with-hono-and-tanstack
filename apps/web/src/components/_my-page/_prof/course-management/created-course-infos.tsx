@@ -74,9 +74,9 @@ export default function CreatedCourseInfos({
 						</CancelButton>
 					</Link>
 				</div>
-				<div className="container relative z-10 mx-auto max-w-screen-xl p-6">
+				<div className="relative z-10 container mx-auto max-w-screen-xl p-6">
 					<div className="text-white">
-						<h1 className="font-medium text-2xl md:text-3xl">
+						<h1 className="text-2xl font-medium md:text-3xl">
 							{courseWithCoverImage.name}
 						</h1>
 						<p className="mt-1 text-white/80">
@@ -87,13 +87,13 @@ export default function CreatedCourseInfos({
 			</div>
 
 			{/* Tab Navigation */}
-			<div className="border-gray-200 border-b bg-white dark:border-gray-700 dark:bg-gray-800">
+			<div className="border-b border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
 				<div className="container mx-auto max-w-screen-xl space-y-3 px-3 pt-1 pb-3">
 					<TabsForCourseInfo
 						announcementsTab={
 							<>
 								<div className="mb-6 flex items-center justify-between">
-									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
+									<h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">
 										お知らせ
 									</h2>
 									<DefaultButton
@@ -129,7 +129,7 @@ export default function CreatedCourseInfos({
 						assignmentsTab={
 							<>
 								<div className="mb-6 flex items-center justify-between">
-									<h2 className="font-medium text-gray-900 text-xl dark:text-gray-100">
+									<h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">
 										課題
 									</h2>
 									<DefaultButton onPress={() => setIsAssignmentModalOpen(true)}>
@@ -172,7 +172,7 @@ export default function CreatedCourseInfos({
 						}
 						membersTab={
 							<>
-								<h2 className="mb-6 font-medium text-gray-900 text-xl dark:text-gray-100">
+								<h2 className="mb-6 text-xl font-medium text-gray-900 dark:text-gray-100">
 									コースメンバー
 								</h2>
 								{members.length > 0 ? (

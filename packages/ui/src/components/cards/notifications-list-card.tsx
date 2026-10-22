@@ -49,9 +49,9 @@ export function NotificationsListCard({
 					<div className="flex items-center justify-between">
 						<div className="flex items-center gap-2">
 							<BellAnimation width={24} height={24} />
-							<h1 className="font-semibold text-lg">通知</h1>
+							<h1 className="text-lg font-semibold">通知</h1>
 							{unreadCount > 0 && (
-								<span className="rounded-full bg-red-500 px-2 py-1 font-medium text-white text-xs">
+								<span className="rounded-full bg-red-500 px-2 py-1 text-xs font-medium text-white">
 									{unreadCount}
 								</span>
 							)}
@@ -110,17 +110,17 @@ export function NotificationsListCard({
 												<div className="min-w-0 flex-1">
 													<div className="mb-1 flex items-center justify-between gap-2">
 														<h3
-															className={`font-medium text-gray-900 text-xs dark:text-gray-100 ${expandedId !== notification.id && "truncate"}`}
+															className={`text-xs font-medium text-gray-900 dark:text-gray-100 ${expandedId !== notification.id && "truncate"}`}
 														>
 															{notification.title}
 														</h3>
-														<p className="flex-shrink-0 text-gray-500 text-xs dark:text-gray-400">
+														<p className="flex-shrink-0 text-xs text-gray-500 dark:text-gray-400">
 															{formatTimestamp(notification.createdAt)}
 														</p>
 													</div>
 													<div className="text-left">
 														<p
-															className={`whitespace-pre-wrap text-gray-600 text-xs leading-relaxed transition-all dark:text-gray-400 ${
+															className={`text-xs leading-relaxed whitespace-pre-wrap text-gray-600 transition-all dark:text-gray-400 ${
 																expandedId === notification.id
 																	? "line-clamp-none"
 																	: "line-clamp-2"

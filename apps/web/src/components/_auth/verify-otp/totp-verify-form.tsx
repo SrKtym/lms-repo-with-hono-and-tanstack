@@ -61,7 +61,7 @@ export default function TotpVerifyForm({
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
 					認証アプリのコード
 				</h3>
-				<p className="text-gray-600 text-sm dark:text-gray-400">
+				<p className="text-sm text-gray-600 dark:text-gray-400">
 					認証アプリ（Google AuthenticatorやMicrosoft
 					Authenticatorなど）に表示されている6桁のコードを入力してください
 				</p>
@@ -90,7 +90,7 @@ export default function TotpVerifyForm({
 								<p
 									id="totpCode-error"
 									key={error?.message}
-									className="text-red-500 text-sm"
+									className="text-sm text-red-500"
 								>
 									{error?.message}
 								</p>
@@ -123,7 +123,7 @@ export default function TotpVerifyForm({
 
 			{/* ヘルプセクション */}
 			<div className="text-center">
-				<p className="text-gray-500 text-xs dark:text-gray-400">
+				<p className="text-xs text-gray-500 dark:text-gray-400">
 					コードが表示されない場合は、認証アプリの時刻を同期してください
 				</p>
 			</div>

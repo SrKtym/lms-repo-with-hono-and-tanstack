@@ -8,7 +8,7 @@ services:
     env_file:
       - ../packages/db/.env.db.test
     ports:
-      - 5433:5432  # 開発用と競合しないようにポートを変更
+      - 5433:5432 # 開発用と競合しないようにポートを変更
     volumes:
       - test_postgres_data:/var/lib/postgresql
     healthcheck:
@@ -22,7 +22,7 @@ services:
     container_name: lms-test-fake-gcs
     image: fsouza/fake-gcs-server
     ports:
-      - 4444:4443  # 開発用と競合しないようにポートを変更
+      - 4444:4443 # 開発用と競合しないようにポートを変更
       - 8001:8000
     volumes:
       - test_gcs_data:/data

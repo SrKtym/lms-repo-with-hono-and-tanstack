@@ -25,7 +25,6 @@
 - **Biome** - リンター、フォーマッター
 
 使用技術の詳細は以下のページを参照してください。
-
 - [使用技術の詳細](https://docs.google.com/spreadsheets/d/1ulwv8rPPF7eSvMoAQ4dYs8eY2HbrgR318JS1peeHCcM/edit?gid=0#gid=0)
 
 ## システム構成図
@@ -74,5 +73,3 @@ bun x auth@latest generate
 ```
 
 開発者が自らテーブルの設計をする必要はありません。以下に「better_auth」スキーマのER図を示します。
-
-

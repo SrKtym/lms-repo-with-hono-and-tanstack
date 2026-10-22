@@ -17,7 +17,7 @@ export function AssignmentDetailCard({
 	const Icon = getIconByFormat(targetAssignment?.format);
 
 	return (
-		<BaseCard className="border border-divider">
+		<BaseCard className="border-divider border">
 			<div className="p-6">
 				<div className="flex items-start justify-between">
 					<div className="flex gap-4">
@@ -27,7 +27,7 @@ export function AssignmentDetailCard({
 							</div>
 						</div>
 						<div className="space-y-2">
-							<h1 className="font-medium text-2xl">
+							<h1 className="text-2xl font-medium">
 								{targetAssignment?.title}
 							</h1>
 							<div className="mt-2">
@@ -48,7 +48,7 @@ export function AssignmentDetailCard({
 							<div className="mb-1 flex items-center gap-2">
 								<span className="font-medium">期限</span>
 							</div>
-							<p className="ml-6 text-default-600">
+							<p className="text-default-600 ml-6">
 								{targetAssignment?.dueDate.toLocaleDateString()}
 							</p>
 						</div>
@@ -57,7 +57,7 @@ export function AssignmentDetailCard({
 							<div className="mb-2 flex items-center gap-2">
 								<span className="font-medium">説明</span>
 							</div>
-							<p className="ml-6 text-default-600 leading-relaxed">
+							<p className="text-default-600 ml-6 leading-relaxed">
 								{targetAssignment?.description}
 							</p>
 						</div>
@@ -66,7 +66,7 @@ export function AssignmentDetailCard({
 							<div className="mb-2 flex items-center gap-2">
 								<span className="font-medium">添付ファイル</span>
 							</div>
-							<p className="ml-6 text-default-600">
+							<p className="text-default-600 ml-6">
 								{/* ここに添付ファイルをダウンロードする機能を実装 */}
 								なし
 							</p>
@@ -90,7 +90,7 @@ export function AssignmentDetailCard({
 									<div className="mb-2 flex items-center gap-2">
 										<span className="font-medium">採点の結果</span>
 									</div>
-									<p className="ml-6 text-default-600">
+									<p className="text-default-600 ml-6">
 										{score !== null
 											? `${score}/${targetAssignment?.points} 点`
 											: "まだ採点されていません"}

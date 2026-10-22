@@ -76,14 +76,14 @@ export function CurrentTimeIndicator({
 			animate={{ opacity: 1, top: `${currentPosition - elementHeight / 2}px` }}
 			transition={{ type: "spring", stiffness: 80, damping: 30 }}
 		>
-			<span className="font-medium text-primary text-xs">
+			<span className="text-primary text-xs font-medium">
 				{new Date().toLocaleTimeString("default", {
 					hour: "2-digit",
 					minute: "2-digit",
 				})}
 			</span>
-			<div className="h-[2px] flex-grow bg-primary/30" />
-			<div className="h-3 w-3 animate-pulse rounded-full bg-primary" />
+			<div className="bg-primary/30 h-[2px] flex-grow" />
+			<div className="bg-primary h-3 w-3 animate-pulse rounded-full" />
 		</m.div>
 	);
 }
