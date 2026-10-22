@@ -4,13 +4,14 @@ import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 import { Image } from "../image";
 
-// Type definitions
 interface CourseCardProps {
-	course: FetchRegisteredCoursesReturnType[number] & { coverImage?: string };
+	course: FetchRegisteredCoursesReturnType[number] & {
+		coverImage?: string;
+	};
 	LinkComponent?: React.ReactNode;
 }
 
-// CourseCard component
+// 講義情報をカバー画像付きで表示するカードコンポーネント
 export function CourseCard({ course, LinkComponent }: CourseCardProps) {
 	return (
 		<BaseCard key={course.id} className="border border-divider px-0 pt-0">
