@@ -5,10 +5,10 @@ import * as schema from "./schema";
 
 let databaseUrl: string;
 
-if (env.NODE_ENV === "development" && env.DATABASE_URL_FOR_DOCKER) {
+if (env.IS_SEEDING === "true") {
+	databaseUrl = env.DATABASE_URL;
+} else if (env.NODE_ENV === "development" && env.DATABASE_URL_FOR_DOCKER) {
 	databaseUrl = env.DATABASE_URL_FOR_DOCKER;
-	// // seed用のデータベースURL
-	// databaseUrl = env.DATABASE_URL;
 } else {
 	databaseUrl = env.DATABASE_URL;
 }
