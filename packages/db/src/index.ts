@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 import { env } from "@lms-repo/env/server";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
@@ -17,9 +19,10 @@ if (env.IS_SEEDING === "true") {
 let caContent: string | undefined;
 if (env.NODE_ENV === "production" && databaseUrl.includes("supabase")) {
 	try {
-		const { file } = await import("bun");
-		const caFile = file("../certs/prod-ca-2021.crt");
-		caContent = await caFile.text();
+		const caPath = fileURLToPath(
+			new URL("../certs/prod-ca-2021.crt", import.meta.url),
+		);
+		caContent = readFileSync(caPath, "utf-8");
 	} catch {
 		console.warn("Certificate file not found, skipping CA certificate");
 	}
