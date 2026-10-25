@@ -7,7 +7,7 @@ import { DefaultTooltip } from "@lms-repo/ui/components/tooltip";
 import type { Event } from "@lms-repo/ui/hooks/use-course-events";
 import { useIsHoverCapable } from "@lms-repo/ui/hooks/use-is-hover-capable";
 import { useLongPress } from "@lms-repo/ui/hooks/use-long-press";
-import { DAYS } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG, DAYS } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { CurrentTimeIndicator } from "./current-time-indicator";
@@ -107,15 +107,15 @@ function WeekEventItem({
 				)}
 			</div>
 			<div className="text-xs opacity-90">
-				{event.startTime.toLocaleTimeString("ja-JP", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})}{" "}
+				{event.startTime.toLocaleTimeString(
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+				)}{" "}
 				-{" "}
-				{event.endTime.toLocaleTimeString("ja-JP", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})}
+				{event.endTime.toLocaleTimeString(
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+				)}
 			</div>
 			{event.description && (
 				<div className="mt-1 line-clamp-2 text-xs opacity-90">

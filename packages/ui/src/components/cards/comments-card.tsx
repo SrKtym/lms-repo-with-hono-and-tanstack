@@ -1,5 +1,5 @@
 import type { FetchCommentsWithAssignmentReturnType } from "@lms-repo/db/utils/query/comments";
-import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 
@@ -30,8 +30,8 @@ export function CommentsCard({ comments, children }: CommentsCardProps) {
 										<p className="font-medium">{comment.createdBy}</p>
 										<p className="text-default-500 text-xs">
 											{comment.createdAt.toLocaleString(
-												"default",
-												DATE_FORMAT_CONFIG.DEFAULT,
+												DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+												DATETIME_FORMAT_CONFIG.DEFAULT.options,
 											)}
 										</p>
 									</div>

@@ -2,7 +2,7 @@ import { AssignmentsProgressCard } from "@lms-repo/ui/components/cards/assignmen
 import { DailySchedulesCard } from "@lms-repo/ui/components/cards/daily-schedules-card";
 import { NotificationsListCard } from "@lms-repo/ui/components/cards/notifications-list-card";
 import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-assignments-card";
-import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {
@@ -105,7 +105,10 @@ function RouteComponent() {
 					ダッシュボード
 				</h1>
 				<p className="text-gray-600 dark:text-gray-400">
-					{now.toLocaleDateString("default", DATE_FORMAT_CONFIG.DASHBOARD)}
+					{now.toLocaleDateString(
+						DATETIME_FORMAT_CONFIG.FULL_DATE.defaultLocale,
+						DATETIME_FORMAT_CONFIG.FULL_DATE.options,
+					)}
 				</p>
 			</div>
 
