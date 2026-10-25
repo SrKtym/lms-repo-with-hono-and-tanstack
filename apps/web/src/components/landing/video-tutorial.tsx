@@ -26,6 +26,13 @@ export function VideoTutorial() {
 			description: "課題の詳細と提出エリア、コメントエリアを表示します。",
 		},
 	];
+	const sceneVariants = {
+		initial: { opacity: 0 },
+		animate: { opacity: 1 },
+		exit: { opacity: 0 },
+		transition: { duration: 0.35 },
+		className: "absolute inset-0",
+	};
 	const [activeStep, setActiveStep] = useState<0 | 1 | 2>(0);
 	const [path, setPath] = useState<string>("/register-courses");
 
@@ -106,42 +113,21 @@ export function VideoTutorial() {
 									{/* 3つのアニメーションが順番に表示される */}
 									<AnimatePresence mode="wait">
 										{activeStep === 0 && (
-											<m.div
-												key="registration"
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												exit={{ opacity: 0 }}
-												transition={{ duration: 0.35 }}
-												className="absolute inset-0"
-											>
+											<m.div key="registration" {...sceneVariants}>
 												<MockHeader />
 												<RegistrationScene />
 											</m.div>
 										)}
 
 										{activeStep === 1 && (
-											<m.div
-												key="schedule"
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												exit={{ opacity: 0 }}
-												transition={{ duration: 0.35 }}
-												className="absolute inset-0"
-											>
+											<m.div key="schedule" {...sceneVariants}>
 												<MockHeader />
 												<ScheduleScene />
 											</m.div>
 										)}
 
 										{activeStep === 2 && (
-											<m.div
-												key="assignment"
-												initial={{ opacity: 0 }}
-												animate={{ opacity: 1 }}
-												exit={{ opacity: 0 }}
-												transition={{ duration: 0.35 }}
-												className="absolute inset-0"
-											>
+											<m.div key="assignment" {...sceneVariants}>
 												<MockHeader />
 												<AssignmentScene />
 											</m.div>

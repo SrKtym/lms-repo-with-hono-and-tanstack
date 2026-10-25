@@ -1,6 +1,6 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
-import { DATE_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { FileQuestion } from "../../assets/icons/file-question";
 import { FileText } from "../../assets/icons/file-text";
 import { Info } from "../../assets/icons/info";
@@ -65,8 +65,8 @@ export function AnnouncementCard({
 							<p className="text-sm text-gray-500 dark:text-gray-400">
 								{announcement.createdAt
 									? announcement.createdAt.toLocaleDateString(
-											"default",
-											DATE_FORMAT_CONFIG.DEFAULT,
+											DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+											DATETIME_FORMAT_CONFIG.DEFAULT.options,
 										)
 									: "処理中…"}
 							</p>

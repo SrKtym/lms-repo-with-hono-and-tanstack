@@ -13,9 +13,26 @@ if (env.IS_SEEDING === "true") {
 	databaseUrl = env.DATABASE_URL;
 }
 
+// 証明書ファイルの読み込み（本番環境のみ）
+let caContent: string | undefined;
+if (env.NODE_ENV === "production" && databaseUrl.includes("supabase")) {
+	try {
+		const { file } = await import("bun");
+		const caFile = file("../certs/prod-ca-2021.crt");
+		caContent = await caFile.text();
+	} catch {
+		console.warn("Certificate file not found, skipping CA certificate");
+	}
+}
+
 const pool = new Pool({
 	connectionString: databaseUrl,
-	ssl: databaseUrl.includes("supabase") && { rejectUnauthorized: true },
+	ssl: databaseUrl.includes("supabase")
+		? {
+				rejectUnauthorized: true,
+				...(caContent && { ca: caContent }),
+			}
+		: undefined,
 });
 
 export const db = drizzle(pool, { schema });

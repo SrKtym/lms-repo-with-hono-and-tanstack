@@ -50,28 +50,12 @@ export function FileUploaderCard({
 		return `${Number.parseFloat((bytes / k ** i).toFixed(2))} ${sizes[i]}`;
 	};
 
-	// ファイル選択時の処理
-	const handleFileSelect = useCallback(
-		(selectedFiles: FileList | null) => {
-			if (!selectedFiles || disabled) return;
-
-			const fileArray = Array.from(selectedFiles).slice(
-				0,
-				maxFiles - uploadedFiles.length,
-			);
-
-			const newFiles: UploadedFile[] = fileArray.map((file) => ({
-				id: Math.random().toString(36).substring(2, 9),
-				name: file.name,
-				size: file.size,
-				type: file.type,
-			}));
-
-			onFilesChange([...uploadedFiles, ...newFiles]);
-			onFileSelect?.(fileArray);
-		},
-		[uploadedFiles, disabled, onFilesChange, onFileSelect],
-	);
+	// クリック時の処理
+	const handleClick = () => {
+		if (!disabled) {
+			document.getElementById("file-input")?.click();
+		}
+	};
 
 	// ドラッグオーバー時の処理
 	const handleDragOver = useCallback(
@@ -89,6 +73,31 @@ export function FileUploaderCard({
 		e.preventDefault();
 		setIsDragOver(false);
 	}, []);
+
+	// ファイル選択時の処理
+	const handleFileSelect = useCallback(
+		(selectedFiles: FileList | null) => {
+			if (!selectedFiles || disabled) {
+				return;
+			}
+
+			const fileArray = Array.from(selectedFiles).slice(
+				0,
+				maxFiles - uploadedFiles.length,
+			);
+
+			const newFiles: UploadedFile[] = fileArray.map((file) => ({
+				id: `temp-${Math.random().toString(36).substring(2, 9)}`,
+				name: file.name,
+				size: file.size,
+				type: file.type,
+			}));
+
+			onFilesChange([...uploadedFiles, ...newFiles]);
+			onFileSelect?.(fileArray);
+		},
+		[uploadedFiles, disabled, onFilesChange, onFileSelect],
+	);
 
 	// ファイルドロップ時の処理
 	const handleDrop = useCallback(
@@ -127,12 +136,10 @@ export function FileUploaderCard({
 						? "border-blue-500 bg-blue-50 dark:bg-blue-950"
 						: "border-gray-300 hover:border-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
 				} ${disabled && "cursor-not-allowed opacity-50"}`}
+				onClick={handleClick}
 				onDragOver={handleDragOver}
 				onDragLeave={handleDragLeave}
 				onDrop={handleDrop}
-				onClick={() =>
-					!disabled && document.getElementById("file-input")?.click()
-				}
 			>
 				<BaseCard className="pointer-events-none border-0">
 					<Input

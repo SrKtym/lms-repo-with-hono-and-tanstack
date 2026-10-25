@@ -4,7 +4,10 @@ import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation"
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
 import * as m from "motion/react-m";
 import { memo } from "react";
-import { isProgressingOrUpcoming } from "../../lib/utils";
+import {
+	DATETIME_FORMAT_CONFIG,
+	isProgressingOrUpcoming,
+} from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 
 function DailySchedulesCardComponent({
@@ -80,15 +83,15 @@ function DailySchedulesCardComponent({
 								}
 								`}
 							>
-								{item.start.toLocaleTimeString("default", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}{" "}
+								{item.start.toLocaleTimeString(
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+								)}{" "}
 								-{" "}
-								{item.end.toLocaleTimeString("default", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}
+								{item.end.toLocaleTimeString(
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+								)}
 							</span>
 						</div>
 						<h3 className="mb-1 font-semibold text-gray-900 dark:text-gray-100">
@@ -151,15 +154,15 @@ function DailySchedulesCardComponent({
 								}
 								`}
 							>
-								{item.start.toLocaleTimeString("default", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}{" "}
+								{item.start.toLocaleTimeString(
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+								)}{" "}
 								-{" "}
-								{item.end.toLocaleTimeString("default", {
-									hour: "2-digit",
-									minute: "2-digit",
-								})}
+								{item.end.toLocaleTimeString(
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+									DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+								)}
 							</span>
 						</div>
 						<h3 className="mb-1 font-semibold text-gray-900 dark:text-gray-100">
@@ -192,19 +195,9 @@ function DailySchedulesCardComponent({
 			<div className="relative z-10 flex flex-col">
 				<div className="mb-6 flex items-center gap-3">
 					<CalendarAnimation width={24} height={24} />
-					<div>
-						<h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-							本日の予定
-						</h1>
-						<p className="text-sm text-gray-600 dark:text-gray-400">
-							{new Date().toLocaleDateString("ja-JP", {
-								weekday: "long",
-								year: "numeric",
-								month: "long",
-								day: "numeric",
-							})}
-						</p>
-					</div>
+					<h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
+						本日の予定
+					</h1>
 				</div>
 
 				{todayCourse.length === 0 && todaySchedule.length === 0 ? (

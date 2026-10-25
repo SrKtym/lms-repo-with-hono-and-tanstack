@@ -1,6 +1,6 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import {
-	DATE_FORMAT_CONFIG,
+	DATETIME_FORMAT_CONFIG,
 	getFileColor,
 	getIconByFormat,
 } from "../../lib/utils";
@@ -40,8 +40,8 @@ export function AssignmentCard({
 								<span>
 									期限:{" "}
 									{assignment.dueDate.toLocaleDateString(
-										"default",
-										DATE_FORMAT_CONFIG.DEFAULT,
+										DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+										DATETIME_FORMAT_CONFIG.DEFAULT.options,
 									)}
 								</span>
 								{isOverdue && (

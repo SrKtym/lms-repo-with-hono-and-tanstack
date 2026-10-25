@@ -29,25 +29,55 @@ export const viewLabels = ["月", "週", "日"] as const;
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
 
-// 日付フォーマット設定
-export const DATE_FORMAT_CONFIG: Record<string, Intl.DateTimeFormatOptions> = {
+type DateTimeFormatConfigKey =
+	| "DEFAULT"
+	| "FULL_DATE"
+	| "DIGIT_TIME"
+	| "FULL_DATETIME";
+
+type DateTimeFormatConfig = {
+	options: Intl.DateTimeFormatOptions;
+	defaultLocale: string;
+};
+
+// 日時フォーマット設定
+export const DATETIME_FORMAT_CONFIG: Record<
+	DateTimeFormatConfigKey,
+	DateTimeFormatConfig
+> = {
 	DEFAULT: {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
+		options: {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+		},
+		defaultLocale: "ja-JP",
 	},
-	DASHBOARD: {
-		weekday: "long",
-		year: "numeric",
-		month: "long",
-		day: "numeric",
+	FULL_DATE: {
+		options: {
+			weekday: "long",
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		},
+		defaultLocale: "ja-JP",
 	},
-	TEXT_SUBMISSION: {
-		year: "numeric",
-		month: "short",
-		day: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
+	DIGIT_TIME: {
+		options: {
+			hour: "2-digit",
+			minute: "2-digit",
+		},
+		defaultLocale: "ja-JP",
+	},
+	FULL_DATETIME: {
+		options: {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		},
+		defaultLocale: "ja-JP",
 	},
 };
 
@@ -157,7 +187,9 @@ export function getDepartmentName() {
 
 // 同じ日かどうかを判定
 export function isSameDay(date1: Date, date2: Date) {
-	if (!date1 || !date2) return false;
+	if (!date1 || !date2) {
+		return false;
+	}
 	return (
 		date1.getFullYear() === date2.getFullYear() &&
 		date1.getMonth() === date2.getMonth() &&
