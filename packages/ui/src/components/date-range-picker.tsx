@@ -8,7 +8,7 @@ import {
 	type TimeValue,
 } from "@heroui/react";
 import {
-	DATE_FORMAT_CONFIG,
+	DATETIME_FORMAT_CONFIG,
 	DateFormatter,
 	type DateValue,
 	getLocalTimeZone,
@@ -29,8 +29,8 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
 	const localTimeZone = getLocalTimeZone();
 	const dateFormatter = new DateFormatter(
-		"default",
-		DATE_FORMAT_CONFIG.DEFAULT,
+		DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+		DATETIME_FORMAT_CONFIG.DEFAULT.options,
 	);
 
 	const formatDate = (date: { start: DateValue; end: DateValue }) => {

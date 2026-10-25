@@ -1,3 +1,4 @@
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
 
@@ -77,10 +78,10 @@ export function CurrentTimeIndicator({
 			transition={{ type: "spring", stiffness: 80, damping: 30 }}
 		>
 			<span className="text-primary text-xs font-medium">
-				{new Date().toLocaleTimeString("default", {
-					hour: "2-digit",
-					minute: "2-digit",
-				})}
+				{new Date().toLocaleTimeString(
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.defaultLocale,
+					DATETIME_FORMAT_CONFIG.DIGIT_TIME.options,
+				)}
 			</span>
 			<div className="bg-primary/30 h-[2px] flex-grow" />
 			<div className="bg-primary h-3 w-3 animate-pulse rounded-full" />
