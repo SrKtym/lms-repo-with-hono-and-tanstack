@@ -81,14 +81,19 @@ export function CreateFileSubmissionForm({
 			return;
 		}
 
-		// 新規ファイルのみをフィルタリング
+		// 新規ファイルのみをフィルタリング（tempIDで識別）
 		const newFiles = files.filter(
-			(file) => !uploadedFiles.some((f) => f.name === file.name),
+			(file) =>
+				file.id.startsWith("temp-") &&
+				!uploadedFiles.some((f) => f.name === file.name),
 		);
 
 		if (newFiles.length === 0) {
 			return;
 		}
+
+		// 一時ファイルを先に追加（ローディング表示用）
+		setUploadedFiles((prev) => [...prev, ...newFiles]);
 
 		// UploadedFileからFileオブジェクトを再構築
 		const fileObjects = newFiles.map((file) => {
@@ -106,15 +111,54 @@ export function CreateFileSubmissionForm({
 				toast.danger("ファイルの提出に失敗しました", {
 					description: res.error,
 				});
-			} else {
-				// アップロード完了したファイル名を記録
-				setUploadedFiles((prev) => [...prev, ...newFiles]);
+				// アップロード失敗時は一時ファイルを削除
+				setUploadedFiles((prev) =>
+					prev.filter((f) => !newFiles.some((nf) => nf.id === f.id)),
+				);
+			} else if ("results" in res) {
+				// 成功したファイルのみをフィルタリング
+				const successfulResults = res.results.filter(
+					(result) => result !== null && "id" in result,
+				);
+
+				// tempIDをサーバーIDで置換
+				const tempToServerIdMap = new Map<string, string>();
+				successfulResults.forEach((serverFile, index) => {
+					const tempId = newFiles[index]?.id;
+					if (tempId) {
+						tempToServerIdMap.set(tempId, serverFile.id);
+					}
+				});
+
+				setUploadedFiles((prev) =>
+					prev.map((file) => {
+						const serverId = tempToServerIdMap.get(file.id);
+						if (serverId) {
+							const serverFile = successfulResults.find(
+								(sf) => sf.id === serverId,
+							);
+							if (serverFile) {
+								return {
+									id: serverFile.id,
+									name: serverFile.originalName,
+									size: serverFile.fileSize,
+									type: serverFile.mimeType,
+								};
+							}
+						}
+						return file;
+					}),
+				);
 			}
 		} catch {
 			toast.danger("ファイルの提出に失敗しました", {
 				description:
 					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
 			});
+			// エラー時は一時ファイルを削除
+			setUploadedFiles((prev) =>
+				prev.filter((f) => !newFiles.some((nf) => nf.id === f.id)),
+			);
 		}
 	};
 
