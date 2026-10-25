@@ -1,5 +1,3 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { env } from "@lms-repo/env/server";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
@@ -15,16 +13,21 @@ if (env.IS_SEEDING === "true") {
 	databaseUrl = env.DATABASE_URL;
 }
 
-// 証明書ファイルの読み込み（本番環境のみ）
+// 証明書ファイルの読み込み（base64エンコード）
 let caContent: string | undefined;
 if (env.NODE_ENV === "production" && databaseUrl.includes("supabase")) {
-	try {
-		const caPath = fileURLToPath(
-			new URL("../certs/prod-ca-2021.crt", import.meta.url),
-		);
-		caContent = readFileSync(caPath, "utf-8");
-	} catch {
-		console.warn("Certificate file not found, skipping CA certificate");
+	const caCertBase64 = process.env.SUPABASE_CA_CERT_B64;
+
+	if (!caCertBase64) {
+		console.warn("SUPABASE_CA_CERT_B64 is not set, using default SSL settings");
+	} else {
+		try {
+			caContent = Buffer.from(caCertBase64, "base64").toString("utf8");
+		} catch {
+			console.warn(
+				"Failed to decode SUPABASE_CA_CERT_B64, using default SSL settings",
+			);
+		}
 	}
 }
 
