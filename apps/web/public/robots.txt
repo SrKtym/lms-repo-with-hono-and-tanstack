@@ -1,0 +1,15 @@
+# 全てのクローラーに適用
+User-agent: *
+
+# 許可するパス
+Allow: /
+
+# ブロックするパス
+Disallow: /profile
+Disallow: /dashboard
+Disallow: /course-list
+Disallow: /schedules
+Disallow: /register-courses
+Disallow: /notifications
+Disallow: /course-management
+Disallow: /admin
