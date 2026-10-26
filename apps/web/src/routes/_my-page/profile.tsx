@@ -104,7 +104,7 @@ function RouteComponent() {
 			showToast(error);
 		} else {
 			toast.success(
-				`${user.name}に確認メールを送信しました。メールに添付されたリンクからアカウント削除を完了してください。`,
+				`${user.email}に確認メールを送信しました。メールに添付されたリンクからアカウント削除を完了してください。`,
 			);
 		}
 	};
