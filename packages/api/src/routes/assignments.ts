@@ -58,7 +58,7 @@ export const assignmentsRouteForProf = new Hono<{
 				react: NewAssignmentEmail({
 					assignmentTitle: title,
 					assignmentDescription: description,
-					dueDate: dueDate.toLocaleDateString("default", dateOptions),
+					dueDate: dueDate.toLocaleDateString("ja-JP", dateOptions),
 					viewUrl,
 				}),
 			}));
