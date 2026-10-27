@@ -50,9 +50,10 @@ export const assignmentsRouteForProf = new Hono<{
 
 			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-			await resend.emails.send({
+			// バッチでメールを送信（全員に同じ内容）
+			const batchEmails = emails.map((email) => ({
 				from: env.EMAIL_ADDRESS,
-				to: emails,
+				to: email,
 				subject: "新しい課題",
 				react: NewAssignmentEmail({
 					assignmentTitle: title,
@@ -60,7 +61,9 @@ export const assignmentsRouteForProf = new Hono<{
 					dueDate: dueDate.toLocaleDateString("default", dateOptions),
 					viewUrl,
 				}),
-			});
+			}));
+
+			await resend.batch.send(batchEmails);
 		}
 
 		return c.json({ message: "課題を作成しました" }, 201);
