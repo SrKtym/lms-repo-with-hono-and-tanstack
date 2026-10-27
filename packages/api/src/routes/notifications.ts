@@ -110,15 +110,17 @@ export const notificationsRouteForCommon = new Hono()
 			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
 			// バッチでメールを送信（全員に同じ内容）
-			await resend.emails.send({
+			const batchEmails = emails.map((email) => ({
 				from: env.EMAIL_ADDRESS,
-				to: emails,
+				to: email,
 				subject: "リマインダー通知",
 				react: AssignmentReminderEmail({
 					assignmentsDetail,
 					viewUrl,
 				}),
-			});
+			}));
+
+			await resend.batch.send(batchEmails);
 		}
 
 		return c.json({ message: "リマインダーを作成しました" }, 201);
