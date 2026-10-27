@@ -39,16 +39,19 @@ export const announcementsRouteForProf = new Hono<{
 
 			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-			await resend.emails.send({
+			// バッチでメールを送信（全員に同じ内容）
+			const batchEmails = emails.map((email) => ({
 				from: env.EMAIL_ADDRESS,
-				to: emails,
+				to: email,
 				subject: "新しいお知らせ",
 				react: NewAnnouncementEmail({
 					announcementTitle: title,
 					announcementContent: description,
 					viewUrl,
 				}),
-			});
+			}));
+
+			await resend.batch.send(batchEmails);
 		}
 
 		return c.json({ message: "アナウンスメントを作成しました" }, 201);
