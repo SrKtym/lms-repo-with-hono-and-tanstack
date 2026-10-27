@@ -105,7 +105,7 @@ export const notificationsRouteForCommon = new Hono()
 			const assignmentsDetail = reminders.map((reminder) => ({
 				title: reminder.title,
 				description: reminder.description,
-				dueDate: reminder.dueDate.toLocaleDateString("default", dateOptions),
+				dueDate: reminder.dueDate.toLocaleDateString("ja-JP", dateOptions),
 			}));
 			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
