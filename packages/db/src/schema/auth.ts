@@ -1,5 +1,7 @@
+import { sql } from "drizzle-orm";
 import {
 	boolean,
+	check,
 	index,
 	integer,
 	pgSchema,
@@ -10,28 +12,39 @@ import {
 // スキーマの定義
 export const betterAuth = pgSchema("better_auth");
 
+const roles = ["student", "professor", "admin"] as const;
+
 // ユーザー
-export const user = betterAuth.table("user", {
-	id: text("id")
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	name: text("name").notNull(),
-	email: text("email").notNull().unique(),
-	emailVerified: boolean("email_verified").default(false).notNull(),
-	image: text("image"),
-	createdAt: timestamp("created_at").defaultNow().notNull(),
-	updatedAt: timestamp("updated_at")
-		.defaultNow()
-		.$onUpdate(() => /* @__PURE__ */ new Date())
-		.notNull(),
-	username: text("username").unique(),
-	displayUsername: text("display_username"),
-	role: text("role"),
-	banned: boolean("banned"),
-	banReason: text("ban_reason"),
-	banExpires: timestamp("ban_expires"),
-	twoFactorEnabled: boolean("two_factor_enabled"),
-});
+export const user = betterAuth.table(
+	"user",
+	{
+		id: text("id")
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		name: text("name").notNull(),
+		email: text("email").notNull().unique(),
+		emailVerified: boolean("email_verified").default(false).notNull(),
+		image: text("image"),
+		createdAt: timestamp("created_at").defaultNow().notNull(),
+		updatedAt: timestamp("updated_at")
+			.defaultNow()
+			.$onUpdate(() => /* @__PURE__ */ new Date())
+			.notNull(),
+		username: text("username").unique(),
+		displayUsername: text("display_username"),
+		role: text("role"),
+		banned: boolean("banned"),
+		banReason: text("ban_reason"),
+		banExpires: timestamp("ban_expires"),
+		twoFactorEnabled: boolean("two_factor_enabled"),
+	},
+	(t) => [
+		check(
+			"role_check",
+			sql`${t.role} IN (${sql.raw(roles.map((r) => `'${r}'`).join(", "))})`,
+		),
+	],
+);
 
 // セッション
 export const session = betterAuth.table(
