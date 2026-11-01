@@ -51,7 +51,7 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 						<div className={style}>
 							<span className="font-medium">属性:</span>
 							<span>
-								{isStudent ? "学生" : isProfessor ? "教授" : "一般ユーザー"}
+								{isStudent ? "学生" : isProfessor ? "教授" : "管理者"}
 							</span>
 						</div>
 

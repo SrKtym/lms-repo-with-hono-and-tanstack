@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_my-page/_prof")({
 		const { role } = context;
 		if (role === "student") {
 			redirect({
-				to: "/",
+				to: "/dashboard",
 				throw: true,
 			});
 		}

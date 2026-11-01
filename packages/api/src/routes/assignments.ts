@@ -39,32 +39,30 @@ export const assignmentsRouteForProf = new Hono<{
 			return c.json(result);
 		}
 
-		if (result) {
-			const dateOptions: Intl.DateTimeFormatOptions = {
-				year: "numeric",
-				month: "short",
-				day: "numeric",
-			};
+		const dateOptions: Intl.DateTimeFormatOptions = {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+		};
 
-			const { emails, title, description, dueDate } = result;
+		const { emails, title, description, dueDate } = result;
 
-			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
+		const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-			// バッチでメールを送信（全員に同じ内容）
-			const batchEmails = emails.map((email) => ({
-				from: env.EMAIL_ADDRESS,
-				to: email,
-				subject: "新しい課題",
-				react: NewAssignmentEmail({
-					assignmentTitle: title,
-					assignmentDescription: description,
-					dueDate: dueDate.toLocaleDateString("ja-JP", dateOptions),
-					viewUrl,
-				}),
-			}));
+		// バッチでメールを送信（全員に同じ内容）
+		const batchEmails = emails.map((email) => ({
+			from: env.EMAIL_ADDRESS,
+			to: email,
+			subject: "新しい課題",
+			react: NewAssignmentEmail({
+				assignmentTitle: title,
+				assignmentDescription: description,
+				dueDate: dueDate.toLocaleDateString("ja-JP", dateOptions),
+				viewUrl,
+			}),
+		}));
 
-			await resend.batch.send(batchEmails);
-		}
+		await resend.batch.send(batchEmails);
 
 		return c.json({ message: "課題を作成しました" }, 201);
 	});

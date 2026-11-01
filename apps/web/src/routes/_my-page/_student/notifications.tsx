@@ -87,8 +87,12 @@ function RouteComponent() {
 
 	// フィルター適用
 	const filteredNotifications = notifications.filter((notification) => {
-		if (filter === "unread") return !notification.isRead;
-		if (filter === "read") return notification.isRead;
+		if (filter === "read") {
+			return notification.isRead;
+		}
+		if (filter === "unread") {
+			return !notification.isRead;
+		}
 		return true;
 	});
 
@@ -124,7 +128,9 @@ function RouteComponent() {
 
 	// 表示件数変更時の処理
 	const handleItemsPerPageChange = (value: string | null) => {
-		if (!value) return;
+		if (!value) {
+			return;
+		}
 		const newLimit = Number(value);
 		const newOffset = 0; // Reset to first page when changing items per page
 		setSelectedItemsPerPage(value);

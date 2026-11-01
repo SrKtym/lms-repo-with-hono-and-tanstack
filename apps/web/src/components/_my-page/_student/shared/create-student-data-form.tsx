@@ -78,6 +78,7 @@ export function CreateStudentDataForm() {
 								},
 								items: departments,
 								ariaLabel: "select department",
+								isRequired: true,
 							}}
 							labelProps={{
 								htmlFor: field.name,

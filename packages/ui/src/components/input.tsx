@@ -36,7 +36,9 @@ export function InputForForm({
 			{datePickerProps && <DatePicker {...datePickerProps} />}
 			{dateRangePickerProps && <DateRangePicker {...dateRangePickerProps} />}
 			{selectProps && <DefaultSelect {...selectProps} />}
-			{!datePickerProps && !dateRangePickerProps && <FieldError />}
+			{!datePickerProps && !dateRangePickerProps && !selectProps && (
+				<FieldError />
+			)}
 		</TextField>
 	);
 }
