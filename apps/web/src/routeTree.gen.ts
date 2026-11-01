@@ -22,6 +22,7 @@ import { Route as AuthRequestResetPasswordRouteImport } from './routes/_auth/req
 import { Route as AuthAddPasskeyRouteImport } from './routes/_auth/add-passkey'
 import { Route as MyPageStudentRouteRouteImport } from './routes/_my-page/_student/route'
 import { Route as MyPageProfRouteRouteImport } from './routes/_my-page/_prof/route'
+import { Route as MyPageAdminIndexRouteImport } from './routes/_my-page/admin/index'
 import { Route as MyPageStudentSchedulesRouteImport } from './routes/_my-page/_student/schedules'
 import { Route as MyPageStudentRegisterCoursesRouteImport } from './routes/_my-page/_student/register-courses'
 import { Route as MyPageStudentNotificationsRouteImport } from './routes/_my-page/_student/notifications'
@@ -91,6 +92,11 @@ const MyPageProfRouteRoute = MyPageProfRouteRouteImport.update({
   id: '/_prof',
   getParentRoute: () => MyPageRouteRoute,
 } as any)
+const MyPageAdminIndexRoute = MyPageAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => MyPageRouteRoute,
+} as any)
 const MyPageStudentSchedulesRoute = MyPageStudentSchedulesRouteImport.update({
   id: '/schedules',
   path: '/schedules',
@@ -141,6 +147,7 @@ export interface FileRoutesByFullPath {
   '/notifications': typeof MyPageStudentNotificationsRoute
   '/register-courses': typeof MyPageStudentRegisterCoursesRoute
   '/schedules': typeof MyPageStudentSchedulesRoute
+  '/admin/': typeof MyPageAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -158,6 +165,7 @@ export interface FileRoutesByTo {
   '/notifications': typeof MyPageStudentNotificationsRoute
   '/register-courses': typeof MyPageStudentRegisterCoursesRoute
   '/schedules': typeof MyPageStudentSchedulesRoute
+  '/admin': typeof MyPageAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -180,6 +188,7 @@ export interface FileRoutesById {
   '/_my-page/_student/notifications': typeof MyPageStudentNotificationsRoute
   '/_my-page/_student/register-courses': typeof MyPageStudentRegisterCoursesRoute
   '/_my-page/_student/schedules': typeof MyPageStudentSchedulesRoute
+  '/_my-page/admin/': typeof MyPageAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/register-courses'
     | '/schedules'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -216,6 +226,7 @@ export interface FileRouteTypes {
     | '/notifications'
     | '/register-courses'
     | '/schedules'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -237,6 +248,7 @@ export interface FileRouteTypes {
     | '/_my-page/_student/notifications'
     | '/_my-page/_student/register-courses'
     | '/_my-page/_student/schedules'
+    | '/_my-page/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -336,6 +348,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof MyPageProfRouteRouteImport
+      parentRoute: typeof MyPageRouteRoute
+    }
+    '/_my-page/admin/': {
+      id: '/_my-page/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof MyPageAdminIndexRouteImport
       parentRoute: typeof MyPageRouteRoute
     }
     '/_my-page/_student/schedules': {
@@ -442,12 +461,14 @@ interface MyPageRouteRouteChildren {
   MyPageProfRouteRoute: typeof MyPageProfRouteRouteWithChildren
   MyPageStudentRouteRoute: typeof MyPageStudentRouteRouteWithChildren
   MyPageProfileRoute: typeof MyPageProfileRoute
+  MyPageAdminIndexRoute: typeof MyPageAdminIndexRoute
 }
 
 const MyPageRouteRouteChildren: MyPageRouteRouteChildren = {
   MyPageProfRouteRoute: MyPageProfRouteRouteWithChildren,
   MyPageStudentRouteRoute: MyPageStudentRouteRouteWithChildren,
   MyPageProfileRoute: MyPageProfileRoute,
+  MyPageAdminIndexRoute: MyPageAdminIndexRoute,
 }
 
 const MyPageRouteRouteWithChildren = MyPageRouteRoute._addFileChildren(

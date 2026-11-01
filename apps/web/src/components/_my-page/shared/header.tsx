@@ -1,6 +1,7 @@
-import type { UserData } from "@lms-repo/auth/web";
 import { authClient } from "@lms-repo/auth/web";
+import type { UserDataTypeWithImage } from "@lms-repo/db/types";
 import { Books } from "@lms-repo/ui/assets/icons/books";
+import { DashBoard } from "@lms-repo/ui/assets/icons/dashboard";
 import { List } from "@lms-repo/ui/assets/icons/list";
 import { DropdownMenuForAccount } from "@lms-repo/ui/components/dropdown-menus/account-dropdown";
 import {
@@ -12,12 +13,7 @@ import { ThemeSwitch } from "@lms-repo/ui/components/switch";
 import { toast } from "@lms-repo/ui/components/toast";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
-export function Header({
-	email,
-	name,
-	image,
-	role,
-}: UserData & { role?: string | null }) {
+export function Header({ email, name, image, role }: UserDataTypeWithImage) {
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -83,6 +79,16 @@ export function Header({
 						>
 							<List />
 							<p>講義の管理</p>
+						</Link>
+					)}
+					{role === "admin" && (
+						<Link
+							to="/admin"
+							className={`nav-link ${location.pathname === "/admin" && "nav-link-active"}
+								`}
+						>
+							<DashBoard />
+							<p>管理者ダッシュボード</p>
 						</Link>
 					)}
 				</nav>
