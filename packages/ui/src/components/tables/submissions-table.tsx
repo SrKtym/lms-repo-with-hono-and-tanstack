@@ -4,9 +4,9 @@ import type { FetchAllSubmissionsWithStudentsReturnType } from "@lms-repo/db/uti
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import type React from "react";
 import { useState } from "react";
-import { CancelButton, DefaultButton } from "./button";
-import { DefaultChip } from "./chip";
-import { DefaultInput } from "./input";
+import { CancelButton, DefaultButton } from "../button";
+import { DefaultChip } from "../chip";
+import { DefaultInput } from "../input";
 
 interface SubmissionsTableProps {
 	submissions: FetchAllSubmissionsWithStudentsReturnType;
@@ -41,10 +41,32 @@ export function SubmissionsTable({
 	const [gradingRowId, setGradingRowId] = useState<string | null>(null);
 	const [tempScore, setTempScore] = useState<string>("");
 
+	const columns = [
+		{
+			id: "studentName",
+			label: "受講者名",
+		},
+		{
+			id: "submission",
+			label: "提出物",
+		},
+		{
+			id: "status",
+			label: "ステータス",
+		},
+		{
+			id: "score",
+			label: "点数",
+		},
+	] as const;
+
 	// 採点モードに切り替え
 	const handleStartGrading = (rowId: string, currentScore: number | null) => {
 		setGradingRowId(rowId);
-		setTempScore(currentScore !== null ? String(currentScore) : "");
+		if (currentScore !== null) {
+			const scoreStr = currentScore.toString();
+			setTempScore(scoreStr);
+		}
 	};
 
 	// 採点の中止
@@ -69,6 +91,7 @@ export function SubmissionsTable({
 		children: submission.fileSubmission,
 	}));
 
+	// テーブル行のレンダリング
 	const renderExpandableRow = (item: SubmissionRow) => {
 		return (
 			<Table.Row id={item.rest.studentName} textValue={item.rest.studentName}>
@@ -166,7 +189,7 @@ export function SubmissionsTable({
 					<Table.Collection items={item.children}>
 						{(file) => (
 							<Table.Row id={file.id} textValue={file.originalName}>
-								<Table.Cell textValue={file.originalName}>
+								<Table.Cell textValue={file.originalName} className="truncate">
 									<button
 										type="button"
 										onClick={() => onDownloadFile?.(file.id)}
@@ -193,22 +216,35 @@ export function SubmissionsTable({
 	return (
 		<Table variant="secondary">
 			<Table.ScrollContainer className="h-[420px] overflow-y-auto">
-				<Table.Content
-					aria-label="Submissions"
-					expandedKeys={expandedKeys}
-					treeColumn="studentName"
-					onExpandedChange={setExpandedKeys}
-				>
-					<Table.Header>
-						<Table.Column isRowHeader id="studentName">
-							受講者名
-						</Table.Column>
-						<Table.Column id="submission">提出物</Table.Column>
-						<Table.Column id="status">ステータス</Table.Column>
-						<Table.Column id="score">点数</Table.Column>
-					</Table.Header>
-					<Table.Body items={data}>{renderExpandableRow}</Table.Body>
-				</Table.Content>
+				<Table.ResizableContainer>
+					<Table.Content
+						aria-label="Submissions"
+						expandedKeys={expandedKeys}
+						treeColumn="studentName"
+						onExpandedChange={setExpandedKeys}
+					>
+						<Table.Header columns={columns}>
+							{(column) => (
+								<Table.Column
+									key={column.id}
+									defaultWidth="1fr"
+									minWidth={
+										column.id === "studentName"
+											? 200
+											: column.id === "score"
+												? 260
+												: 150
+									}
+									isRowHeader={column.id === "studentName"}
+								>
+									{column.label}
+									<Table.ColumnResizer />
+								</Table.Column>
+							)}
+						</Table.Header>
+						<Table.Body items={data}>{renderExpandableRow}</Table.Body>
+					</Table.Content>
+				</Table.ResizableContainer>
 				{children}
 			</Table.ScrollContainer>
 		</Table>

@@ -1,7 +1,7 @@
 import type { FetchAllSubmissionsWithStudentsReturnType } from "@lms-repo/db/utils/query/submissions";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
 import { Loader } from "../loader";
-import { SubmissionsTable } from "../table";
+import { SubmissionsTable } from "../tables/submissions-table";
 import { BaseCard } from "./base-card";
 
 interface EvaluatedCardProps {

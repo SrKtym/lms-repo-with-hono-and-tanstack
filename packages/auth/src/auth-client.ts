@@ -15,6 +15,3 @@ export const authClient = createAuthClient({
 		twoFactorClient(),
 	],
 });
-
-type User = typeof authClient.$Infer.Session.user;
-export type UserData = Pick<User, "email" | "name" | "image" | "role">;
