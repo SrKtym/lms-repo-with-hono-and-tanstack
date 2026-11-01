@@ -67,7 +67,8 @@ CREATE TABLE "better_auth"."user" (
 	"ban_expires" timestamp,
 	"two_factor_enabled" boolean,
 	CONSTRAINT "user_email_unique" UNIQUE("email"),
-	CONSTRAINT "user_username_unique" UNIQUE("username")
+	CONSTRAINT "user_username_unique" UNIQUE("username"),
+	CONSTRAINT "role_check" CHECK ("better_auth"."user"."role" IN ('student', 'professor', 'admin'))
 );
 --> statement-breakpoint
 CREATE TABLE "better_auth"."verification" (

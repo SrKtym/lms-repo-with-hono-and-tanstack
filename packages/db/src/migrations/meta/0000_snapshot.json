@@ -1,5 +1,5 @@
 {
-	"id": "df89dc59-0a11-4216-b1ca-ddae962981af",
+	"id": "43c83b30-1c8c-4052-9000-108c15e77993",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"version": "7",
 	"dialect": "postgresql",
@@ -471,7 +471,12 @@
 				}
 			},
 			"policies": {},
-			"checkConstraints": {},
+			"checkConstraints": {
+				"role_check": {
+					"name": "role_check",
+					"value": "\"better_auth\".\"user\".\"role\" IN ('student', 'professor', 'admin')"
+				}
+			},
 			"isRLSEnabled": false
 		},
 		"better_auth.verification": {
