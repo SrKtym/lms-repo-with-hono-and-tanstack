@@ -34,25 +34,23 @@ export const announcementsRouteForProf = new Hono<{
 			return c.json(result);
 		}
 
-		if (result) {
-			const { emails, title, description } = result;
+		const { emails, title, description } = result;
 
-			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
+		const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-			// バッチでメールを送信（全員に同じ内容）
-			const batchEmails = emails.map((email) => ({
-				from: env.EMAIL_ADDRESS,
-				to: email,
-				subject: "新しいお知らせ",
-				react: NewAnnouncementEmail({
-					announcementTitle: title,
-					announcementContent: description,
-					viewUrl,
-				}),
-			}));
+		// バッチでメールを送信（全員に同じ内容）
+		const batchEmails = emails.map((email) => ({
+			from: env.EMAIL_ADDRESS,
+			to: email,
+			subject: "新しいお知らせ",
+			react: NewAnnouncementEmail({
+				announcementTitle: title,
+				announcementContent: description,
+				viewUrl,
+			}),
+		}));
 
-			await resend.batch.send(batchEmails);
-		}
+		await resend.batch.send(batchEmails);
 
 		return c.json({ message: "アナウンスメントを作成しました" }, 201);
 	});

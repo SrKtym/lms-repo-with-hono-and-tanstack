@@ -22,8 +22,8 @@ export const QUERY_CONFIG = {
 		gcTime: TIME.DAY, // 1日
 	},
 	NOTIFICATIONS: {
-		staleTime: TIME.MINUTE, // 1分
-		gcTime: 5 * TIME.MINUTE, // 5分
+		staleTime: 0 * TIME.MINUTE, // 0分
+		gcTime: 10 * TIME.MINUTE, // 10分
 	},
 } as const;
 

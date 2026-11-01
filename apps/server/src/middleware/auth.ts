@@ -31,11 +31,11 @@ export const authMiddleware = createMiddleware<{
 
 	// 認可チェック
 	if (path.startsWith("/api/students")) {
-		if (role === "professor") {
+		if (role !== "student" && role !== "admin") {
 			return c.json({ error: "not authorized" }, 403);
 		}
 	} else if (path.startsWith("/api/professors")) {
-		if (role === "student") {
+		if (role !== "professor" && role !== "admin") {
 			return c.json({ error: "not authorized" }, 403);
 		}
 	}

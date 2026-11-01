@@ -1,7 +1,7 @@
 import type { Notifications } from "@lms-repo/db/types";
 import type { FetchNotificationsReturnType } from "@lms-repo/db/utils/query/notifications";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
-import { queryClient } from "@/lib/query-client";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import {
 	deleteNotificationMutationFn,
 	markNotificationAsReadMutationFn,
@@ -30,8 +30,8 @@ export const useNotifications = (
 				}
 			: undefined,
 		getNextPageParam: (lastPage, allPages) => {
-			if (lastPage.length < 10) {
-				return; // データが10件未満の場合はこれ以上データがない
+			if (lastPage.length < limit) {
+				return; // データがlimit件未満の場合はこれ以上データがない
 			}
 			return allPages.length; // 次のページ番号
 		},
@@ -53,8 +53,7 @@ export const useNotificationsPaginated = (
 		queryKey: ["notifications", page, limit],
 		queryFn: () => fetchNotificationsQueryFn(limit, offset),
 		initialData,
-		staleTime: 0, // ページ変更時に即時再取得するため0に設定
-		gcTime: 10 * 60 * 1000, // 10 minutes
+		...QUERY_CONFIG.NOTIFICATIONS,
 		refetchInterval: 10000, // ポーリング間隔10秒を設定
 		refetchIntervalInBackground: true, // バックグラウンドでもポーリング
 		retry: 3, // 失敗時のリトライ回数

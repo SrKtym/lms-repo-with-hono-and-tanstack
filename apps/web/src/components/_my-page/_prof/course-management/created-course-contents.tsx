@@ -59,8 +59,9 @@ export default function CreatedCourseContents({
 				onSuccess: (data) => {
 					if ("error" in data) {
 						toast.danger(data.error);
+					} else {
+						toast.success("採点が完了しました");
 					}
-					toast.success("採点が完了しました");
 				},
 				onError: (error) => {
 					toast.danger("採点に失敗しました", {
