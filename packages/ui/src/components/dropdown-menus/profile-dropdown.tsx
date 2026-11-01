@@ -17,6 +17,11 @@ export function DropdownMenuForProfile({
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [value, setValue] = useState("");
 
+	const handleUpdateName = async () => {
+		await onUpdateName(value);
+		setIsModalOpen(false);
+	};
+
 	return (
 		<>
 			<Dropdown>
@@ -67,13 +72,7 @@ export function DropdownMenuForProfile({
 							<CancelButton onPress={() => setIsModalOpen(false)}>
 								キャンセル
 							</CancelButton>
-							<DefaultButton
-								type="submit"
-								onPress={async () => {
-									await onUpdateName(value);
-									setIsModalOpen(false);
-								}}
-							>
+							<DefaultButton type="submit" onPress={handleUpdateName}>
 								変更
 							</DefaultButton>
 						</div>

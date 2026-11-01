@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_my-page")({
 });
 
 function MyPageLayoutComponent() {
-	const { role, ...userData } = Route.useLoaderData();
+	const { ...userData } = Route.useLoaderData();
 
 	return (
 		<div className="relative min-h-screen">
@@ -49,7 +49,7 @@ function MyPageLayoutComponent() {
 			{/* Content */}
 			<Toast.Provider placement="top" />
 			<div className="relative z-10 flex flex-col">
-				<Header role={role} {...userData} />
+				<Header {...userData} />
 				<div className="flex-1">
 					<LazyMotionProvider>
 						<Outlet />
