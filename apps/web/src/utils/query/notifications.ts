@@ -5,7 +5,7 @@ export const fetchNotificationsQueryFn = async (
 	limit?: number,
 	offset?: number,
 ) => {
-	if (limit === undefined || offset === undefined) {
+	if (!limit || !offset) {
 		return [];
 	}
 

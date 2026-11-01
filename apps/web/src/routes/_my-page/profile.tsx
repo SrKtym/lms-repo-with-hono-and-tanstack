@@ -1,16 +1,21 @@
 import { authClient } from "@lms-repo/auth/web";
 import { env } from "@lms-repo/env/web";
+import { DefaultButton } from "@lms-repo/ui/components/button";
+import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { AccountSettings } from "@lms-repo/ui/components/surfaces/account-settings";
 import { NotificationSettings } from "@lms-repo/ui/components/surfaces/notification-settings";
 import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-info";
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
 import { toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { CreateProfDataForm } from "@/components/_my-page/_prof/shared/create-prof-data-form";
+import { CreateStudentDataForm } from "@/components/_my-page/_student/shared/create-student-data-form";
 import {
 	useEmailNotificationSettings,
 	useUpdateEmailNotificationSettings,
 } from "@/hooks/settings";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { requestRoleChangeMutationFn } from "@/utils/mutation/students";
 import { fetchCompletedCoursesQueryFn } from "@/utils/query/courses";
 import { fetchProfDataQueryFn } from "@/utils/query/professors";
 import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query/settings";
@@ -21,7 +26,7 @@ export const Route = createFileRoute("/_my-page/profile")({
 	loader: async ({ context }) => {
 		const { email, name, image, role } = context;
 
-		const [studentData, completedCourses, initialSettings] = await Promise.all([
+		const [profileData, completedCourses, initialSettings] = await Promise.all([
 			role === "professor"
 				? queryClient.ensureQueryData({
 						queryKey: ["profData"],
@@ -52,7 +57,7 @@ export const Route = createFileRoute("/_my-page/profile")({
 			name,
 			image,
 			role,
-			studentData,
+			profileData,
 			completedCourses,
 			initialSettings,
 		};
@@ -67,9 +72,10 @@ export const Route = createFileRoute("/_my-page/profile")({
 });
 
 function RouteComponent() {
-	const { studentData, completedCourses, initialSettings, ...userData } =
+	const { profileData, completedCourses, initialSettings, ...userData } =
 		Route.useLoaderData();
-	const user = { ...userData, ...completedCourses, ...studentData };
+	const noData = "error" in profileData;
+	const user = { ...userData, ...completedCourses, ...profileData };
 
 	// トースト表示
 	function showToast(error: { status: number }) {
@@ -109,6 +115,18 @@ function RouteComponent() {
 		}
 	};
 
+	// ロール変更申請処理
+	const handleRoleChangeRequest = async () => {
+		const result = await requestRoleChangeMutationFn();
+		if ("error" in result) {
+			toast.danger(result.error);
+		} else {
+			toast.success(
+				"教員アカウントへの変更申請が送信されました。管理者に承認されるまでお待ちください。",
+			);
+		}
+	};
+
 	// 現在のメール通知設定を取得
 	const { data: emailNotificationSettings = [] } =
 		useEmailNotificationSettings(initialSettings);
@@ -129,6 +147,24 @@ function RouteComponent() {
 				</p>
 			</div>
 
+			{/* 学生用：ロール変更申請セクション */}
+			{user.role === "student" && (
+				<div className="mb-8 space-y-4 rounded-lg bg-blue-50 p-6 dark:bg-blue-900/20">
+					<h2 className="mb-2 text-xl font-semibold">
+						教員用アカウントへ変更する
+					</h2>
+					<p className="mb-4 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+						あなたは「学生」としてログインしています。「教員」としてこのアプリを利用するには、管理者による承認が必要です。
+						申請を送信すると、管理者が審査を行います。
+					</p>
+					<div className="flex justify-end">
+						<DefaultButton onPress={handleRoleChangeRequest}>
+							教員として申請する
+						</DefaultButton>
+					</div>
+				</div>
+			)}
+
 			{/* タブコンテンツ */}
 			<TabsForProfile
 				profileTab={
@@ -147,6 +183,30 @@ function RouteComponent() {
 					/>
 				}
 			/>
+
+			{/* 学生の場合は学科・学年登録モーダルを表示 */}
+			{user.role === "student" && noData && (
+				<ControlledModal
+					isOpen={true}
+					heading="学科・学年の登録をしましょう"
+					size="cover"
+					showCloseTrigger={false}
+				>
+					<CreateStudentDataForm />
+				</ControlledModal>
+			)}
+
+			{/* 教員の場合は学科登録モーダルを表示 */}
+			{user.role === "professor" && noData && (
+				<ControlledModal
+					isOpen={true}
+					heading="学科の登録をしましょう"
+					size="cover"
+					showCloseTrigger={false}
+				>
+					<CreateProfDataForm />
+				</ControlledModal>
+			)}
 		</div>
 	);
 }
