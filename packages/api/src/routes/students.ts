@@ -1,7 +1,13 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import { registerStudentData } from "@lms-repo/db/utils/mutation/students";
+import {
+	registerStudentData,
+	requestRoleChange,
+} from "@lms-repo/db/utils/mutation/students";
 import { fetchStudentData } from "@lms-repo/db/utils/query/students";
+import { resend } from "@lms-repo/emails";
+import RoleChangeRequestEmail from "@lms-repo/emails/components/role-change-request-email";
+import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { z } from "zod";
 import { coursesRouteForStudent } from "./courses";
@@ -31,6 +37,34 @@ export const studentsRoute = new Hono<{
 		const { grade, departmentName } = c.req.valid("json");
 		const result = await registerStudentData(userId, departmentName, grade);
 		return c.json(result);
+	})
+	// ユーザーロール変更の申請
+	.post("/role_change_request", async (c) => {
+		const { id, email, name } = c.get("user");
+		const result = await requestRoleChange(id);
+
+		if ("error" in result) {
+			return c.json(result);
+		}
+
+		const { adminEmail } = result;
+		const viewUrl = `${env.CORS_ORIGIN}/admin`;
+		await resend.emails.send({
+			from: env.EMAIL_ADDRESS,
+			to: adminEmail,
+			subject: "教員アカウントへの変更申請",
+			react: RoleChangeRequestEmail({
+				adminEmail,
+				email,
+				name,
+				viewUrl,
+			}),
+		});
+
+		return c.json(
+			{ message: "教員アカウントへの変更申請が送信されました" },
+			200,
+		);
 	})
 	// 学生のデータ取得
 	.get("/data", async (c) => {
