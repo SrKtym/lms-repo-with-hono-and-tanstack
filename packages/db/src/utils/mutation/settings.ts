@@ -1,6 +1,7 @@
 import { db } from "../../index";
 import { emailNotificationSettings } from "../../schema";
 import type { EmailNotificationSettings } from "../../types";
+import { fail, ok } from "./helpers";
 
 // メール通知設定の更新
 export async function updateEmailNotificationSettings(
@@ -20,8 +21,8 @@ export async function updateEmailNotificationSettings(
 					remindersEmail: settings.remindersEmail,
 				},
 			});
-		return { message: "メール通知設定を更新しました。", status: 200 };
+		return ok("メール通知設定を更新しました。", 200);
 	} catch {
-		return { error: "メール通知設定の更新に失敗しました。", status: 500 };
+		return fail("メール通知設定の更新に失敗しました。", 500);
 	}
 }

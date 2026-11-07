@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../index";
 import { departments, students, user } from "../../schema";
-import { createNotificationForUser } from "./helpers";
+import { createNotificationForUser, fail, ok } from "./helpers";
 
 // 学生の所属（学年、学科）を登録する
 export async function registerStudentData(
@@ -18,7 +18,7 @@ export async function registerStudentData(
 				.limit(1);
 
 			if (!department) {
-				return { error: "学科が見つかりません。", status: 404 };
+				return fail("学科が見つかりません。", 404);
 			}
 
 			await tx
@@ -30,9 +30,9 @@ export async function registerStudentData(
 				})
 				.onConflictDoNothing();
 		});
-		return { message: "学生の所属登録に成功しました。", status: 201 };
+		return ok("学生の所属登録に成功しました。", 201);
 	} catch {
-		return { error: "学生の所属登録に失敗しました。", status: 500 };
+		return fail("学生の所属登録に失敗しました。", 500);
 	}
 }
 
@@ -59,13 +59,13 @@ export async function requestRoleChange(userId: string) {
 				.limit(1);
 
 			if (!admin) {
-				return { error: "管理者が見つかりません。", status: 404 };
+				return fail("管理者が見つかりません。", 404);
 			}
 
 			return { adminEmail: admin.email };
 		});
 		return result;
 	} catch {
-		return { error: "申請の送信に失敗しました。", status: 500 };
+		return fail("申請の送信に失敗しました。", 500);
 	}
 }

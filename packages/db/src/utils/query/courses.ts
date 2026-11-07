@@ -115,7 +115,7 @@ export async function fetchCompletedCourses(userId: string) {
 		)
 		.limit(1);
 
-	return completedCoursesCredits;
+	return completedCoursesCredits || 0;
 }
 
 export type FetchCompletedCoursesReturnType = Awaited<

@@ -6,6 +6,7 @@ import {
 	textSubmissions,
 } from "../../schema/service";
 import type { FileSubmissionsMetadata, TextSubmissions } from "../../types";
+import { fail, ok } from "./helpers";
 
 // テキスト形式の提出
 export const createTextSubmission = async (submission: TextSubmissions) => {
@@ -20,9 +21,9 @@ export const createTextSubmission = async (submission: TextSubmissions) => {
 					description: submission.description,
 				},
 			});
-		return { message: "テキスト提出に成功しました", status: 200 };
+		return ok("テキスト提出に成功しました", 200);
 	} catch {
-		return { error: "テキスト提出に失敗しました", status: 500 };
+		return fail("テキスト提出に失敗しました", 500);
 	}
 };
 
@@ -44,7 +45,7 @@ export const createFileSubmissionMetadata = async (
 			});
 		return result;
 	} catch {
-		return { error: "ファイルメタデータの作成に失敗しました", status: 500 };
+		return fail("ファイルメタデータの作成に失敗しました", 500);
 	}
 };
 
@@ -66,9 +67,9 @@ export const updateSubmissionStatus = async (
 				target: [submissionStatus.assignmentId, submissionStatus.userId],
 				set: { status },
 			});
-		return { message: "提出状況の更新に成功しました", status: 200 };
+		return ok("提出状況の更新に成功しました", 200);
 	} catch {
-		return { error: "提出状況の更新に失敗しました", status: 500 };
+		return fail("提出状況の更新に失敗しました", 500);
 	}
 };
 
@@ -91,9 +92,9 @@ export const updateSubmissionScore = async (
 				target: [submissionStatus.assignmentId, submissionStatus.userId],
 				set: { score, status: "評定済み" },
 			});
-		return { message: "採点に成功しました", status: 200 };
+		return ok("採点に成功しました", 200);
 	} catch {
-		return { error: "採点に失敗しました", status: 500 };
+		return fail("採点に失敗しました", 500);
 	}
 };
 
@@ -103,9 +104,9 @@ export const deleteFileSubmissionMetadata = async (id: string) => {
 		await db
 			.delete(fileSubmissionsMetadata)
 			.where(eq(fileSubmissionsMetadata.id, id));
-		return { message: "ファイルメタデータの削除に成功しました", status: 200 };
+		return ok("ファイルメタデータの削除に成功しました", 200);
 	} catch {
-		return { error: "ファイルメタデータの削除に失敗しました", status: 500 };
+		return fail("ファイルメタデータの削除に失敗しました", 500);
 	}
 };
 
@@ -113,8 +114,8 @@ export const deleteFileSubmissionMetadata = async (id: string) => {
 export const deleteTextSubmission = async (id: string) => {
 	try {
 		await db.delete(textSubmissions).where(eq(textSubmissions.id, id));
-		return { message: "テキスト提出物の削除に成功しました", status: 200 };
+		return ok("テキスト提出物の削除に成功しました", 200);
 	} catch {
-		return { error: "テキスト提出物の削除に失敗しました", status: 500 };
+		return fail("テキスト提出物の削除に失敗しました", 500);
 	}
 };
