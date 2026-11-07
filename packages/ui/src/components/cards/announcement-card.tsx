@@ -1,6 +1,6 @@
 import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
-import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { FileQuestion } from "../../assets/icons/file-question";
 import { FileText } from "../../assets/icons/file-text";
 import { Info } from "../../assets/icons/info";

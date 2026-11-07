@@ -14,6 +14,7 @@ COPY packages/auth/package.json ./packages/auth/
 COPY packages/emails/package.json ./packages/emails/
 COPY packages/db/package.json ./packages/db/
 COPY packages/env/package.json ./packages/env/
+COPY packages/shared/package.json ./packages/shared/
 COPY packages/config/package.json ./packages/config/
 
 # docker開発用に必要なパッケージをインストール（本番環境では不要）

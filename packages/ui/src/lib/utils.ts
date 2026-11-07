@@ -1,4 +1,8 @@
 import { coursesMaster } from "@lms-repo/db/mock/course-master";
+import type {
+	FetchCreatedCoursesReturnType,
+	FetchRegisteredCoursesReturnType,
+} from "@lms-repo/db/utils/query/courses";
 import { FileText } from "../assets/icons/file-text";
 import { MSExcel } from "../assets/icons/ms-excel";
 import { MSPowerpoint } from "../assets/icons/ms-powerpoint";
@@ -28,58 +32,6 @@ export const viewLabels = ["月", "週", "日"] as const;
 
 // 曜日の配列
 export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
-
-type DateTimeFormatConfigKey =
-	| "DEFAULT"
-	| "FULL_DATE"
-	| "DIGIT_TIME"
-	| "FULL_DATETIME";
-
-type DateTimeFormatConfig = {
-	options: Intl.DateTimeFormatOptions;
-	defaultLocale: string;
-};
-
-// 日時フォーマット設定
-export const DATETIME_FORMAT_CONFIG: Record<
-	DateTimeFormatConfigKey,
-	DateTimeFormatConfig
-> = {
-	DEFAULT: {
-		options: {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-		},
-		defaultLocale: "ja-JP",
-	},
-	FULL_DATE: {
-		options: {
-			weekday: "long",
-			year: "numeric",
-			month: "long",
-			day: "numeric",
-		},
-		defaultLocale: "ja-JP",
-	},
-	DIGIT_TIME: {
-		options: {
-			hour: "2-digit",
-			minute: "2-digit",
-		},
-		defaultLocale: "ja-JP",
-	},
-	FULL_DATETIME: {
-		options: {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-			hour: "2-digit",
-			minute: "2-digit",
-		},
-		defaultLocale: "ja-JP",
-	},
-};
 
 // イベントが現在進行中であるかどうかを判定
 export const isProgressingOrUpcoming = (start: Date, end: Date) => {
@@ -195,4 +147,20 @@ export function isSameDay(date1: Date, date2: Date) {
 		date1.getMonth() === date2.getMonth() &&
 		date1.getDate() === date2.getDate()
 	);
+}
+
+// カバー画像を生成して講義データに追加する関数
+export function addCoverImagesToCourses(
+	courses: FetchRegisteredCoursesReturnType | FetchCreatedCoursesReturnType,
+) {
+	const dataLength = courses.length;
+	const coverImageList = Array.from(
+		{ length: dataLength },
+		(_, i) => `https://img.heroui.chat/image/landscape?w=1200&h=400&u=${i + 1}`,
+	);
+	const coursesWithCoverImage = courses.map((course, index) => ({
+		...course,
+		coverImage: coverImageList[index],
+	}));
+	return coursesWithCoverImage;
 }

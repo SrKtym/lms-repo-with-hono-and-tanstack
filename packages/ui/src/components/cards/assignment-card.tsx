@@ -1,9 +1,6 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import {
-	DATETIME_FORMAT_CONFIG,
-	getFileColor,
-	getIconByFormat,
-} from "../../lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
+import { getFileColor, getIconByFormat } from "@lms-repo/ui/lib/utils";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 

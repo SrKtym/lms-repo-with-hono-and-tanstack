@@ -18,6 +18,7 @@ on:
       - "packages/db/**"
       - "packages/emails/**"
       - "packages/env/**"
+      - "packages/shared/**"
       - "packages/config/**"
       - "package.json"
       - "turbo.json"
