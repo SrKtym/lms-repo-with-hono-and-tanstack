@@ -1,4 +1,4 @@
-import { and, eq, lte, or, sql } from "drizzle-orm";
+import { and, eq, isNull, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	courses,
@@ -53,7 +53,6 @@ export async function fetchCourses(
 			and(
 				eq(courses.id, registration.courseId),
 				eq(registration.userId, userId),
-				eq(registration.isCompleted, true),
 			),
 		)
 		.where(
@@ -61,7 +60,10 @@ export async function fetchCourses(
 				eq(courses.weekdays, weekdays),
 				eq(courses.period, period),
 				lte(courses.targetGrade, grade),
-				sql`${registration.courseId} IS NULL`,
+				or(
+					eq(registration.isCompleted, false),
+					isNull(registration.isCompleted),
+				),
 				or(eq(departments.id, departmentId), eq(departments.name, "全学科")),
 			),
 		)

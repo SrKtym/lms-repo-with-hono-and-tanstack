@@ -70,6 +70,7 @@ function RouteComponent() {
 					...prev,
 					name: debouncedValue,
 				}),
+				replace: true,
 			});
 		}, 1000);
 

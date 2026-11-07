@@ -18,7 +18,6 @@
 	},
 	"devDependencies": {
 		"@lms-repo/config": "workspace:*",
-		"@types/bun": "catalog:",
 		"typescript": "catalog:"
 	}
 }
