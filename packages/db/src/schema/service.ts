@@ -338,9 +338,13 @@ export const notifications = pgTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		type: text("type").notNull(),
+		assignmentId: text("assignment_id").references(() => assignments.id, {
+			onDelete: "cascade",
+		}),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(t) => [
+		index("notifications_assignment_id_idx").on(t.assignmentId),
 		check(
 			"type_check",
 			sql`${t.type} IN (${sql.raw([...notificationType].map((t) => `'${t}'`).join(","))})`,

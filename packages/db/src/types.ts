@@ -30,6 +30,7 @@ export type FileSubmissionsMetadata =
 // データ挿入時のオプショナルフィールド
 export type CoursesOptional = "departmentId" | "professorId";
 export type AssignmentsOptional = "id" | "courseId" | "createdAt" | "updatedAt";
+export type NotificationsOptional = "id" | "createdAt";
 
 type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type PickUserDataType = Pick<
