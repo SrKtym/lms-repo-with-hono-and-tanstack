@@ -1,4 +1,4 @@
-import { eq, or } from "drizzle-orm";
+import { and, eq, exists, or } from "drizzle-orm";
 import { db } from "../../index";
 import { announcements, courses, registration } from "../../schema";
 
@@ -7,8 +7,18 @@ export async function fetchAnnouncementsFromUserCourses(
 	userId: string,
 	courseId?: string,
 ) {
+	const subQuery = db
+		.select()
+		.from(registration)
+		.where(
+			and(
+				eq(registration.courseId, courses.id),
+				eq(registration.userId, userId),
+			),
+		);
+
 	const announcementsList = await db
-		.selectDistinct({
+		.select({
 			id: announcements.id,
 			title: announcements.title,
 			description: announcements.description,
@@ -20,11 +30,10 @@ export async function fetchAnnouncementsFromUserCourses(
 		})
 		.from(announcements)
 		.innerJoin(courses, eq(announcements.courseId, courses.id))
-		.leftJoin(registration, eq(courses.id, registration.courseId))
 		.where(
 			or(
-				eq(registration.userId, userId),
 				eq(courses.professorId, userId),
+				exists(subQuery),
 				courseId ? eq(announcements.courseId, courseId) : undefined,
 			),
 		);
