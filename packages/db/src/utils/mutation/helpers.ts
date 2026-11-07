@@ -1,4 +1,5 @@
 import { and, eq } from "drizzle-orm";
+import type { ContentfulStatusCode } from "hono/utils/http-status";
 import type { db } from "../../index";
 import {
 	courses,
@@ -8,6 +9,7 @@ import {
 	user,
 	userNotifications,
 } from "../../schema";
+import type { Notifications, NotificationsOptional } from "../../types";
 
 type Transaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -16,15 +18,17 @@ interface CourseData {
 	studentId: string;
 }
 
-interface NotificationData {
-	title: string;
-	description: string;
-	type: string;
-}
-
 // 編集期限（2週間）
 export const EDIT_PERIOD_DAYS = 14;
 
+// レスポンスヘルパー
+export function ok<S extends ContentfulStatusCode>(message: string, status: S) {
+	return { message, status };
+}
+
+export function fail<S extends ContentfulStatusCode>(error: string, status: S) {
+	return { error, status };
+}
 // 履修登録について編集期限内かチェック
 export async function isWithinEditPeriod(tx: Transaction, userId: string) {
 	const [userInfo] = await tx
@@ -65,7 +69,7 @@ export async function fetchCourseData(tx: Transaction, courseId: string) {
 // 通知を作成し、ユーザー通知を登録（複数ユーザー向け）
 export async function createNotification(
 	tx: Transaction,
-	notificationsData: NotificationData,
+	notificationsData: Omit<Notifications, NotificationsOptional>,
 	courseData: CourseData[],
 ) {
 	const [data] = await tx
@@ -93,7 +97,7 @@ export async function createNotification(
 // 通知を作成し、ユーザー通知を登録（単一ユーザー向け）
 export async function createNotificationForUser(
 	tx: Transaction,
-	notificationsData: NotificationData,
+	notificationsData: Omit<Notifications, NotificationsOptional>,
 	userId: string,
 ) {
 	const [data] = await tx
