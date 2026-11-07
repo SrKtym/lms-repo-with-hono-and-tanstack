@@ -1,4 +1,4 @@
-import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
 
