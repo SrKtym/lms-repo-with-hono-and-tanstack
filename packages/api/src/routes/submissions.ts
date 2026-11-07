@@ -113,7 +113,7 @@ export const submissionsRouteForStudent = new Hono<{
 		const fileName = formData.get("fileName") as string;
 
 		if (!file || !fileName) {
-			return c.json({ error: "ファイルが見つかりません" }, 400);
+			return c.json({ error: "ファイルが見つかりません" }, 404);
 		}
 
 		// バケットが存在することを確認
@@ -205,6 +205,13 @@ export const submissionsRouteForStudent = new Hono<{
 			return c.json(result, 201);
 		},
 	)
+	// 課題提出状況の取得
+	.get("/status/:assignment-id?", async (c) => {
+		const { userId } = c.get("session");
+		const { "assignment-id": assignmentId } = c.req.param();
+		const submissions = await fetchSubmissionsState(userId, assignmentId);
+		return c.json(submissions, 200);
+	})
 	// ファイルの削除
 	.delete("/files/:id", async (c) => {
 		const { userId } = c.get("session");
@@ -327,7 +334,7 @@ export const submissionsRouteForProf = new Hono<{
 			return c.json(result, 200);
 		},
 	) // 指定された課題のすべての提出状況を取得（教員用、無限スクロールに対応）
-	.get("/status/all", async (c) => {
+	.get("/status", async (c) => {
 		const { assignmentId, limit, offset } = c.req.query();
 
 		if (!assignmentId) {
@@ -350,7 +357,7 @@ export const submissionsRouteForCommon = new Hono<{
 	};
 }>()
 	// 署名付きURLの一括発行（ファイルアップロード・ダウンロード用）
-	.post("/signed_urls", zValidator("json", signedUrlSchema), async (c) => {
+	.post("/signed-urls", zValidator("json", signedUrlSchema), async (c) => {
 		const files = c.req.valid("json");
 
 		// MIMEタイプの検証
@@ -398,27 +405,20 @@ export const submissionsRouteForCommon = new Hono<{
 			}),
 		);
 
-		return c.json(signedUrls);
-	})
-	// 課題提出状況の取得
-	.get("/status", async (c) => {
-		const { userId } = c.get("session");
-		const assignmentId = c.req.query("assignmentId");
-		const submissions = await fetchSubmissionsState(userId, assignmentId);
-		return c.json(submissions, 200);
+		return c.json(signedUrls, 200);
 	})
 	// ファイルメタデータの取得
-	.get("/files/:assignmentId", async (c) => {
+	.get("/files/:assignment-id", async (c) => {
 		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
+		const { "assignment-id": assignmentId } = c.req.param();
 
 		const fileMetadata = await fetchFileMetadataByUserId(userId, assignmentId);
 		return c.json(fileMetadata, 200);
 	})
 	// テキスト提出物の取得
-	.get("/text/:assignmentId", async (c) => {
+	.get("/text/:assignment-id", async (c) => {
 		const { userId } = c.get("session");
-		const assignmentId = c.req.param("assignmentId");
+		const { "assignment-id": assignmentId } = c.req.param();
 
 		const textSubmissionsData = await fetchTextSubmissionsByUserId(
 			userId,

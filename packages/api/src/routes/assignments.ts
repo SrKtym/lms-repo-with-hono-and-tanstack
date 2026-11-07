@@ -5,6 +5,7 @@ import { fetchAssignmentsFromUserCourses } from "@lms-repo/db/utils/query/assign
 import { resend } from "@lms-repo/emails";
 import NewAssignmentEmail from "@lms-repo/emails/components/new-assignment-email";
 import { env } from "@lms-repo/env/server";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
 import { z } from "zod";
 
@@ -36,14 +37,9 @@ export const assignmentsRouteForProf = new Hono<{
 		const result = await createAssignments(assignmentData);
 
 		if ("error" in result) {
-			return c.json(result);
+			const { status, ...body } = result;
+			return c.json(body, status);
 		}
-
-		const dateOptions: Intl.DateTimeFormatOptions = {
-			year: "numeric",
-			month: "short",
-			day: "numeric",
-		};
 
 		const { emails, title, description, dueDate } = result;
 
@@ -51,13 +47,16 @@ export const assignmentsRouteForProf = new Hono<{
 
 		// バッチでメールを送信（全員に同じ内容）
 		const batchEmails = emails.map((email) => ({
-			from: env.EMAIL_ADDRESS,
+			from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 			to: email,
 			subject: "新しい課題",
 			react: NewAssignmentEmail({
 				assignmentTitle: title,
 				assignmentDescription: description,
-				dueDate: dueDate.toLocaleDateString("ja-JP", dateOptions),
+				dueDate: dueDate.toLocaleDateString(
+					DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+					DATETIME_FORMAT_CONFIG.DEFAULT.options,
+				),
 				viewUrl,
 			}),
 		}));
@@ -75,9 +74,9 @@ export const assignmentsRouteForCommon = new Hono<{
 	};
 }>()
 	// 課題一覧取得
-	.get("/", async (c) => {
+	.get("/:course-id?", async (c) => {
 		const { userId } = c.get("session");
-		const { courseId } = c.req.query();
+		const { "course-id": courseId } = c.req.param();
 		const assignments = await fetchAssignmentsFromUserCourses(userId, courseId);
 		return c.json(assignments, 200);
 	});

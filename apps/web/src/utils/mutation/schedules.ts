@@ -14,8 +14,10 @@ export const createScheduleMutationFn = async (
 
 // スケジュールを削除するmutationFn
 export const deleteScheduleMutationFn = async (scheduleId: string) => {
-	const res = await client.api.students.schedules.$delete({
-		json: { scheduleId },
+	const res = await client.api.students.schedules[":schedule-id"].$delete({
+		param: {
+			"schedule-id": scheduleId,
+		},
 	});
 	const data = await res.json();
 	return data;

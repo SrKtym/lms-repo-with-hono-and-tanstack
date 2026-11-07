@@ -5,9 +5,9 @@ export const fetchTextSubmissionsQueryFn = async (assignmentId?: string) => {
 	if (!assignmentId) {
 		return [];
 	}
-	const res = await client.api.submissions.text[":assignmentId"].$get({
+	const res = await client.api.submissions.text[":assignment-id"].$get({
 		param: {
-			assignmentId,
+			"assignment-id": assignmentId,
 		},
 	});
 	const data = await res.json();
@@ -16,9 +16,11 @@ export const fetchTextSubmissionsQueryFn = async (assignmentId?: string) => {
 
 // 課題提出状況取得用のqueryFn
 export const fetchSubmissionsStatusQueryFn = async (assignmentId?: string) => {
-	const res = await client.api.submissions.status.$get({
-		query: {
-			assignmentId,
+	const res = await client.api.students.submissions.status[
+		":assignment-id?"
+	].$get({
+		param: {
+			"assignment-id": assignmentId,
 		},
 	});
 	const data = await res.json();
@@ -33,14 +35,13 @@ export const fetchAllSubmissionsWithStudentsQueryFn = async (
 ) => {
 	const queryParams: Record<string, string> = {};
 
-	if (limit !== undefined) {
+	if (limit) {
 		queryParams.limit = limit.toString();
-	}
-	if (offset !== undefined) {
+	} else if (offset) {
 		queryParams.offset = offset.toString();
 	}
 
-	const res = await client.api.professors.submissions.status.all.$get({
+	const res = await client.api.professors.submissions.status.$get({
 		query: { assignmentId, ...queryParams },
 	});
 
@@ -53,8 +54,8 @@ export const fetchFileMetadataQueryFn = async (assignmentId?: string) => {
 	if (!assignmentId) {
 		return [];
 	}
-	const res = await client.api.submissions.files[":assignmentId"].$get({
-		param: { assignmentId },
+	const res = await client.api.submissions.files[":assignment-id"].$get({
+		param: { "assignment-id": assignmentId },
 	});
 	const data = await res.json();
 	return data;

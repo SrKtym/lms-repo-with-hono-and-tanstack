@@ -13,10 +13,9 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 
 	const queryParams: Record<string, string> = {};
 
-	if (limit !== undefined) {
+	if (limit) {
 		queryParams.limit = limit.toString();
-	}
-	if (offset !== undefined) {
+	} else if (offset) {
 		queryParams.offset = offset.toString();
 	}
 
@@ -29,21 +28,21 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 
 // 登録済み講義取得用のqueryFn
 export const fetchRegisteredCoursesQueryFn = async () => {
-	const res = await client.api.students.courses.registered.$get();
+	const res = await client.api.students.courses.registrations.$get();
 	const data = await res.json();
 	return data;
 };
 
 // 修了済み講義の総単位数取得用のqueryFn
-export const fetchCompletedCoursesQueryFn = async () => {
-	const res = await client.api.students.courses.completed.$get();
+export const fetchCompletedCreditsQueryFn = async () => {
+	const res = await client.api.students.courses["completed-credits"].$get();
 	const data = await res.json();
 	return data;
 };
 
 // 作成済み講義取得用のqueryFn
 export const fetchCreatedCoursesQueryFn = async () => {
-	const res = await client.api.professors.courses.created.$get();
+	const res = await client.api.professors.courses.$get();
 	const data = await res.json();
 	return data;
 };

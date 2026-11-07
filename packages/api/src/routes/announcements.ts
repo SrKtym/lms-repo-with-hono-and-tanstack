@@ -31,7 +31,8 @@ export const announcementsRouteForProf = new Hono<{
 		const result = await createAnnouncements(announcementData);
 
 		if ("error" in result) {
-			return c.json(result);
+			const { status, ...body } = result;
+			return c.json(body, status);
 		}
 
 		const { emails, title, description } = result;
@@ -40,7 +41,7 @@ export const announcementsRouteForProf = new Hono<{
 
 		// バッチでメールを送信（全員に同じ内容）
 		const batchEmails = emails.map((email) => ({
-			from: env.EMAIL_ADDRESS,
+			from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 			to: email,
 			subject: "新しいお知らせ",
 			react: NewAnnouncementEmail({
@@ -63,12 +64,12 @@ export const announcementsRouteForCommon = new Hono<{
 	};
 }>()
 	// アナウンスメントの取得
-	.get("/", async (c) => {
+	.get("/:course-id?", async (c) => {
 		const { userId } = c.get("session");
-		const { courseId } = c.req.query();
+		const { "course-id": courseId } = c.req.param();
 		const announcements = await fetchAnnouncementsFromUserCourses(
 			userId,
 			courseId,
 		);
-		return c.json(announcements);
+		return c.json(announcements, 200);
 	});

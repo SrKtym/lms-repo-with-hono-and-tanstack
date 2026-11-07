@@ -35,22 +35,27 @@ export const studentsRoute = new Hono<{
 	.post("/", zValidator("json", formSchema), async (c) => {
 		const { userId } = c.get("session");
 		const { grade, departmentName } = c.req.valid("json");
-		const result = await registerStudentData(userId, departmentName, grade);
-		return c.json(result);
+		const { status, ...body } = await registerStudentData(
+			userId,
+			departmentName,
+			grade,
+		);
+		return c.json(body, status);
 	})
 	// ユーザーロール変更の申請
-	.post("/role_change_request", async (c) => {
+	.post("/role-change-request", async (c) => {
 		const { id, email, name } = c.get("user");
 		const result = await requestRoleChange(id);
 
 		if ("error" in result) {
-			return c.json(result);
+			const { status, ...body } = result;
+			return c.json(body, status);
 		}
 
 		const { adminEmail } = result;
 		const viewUrl = `${env.CORS_ORIGIN}/admin`;
 		await resend.emails.send({
-			from: env.EMAIL_ADDRESS,
+			from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 			to: adminEmail,
 			subject: "教員アカウントへの変更申請",
 			react: RoleChangeRequestEmail({
@@ -66,14 +71,14 @@ export const studentsRoute = new Hono<{
 			200,
 		);
 	})
-	// 学生のデータ取得
-	.get("/data", async (c) => {
+	// 学生のプロフィール情報取得
+	.get("/profile", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchStudentData(userId);
 		if (!result) {
 			return c.json({ error: "学生情報が見つかりません" }, 404);
 		}
-		return c.json(result);
+		return c.json(result, 200);
 	})
 	.route("/courses", coursesRouteForStudent)
 	.route("/notifications", notificationsRouteForStudent)

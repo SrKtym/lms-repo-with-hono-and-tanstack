@@ -22,18 +22,22 @@ export const professorsRoute = new Hono<{
 		async (c) => {
 			const { userId } = c.get("session");
 			const { departmentName } = c.req.valid("json");
-			const result = await registerProfData(userId, departmentName);
-			return c.json(result);
+			const { status, ...body } = await registerProfData(
+				userId,
+				departmentName,
+			);
+			return c.json(body, status);
 		},
 	)
-	// 教授のデータ取得
-	.get("/data", async (c) => {
+	// 教授のプロフィール情報取得
+	.get("/profile", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchProfData(userId);
+
 		if (!result) {
-			return c.json({ error: "教員情報が見つかりません" }, 404);
+			return c.json({ error: "プロフィール情報が見つかりませんでした" }, 404);
 		}
-		return c.json(result);
+		return c.json(result, 200);
 	})
 	.route("/announcements", announcementsRouteForProf)
 	.route("/assignments", assignmentsRouteForProf)
