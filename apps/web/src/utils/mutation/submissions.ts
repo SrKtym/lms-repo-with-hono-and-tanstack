@@ -86,7 +86,7 @@ export const submitMultipleFilesMutationFn = async ({
 	}
 	// 本番環境：署名付きURLを使用
 	// 1. 署名付きURLを一括取得（1回のAPIリクエスト）
-	const signedUrlsRes = await client.api.submissions.signed_urls.$post({
+	const signedUrlsRes = await client.api.submissions["signed-urls"].$post({
 		json: files.map((file) => ({
 			fileName: file.name,
 			fileType: file.type,

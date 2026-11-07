@@ -14,8 +14,10 @@ export const createCourseMutationFn = async (
 
 // 講義を登録するmutationFn
 export const registerCourseMutationFn = async (courseId: string) => {
-	const res = await client.api.students.courses.registered.$post({
-		json: { courseId },
+	const res = await client.api.students.courses.registrations[
+		":course-id"
+	].$post({
+		param: { "course-id": courseId },
 	});
 	const data = await res.json();
 	return data;
@@ -23,8 +25,10 @@ export const registerCourseMutationFn = async (courseId: string) => {
 
 // 講義を登録解除するmutationFn
 export const unregisterCourseMutationFn = async (courseId: string) => {
-	const res = await client.api.students.courses.registered.$delete({
-		json: { courseId },
+	const res = await client.api.students.courses.registrations[
+		":course-id"
+	].$delete({
+		param: { "course-id": courseId },
 	});
 	const data = await res.json();
 	return data;
@@ -32,7 +36,7 @@ export const unregisterCourseMutationFn = async (courseId: string) => {
 
 // 登録講義を確定するmutationFn
 export const checkCourseMutationFn = async () => {
-	const res = await client.api.students.courses.registered.$patch();
+	const res = await client.api.students.courses.registrations.confirm.$patch();
 	const data = await res.json();
 	return data;
 };

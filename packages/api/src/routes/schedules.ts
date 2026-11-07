@@ -43,11 +43,11 @@ export const schedulesRouteForStudent = new Hono<{
 	.post("/", zValidator("json", formSchema), async (c) => {
 		const { userId } = c.get("session");
 		const scheduleData = c.req.valid("json");
-		const result = await createSchedules({
+		const { status, ...body } = await createSchedules({
 			...scheduleData,
 			createdBy: userId,
 		});
-		return c.json(result);
+		return c.json(body, status);
 	})
 	// スケジュール一覧取得
 	.get("/", async (c) => {
@@ -56,12 +56,8 @@ export const schedulesRouteForStudent = new Hono<{
 		return c.json(result, 200);
 	})
 	// スケジュール削除
-	.delete(
-		"/",
-		zValidator("json", z.object({ scheduleId: z.string() })),
-		async (c) => {
-			const { scheduleId } = c.req.valid("json");
-			const result = await deleteSchedules(scheduleId);
-			return c.json(result);
-		},
-	);
+	.delete("/:schedule-id", async (c) => {
+		const { "schedule-id": scheduleId } = c.req.param();
+		const { status, ...body } = await deleteSchedules(scheduleId);
+		return c.json(body, status);
+	});
