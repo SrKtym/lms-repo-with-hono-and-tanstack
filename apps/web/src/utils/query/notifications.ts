@@ -5,14 +5,13 @@ export const fetchNotificationsQueryFn = async (
 	limit?: number,
 	offset?: number,
 ) => {
-	if (!limit || !offset) {
-		return [];
-	}
-
 	const queryParams: Record<string, string> = {};
 
-	queryParams.limit = limit.toString();
-	queryParams.offset = offset.toString();
+	if (limit) {
+		queryParams.limit = limit.toString();
+	} else if (offset) {
+		queryParams.offset = offset.toString();
+	}
 
 	const res = await client.api.students.notifications.$get({
 		query: queryParams,
@@ -37,6 +36,6 @@ export const fetchNotificationsCountQueryFn = async (
 	const res = await client.api.students.notifications.count.$get({
 		query: queryParams,
 	});
-	const { count } = await res.json();
+	const count = await res.json();
 	return count;
 };
