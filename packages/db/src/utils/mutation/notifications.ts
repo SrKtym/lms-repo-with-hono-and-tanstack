@@ -85,7 +85,7 @@ export async function createReminder() {
 					title: assignments.title,
 					description: assignments.description,
 					dueDate: assignments.dueDate,
-					courseId: courses.id
+					courseId: courses.id,
 				})
 				.from(assignments)
 				.innerJoin(courses, eq(assignments.courseId, courses.id))
@@ -119,7 +119,7 @@ export async function createReminder() {
 				title: `リマインダー: 課題（${v.title}）`,
 				description: v.description,
 				type: "system",
-				assignmentId: v.id
+				assignmentId: v.id,
 			}));
 
 			// リマインダー通知をデータベースに保存
