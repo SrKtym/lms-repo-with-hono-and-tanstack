@@ -84,7 +84,7 @@ export const useDeleteFile = () => {
 			queryClient.setQueryData(
 				["file-metadata"],
 				(old?: FetchFileMetadataByUserIdReturnType) =>
-					old?.filter((file) => file.id !== fileId) ?? [],
+					old?.filter((file) => file.id !== fileId),
 			);
 
 			return { previousMetadata };
@@ -142,7 +142,7 @@ export const useDeleteTextSubmission = () => {
 			queryClient.setQueryData(
 				["text-submissions"],
 				(old?: FetchTextSubmissionsByUserIdReturnType) =>
-					old?.filter((submission) => submission.id !== submissionId) ?? [],
+					old?.filter((submission) => submission.id !== submissionId),
 			);
 
 			return { previousSubmissions };

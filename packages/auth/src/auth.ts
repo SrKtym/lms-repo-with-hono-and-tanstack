@@ -25,7 +25,7 @@ export const auth = betterAuth({
 		resetPasswordTokenExpiresIn: 3600, // 1 hour
 		async sendResetPassword({ user, url }) {
 			await resend.emails.send({
-				from: env.EMAIL_ADDRESS,
+				from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 				to: user.email,
 				subject: "パスワードの変更",
 				react: ResetPasswordEmail({
@@ -46,7 +46,7 @@ export const auth = betterAuth({
 				`${env.CORS_ORIGIN}/set-twofactor`,
 			);
 			await resend.emails.send({
-				from: env.EMAIL_ADDRESS,
+				from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 				to: user.email,
 				subject: "新規ログインの確認",
 				react: ConfirmSignUpEmail({
@@ -61,7 +61,7 @@ export const auth = betterAuth({
 			enabled: true,
 			async sendDeleteAccountVerification({ user, url }) {
 				await resend.emails.send({
-					from: env.EMAIL_ADDRESS,
+					from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 					to: user.email,
 					subject: "アカウント削除の確認",
 					react: DeleteAccountEmail({
@@ -120,7 +120,7 @@ export const auth = betterAuth({
 			otpOptions: {
 				async sendOTP({ user, otp }) {
 					await resend.emails.send({
-						from: env.EMAIL_ADDRESS,
+						from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
 						to: user.email,
 						subject: "OTP認証",
 						react: OtpNotificationEmail({

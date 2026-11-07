@@ -72,8 +72,9 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 		enabled: !!weekdays && !!period,
 		...QUERY_CONFIG.USER_DATA,
 		getNextPageParam: (lastPage, allPages) => {
-			if (lastPage.length < 10) {
-				return; // データが10件未満の場合はこれ以上データがない
+			const isError = "error" in lastPage;
+			if (isError || lastPage.length < 10) {
+				return;
 			}
 			return allPages.length; // 次のページ番号
 		},
