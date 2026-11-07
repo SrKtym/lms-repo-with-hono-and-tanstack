@@ -1,0 +1,16 @@
+{
+	"name": "@lms-repo/shared",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./utils": "./src/index.ts"
+	},
+	"scripts": {
+		"check": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@lms-repo/config": "workspace:*",
+		"typescript": "catalog:"
+	}
+}

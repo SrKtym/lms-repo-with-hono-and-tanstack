@@ -7,9 +7,9 @@ Allow: /
 # ブロックするパス
 Disallow: /profile
 Disallow: /dashboard
-Disallow: /course-list
+Disallow: /my-courses/
 Disallow: /schedules
 Disallow: /register-courses
 Disallow: /notifications
-Disallow: /course-management
+Disallow: /prof/
 Disallow: /admin

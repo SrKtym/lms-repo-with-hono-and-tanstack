@@ -46,6 +46,7 @@
         "@lms-repo/auth": "workspace:*",
         "@lms-repo/db": "workspace:*",
         "@lms-repo/env": "workspace:*",
+        "@lms-repo/shared": "workspace:*",
         "@lms-repo/ui": "workspace:*",
         "@tailwindcss/vite": "^4.1.18",
         "@tanstack/query-async-storage-persister": "^5.100.9",
@@ -81,6 +82,7 @@
         "@lms-repo/auth": "workspace:*",
         "@lms-repo/db": "workspace:*",
         "@lms-repo/emails": "workspace:",
+        "@lms-repo/shared": "workspace:*",
         "hono": "catalog:",
       },
       "devDependencies": {
@@ -154,7 +156,14 @@
       },
       "devDependencies": {
         "@lms-repo/config": "workspace:*",
-        "@types/bun": "catalog:",
+        "typescript": "catalog:",
+      },
+    },
+    "packages/shared": {
+      "name": "@lms-repo/shared",
+      "version": "0.0.0",
+      "devDependencies": {
+        "@lms-repo/config": "workspace:*",
         "typescript": "catalog:",
       },
     },
@@ -166,6 +175,7 @@
         "@heroui/styles": "^3.0.1",
         "@internationalized/date": "^3.12.0",
         "@lms-repo/db": "workspace:*",
+        "@lms-repo/shared": "workspace:*",
         "@unpic/react": "^1.0.2",
         "class-variance-authority": "^0.7.1",
         "motion": "catalog:",
@@ -502,6 +512,8 @@
     "@lms-repo/emails": ["@lms-repo/emails@workspace:packages/emails"],
 
     "@lms-repo/env": ["@lms-repo/env@workspace:packages/env"],
+
+    "@lms-repo/shared": ["@lms-repo/shared@workspace:packages/shared"],
 
     "@lms-repo/ui": ["@lms-repo/ui@workspace:packages/ui"],
 

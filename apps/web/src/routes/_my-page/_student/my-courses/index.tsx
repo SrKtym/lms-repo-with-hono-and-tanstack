@@ -1,24 +1,45 @@
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { BookOpen } from "@lms-repo/ui/assets/icons/book-open";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { CourseCard } from "@lms-repo/ui/components/cards/course-card";
 import { DefaultSearchField } from "@lms-repo/ui/components/search-field";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
-import { Link } from "@tanstack/react-router";
+import { addCoverImagesToCourses } from "@lms-repo/ui/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
 
-export default function RegisteredCourseList({
-	coursesWithCoverImage,
-}: {
-	coursesWithCoverImage: (FetchRegisteredCoursesReturnType[number] & {
-		coverImage?: string;
-	})[];
-}) {
+export const Route = createFileRoute("/_my-page/_student/my-courses/")({
+	component: RouteComponent,
+	loader: async () => {
+		const courses = await queryClient.ensureQueryData({
+			queryKey: ["registered-courses"],
+			queryFn: fetchRegisteredCoursesQueryFn,
+			...QUERY_CONFIG.USER_DATA,
+		});
+
+		return { courses };
+	},
+	head: () => {
+		return {
+			meta: [
+				{
+					title: "講義一覧 | LMS-repo",
+				},
+			],
+		};
+	},
+});
+
+function RouteComponent() {
+	const { courses } = Route.useLoaderData();
 	const selectItems = ["昇順", "降順"];
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState("昇順");
+
+	const coursesWithCoverImage = addCoverImagesToCourses(courses);
 
 	// 検索フィルタリング
 	const filteredCourses = coursesWithCoverImage.filter(
@@ -98,11 +119,11 @@ export default function RegisteredCourseList({
 							>
 								<m.div whileHover={{ y: -4 }} transition={{ duration: 0.2 }}>
 									<CourseCard
-										course={currentCourseData}
+										course={{ ...currentCourseData, isChecked: false }}
 										LinkComponent={
 											<Link
-												to="/course-list"
-												search={{
+												to="/my-courses/$course-id"
+												params={{
 													"course-id": currentCourseData.id,
 												}}
 											>

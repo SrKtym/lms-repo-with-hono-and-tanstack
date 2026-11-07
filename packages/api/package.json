@@ -13,6 +13,7 @@
 		"@lms-repo/auth": "workspace:*",
 		"@lms-repo/db": "workspace:*",
 		"@lms-repo/emails": "workspace:",
+		"@lms-repo/shared": "workspace:*",
 		"hono": "catalog:"
 	},
 	"devDependencies": {

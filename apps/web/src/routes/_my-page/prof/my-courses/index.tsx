@@ -1,4 +1,3 @@
-import type { FetchCreatedCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { BookOpen } from "@lms-repo/ui/assets/icons/book-open";
 import { SquarePlus } from "@lms-repo/ui/assets/icons/square-plus";
@@ -6,22 +5,44 @@ import { DefaultButton } from "@lms-repo/ui/components/button";
 import { CourseCard } from "@lms-repo/ui/components/cards/course-card";
 import { DefaultSearchField } from "@lms-repo/ui/components/search-field";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
-import { Link } from "@tanstack/react-router";
+import { addCoverImagesToCourses } from "@lms-repo/ui/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { CreateCourseForm } from "./create-course-form";
+import { CreateCourseForm } from "@/components/_my-page/prof/my-courses/create-course-form";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { fetchCreatedCoursesQueryFn } from "@/utils/query/courses";
 
-export default function CreatedCourseList({
-	coursesWithCoverImage,
-}: {
-	coursesWithCoverImage: (FetchCreatedCoursesReturnType[number] & {
-		coverImage?: string;
-	})[];
-}) {
+export const Route = createFileRoute("/_my-page/prof/my-courses/")({
+	component: RouteComponent,
+	loader: async () => {
+		const courses = await queryClient.ensureQueryData({
+			queryKey: ["created-courses"],
+			queryFn: fetchCreatedCoursesQueryFn,
+			...QUERY_CONFIG.USER_DATA,
+		});
+
+		return { courses };
+	},
+	head: () => {
+		return {
+			meta: [
+				{
+					title: "講義管理 | LMS-repo",
+				},
+			],
+		};
+	},
+});
+
+function RouteComponent() {
+	const { courses } = Route.useLoaderData();
 	const selectItems = ["昇順", "降順"];
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState("昇順");
 	const [isModalOpen, setIsModalOpen] = useState(false);
+
+	const coursesWithCoverImage = addCoverImagesToCourses(courses);
 
 	// 検索フィルタリング
 	const filteredCourses = coursesWithCoverImage.filter((course) =>
@@ -109,8 +130,8 @@ export default function CreatedCourseList({
 										}}
 										LinkComponent={
 											<Link
-												to="/course-management"
-												search={{
+												to="/prof/my-courses/$course-id"
+												params={{
 													"course-id": currentCourseData.id,
 												}}
 											>

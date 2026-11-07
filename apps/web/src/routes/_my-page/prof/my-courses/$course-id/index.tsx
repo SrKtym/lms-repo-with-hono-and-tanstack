@@ -1,37 +1,80 @@
-import type { FetchAnnouncementsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/announcements";
-import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
-import { CancelButton } from "@lms-repo/ui/components/button";
+import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { AnnouncementCard } from "@lms-repo/ui/components/cards/announcement-card";
 import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { Loader } from "@lms-repo/ui/components/loader";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
-import { Link } from "@tanstack/react-router";
+import { addCoverImagesToCourses } from "@lms-repo/ui/lib/utils";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { CreateAnnouncementForm } from "@/components/_my-page/prof/my-courses/create-announcement-form";
+import { CreateAssignmentForm } from "@/components/_my-page/prof/my-courses/create-assignment-form";
 import { useAnnouncements } from "@/hooks/announcements";
 import { useAssignments } from "@/hooks/assignments";
 import { useMembersByCourseId } from "@/hooks/students";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { fetchAnnouncementsQueryFn } from "@/utils/query/announcements";
+import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchCreatedCoursesQueryFn } from "@/utils/query/courses";
 
-interface RegisteredCourseInfosProps {
-	courseWithCoverImage?: FetchRegisteredCoursesReturnType[number] & {
-		coverImage?: string;
-	};
-	announcements: FetchAnnouncementsFromUserCoursesReturnType;
-	assignments: FetchAssignmentsFromUserCoursesReturnType;
-	courseId: string;
-}
+export const Route = createFileRoute("/_my-page/prof/my-courses/$course-id/")({
+	component: RouteComponent,
+	loader: async ({ params: { "course-id": courseId } }) => {
+		const [courses, announcements, assignments] = await Promise.all([
+			queryClient.ensureQueryData({
+				queryKey: ["created-courses"],
+				queryFn: fetchCreatedCoursesQueryFn,
+				...QUERY_CONFIG.USER_DATA,
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["announcements-related-courses"],
+				queryFn: () => fetchAnnouncementsQueryFn(courseId),
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["assignments-related-courses"],
+				queryFn: () => fetchAssignmentsQueryFn(courseId),
+			}),
+		]);
 
-export default function RegisteredCourseInfos({
-	courseWithCoverImage,
-	announcements,
-	assignments,
-	courseId,
-}: RegisteredCourseInfosProps) {
+		return { courses, announcements, assignments };
+	},
+	head: ({ match }) => {
+		const courseName =
+			match.loaderData?.courses?.find(
+				({ id }) => id === match.params["course-id"],
+			)?.name || "講義詳細";
+
+		return {
+			meta: [
+				{
+					title: `${courseName} | LMS-repo`,
+				},
+			],
+		};
+	},
+});
+
+function RouteComponent() {
+	const { "course-id": courseId } = Route.useParams();
+	const { courses, announcements, assignments } = Route.useLoaderData();
+
+	const coursesWithCoverImage = addCoverImagesToCourses(courses);
+
+	const targetCourse = coursesWithCoverImage.find(
+		(course) => course.id === courseId,
+	);
+
+	if (!targetCourse) {
+		throw new Error("講義が見つかりません");
+	}
+
 	const { data: announcementsData = [] } = useAnnouncements(announcements);
 	const { data: assignmentsData = [] } = useAssignments(assignments);
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
+	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
+	const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
 
 	const targetAnnouncements = announcementsData.filter(
 		(announcement) => announcement.courseId === courseId,
@@ -46,7 +89,7 @@ export default function RegisteredCourseInfos({
 			<div className="relative flex h-48 items-end md:h-64">
 				<div className="absolute inset-0">
 					<Image
-						src={courseWithCoverImage?.coverImage || ""}
+						src={targetCourse.coverImage || ""}
 						layout="fullWidth"
 						sizes="100vw"
 						className="h-full w-full object-cover"
@@ -55,8 +98,7 @@ export default function RegisteredCourseInfos({
 					/>
 					<div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
 					<Link
-						to="/course-list"
-						search={(prev) => ({ ...prev, "course-id": undefined })}
+						to="/prof/my-courses"
 						className="absolute top-4 left-4 flex items-center gap-1"
 					>
 						<CancelButton size="sm">
@@ -68,12 +110,9 @@ export default function RegisteredCourseInfos({
 				<div className="relative z-10 container mx-auto max-w-screen-xl p-6">
 					<div className="text-white">
 						<h1 className="text-2xl font-medium md:text-3xl">
-							{courseWithCoverImage?.name}
+							{targetCourse.name}
 						</h1>
-						<p className="mt-1 text-white/80">
-							{courseWithCoverImage?.classRoom}
-						</p>
-						<p className="text-white/80">{courseWithCoverImage?.professor}</p>
+						<p className="mt-1 text-white/80">{targetCourse.classRoom}</p>
 					</div>
 				</div>
 			</div>
@@ -88,7 +127,17 @@ export default function RegisteredCourseInfos({
 									<h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">
 										お知らせ
 									</h2>
+									<DefaultButton
+										onPress={() => setIsAnnouncementModalOpen(true)}
+									>
+										お知らせを作成
+									</DefaultButton>
 								</div>
+								<CreateAnnouncementForm
+									isOpen={isAnnouncementModalOpen}
+									onOpenChange={setIsAnnouncementModalOpen}
+									courseId={courseId}
+								/>
 
 								{targetAnnouncements.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -114,18 +163,26 @@ export default function RegisteredCourseInfos({
 									<h2 className="text-xl font-medium text-gray-900 dark:text-gray-100">
 										課題
 									</h2>
+									<DefaultButton onPress={() => setIsAssignmentModalOpen(true)}>
+										課題を作成
+									</DefaultButton>
 								</div>
+								<CreateAssignmentForm
+									isOpen={isAssignmentModalOpen}
+									onOpenChange={setIsAssignmentModalOpen}
+									courseId={courseId}
+								/>
 
 								{targetAssignments.length > 0 ? (
 									<div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 										{targetAssignments.map((assignment) => (
 											<Link
 												key={assignment.id}
-												to="/course-list"
-												search={(prev) => ({
-													...prev,
+												to="/prof/my-courses/$course-id/assignments/$assignment-id"
+												params={{
+													"course-id": courseId,
 													"assignment-id": assignment.id,
-												})}
+												}}
 												className="block"
 											>
 												<AssignmentCard
