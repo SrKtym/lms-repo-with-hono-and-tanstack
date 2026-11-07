@@ -3,7 +3,7 @@
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
-import { CreateProfDataForm } from "@/components/_my-page/_prof/shared/create-prof-data-form";
+import { CreateProfDataForm } from "@/components/_my-page/prof/shared/create-prof-data-form";
 import {
 	asyncStoragePersister,
 	QUERY_CONFIG,
@@ -11,7 +11,7 @@ import {
 } from "@/lib/query-client";
 import { fetchProfDataQueryFn } from "@/utils/query/professors";
 
-export const Route = createFileRoute("/_my-page/_prof")({
+export const Route = createFileRoute("/_my-page/prof")({
 	component: ProfLayoutComponent,
 	beforeLoad: ({ context }) => {
 		const { role } = context;

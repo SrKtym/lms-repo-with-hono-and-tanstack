@@ -73,8 +73,8 @@ export function Header({ email, name, image, role }: UserDataTypeWithImage) {
 						})}
 					{role === "professor" && (
 						<Link
-							to="/course-management"
-							className={`nav-link ${location.pathname === "/course-management" && "nav-link-active"}
+							to="/prof/my-courses"
+							className={`nav-link ${location.pathname === "/prof/my-courses" && "nav-link-active"}
 								`}
 						>
 							<List />

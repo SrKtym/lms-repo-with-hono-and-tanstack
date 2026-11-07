@@ -46,7 +46,7 @@ export function VideoTutorial() {
 						setPath("/schedules");
 						return 1;
 					case 1:
-						setPath("/course-list?course-id=abc&assignment-id=def");
+						setPath("/my-courses/abc/assignments/def");
 						return 2;
 					case 2:
 						setPath("/register-courses");

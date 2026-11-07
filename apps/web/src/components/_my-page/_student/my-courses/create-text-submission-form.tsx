@@ -1,12 +1,11 @@
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultDisclosure } from "@lms-repo/ui/components/disclosure";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { toast } from "@lms-repo/ui/components/toast";
-import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { useSearch } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
@@ -17,11 +16,11 @@ import {
 	useTextSubmissions,
 } from "@/hooks/submissions";
 
-export function CreateTextSubmissionForm() {
-	const { "assignment-id": assignmentId } = useSearch({
-		from: "/_my-page/_student/course-list",
-	});
-
+export function CreateTextSubmissionForm({
+	assignmentId,
+}: {
+	assignmentId: string;
+}) {
 	const { mutateAsync: createTextSubmission } = useCreateTextSubmission();
 	const { mutate: deleteTextSubmission } = useDeleteTextSubmission();
 	const { data: textSubmissions } = useTextSubmissions(assignmentId);

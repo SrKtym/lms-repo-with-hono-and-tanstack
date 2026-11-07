@@ -1,4 +1,3 @@
-import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { CancelButton } from "@lms-repo/ui/components/button";
 import { AssignmentDetailCard } from "@lms-repo/ui/components/cards/assignment-detail-card";
@@ -6,7 +5,7 @@ import { CommentsCard } from "@lms-repo/ui/components/cards/comments-card";
 import { EvaluatedCard } from "@lms-repo/ui/components/cards/evaluated-card";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
 import { toast } from "@lms-repo/ui/components/toast";
-import { Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useEffect, useState } from "react";
 import { CreateCommentForm } from "@/components/_my-page/shared/create-comment-form";
@@ -16,16 +15,57 @@ import {
 	useDownloadUrl,
 	useGradeSubmission,
 } from "@/hooks/submissions";
+import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchCreatedCoursesQueryFn } from "@/utils/query/courses";
 
-interface CreatedCourseContentsProps {
-	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
-	assignmentId: string;
-}
+export const Route = createFileRoute(
+	"/_my-page/prof/my-courses/$course-id/assignments/$assignment-id",
+)({
+	component: RouteComponent,
+	loader: async ({ params: { "course-id": courseId } }) => {
+		const [courses, assignments] = await Promise.all([
+			queryClient.ensureQueryData({
+				queryKey: ["created-courses"],
+				queryFn: fetchCreatedCoursesQueryFn,
+				...QUERY_CONFIG.USER_DATA,
+			}),
+			queryClient.ensureQueryData({
+				queryKey: ["assignments-related-courses"],
+				queryFn: () => fetchAssignmentsQueryFn(courseId),
+			}),
+		]);
 
-export default function CreatedCourseContents({
-	targetAssignment,
-	assignmentId,
-}: CreatedCourseContentsProps) {
+		return { courses, assignments };
+	},
+	head: ({ match }) => {
+		const assignmentTitle = match.loaderData?.assignments?.find(
+			({ id }) => id === match.params["assignment-id"],
+		)?.title;
+
+		return {
+			meta: [
+				{
+					title: `${assignmentTitle || "課題詳細"} | LMS-repo`,
+				},
+			],
+		};
+	},
+});
+
+function RouteComponent() {
+	const { "course-id": courseId, "assignment-id": assignmentId } =
+		Route.useParams();
+	const { assignments } = Route.useLoaderData();
+
+	const targetAssignment = assignments.find(
+		(assignment) => assignment.id === assignmentId,
+	);
+
+	if (!targetAssignment) {
+		throw new Error("課題が見つかりません");
+	}
+
 	const propaties = {
 		initial: { opacity: 0, y: 10 },
 		animate: { opacity: 1, y: 0 },
@@ -109,8 +149,10 @@ export default function CreatedCourseContents({
 				<div>
 					<div className="flex items-center space-x-4">
 						<Link
-							to="/course-management"
-							search={(prev) => ({ ...prev, "assignment-id": undefined })}
+							to="/prof/my-courses/$course-id"
+							params={{
+								"course-id": courseId,
+							}}
 							className="flex items-center gap-1"
 						>
 							<CancelButton size="sm">
