@@ -121,9 +121,7 @@ function RouteComponent() {
 		if ("error" in result) {
 			toast.danger(result.error);
 		} else {
-			toast.success(
-				"教員アカウントへの変更申請が送信されました。管理者に承認されるまでお待ちください。",
-			);
+			toast.success(result.message);
 		}
 	};
 

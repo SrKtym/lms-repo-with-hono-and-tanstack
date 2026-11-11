@@ -119,10 +119,10 @@ export default function OtpVerifyForm({
 					</div>
 				</div>
 				<h3 className="mb-2 font-semibold text-gray-900 dark:text-gray-100">
-					SMS/メール認証
+					メール認証
 				</h3>
 				<p className="text-sm text-gray-600 dark:text-gray-400">
-					登録済みの電話番号またはメールアドレスに送信された6桁のコードを入力してください
+					登録済みのメールアドレスに送信された6桁のコードを入力してください
 				</p>
 			</div>
 

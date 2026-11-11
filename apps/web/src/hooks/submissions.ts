@@ -1,4 +1,5 @@
 import type {
+	FetchAllSubmissionsWithStudentsReturnType,
 	FetchFileMetadataByUserIdReturnType,
 	FetchTextSubmissionsByUserIdReturnType,
 } from "@lms-repo/db/utils/query/submissions";
@@ -19,7 +20,10 @@ import {
 } from "@/utils/query/submissions";
 
 // 指定された課題のすべての提出状況を取得するフック（教員用、無限スクロール対応）
-export const useAllSubmissionsWithStudents = (assignmentId: string) => {
+export const useAllSubmissionsWithStudents = (
+	assignmentId: string,
+	initialData: FetchAllSubmissionsWithStudentsReturnType,
+) => {
 	return useInfiniteQuery({
 		queryKey: ["all-submissions-with-students", assignmentId],
 		queryFn: async ({ pageParam = 0 }) => {
@@ -29,10 +33,11 @@ export const useAllSubmissionsWithStudents = (assignmentId: string) => {
 				pageParam * 10,
 			);
 
-			if ("error" in data) {
-				return [];
-			}
 			return data;
+		},
+		initialData: {
+			pages: [initialData],
+			pageParams: [0],
 		},
 		initialPageParam: 0,
 		getNextPageParam: (lastPage, allPages) => {
@@ -45,7 +50,7 @@ export const useAllSubmissionsWithStudents = (assignmentId: string) => {
 };
 
 // テキスト提出取得のフック
-export const useTextSubmissions = (assignmentId?: string) => {
+export const useTextSubmissions = (assignmentId: string) => {
 	return useQuery({
 		queryKey: ["text-submissions", assignmentId],
 		queryFn: () => fetchTextSubmissionsQueryFn(assignmentId),
@@ -53,7 +58,7 @@ export const useTextSubmissions = (assignmentId?: string) => {
 };
 
 // ファイルメタデータ取得のフック
-export const useFileMetadata = (assignmentId?: string) => {
+export const useFileMetadata = (assignmentId: string) => {
 	return useQuery({
 		queryKey: ["file-metadata", assignmentId],
 		queryFn: () => fetchFileMetadataQueryFn(assignmentId),

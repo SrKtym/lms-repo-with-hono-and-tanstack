@@ -199,6 +199,8 @@ export function SubmissionsTable({
 									</button>
 								</Table.Cell>
 								<Table.Cell>{file.mimeType}</Table.Cell>
+								<Table.Cell />
+								<Table.Cell />
 							</Table.Row>
 						)}
 					</Table.Collection>
