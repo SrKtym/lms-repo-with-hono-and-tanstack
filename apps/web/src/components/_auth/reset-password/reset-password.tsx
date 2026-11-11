@@ -61,7 +61,7 @@ export default function ResetPassword({ token }: { token: string }) {
 				})
 				.refine((data) => data.password === data.confirmPassword, {
 					path: ["confirmPassword"],
-					message: "パスワードが一致しません",
+					error: "パスワードが一致しません",
 				}),
 		},
 	});

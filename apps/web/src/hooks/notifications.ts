@@ -14,7 +14,7 @@ import {
 // 通知一覧を取得するカスタムフック（無限スクロール・ポーリング対応）
 export const useNotifications = (
 	limit: number,
-	initialData?: FetchNotificationsReturnType,
+	initialData: FetchNotificationsReturnType,
 ) => {
 	return useInfiniteQuery({
 		queryKey: ["notifications", limit],
@@ -23,12 +23,10 @@ export const useNotifications = (
 		},
 		enabled: true,
 		initialPageParam: 0,
-		initialData: initialData
-			? {
-					pages: [initialData],
-					pageParams: [0],
-				}
-			: undefined,
+		initialData: {
+			pages: [initialData],
+			pageParams: [0],
+		},
 		getNextPageParam: (lastPage, allPages) => {
 			if (lastPage.length < limit) {
 				return; // データがlimit件未満の場合はこれ以上データがない
@@ -42,7 +40,7 @@ export const useNotifications = (
 	});
 };
 
-// 通知一覧を取得するカスタムフック（従来のページネーション対応）
+// 通知一覧を取得するカスタムフック（ページネーション対応）
 export const useNotificationsPaginated = (
 	page: number,
 	limit: number,

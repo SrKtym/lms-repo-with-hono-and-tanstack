@@ -6,7 +6,7 @@ import { fetchAllUsersQueryFn } from "@/utils/query/admin";
 // すべてのユーザーを取得するカスタムフック
 export const useAllUsers = (
 	limit: number,
-	initialData?: UserDataTypeWithId[],
+	initialData: UserDataTypeWithId[],
 	searchQuery?: string,
 ) => {
 	return useInfiniteQuery({
@@ -16,12 +16,10 @@ export const useAllUsers = (
 		},
 		enabled: true,
 		initialPageParam: 0,
-		initialData: initialData
-			? {
-					pages: [initialData],
-					pageParams: [0],
-				}
-			: undefined,
+		initialData: {
+			pages: [initialData],
+			pageParams: [0],
+		},
 		...QUERY_CONFIG.USER_DATA,
 		getNextPageParam: (lastPage, allPages) => {
 			if (lastPage.length < limit) {

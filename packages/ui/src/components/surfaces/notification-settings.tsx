@@ -56,8 +56,8 @@ export function NotificationSettings({
 								<span className="text-sm">
 									{key === "announcementsEmail" && "お知らせの投稿・更新"}
 									{key === "assignmentsEmail" && "課題の投稿・更新"}
-									{key === "submissionsEmail" && "課題の提出"}
-									{key === "evaluationsEmail" && "成績・評価"}
+									{key === "submissionsEmail" && "課題の提出（未実装）"}
+									{key === "evaluationsEmail" && "成績・評価（未実装）"}
 									{key === "remindersEmail" && "締切リマインダー"}
 								</span>
 								<EmailNotificationSwitch

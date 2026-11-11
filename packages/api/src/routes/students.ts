@@ -67,7 +67,10 @@ export const studentsRoute = new Hono<{
 		});
 
 		return c.json(
-			{ message: "教員アカウントへの変更申請が送信されました" },
+			{
+				message:
+					"教員アカウントへの変更申請が送信されました。管理者に承認されるまでお待ちください。",
+			},
 			200,
 		);
 	})
