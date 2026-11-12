@@ -1,14 +1,13 @@
 import { Storage } from "@google-cloud/storage";
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { TextSubmissions } from "@lms-repo/db/types";
+
 import {
-	createFileSubmissionMetadata,
-	createTextSubmission,
-	deleteFileSubmissionMetadata,
-	deleteTextSubmission,
+	deleteFileAndSyncStatus,
+	deleteTextAndSyncStatus,
+	submitFilesWithStatus,
+	submitTextWithStatus,
 	updateSubmissionScore,
-	updateSubmissionStatus,
 } from "@lms-repo/db/utils/mutation/submissions";
 import { fetchAssignmentPointsById } from "@lms-repo/db/utils/query/assignments";
 import {
@@ -23,6 +22,11 @@ import {
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
 import { z } from "zod";
+import {
+	metadataSchema,
+	signedUrlSchema,
+	textSubmissionsSchema,
+} from "../schema/submissions";
 
 const storage = new Storage({
 	// エミュレータ環境の場合のみAPIエンドポイントを設定
@@ -39,18 +43,9 @@ const storage = new Storage({
 
 const bucket = storage.bucket(env.GCS_BUCKET_NAME);
 
-// ファイルアップロードの制限
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
-const MAX_FILE_COUNT = 5;
-const ALLOWED_MIME_TYPES = [
-	"application/pdf",
-	"application/msword",
-	"application/vnd.ms-excel",
-	"application/vnd.ms-powerpoint",
-	"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-	"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-	"application/vnd.openxmlformats-officedocument.presentationml.presentation",
-];
+type FileMetadata =
+	| FetchFileMetadataByIdReturnType
+	| FetchFileMetadataByUserIdReturnType[number];
 
 // エミュレータ環境でバケットが存在しない場合は作成
 async function ensureBucketExists() {
@@ -63,42 +58,6 @@ async function ensureBucketExists() {
 	}
 }
 
-// 署名付きURL生成スキーマ
-const signedUrlSchema = z
-	.array(
-		z.object({
-			fileName: z.string(),
-			fileType: z.string(),
-			fileSize: z
-				.number()
-				.max(MAX_FILE_SIZE, "ファイルサイズは10MB以下である必要があります"),
-		}),
-	)
-	.max(
-		MAX_FILE_COUNT,
-		`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
-	);
-
-// メタデータスキーマ
-const metadataSchema = z.object({
-	metadataList: z
-		.array(
-			z.object({
-				objectName: z.string(),
-				originalName: z.string(),
-				mimeType: z.string(),
-				fileSize: z
-					.number()
-					.max(MAX_FILE_SIZE, "ファイルサイズは10MB以下である必要があります"),
-			}),
-		)
-		.max(
-			MAX_FILE_COUNT,
-			`一度にアップロードできるファイルは${MAX_FILE_COUNT}個までです`,
-		),
-	assignmentId: z.string(),
-});
-
 // 提出に関するロジック（学生用）
 export const submissionsRouteForStudent = new Hono<{
 	Variables: {
@@ -107,109 +66,110 @@ export const submissionsRouteForStudent = new Hono<{
 	};
 }>()
 	// エミュレータ環境用の直接アップロードエンドポイント
-	.post("/upload", async (c) => {
-		const formData = await c.req.formData();
-		const file = formData.get("file") as File;
-		const fileName = formData.get("fileName") as string;
-
-		if (!file || !fileName) {
-			return c.json({ error: "ファイルが見つかりません" }, 404);
-		}
-
-		// バケットが存在することを確認
-		await ensureBucketExists();
-
-		// エミュレータ環境ではストレージクライアントを使用して直接アップロード
-		const fileObject = bucket.file(`uploads/${fileName}`);
-		const buffer = Buffer.from(await file.arrayBuffer());
-		await fileObject.save(buffer, {
-			contentType: file.type,
-		});
-
-		return c.json({
-			objectName: `uploads/${fileName}`,
-			originalName: fileName,
-			mimeType: file.type,
-			fileSize: file.size,
-		});
-	})
-	// ファイルメタデータの一括保存（複数ファイルアップロード用）
-	.post("/metadata", zValidator("json", metadataSchema), async (c) => {
-		const { userId } = c.get("session");
-		const { metadataList, assignmentId } = c.req.valid("json");
-
-		// MIMEタイプの検証
-		for (const metadata of metadataList) {
-			if (!ALLOWED_MIME_TYPES.includes(metadata.mimeType)) {
-				return c.json(
-					{
-						error: `許可されていないファイルタイプです: ${metadata.mimeType}`,
-						allowedTypes: ALLOWED_MIME_TYPES,
-					},
-					400,
-				);
-			}
-		}
-
-		// メタデータを一括保存
-		const results = await Promise.all(
-			metadataList.map(async (metadata) => {
-				const result = await createFileSubmissionMetadata({
-					assignmentId,
-					bucket: env.GCS_BUCKET_NAME,
-					...metadata,
-					createdBy: userId,
-				});
-				return result;
-			}),
-		);
-
-		// 提出状況を更新
-		const updateResult = await updateSubmissionStatus(
-			assignmentId,
-			userId,
-			"提出済み",
-		);
-
-		if (updateResult.status !== 200) {
-			return c.json(updateResult);
-		}
-
-		return c.json({ successCount: results.length, results }, 201);
-	})
-	// 課題の提出（テキスト形式）
 	.post(
-		"/text",
-		zValidator("json", z.custom<Omit<TextSubmissions, "createdBy">>()),
+		"/:assignment-id/upload",
+		zValidator(
+			"form",
+			z.object({
+				files: z.array(z.file()).or(z.file()),
+			}),
+		),
 		async (c) => {
-			const { userId } = c.get("session");
-			const { assignmentId, title, description } = c.req.valid("json");
+			const { files } = c.req.valid("form");
 
-			const result = await createTextSubmission({
-				assignmentId,
-				title,
-				description,
-				createdBy: userId,
-			});
-
-			// 提出状況を更新
-			const updateResult = await updateSubmissionStatus(
-				assignmentId,
-				userId,
-				"提出済み",
-			);
-
-			if (updateResult.status !== 200) {
-				return c.json(updateResult);
+			// 単一ファイルでも配列に正規化
+			const fileList = Array.isArray(files) ? files : [files];
+			if (fileList.length === 0) {
+				return c.json({ error: "ファイルが見つかりません" }, 404);
 			}
-			return c.json(result, 201);
+
+			// バケットが存在することを確認
+			await ensureBucketExists();
+
+			// エミュレータ環境のストレージに並列でアップロード
+			const uploadedMetadata = await Promise.all(
+				fileList.map(async (file) => {
+					const fileName = file.name;
+					const fileObject = bucket.file(`uploads/${fileName}`);
+					const buffer = Buffer.from(await file.arrayBuffer());
+					await fileObject.save(buffer, {
+						contentType: file.type,
+					});
+					return {
+						objectName: `uploads/${fileName}`,
+						originalName: fileName,
+						mimeType: file.type,
+						fileSize: file.size,
+					};
+				}),
+			);
+			// メタデータの配列を返す
+			return c.json(uploadedMetadata, 200);
 		},
 	)
-	// 課題提出状況の取得
-	.get("/status/:assignment-id?", async (c) => {
+	// ファイルメタデータの一括保存（複数ファイルアップロード用）
+	.post(
+		"/:assignment-id/files",
+		zValidator("json", metadataSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { "assignment-id": assignmentId } = c.req.param();
+			const { metadataList } = c.req.valid("json");
+
+			// トランザクション処理（メタデータ登録 + ステータス更新）
+			const result = await submitFilesWithStatus(
+				assignmentId,
+				userId,
+				env.GCS_BUCKET_NAME,
+				metadataList,
+			);
+
+			if ("error" in result) {
+				const { status, ...body } = result;
+				return c.json(body, status);
+			}
+
+			return c.json(result, 200);
+		},
+	)
+	// 課題の提出（テキスト形式）
+	.post(
+		"/:assignment-id/text",
+		zValidator("json", textSubmissionsSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { "assignment-id": assignmentId } = c.req.param();
+			const req = c.req.valid("json");
+
+			const merged = { createdBy: userId, assignmentId, ...req };
+
+			// トランザクション処理（テキスト提出 + ステータス更新）
+			const { status, ...body } = await submitTextWithStatus(merged);
+
+			return c.json(body, status);
+		},
+	)
+	// 特定の課題の提出状況の取得
+	.get("/:assignment-id/status", async (c) => {
 		const { userId } = c.get("session");
 		const { "assignment-id": assignmentId } = c.req.param();
 		const submissions = await fetchSubmissionsState(userId, assignmentId);
+		return c.json(submissions, 200);
+	})
+	// すべての課題の提出状況の取得
+	.get("/status", async (c) => {
+		const { userId } = c.get("session");
+		const submissions = await fetchSubmissionsState(userId);
 		return c.json(submissions, 200);
 	})
 	// ファイルの削除
@@ -233,36 +193,20 @@ export const submissionsRouteForStudent = new Hono<{
 			// GCS削除に失敗してもDB削除は続行
 		}
 
-		// データベースからメタデータを削除
-		const deleteResult = await deleteFileSubmissionMetadata(id);
+		const { status, ...body } = await deleteFileAndSyncStatus(
+			file.id,
+			userId,
+			file.assignmentId,
+		);
 
-		if (deleteResult.status !== 200) {
-			return c.json(deleteResult, 500);
-		}
-
-		// 削除後にテキスト提出とファイル提出が両方存在しない場合、ステータスを「未提出」に更新
-		const [remainingTextSubmissions, remainingFileSubmissions] =
-			await Promise.all([
-				fetchTextSubmissionsByUserId(userId, file.assignmentId),
-				fetchFileMetadataByUserId(userId, file.assignmentId),
-			]);
-
-		const isNotSubmitted =
-			remainingTextSubmissions.length === 0 &&
-			remainingFileSubmissions.length === 0;
-
-		if (isNotSubmitted) {
-			await updateSubmissionStatus(file.assignmentId, userId, "未提出");
-		}
-
-		return c.json({ message: "ファイルを削除しました" }, 200);
+		return c.json(body, status);
 	})
 	// テキスト提出物の削除
 	.delete("/text/:id", async (c) => {
 		const { userId } = c.get("session");
 		const id = c.req.param("id");
 
-		// ユーザーが所有するテキスト提出か確認
+		// ユーザーが所有するテキスト提出物か確認
 		const textSubmissionsData = await fetchTextSubmissionsByUserId(userId);
 		const submission = textSubmissionsData?.find((s) => s.id === id);
 
@@ -270,29 +214,13 @@ export const submissionsRouteForStudent = new Hono<{
 			return c.json({ error: "テキスト提出物が見つかりません" }, 404);
 		}
 
-		// データベースからテキスト提出物を削除
-		const deleteResult = await deleteTextSubmission(id);
+		const { status, ...body } = await deleteTextAndSyncStatus(
+			submission.id,
+			userId,
+			submission.assignmentId,
+		);
 
-		if (deleteResult.status !== 200) {
-			return c.json(deleteResult, 500);
-		}
-
-		// 削除後にテキスト提出とファイル提出が両方存在しない場合、ステータスを「未提出」に更新
-		const [remainingTextSubmissions, remainingFileSubmissions] =
-			await Promise.all([
-				fetchTextSubmissionsByUserId(userId, submission.assignmentId),
-				fetchFileMetadataByUserId(userId, submission.assignmentId),
-			]);
-
-		const isNotSubmitted =
-			remainingTextSubmissions.length === 0 &&
-			remainingFileSubmissions.length === 0;
-
-		if (isNotSubmitted) {
-			await updateSubmissionStatus(submission.assignmentId, userId, "未提出");
-		}
-
-		return c.json({ message: "テキスト提出物を削除しました" }, 200);
+		return c.json(body, 200);
 	});
 
 // 提出に関するロジック（教員用）
@@ -303,17 +231,17 @@ export const submissionsRouteForProf = new Hono<{
 	};
 }>() // 採点（教員用）
 	.post(
-		"/grade",
+		"/:assignment-id/grade",
 		zValidator(
 			"json",
 			z.object({
-				userId: z.string(),
-				assignmentId: z.string(),
+				userId: z.uuidv4(),
 				score: z.number(),
 			}),
 		),
 		async (c) => {
-			const { userId, assignmentId, score } = c.req.valid("json");
+			const { "assignment-id": assignmentId } = c.req.param();
+			const { userId, score } = c.req.valid("json");
 
 			const assignmentPoints = await fetchAssignmentPointsById(assignmentId);
 
@@ -325,29 +253,36 @@ export const submissionsRouteForProf = new Hono<{
 				return c.json({ error: "点数が課題の配点を超えています" }, 400);
 			}
 
-			const result = await updateSubmissionScore(assignmentId, userId, score);
+			const { status, ...body } = await updateSubmissionScore(
+				assignmentId,
+				userId,
+				score,
+			);
 
-			if (result.status !== 200) {
-				return c.json(result, 500);
-			}
-
-			return c.json(result, 200);
+			return c.json(body, status);
 		},
-	) // 指定された課題のすべての提出状況を取得（教員用、無限スクロールに対応）
-	.get("/status", async (c) => {
-		const { assignmentId, limit, offset } = c.req.query();
+	) // 指定された課題のすべての提出物を取得（教員用、無限スクロールに対応）
+	.get(
+		"/:assignment-id",
+		zValidator(
+			"query",
+			z.object({
+				limit: z.coerce.number(),
+				offset: z.coerce.number(),
+			}),
+		),
+		async (c) => {
+			const { "assignment-id": assignmentId } = c.req.param();
+			const { limit, offset } = c.req.valid("query");
 
-		if (!assignmentId) {
-			return c.json({ error: "指定された課題がありません" }, 404);
-		}
-
-		const submissions = await fetchAllSubmissionsWithStudents(
-			assignmentId,
-			Number(limit),
-			Number(offset),
-		);
-		return c.json(submissions, 200);
-	});
+			const submissions = await fetchAllSubmissionsWithStudents(
+				assignmentId,
+				limit,
+				offset,
+			);
+			return c.json(submissions, 200);
+		},
+	);
 
 // 提出に関するロジック(共通)
 export const submissionsRouteForCommon = new Hono<{
@@ -357,58 +292,52 @@ export const submissionsRouteForCommon = new Hono<{
 	};
 }>()
 	// 署名付きURLの一括発行（ファイルアップロード・ダウンロード用）
-	.post("/signed-urls", zValidator("json", signedUrlSchema), async (c) => {
-		const files = c.req.valid("json");
-
-		// MIMEタイプの検証
-		for (const file of files) {
-			if (!ALLOWED_MIME_TYPES.includes(file.fileType)) {
-				return c.json(
-					{
-						error: `許可されていないファイルタイプです: ${file.fileType}`,
-						allowedTypes: ALLOWED_MIME_TYPES,
-					},
-					400,
-				);
+	.post(
+		"/signed-urls",
+		zValidator("json", signedUrlSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
 			}
-		}
+		}),
+		async (c) => {
+			const files = c.req.valid("json");
 
-		// バケットが存在することを確認
-		await ensureBucketExists();
+			// バケットが存在することを確認
+			await ensureBucketExists();
 
-		const signedUrls = await Promise.all(
-			files.map(async ({ fileName, fileType }) => {
-				let signedUrl: string;
+			const signedUrls = await Promise.all(
+				files.map(async ({ fileName, fileType }) => {
+					let signedUrl: string;
 
-				// エミュレータ環境では署名なしURLを使用
-				if (env.GCS_EMULATOR_HOST) {
-					const gcsHost = env.GCS_EMULATOR_HOST.replace(
-						"fake-gcs",
-						"localhost",
-					);
-					signedUrl = `${gcsHost}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
-				} else {
-					// 本番環境では署名付きURLを使用
-					[signedUrl] = await bucket.file(`uploads/${fileName}`).getSignedUrl({
-						version: "v4",
-						action: "write",
-						expires: Date.now() + 15 * 60 * 1000,
-						contentType: fileType,
-					});
-				}
+					// エミュレータ環境では署名なしURLを使用
+					if (env.GCS_EMULATOR_HOST) {
+						signedUrl = `${env.GCS_EMULATOR_HOST}/${env.GCS_BUCKET_NAME}/uploads/${fileName}`;
+					} else {
+						// 本番環境では署名付きURLを使用
+						[signedUrl] = await bucket
+							.file(`uploads/${fileName}`)
+							.getSignedUrl({
+								version: "v4",
+								action: "write",
+								expires: Date.now() + 15 * 60 * 1000,
+								contentType: fileType,
+							});
+					}
 
-				return {
-					fileName,
-					signedUrl,
-					objectName: `uploads/${fileName}`,
-				};
-			}),
-		);
+					return {
+						fileName,
+						signedUrl,
+						objectName: `uploads/${fileName}`,
+					};
+				}),
+			);
 
-		return c.json(signedUrls, 200);
-	})
+			return c.json(signedUrls, 200);
+		},
+	)
 	// ファイルメタデータの取得
-	.get("/files/:assignment-id", async (c) => {
+	.get("/:assignment-id/files", async (c) => {
 		const { userId } = c.get("session");
 		const { "assignment-id": assignmentId } = c.req.param();
 
@@ -416,7 +345,7 @@ export const submissionsRouteForCommon = new Hono<{
 		return c.json(fileMetadata, 200);
 	})
 	// テキスト提出物の取得
-	.get("/text/:assignment-id", async (c) => {
+	.get("/:assignment-id/text", async (c) => {
 		const { userId } = c.get("session");
 		const { "assignment-id": assignmentId } = c.req.param();
 
@@ -432,12 +361,9 @@ export const submissionsRouteForCommon = new Hono<{
 		const { role } = c.get("user");
 		const id = c.req.param("id");
 
-		let file:
-			| FetchFileMetadataByIdReturnType
-			| FetchFileMetadataByUserIdReturnType[number]
-			| undefined;
+		let file: FileMetadata;
 
-		if (role === "professor") {
+		if (role === "professor" || role === "admin") {
 			// 教員はすべてのファイルメタデータにアクセス可能
 			file = await fetchFileMetadataById(id);
 		} else {
@@ -476,10 +402,7 @@ export const submissionsRouteForCommon = new Hono<{
 		const { role } = c.get("user");
 		const id = c.req.param("id");
 
-		let file:
-			| FetchFileMetadataByIdReturnType
-			| FetchFileMetadataByUserIdReturnType[number]
-			| undefined;
+		let file: FileMetadata;
 
 		if (role === "professor") {
 			// 教員はすべてのファイルメタデータにアクセス可能

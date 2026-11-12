@@ -1,11 +1,8 @@
 import { client } from "../../lib/hono-client";
 
 // テキスト提出取得用のqueryFn
-export const fetchTextSubmissionsQueryFn = async (assignmentId?: string) => {
-	if (!assignmentId) {
-		return [];
-	}
-	const res = await client.api.submissions.text[":assignment-id"].$get({
+export const fetchTextSubmissionsQueryFn = async (assignmentId: string) => {
+	const res = await client.api.submissions[":assignment-id"].text.$get({
 		param: {
 			"assignment-id": assignmentId,
 		},
@@ -16,13 +13,18 @@ export const fetchTextSubmissionsQueryFn = async (assignmentId?: string) => {
 
 // 課題提出状況取得用のqueryFn
 export const fetchSubmissionsStatusQueryFn = async (assignmentId?: string) => {
-	const res = await client.api.students.submissions.status[
-		":assignment-id?"
-	].$get({
-		param: {
-			"assignment-id": assignmentId,
-		},
-	});
+	if (assignmentId) {
+		const res = await client.api.students.submissions[
+			":assignment-id"
+		].status.$get({
+			param: {
+				"assignment-id": assignmentId,
+			},
+		});
+		const data = await res.json();
+		return data;
+	}
+	const res = await client.api.students.submissions.status.$get();
 	const data = await res.json();
 	return data;
 };
@@ -30,19 +32,17 @@ export const fetchSubmissionsStatusQueryFn = async (assignmentId?: string) => {
 // 指定された課題のすべての提出状況を取得するqueryFn（教員用、ページネーション対応）
 export const fetchAllSubmissionsWithStudentsQueryFn = async (
 	assignmentId: string,
-	limit = 10,
-	offset = 0,
+	limit: number,
+	offset: number,
 ) => {
-	const queryParams: Record<string, string> = {};
-
-	if (limit) {
-		queryParams.limit = limit.toString();
-	} else if (offset) {
-		queryParams.offset = offset.toString();
-	}
-
-	const res = await client.api.professors.submissions.status.$get({
-		query: { assignmentId, ...queryParams },
+	const res = await client.api.professors.submissions[":assignment-id"].$get({
+		param: {
+			"assignment-id": assignmentId,
+		},
+		query: {
+			limit: limit.toString(),
+			offset: offset.toString(),
+		},
 	});
 
 	const data = await res.json();
@@ -50,11 +50,8 @@ export const fetchAllSubmissionsWithStudentsQueryFn = async (
 };
 
 // ファイルメタデータ取得用のqueryFn
-export const fetchFileMetadataQueryFn = async (assignmentId?: string) => {
-	if (!assignmentId) {
-		return [];
-	}
-	const res = await client.api.submissions.files[":assignment-id"].$get({
+export const fetchFileMetadataQueryFn = async (assignmentId: string) => {
+	const res = await client.api.submissions[":assignment-id"].files.$get({
 		param: { "assignment-id": assignmentId },
 	});
 	const data = await res.json();
