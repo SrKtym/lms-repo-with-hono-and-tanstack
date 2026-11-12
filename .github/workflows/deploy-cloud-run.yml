@@ -7,6 +7,7 @@
 name: Deploy Server to Cloud Run
 
 on:
+  workflow_dispatch:
   # mainブランチへのプッシュ時（バックエンドアプリに変更があった場合）に実行
   push:
     branches:
