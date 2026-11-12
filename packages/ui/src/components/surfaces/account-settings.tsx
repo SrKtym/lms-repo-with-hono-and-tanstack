@@ -1,7 +1,7 @@
 import { Surface } from "@heroui/react";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
-import { useState } from "react";
 import type { LinkComponentProps } from "@lms-repo/ui/utils/link";
+import { useState } from "react";
 import { CancelButton, DangerButton, DefaultButton } from "../button";
 import { ControlledModal } from "../modals/controlled-modal";
 
