@@ -25,7 +25,7 @@
 - **Biome** - リンター、フォーマッター
 
 使用技術の詳細は以下のページを参照してください。
-- [使用技術の詳細](https://docs.google.com/spreadsheets/d/1ulwv8rPPF7eSvMoAQ4dYs8eY2HbrgR318JS1peeHCcM/edit?gid=0#gid=0)
+[使用技術の詳細](https://docs.google.com/spreadsheets/d/1ulwv8rPPF7eSvMoAQ4dYs8eY2HbrgR318JS1peeHCcM/edit?gid=0#gid=0)
 
 ## システム構成図
 
@@ -46,7 +46,9 @@ lms-repo-with-hono-and-tanstack/
 |   |── config/      # packages/の共通設定
 |   |── db/          # データベース（postgres）のスキーマとクエリ
 |   |── emails/      # メールテンプレートとResendのインスタンス生成
-|   └── ui/          # Hero UIベースのコンポーネント
+|   |── ui/          # Hero UIベースのコンポーネント
+|   └── shared/      # プロジェクト全体で使用するユーティリティ関数など
+|
 ├── docker/
 |   ├── docker-compose.dev.yml  # Docker Composeの開発環境設定ファイル
 |   └── docker-compose.test.yml  # Docker Composeのテスト環境設定ファイル
@@ -75,6 +77,21 @@ bun x auth@latest generate
 開発者が自らテーブルの設計をする必要はありません。以下に「better_auth」スキーマのER図を示します。
 
 ## ローカル環境での起動方法
+
+あらかじめBunをグローバルインストールしておく必要があります。Bunのインストールについては公式ドキュメントを参照してください。ホストにプロジェクトをクローンした後、以下のコマンドを実行してください。
+
+```bash
+bun install
+```
+
+WSL2環境でインストールが失敗する場合、/etc/wsl.conf に
+```ini
+[interop]
+appendWindowsPath = false
+```
+を追加し、
+`wsl --shutdown`
+でwslを再起動してみてください。
 
 ```bash
 bun run docker:up
