@@ -2,25 +2,22 @@ import { client } from "../../lib/hono-client";
 
 // 曜日と時限から講義を取得するqueryFn
 export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
+	limit: number,
+	offset: number,
 	weekdays?: number,
 	period?: number,
-	limit?: number,
-	offset?: number,
 ) => {
 	if (!weekdays || !period) {
 		return [];
 	}
 
-	const queryParams: Record<string, string> = {};
-
-	if (limit) {
-		queryParams.limit = limit.toString();
-	} else if (offset) {
-		queryParams.offset = offset.toString();
-	}
-
 	const res = await client.api.students.courses.$get({
-		query: { weekdays, period, ...queryParams },
+		query: {
+			weekdays: weekdays.toString(),
+			period: period.toString(),
+			limit: limit.toString(),
+			offset: offset.toString(),
+		},
 	});
 	const data = await res.json();
 	return data;

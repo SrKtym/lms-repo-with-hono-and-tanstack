@@ -2,11 +2,12 @@ import { assignmentFormat } from "@lms-repo/db/schema/service";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
+import { toast } from "@lms-repo/ui/components/toast";
 import {
 	getLocalTimeZone,
 	now,
 	type ZonedDateTime,
-} from "@lms-repo/ui/lib/utils";
+} from "@lms-repo/ui/lib/internationalized-date";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { z } from "zod";
@@ -24,7 +25,7 @@ export function CreateAssignmentForm({
 	courseId,
 }: CreateAssignmentFormProps) {
 	const dateTime = now(getLocalTimeZone());
-	const [error, setError] = useState<string>("");
+	const [error, setError] = useState<string>();
 	const { mutateAsync: createAssignment } = useCreateAssignment();
 	const form = useForm({
 		defaultValues: {
@@ -44,6 +45,11 @@ export function CreateAssignmentForm({
 			const isSuccess = "message" in res;
 			if (isSuccess) {
 				onOpenChange(false);
+				if ("warning" in res && typeof res.warning === "string") {
+					toast.warning(res.message, {
+						description: res.warning,
+					});
+				}
 			} else {
 				setError(res.error);
 			}
@@ -55,7 +61,7 @@ export function CreateAssignmentForm({
 				points: z.number().min(0).max(100),
 				dueDate: z.custom<ZonedDateTime>(),
 				format: z.enum(assignmentFormat),
-				courseId: z.string().min(1),
+				courseId: z.uuidv4(),
 			}),
 		},
 	});
@@ -214,7 +220,7 @@ export function CreateAssignmentForm({
 											field.handleChange(value);
 										}
 									},
-									items: [...assignmentFormat],
+									items: assignmentFormat,
 									ariaLabel: "select format",
 								}}
 								labelProps={{

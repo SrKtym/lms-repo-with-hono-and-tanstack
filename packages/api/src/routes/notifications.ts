@@ -24,17 +24,23 @@ export const notificationsRouteForStudent = new Hono<{
 	};
 }>()
 	// 通知取得
-	.get("/", async (c) => {
-		const { userId } = c.get("session");
-		const { limit, offset } = c.req.query();
+	.get(
+		"/",
+		zValidator(
+			"query",
+			z.object({
+				limit: z.coerce.number(),
+				offset: z.coerce.number(),
+			}),
+		),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { limit, offset } = c.req.valid("query");
 
-		const notificationList = await fetchNotifications(
-			userId,
-			Number(limit),
-			Number(offset),
-		);
-		return c.json(notificationList, 200);
-	})
+			const notificationList = await fetchNotifications(userId, limit, offset);
+			return c.json(notificationList, 200);
+		},
+	)
 	// 通知総数取得
 	.get(
 		"/count",

@@ -99,65 +99,46 @@ export function CreateFileSubmissionForm({
 		const fileObjects = newFiles.map((file) => {
 			return new File([file.name], file.name, { type: file.type });
 		});
+		// アップロード処理
+		const res = await submitMultipleFiles({
+			files: fileObjects,
+			assignmentId,
+		});
 
-		try {
-			// アップロード処理
-			const res = await submitMultipleFiles({
-				files: fileObjects,
-				assignmentId,
-			});
-
-			if ("error" in res) {
-				toast.danger("ファイルの提出に失敗しました", {
-					description: res.error,
-				});
-				// アップロード失敗時は一時ファイルを削除
-				setUploadedFiles((prev) =>
-					prev.filter((f) => !newFiles.some((nf) => nf.id === f.id)),
-				);
-			} else if ("results" in res) {
-				// 成功したファイルのみをフィルタリング
-				const successfulResults = res.results.filter(
-					(result) => result !== null && "id" in result,
-				);
-
-				// tempIDをサーバーIDで置換
-				const tempToServerIdMap = new Map<string, string>();
-				successfulResults.forEach((serverFile, index) => {
-					const tempId = newFiles[index]?.id;
-					if (tempId) {
-						tempToServerIdMap.set(tempId, serverFile.id);
-					}
-				});
-
-				setUploadedFiles((prev) =>
-					prev.map((file) => {
-						const serverId = tempToServerIdMap.get(file.id);
-						if (serverId) {
-							const serverFile = successfulResults.find(
-								(sf) => sf.id === serverId,
-							);
-							if (serverFile) {
-								return {
-									id: serverFile.id,
-									name: serverFile.originalName,
-									size: serverFile.fileSize,
-									type: serverFile.mimeType,
-								};
-							}
-						}
-						return file;
-					}),
-				);
-			}
-		} catch {
+		if ("error" in res) {
 			toast.danger("ファイルの提出に失敗しました", {
-				description:
-					"予期しないエラーが発生しました。お手数ですが再度試行してください。",
+				description: res.error,
 			});
-			// エラー時は一時ファイルを削除
+			// アップロード失敗時は一時ファイルを削除
 			setUploadedFiles((prev) =>
 				prev.filter((f) => !newFiles.some((nf) => nf.id === f.id)),
+			);
+		} else {
+			// tempIDをサーバーIDで置換
+			const tempToServerIdMap = new Map<string, string>();
+			res.forEach((serverFile, index) => {
+				const tempId = newFiles[index]?.id;
+				if (tempId) {
+					tempToServerIdMap.set(tempId, serverFile.id);
+				}
+			});
+
+			setUploadedFiles((prev) =>
+				prev.map((file) => {
+					const serverId = tempToServerIdMap.get(file.id);
+					if (serverId) {
+						const serverFile = res.find((sf) => sf.id === serverId);
+						if (serverFile) {
+							return {
+								id: serverFile.id,
+								name: serverFile.originalName,
+								size: serverFile.fileSize,
+								type: serverFile.mimeType,
+							};
+						}
+					}
+					return file;
+				}),
 			);
 		}
 	};

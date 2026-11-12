@@ -1,8 +1,8 @@
+import { formSchema } from "@lms-repo/api/schema/students";
+import { getDepartmentName } from "@lms-repo/db/utils/helpers";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { getDepartmentName } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
 import { useRegisterStudentData } from "@/hooks/students";
 
 export function CreateStudentDataForm() {
@@ -20,10 +20,7 @@ export function CreateStudentDataForm() {
 			location.reload();
 		},
 		validators: {
-			onSubmit: z.object({
-				grade: z.number().int().min(1).max(4),
-				departmentName: z.string(),
-			}),
+			onSubmit: formSchema,
 		},
 	});
 

@@ -1,7 +1,9 @@
+import { formSchema } from "@lms-repo/api/schema/announcements";
 import { announcementType } from "@lms-repo/db/schema/service";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
+import { toast } from "@lms-repo/ui/components/toast";
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
 import { z } from "zod";
@@ -18,7 +20,7 @@ export function CreateAnnouncementForm({
 	onOpenChange,
 	courseId,
 }: CreateAnnouncementFormProps) {
-	const [error, setError] = useState<string>("");
+	const [error, setError] = useState<string>();
 	const { mutateAsync: createAnnouncement } = useCreateAnnouncement();
 	const form = useForm({
 		defaultValues: {
@@ -32,16 +34,18 @@ export function CreateAnnouncementForm({
 			const isSuccess = "message" in res;
 			if (isSuccess) {
 				onOpenChange(false);
+				if ("warning" in res && typeof res.warning === "string") {
+					toast.warning(res.message, {
+						description: res.warning,
+					});
+				}
 			} else {
 				setError(res.error);
 			}
 		},
 		validators: {
-			onSubmit: z.object({
-				title: z.string().min(1).max(100),
-				description: z.string().min(1).max(500),
-				type: z.enum(announcementType),
-				courseId: z.string().min(1),
+			onSubmit: formSchema.safeExtend({
+				courseId: z.uuidv4(),
 			}),
 		},
 	});
@@ -140,7 +144,7 @@ export function CreateAnnouncementForm({
 											field.handleChange(value);
 										}
 									},
-									items: [...announcementType],
+									items: announcementType,
 									ariaLabel: "select type",
 								}}
 								labelProps={{

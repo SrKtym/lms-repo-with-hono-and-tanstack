@@ -6,17 +6,7 @@ import { resend } from "@lms-repo/emails";
 import NewAnnouncementEmail from "@lms-repo/emails/components/new-announcement-email";
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
-import { z } from "zod";
-
-const formSchema = z.object({
-	title: z.string().min(1, "タイトルは必須です"),
-	description: z
-		.string()
-		.min(1, "説明は必須です")
-		.max(500, "説明は500文字以内で入力してください"),
-	type: z.string().min(1, "アナウンスメントの形式を選択してください"),
-	courseId: z.string().min(1),
-});
+import { formSchema } from "../schema/announcements";
 
 // アナウンスメントに関するロジック（教員用）
 export const announcementsRouteForProf = new Hono<{
@@ -26,35 +16,52 @@ export const announcementsRouteForProf = new Hono<{
 	};
 }>()
 	// アナウンスメントの作成
-	.post("/", zValidator("json", formSchema), async (c) => {
-		const announcementData = c.req.valid("json");
-		const result = await createAnnouncements(announcementData);
+	.post(
+		"/:course-id",
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { "course-id": courseId } = c.req.param();
+			const announcementData = c.req.valid("json");
+			const result = await createAnnouncements({
+				...announcementData,
+				courseId,
+			});
 
-		if ("error" in result) {
-			const { status, ...body } = result;
-			return c.json(body, status);
-		}
+			if ("error" in result) {
+				const { status, ...body } = result;
+				return c.json(body, status);
+			}
+			if ("warning" in result) {
+				const { status, ...body } = result;
+				return c.json(body, status);
+			}
 
-		const { emails, title, description } = result;
+			const { emails, title, description } = result;
 
-		const viewUrl = `${env.CORS_ORIGIN}/notifications`;
+			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-		// バッチでメールを送信（全員に同じ内容）
-		const batchEmails = emails.map((email) => ({
-			from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
-			to: email,
-			subject: "新しいお知らせ",
-			react: NewAnnouncementEmail({
-				announcementTitle: title,
-				announcementContent: description,
-				viewUrl,
-			}),
-		}));
+			// バッチでメールを送信（全員に同じ内容）
+			const batchEmails = emails.map((email) => ({
+				from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
+				to: email,
+				subject: "新しいお知らせ",
+				react: NewAnnouncementEmail({
+					announcementTitle: title,
+					announcementContent: description,
+					viewUrl,
+				}),
+			}));
 
-		await resend.batch.send(batchEmails);
+			await resend.batch.send(batchEmails);
 
-		return c.json({ message: "アナウンスメントを作成しました" }, 201);
-	});
+			return c.json({ message: "アナウンスメントを作成しました" }, 201);
+		},
+	);
 
 // アナウンスメントに関するロジック（共通）
 export const announcementsRouteForCommon = new Hono<{

@@ -1,8 +1,8 @@
+import { formSchema } from "@lms-repo/api/schema/professors";
+import { getDepartmentName } from "@lms-repo/db/utils/helpers";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { getDepartmentName } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
 import { useRegisterProfData } from "@/hooks/professors";
 
 export function CreateProfDataForm() {
@@ -19,9 +19,7 @@ export function CreateProfDataForm() {
 			location.reload();
 		},
 		validators: {
-			onSubmit: z.object({
-				departmentName: z.string(),
-			}),
+			onSubmit: formSchema,
 		},
 	});
 
