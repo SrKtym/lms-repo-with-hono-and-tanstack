@@ -10,9 +10,8 @@ import { CreateFileSubmissionForm } from "@/components/_my-page/_student/my-cour
 import { CreateTextSubmissionForm } from "@/components/_my-page/_student/my-courses/create-text-submission-form";
 import { CreateCommentForm } from "@/components/_my-page/shared/create-comment-form";
 import { useCommentsWithAssignment } from "@/hooks/comments";
-import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { queryClient } from "@/lib/query-client";
 import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
-import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
 import { fetchSubmissionsStatusQueryFn } from "@/utils/query/submissions";
 
 export const Route = createFileRoute(
@@ -22,12 +21,7 @@ export const Route = createFileRoute(
 	loader: async ({
 		params: { "course-id": courseId, "assignment-id": assignmentId },
 	}) => {
-		const [courses, assignments, submission] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["registered-courses"],
-				queryFn: fetchRegisteredCoursesQueryFn,
-				...QUERY_CONFIG.USER_DATA,
-			}),
+		const [assignments, submission] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["assignments-related-courses"],
 				queryFn: () => fetchAssignmentsQueryFn(courseId),
@@ -38,7 +32,7 @@ export const Route = createFileRoute(
 			}),
 		]);
 
-		return { courses, assignments, submission };
+		return { assignments, submission };
 	},
 	head: ({ match }) => {
 		const assignmentTitle = match.loaderData?.assignments?.find(
