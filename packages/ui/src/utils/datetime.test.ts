@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import { formatTimestamp, isProgressingOrUpcoming } from "./utils";
+import { formatTimestamp, isProgressingOrUpcoming } from "./datetime";
 
 describe("formatTimestamp", () => {
 	it("たった今（1分未満）", () => {

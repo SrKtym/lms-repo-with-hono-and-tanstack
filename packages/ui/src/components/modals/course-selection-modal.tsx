@@ -3,8 +3,8 @@ import type {
 	FetchCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
+import { DAYS } from "@lms-repo/shared/utils";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
-import { DAYS } from "../../lib/utils";
 import { CancelButton, OutlineButton } from "../button";
 import { Loader } from "../loader";
 

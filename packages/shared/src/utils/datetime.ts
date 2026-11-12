@@ -49,3 +49,14 @@ export const DATETIME_FORMAT_CONFIG: Record<
 		defaultLocale: "ja-JP",
 	},
 };
+
+// 編集期限（2週間）
+export const EDIT_PERIOD_DAYS = 14;
+
+// 曜日の配列
+export const DAYS = ["日", "月", "火", "水", "木", "金", "土"] as const;
+
+// 土曜日と日曜日を除外
+export const DAYS_EXCEPT_WEEKEND = DAYS.filter(
+	(day) => day !== "土" && day !== "日",
+);

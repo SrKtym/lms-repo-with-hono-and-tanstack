@@ -6,7 +6,7 @@ import { AssignmentCard } from "@lms-repo/ui/components/cards/assignment-card";
 import { Image } from "@lms-repo/ui/components/image";
 import { Loader } from "@lms-repo/ui/components/loader";
 import { TabsForCourseInfo } from "@lms-repo/ui/components/tabs";
-import { addCoverImagesToCourses } from "@lms-repo/ui/lib/utils";
+import { addCoverImagesToCourses } from "@lms-repo/ui/utils/image";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useAnnouncements } from "@/hooks/announcements";
 import { useAssignments } from "@/hooks/assignments";

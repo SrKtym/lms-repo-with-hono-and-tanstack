@@ -1,6 +1,6 @@
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
+import { isSameDay } from "@lms-repo/ui/utils/datetime";
 import { useMemo } from "react";
-import { isSameDay } from "../lib/utils";
 
 interface Course {
 	id: string;

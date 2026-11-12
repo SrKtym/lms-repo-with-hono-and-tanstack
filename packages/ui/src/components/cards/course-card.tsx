@@ -1,5 +1,5 @@
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
-import { DAYS } from "../../lib/utils";
+import { DAYS } from "@lms-repo/shared/utils";
 import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 import { Image } from "../image";

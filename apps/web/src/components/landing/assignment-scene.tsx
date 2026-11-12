@@ -7,7 +7,7 @@ import { DefaultChip } from "@lms-repo/ui/components/chip";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { DefaultSeparator } from "@lms-repo/ui/components/separator";
 import { TabsForSubmissions } from "@lms-repo/ui/components/tabs";
-import { getIconByFormat } from "@lms-repo/ui/lib/utils";
+import { getIconByFormat } from "@lms-repo/ui/utils/file-icon";
 import * as m from "motion/react-m";
 import { useEffect, useRef } from "react";
 

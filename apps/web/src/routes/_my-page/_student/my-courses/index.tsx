@@ -4,7 +4,7 @@ import { DefaultButton } from "@lms-repo/ui/components/button";
 import { CourseCard } from "@lms-repo/ui/components/cards/course-card";
 import { DefaultSearchField } from "@lms-repo/ui/components/search-field";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
-import { addCoverImagesToCourses } from "@lms-repo/ui/lib/utils";
+import { addCoverImagesToCourses } from "@lms-repo/ui/utils/image";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";

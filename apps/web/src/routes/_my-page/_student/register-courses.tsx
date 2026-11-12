@@ -1,5 +1,4 @@
-import { EDIT_PERIOD_DAYS } from "@lms-repo/db/utils/mutation/helpers";
-import type { FetchCoursesReturnType } from "@lms-repo/db/utils/query/courses";
+import { EDIT_PERIOD_DAYS } from "@lms-repo/shared/utils";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { TimeTableCard } from "@lms-repo/ui/components/cards/time-table-card";
@@ -19,8 +18,10 @@ import {
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
 
-const searchSchema =
-	z.custom<Partial<Omit<FetchCoursesReturnType[number], "id">>>();
+const searchSchema = z.object({
+	weekdays: z.number().optional(),
+	period: z.number().optional(),
+});
 
 export const Route = createFileRoute("/_my-page/_student/register-courses")({
 	component: RouteComponent,

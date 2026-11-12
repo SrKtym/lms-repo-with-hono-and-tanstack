@@ -1,8 +1,8 @@
+import { DAYS } from "@lms-repo/shared/utils";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { DefaultButton, OutlineButton } from "@lms-repo/ui/components/button";
 import { useMoveCursorToElement } from "@lms-repo/ui/hooks/use-move-cursor";
-import { DAYS } from "@lms-repo/ui/lib/utils";
 import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
 import { CursorAnimation } from "./cursor-animation";
