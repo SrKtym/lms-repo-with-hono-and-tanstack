@@ -15,31 +15,33 @@ import {
 	useDownloadUrl,
 	useGradeSubmission,
 } from "@/hooks/submissions";
-import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
+import { queryClient } from "@/lib/query-client";
 import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
-import { fetchCreatedCoursesQueryFn } from "@/utils/query/courses";
+import { fetchAllSubmissionsWithStudentsQueryFn } from "@/utils/query/submissions";
 
 export const Route = createFileRoute(
 	"/_my-page/prof/my-courses/$course-id/assignments/$assignment-id",
 )({
 	component: RouteComponent,
-	loader: async ({ params: { "course-id": courseId } }) => {
-		const [courses, assignments] = await Promise.all([
-			queryClient.ensureQueryData({
-				queryKey: ["created-courses"],
-				queryFn: fetchCreatedCoursesQueryFn,
-				...QUERY_CONFIG.USER_DATA,
-			}),
+	loader: async ({
+		params: { "course-id": courseId, "assignment-id": assignmentId },
+	}) => {
+		const [assignments, initialSubmissions] = await Promise.all([
 			queryClient.ensureQueryData({
 				queryKey: ["assignments-related-courses"],
 				queryFn: () => fetchAssignmentsQueryFn(courseId),
 			}),
+			queryClient.ensureQueryData({
+				queryKey: ["submissions", assignmentId],
+				queryFn: () =>
+					fetchAllSubmissionsWithStudentsQueryFn(assignmentId, 10, 0),
+			}),
 		]);
 
-		return { courses, assignments };
+		return { assignments, initialSubmissions };
 	},
 	head: ({ match }) => {
-		const assignmentTitle = match.loaderData?.assignments?.find(
+		const assignmentTitle = match.loaderData?.assignments.find(
 			({ id }) => id === match.params["assignment-id"],
 		)?.title;
 
@@ -56,7 +58,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
 	const { "course-id": courseId, "assignment-id": assignmentId } =
 		Route.useParams();
-	const { assignments } = Route.useLoaderData();
+	const { assignments, initialSubmissions } = Route.useLoaderData();
 
 	const targetAssignment = assignments.find(
 		(assignment) => assignment.id === assignmentId,
@@ -83,7 +85,7 @@ function RouteComponent() {
 
 	// すべての提出物を取得
 	const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-		useAllSubmissionsWithStudents(assignmentId);
+		useAllSubmissionsWithStudents(assignmentId, initialSubmissions);
 
 	const { mutate: gradeSubmission } = useGradeSubmission();
 
