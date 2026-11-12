@@ -1,40 +1,8 @@
 import { Dropdown } from "@heroui/react";
-import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
-import { DashBoard } from "@lms-repo/ui/assets/icons/dashboard";
-import { List } from "@lms-repo/ui/assets/icons/list";
 import { Menu } from "@lms-repo/ui/assets/icons/menu";
-import { MessagesSquare } from "@lms-repo/ui/assets/icons/messages-square";
-import { SquarePlus } from "@lms-repo/ui/assets/icons/square-plus";
-import type { LinkComponentProps } from "../../lib/utils";
+import type { LinkComponentProps } from "@lms-repo/ui/utils/link";
+import { getHeaderLinks } from "@lms-repo/ui/utils/link";
 import { DropdownButton } from "../button";
-
-export const links = [
-	{
-		icon: <DashBoard width={24} height={24} />,
-		to: "/dashboard",
-		label: "ダッシュボード",
-	},
-	{
-		icon: <SquarePlus width={24} height={24} />,
-		to: "/register-courses",
-		label: "履修登録",
-	},
-	{
-		icon: <List width={24} height={24} />,
-		to: "/my-courses",
-		label: "履修一覧",
-	},
-	{
-		icon: <CalendarClock width={24} height={24} />,
-		to: "/schedules",
-		label: "スケジュール",
-	},
-	{
-		icon: <MessagesSquare width={24} height={24} />,
-		to: "/notifications",
-		label: "通知",
-	},
-] as const;
 
 // ナビゲーションドロップダウンメニュー
 export function DropdownMenuForNavLink({
@@ -42,6 +10,7 @@ export function DropdownMenuForNavLink({
 }: {
 	LinkComponent: React.ComponentType<LinkComponentProps>;
 }) {
+	const links = getHeaderLinks(24, 24);
 	return (
 		<Dropdown>
 			<DropdownButton className="md:hidden">

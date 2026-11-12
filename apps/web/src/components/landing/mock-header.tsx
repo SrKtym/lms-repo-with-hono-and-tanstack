@@ -1,10 +1,11 @@
 import { Books } from "@lms-repo/ui/assets/icons/books";
 import { DefaultAvatar } from "@lms-repo/ui/components/avatar";
-import { links } from "@lms-repo/ui/components/dropdown-menus/nav-dropdown";
 import { DefaultSeparator } from "@lms-repo/ui/components/separator";
 import { ThemeSwitch } from "@lms-repo/ui/components/switch";
+import { getHeaderLinks } from "@lms-repo/ui/utils/link";
 
 export function MockHeader() {
+	const links = getHeaderLinks(24, 24);
 	return (
 		<div className="sticky inset-x-0 top-0 z-50 backdrop-blur-lg">
 			<div className="flex flex-row items-center justify-between px-3 py-2">

@@ -1,10 +1,10 @@
+import { EDIT_PERIOD_DAYS } from "@lms-repo/shared/utils";
 import { and, eq, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
 import { courses, departments, registration, students } from "../../schema";
 import type { Courses } from "../../types";
 import {
 	createNotificationForUser,
-	EDIT_PERIOD_DAYS,
 	fail,
 	isWithinEditPeriod,
 	ok,

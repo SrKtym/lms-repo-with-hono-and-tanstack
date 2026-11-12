@@ -6,7 +6,7 @@ import {
 	TimeField,
 	type TimeValue,
 } from "@heroui/react";
-import type { ZonedDateTime } from "@lms-repo/ui/lib/utils";
+import type { ZonedDateTime } from "@lms-repo/ui/lib/internationalized-date";
 
 interface DatePickerProps {
 	defaultValue: ZonedDateTime;

@@ -1,9 +1,10 @@
+import { DAYS } from "@lms-repo/shared/utils";
 import { ArrowLeft } from "@lms-repo/ui/assets/icons/arrow-left";
 import { ArrowRight } from "@lms-repo/ui/assets/icons/arrow-right";
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { useMoveCursorToElement } from "@lms-repo/ui/hooks/use-move-cursor";
-import { DAYS, viewLabels } from "@lms-repo/ui/lib/utils";
+import { viewLabels } from "@lms-repo/ui/utils/datetime";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CursorAnimation } from "./cursor-animation";
 import { MockScheduleModal } from "./mock-schedule-modal";

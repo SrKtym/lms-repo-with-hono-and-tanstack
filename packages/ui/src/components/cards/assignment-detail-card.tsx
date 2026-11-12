@@ -1,8 +1,8 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import { getIconByFormat } from "../../lib/utils";
-import { BaseCard } from "../cards/base-card";
-import { DefaultChip } from "../chip";
-import { DefaultSeparator } from "../separator";
+import { BaseCard } from "@lms-repo/ui/components/cards/base-card";
+import { DefaultChip } from "@lms-repo/ui/components/chip";
+import { DefaultSeparator } from "@lms-repo/ui/components/separator";
+import { getIconByFormat } from "@lms-repo/ui/utils/file-icon";
 
 interface AssignmentDetailCardProps {
 	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];

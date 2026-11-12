@@ -1,5 +1,5 @@
 import { InputForForm } from "@lms-repo/ui/components/input";
-import { getLocalTimeZone, now } from "@lms-repo/ui/lib/utils";
+import { getLocalTimeZone, now } from "@lms-repo/ui/lib/internationalized-date";
 import * as m from "motion/react-m";
 
 interface MockScheduleModalProps {

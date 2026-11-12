@@ -13,7 +13,7 @@ import {
 	type DateValue,
 	getLocalTimeZone,
 	type ZonedDateTime,
-} from "@lms-repo/ui/lib/utils";
+} from "@lms-repo/ui/lib/internationalized-date";
 
 interface DateRangePickerProps {
 	defaultValue: { start: ZonedDateTime; end: ZonedDateTime };

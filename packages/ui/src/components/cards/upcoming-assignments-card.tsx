@@ -1,6 +1,6 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
 import { FileDocument } from "@lms-repo/ui/assets/icons/file-document";
-import { getIconByFormat } from "@lms-repo/ui/lib/utils";
+import { getIconByFormat } from "@lms-repo/ui/utils/file-icon";
 import { useState } from "react";
 import { DefaultSelect } from "../select";
 import { BaseCard } from "./base-card";

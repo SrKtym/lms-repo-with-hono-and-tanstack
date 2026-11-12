@@ -3,7 +3,7 @@ import { BellAnimation } from "@lms-repo/ui/assets/icons/bell-animation";
 import { Close } from "@lms-repo/ui/assets/icons/close";
 import { useInfiniteScroll } from "@lms-repo/ui/hooks/use-infinite-scroll";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
-import { formatTimestamp } from "@lms-repo/ui/lib/utils";
+import { formatTimestamp } from "@lms-repo/ui/utils/datetime";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { DefaultButton } from "../button";

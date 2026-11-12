@@ -2,6 +2,7 @@ import type {
 	FetchCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
+import { DAYS } from "@lms-repo/shared/utils";
 import { MoreVertical } from "@lms-repo/ui/assets/icons/more-vertical";
 import { Plus } from "@lms-repo/ui/assets/icons/plus";
 import { LongPressPopover } from "@lms-repo/ui/components/popover";
@@ -10,7 +11,6 @@ import { useLongPress } from "@lms-repo/ui/hooks/use-long-press";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { useState } from "react";
-import { DAYS, getColorbyRequirements } from "../../lib/utils";
 import { MenuActionButton, OutlineButton } from "../button";
 import { CourseSelectionModal } from "../modals/course-selection-modal";
 import { DefaultTooltip } from "../tooltip";
@@ -45,6 +45,18 @@ interface CourseCellProps {
 	) => void;
 	isHoverCapable: boolean;
 	isEditable?: boolean;
+}
+
+// 講義の履修要件に基づく配色
+function getColorbyRequirements(requirements: string) {
+	switch (requirements) {
+		case "必修":
+			return "bg-danger/30";
+		case "選択必修":
+			return "bg-warning/30";
+		default:
+			return "bg-blue-500/30";
+	}
 }
 
 // 時間割上の講義セル

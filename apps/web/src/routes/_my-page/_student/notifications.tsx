@@ -6,7 +6,7 @@ import { DangerButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { DefaultPagination } from "@lms-repo/ui/components/pagination";
 import { DefaultSelect } from "@lms-repo/ui/components/select";
 import { useToggleExpand } from "@lms-repo/ui/hooks/use-toggle-expand";
-import { formatTimestamp } from "@lms-repo/ui/lib/utils";
+import { formatTimestamp } from "@lms-repo/ui/utils/datetime";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
