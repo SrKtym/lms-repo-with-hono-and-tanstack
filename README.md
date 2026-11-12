@@ -85,10 +85,12 @@ bun install
 ```
 
 WSL2環境でインストールが失敗する場合、/etc/wsl.conf に
+
 ```ini
 [interop]
 appendWindowsPath = false
 ```
+
 を追加し、
 `wsl --shutdown`
 でwslを再起動してみてください。
