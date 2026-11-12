@@ -4,18 +4,18 @@ import { Books } from "@lms-repo/ui/assets/icons/books";
 import { DashBoard } from "@lms-repo/ui/assets/icons/dashboard";
 import { List } from "@lms-repo/ui/assets/icons/list";
 import { DropdownMenuForAccount } from "@lms-repo/ui/components/dropdown-menus/account-dropdown";
-import {
-	DropdownMenuForNavLink,
-	links,
-} from "@lms-repo/ui/components/dropdown-menus/nav-dropdown";
+import { DropdownMenuForNavLink } from "@lms-repo/ui/components/dropdown-menus/nav-dropdown";
 import { DefaultSeparator } from "@lms-repo/ui/components/separator";
 import { ThemeSwitch } from "@lms-repo/ui/components/switch";
 import { toast } from "@lms-repo/ui/components/toast";
+import { getHeaderLinks } from "@lms-repo/ui/utils/link";
 import { Link, useLocation, useNavigate } from "@tanstack/react-router";
 
 export function Header({ email, name, image, role }: UserDataTypeWithImage) {
 	const location = useLocation();
 	const navigate = useNavigate();
+
+	const links = getHeaderLinks(24, 24);
 
 	// トースト表示
 	function showToast(error: { status: number }) {
@@ -73,8 +73,8 @@ export function Header({ email, name, image, role }: UserDataTypeWithImage) {
 						})}
 					{role === "professor" && (
 						<Link
-							to="/course-management"
-							className={`nav-link ${location.pathname === "/course-management" && "nav-link-active"}
+							to="/prof/my-courses"
+							className={`nav-link ${location.pathname === "/prof/my-courses" && "nav-link-active"}
 								`}
 						>
 							<List />

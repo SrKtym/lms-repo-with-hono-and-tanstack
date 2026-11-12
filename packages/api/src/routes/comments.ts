@@ -19,13 +19,16 @@ export const commentsRouteForCommon = new Hono<{
 		async (c) => {
 			const { userId } = c.get("session");
 			const comment = c.req.valid("json");
-			const result = await createComments({ ...comment, createdBy: userId });
-			return c.json(result);
+			const { status, ...body } = await createComments({
+				...comment,
+				createdBy: userId,
+			});
+			return c.json(body, status);
 		},
 	)
 	// コメント取得
 	.get("/:assignmentId", async (c) => {
 		const assignmentId = c.req.param("assignmentId");
 		const result = await fetchCommentsWithAssignment(assignmentId);
-		return c.json(result);
+		return c.json(result, 200);
 	});

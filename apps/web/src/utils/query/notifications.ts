@@ -2,20 +2,14 @@ import { client } from "../../lib/hono-client";
 
 // 通知取得用のqueryFn
 export const fetchNotificationsQueryFn = async (
-	limit?: number,
-	offset?: number,
+	limit: number,
+	offset: number,
 ) => {
-	if (!limit || !offset) {
-		return [];
-	}
-
-	const queryParams: Record<string, string> = {};
-
-	queryParams.limit = limit.toString();
-	queryParams.offset = offset.toString();
-
 	const res = await client.api.students.notifications.$get({
-		query: queryParams,
+		query: {
+			limit: limit.toString(),
+			offset: offset.toString(),
+		},
 	});
 	const data = await res.json();
 	const parsedData = data.map((notification) => ({
@@ -37,6 +31,6 @@ export const fetchNotificationsCountQueryFn = async (
 	const res = await client.api.students.notifications.count.$get({
 		query: queryParams,
 	});
-	const { count } = await res.json();
+	const count = await res.json();
 	return count;
 };

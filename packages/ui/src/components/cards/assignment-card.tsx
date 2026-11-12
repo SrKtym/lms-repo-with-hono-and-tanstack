@@ -1,9 +1,6 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import {
-	DATETIME_FORMAT_CONFIG,
-	getFileColor,
-	getIconByFormat,
-} from "../../lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
+import { getIconByFormat } from "@lms-repo/ui/utils/file-icon";
 import { BaseCard } from "../cards/base-card";
 import { DefaultChip } from "../chip";
 
@@ -18,6 +15,22 @@ export function AssignmentCard({
 	const daysUntilDue = Math.ceil(
 		(assignment.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
 	);
+
+	// ファイルの形式に基づく配色
+	function getFileColor(type: string) {
+		switch (type) {
+			case "pdf":
+				return "danger";
+			case "word":
+				return "accent";
+			case "excel":
+				return "success";
+			case "powerpoint":
+				return "warning";
+			default:
+				return "default";
+		}
+	}
 
 	const Icon = getIconByFormat(assignment.format);
 

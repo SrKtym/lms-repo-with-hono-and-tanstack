@@ -1,13 +1,11 @@
 import type { FetchRegisteredCoursesReturnType } from "@lms-repo/db/utils/query/courses";
 import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedules";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { CalendarAnimation } from "@lms-repo/ui/assets/icons/calendar-animation";
 import { usePeriodTime } from "@lms-repo/ui/hooks/use-period-time";
+import { isProgressingOrUpcoming } from "@lms-repo/ui/utils/datetime";
 import * as m from "motion/react-m";
 import { memo } from "react";
-import {
-	DATETIME_FORMAT_CONFIG,
-	isProgressingOrUpcoming,
-} from "../../lib/utils";
 import { BaseCard } from "../cards/base-card";
 
 function DailySchedulesCardComponent({

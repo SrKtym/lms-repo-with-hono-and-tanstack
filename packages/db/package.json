@@ -21,9 +21,11 @@
 	},
 	"dependencies": {
 		"@lms-repo/env": "workspace:*",
+		"@lms-repo/shared": "workspace:*",
 		"dotenv": "catalog:",
 		"drizzle-orm": "^0.45.1",
 		"pg": "^8.17.1",
+		"hono": "catalog:",
 		"zod": "catalog:"
 	},
 	"devDependencies": {

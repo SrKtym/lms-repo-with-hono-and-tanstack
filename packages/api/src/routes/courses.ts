@@ -1,6 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
 import type { Session } from "@lms-repo/auth/server";
-import type { Courses, CoursesOptional } from "@lms-repo/db/types";
 import {
 	checkCourse,
 	createCourses,
@@ -15,8 +14,9 @@ import {
 } from "@lms-repo/db/utils/query/courses";
 import { fetchProfData } from "@lms-repo/db/utils/query/professors";
 import { fetchMembersByCourseId } from "@lms-repo/db/utils/query/students";
+import { DAYS_EXCEPT_WEEKEND } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
-import { z } from "zod";
+import { courseSearchQuerySchema, formSchema } from "../schema/courses";
 
 // 講義に関するロジック（学生用）
 export const coursesRouteForStudent = new Hono<{
@@ -26,63 +26,46 @@ export const coursesRouteForStudent = new Hono<{
 	};
 }>()
 	// 講義検索
-	.get("/", async (c) => {
+	.get("/", zValidator("query", courseSearchQuerySchema), async (c) => {
 		const { userId } = c.get("session");
-		const { weekdays, period, limit, offset } = c.req.query();
-		if (!weekdays || !period) {
-			return c.json([], 200);
-		}
+		const { weekdays, period, limit, offset } = c.req.valid("query");
 
-		const result = await fetchCourses(
-			userId,
-			Number(weekdays),
-			Number(period),
-			Number(limit),
-			Number(offset),
-		);
+		const result = await fetchCourses(userId, weekdays, period, limit, offset);
 		return c.json(result, 200);
 	})
 	// 修了した講義の単位数の合計を取得
-	.get("/completed", async (c) => {
+	.get("/completed-credits", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchCompletedCourses(userId);
 		return c.json(result, 200);
 	})
-	.basePath("/registered")
+	.basePath("/registrations")
 	// 講義登録
-	.post(
-		"/",
-		zValidator("json", z.object({ courseId: z.string() })),
-		async (c) => {
-			const { userId } = c.get("session");
-			const { courseId } = c.req.valid("json");
-			const result = await registerCourses(courseId, userId);
-			return c.json(result);
-		},
-	)
-	// 登録講義取得
+	.post("/:course-id", async (c) => {
+		const { userId } = c.get("session");
+		const { "course-id": courseId } = c.req.param();
+		const { status, ...body } = await registerCourses(courseId, userId);
+		return c.json(body, status);
+	})
+	// 登録講義一覧取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchRegisteredCourses(userId);
 		return c.json(result, 200);
 	})
 	// 登録講義の確定
-	.patch("/", async (c) => {
+	.patch("/confirm", async (c) => {
 		const { userId } = c.get("session");
-		const result = await checkCourse(userId);
-		return c.json(result);
+		const { status, ...body } = await checkCourse(userId);
+		return c.json(body, status);
 	})
 	// 登録講義削除
-	.delete(
-		"/",
-		zValidator("json", z.object({ courseId: z.string() })),
-		async (c) => {
-			const { userId } = c.get("session");
-			const { courseId } = c.req.valid("json");
-			const result = await unregisterCourse(courseId, userId);
-			return c.json(result);
-		},
-	);
+	.delete("/:course-id", async (c) => {
+		const { userId } = c.get("session");
+		const { "course-id": courseId } = c.req.param();
+		const { status, ...body } = await unregisterCourse(courseId, userId);
+		return c.json(body, status);
+	});
 
 // 講義に関するロジック（教員用）
 export const coursesRouteForProf = new Hono<{
@@ -93,7 +76,12 @@ export const coursesRouteForProf = new Hono<{
 }>() // 講義作成
 	.post(
 		"/",
-		zValidator("json", z.custom<Omit<Courses, CoursesOptional>>()),
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
 		async (c) => {
 			const { userId } = c.get("session");
 			const courseData = c.req.valid("json");
@@ -103,16 +91,32 @@ export const coursesRouteForProf = new Hono<{
 				return c.json({ error: "学科が見つかりません" }, 404);
 			}
 
-			const result = await createCourses({
+			// 曜日と数字のマッピング
+			const daysMap: Record<string, number> = Object.fromEntries(
+				DAYS_EXCEPT_WEEKEND.map((day, i) => [day, i + 1]),
+			);
+
+			const weekdays = daysMap[courseData.weekdays];
+
+			if (!weekdays) {
+				return c.json({ error: "曜日が正しくありません" }, 400);
+			}
+
+			const transformedValue = {
 				...courseData,
+				weekdays,
+			};
+
+			const { status, ...body } = await createCourses({
+				...transformedValue,
 				departmentId: department.departmentId,
 				professorId: userId,
 			});
-			return c.json(result);
+			return c.json(body, status);
 		},
 	)
 	// 作成した講義を取得
-	.get("/created", async (c) => {
+	.get("/", async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchCreatedCourses(userId);
 		return c.json(result, 200);
@@ -129,5 +133,5 @@ export const coursesRouteForCommon = new Hono<{
 	.get("/:courseId", async (c) => {
 		const { courseId } = c.req.param();
 		const result = await fetchMembersByCourseId(courseId);
-		return c.json(result);
+		return c.json(result, 200);
 	});

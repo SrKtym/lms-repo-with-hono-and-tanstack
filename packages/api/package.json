@@ -4,6 +4,9 @@
 	"exports": {
 		".": {
 			"default": "./src/index.ts"
+		},
+		"./schema/*": {
+			"default": "./src/schema/*.ts"
 		}
 	},
 	"scripts": {},
@@ -13,6 +16,7 @@
 		"@lms-repo/auth": "workspace:*",
 		"@lms-repo/db": "workspace:*",
 		"@lms-repo/emails": "workspace:",
+		"@lms-repo/shared": "workspace:*",
 		"hono": "catalog:"
 	},
 	"devDependencies": {

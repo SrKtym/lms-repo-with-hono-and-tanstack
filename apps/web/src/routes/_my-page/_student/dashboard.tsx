@@ -1,8 +1,8 @@
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { AssignmentsProgressCard } from "@lms-repo/ui/components/cards/assignments-progress-card";
 import { DailySchedulesCard } from "@lms-repo/ui/components/cards/daily-schedules-card";
 import { NotificationsListCard } from "@lms-repo/ui/components/cards/notifications-list-card";
 import { UpcomingAssignmentsCard } from "@lms-repo/ui/components/cards/upcoming-assignments-card";
-import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo } from "react";
 import {

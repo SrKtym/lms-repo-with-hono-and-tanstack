@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../..";
 import { departments, professors } from "../../schema";
+import { fail, ok } from "./helpers";
 
 // 教授データ登録
 export async function registerProfData(userId: string, departmentName: string) {
@@ -13,7 +14,7 @@ export async function registerProfData(userId: string, departmentName: string) {
 				.limit(1);
 
 			if (!department) {
-				return { error: "学科が見つかりません。", status: 404 };
+				return fail("学科が見つかりません。", 404);
 			}
 
 			await tx
@@ -24,8 +25,8 @@ export async function registerProfData(userId: string, departmentName: string) {
 				})
 				.onConflictDoNothing();
 		});
-		return { message: "学生の所属登録に成功しました。", status: 201 };
+		return ok("学生の所属登録に成功しました。", 201);
 	} catch {
-		return { error: "学生の所属登録に失敗しました。", status: 500 };
+		return fail("学生の所属登録に失敗しました。", 500);
 	}
 }

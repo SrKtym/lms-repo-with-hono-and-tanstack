@@ -4,8 +4,11 @@ import { announcements } from "../../schema";
 import type { Announcements } from "../../types";
 import {
 	createNotification,
+	fail,
 	fetchCourseData,
 	fetchEmailsForNotification,
+	ok,
+	warn,
 } from "./helpers";
 
 // アナウンスメント作成
@@ -27,28 +30,29 @@ export async function createAnnouncements(announcementsData: Announcements) {
 			const courseId = result?.courseId;
 
 			if (!courseId) {
-				return { error: "講義が見つかりません", status: 404 };
+				return fail("講義が見つかりません", 404);
 			}
 
 			// 講義名と受講者IDを取得
 			const courseData = await fetchCourseData(tx, courseId);
 
-			if (!courseData?.studentId) {
-				return {
-					error: "受講者がいないため通知を作成できませんでした。",
-					status: 404,
-				};
+			if (courseData.length === 0) {
+				return warn(
+					"アナウンスメントの作成に成功しました",
+					"受講者がいないため通知を作成できませんでした",
+					201,
+				);
 			}
 
 			// 通知の作成
 			await createNotification(
 				tx,
 				{
-					title: `${courseData.name}に新しいお知らせ: ${result.title}`,
+					title: `${courseData[0]?.name}に新しいお知らせ: ${result.title}`,
 					description: `${result.type}: ${result.description}`,
 					type: "announcement",
 				},
-				[courseData],
+				courseData,
 			);
 
 			// メール通知を有効にしているユーザーのメール一覧
@@ -66,10 +70,7 @@ export async function createAnnouncements(announcementsData: Announcements) {
 		});
 		return result;
 	} catch {
-		return {
-			error: "アナウンスメントの作成に失敗しました。",
-			status: 500,
-		};
+		return fail("アナウンスメントの作成に失敗しました。", 500);
 	}
 }
 
@@ -77,9 +78,9 @@ export async function createAnnouncements(announcementsData: Announcements) {
 export async function updateAnnouncements(announcementsData: Announcements) {
 	try {
 		await db.update(announcements).set(announcementsData);
-		return { message: "アナウンスメントの更新に成功しました。", status: 200 };
+		return ok("アナウンスメントの更新に成功しました。", 200);
 	} catch {
-		return { error: "アナウンスメントの更新に失敗しました。", status: 500 };
+		return fail("アナウンスメントの更新に失敗しました。", 500);
 	}
 }
 
@@ -87,8 +88,8 @@ export async function updateAnnouncements(announcementsData: Announcements) {
 export async function deleteAnnouncements(id: string) {
 	try {
 		await db.delete(announcements).where(eq(announcements.id, id));
-		return { message: "アナウンスメントの削除に成功しました。", status: 200 };
+		return ok("アナウンスメントの削除に成功しました。", 200);
 	} catch {
-		return { error: "アナウンスメントの削除に失敗しました。", status: 500 };
+		return fail("アナウンスメントの削除に失敗しました。", 500);
 	}
 }

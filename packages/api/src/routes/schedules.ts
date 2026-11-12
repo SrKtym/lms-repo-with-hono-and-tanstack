@@ -6,31 +6,7 @@ import {
 } from "@lms-repo/db/utils/mutation/schedules";
 import { fetchSchedules } from "@lms-repo/db/utils/query/schedules";
 import { Hono } from "hono";
-import { z } from "zod";
-
-const formSchema = z
-	.object({
-		id: z
-			.string()
-			.transform((value) => (value === "" ? undefined : value))
-			.optional(),
-		title: z
-			.string()
-			.transform((value) => (value === "" ? "タイトルなし" : value))
-			.optional(),
-		description: z.string().optional(),
-		startTime: z.coerce
-			.date()
-			.min(new Date(), "開始日時は現在時刻以降でなければなりません。"),
-		endTime: z.coerce.date(),
-		theme: z
-			.string()
-			.regex(/^#[0-9a-f]{6}$/i, "有効なカラーコードを入力してください")
-			.optional(),
-	})
-	.refine((value) => value.startTime < value.endTime, {
-		error: "開始日時は終了日時よりも前でなければなりません。",
-	});
+import { formSchema } from "../schema/schedules";
 
 // スケジュールに関するロジック
 export const schedulesRouteForStudent = new Hono<{
@@ -40,15 +16,24 @@ export const schedulesRouteForStudent = new Hono<{
 	};
 }>()
 	// スケジュール作成
-	.post("/", zValidator("json", formSchema), async (c) => {
-		const { userId } = c.get("session");
-		const scheduleData = c.req.valid("json");
-		const result = await createSchedules({
-			...scheduleData,
-			createdBy: userId,
-		});
-		return c.json(result);
-	})
+	.post(
+		"/",
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { userId } = c.get("session");
+			const scheduleData = c.req.valid("json");
+			const { status, ...body } = await createSchedules({
+				...scheduleData,
+				createdBy: userId,
+			});
+			return c.json(body, status);
+		},
+	)
 	// スケジュール一覧取得
 	.get("/", async (c) => {
 		const { userId } = c.get("session");
@@ -56,12 +41,8 @@ export const schedulesRouteForStudent = new Hono<{
 		return c.json(result, 200);
 	})
 	// スケジュール削除
-	.delete(
-		"/",
-		zValidator("json", z.object({ scheduleId: z.string() })),
-		async (c) => {
-			const { scheduleId } = c.req.valid("json");
-			const result = await deleteSchedules(scheduleId);
-			return c.json(result);
-		},
-	);
+	.delete("/:schedule-id", async (c) => {
+		const { "schedule-id": scheduleId } = c.req.param();
+		const { status, ...body } = await deleteSchedules(scheduleId);
+		return c.json(body, status);
+	});

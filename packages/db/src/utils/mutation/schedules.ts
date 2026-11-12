@@ -2,6 +2,7 @@ import { eq } from "drizzle-orm";
 import { db } from "../../index";
 import { schedules } from "../../schema";
 import type { Schedules } from "../../types";
+import { fail, ok } from "./helpers";
 
 // スケジュール作成・更新
 export async function createSchedules(schedulesData: Schedules) {
@@ -10,9 +11,9 @@ export async function createSchedules(schedulesData: Schedules) {
 			target: schedules.id,
 			set: schedulesData,
 		});
-		return { message: "スケジュールの作成に成功しました。", status: 200 };
+		return ok("スケジュールの作成に成功しました。", 200);
 	} catch {
-		return { error: "スケジュールの作成に失敗しました。", status: 500 };
+		return fail("スケジュールの作成に失敗しました。", 500);
 	}
 }
 
@@ -20,8 +21,8 @@ export async function createSchedules(schedulesData: Schedules) {
 export async function deleteSchedules(scheduleId: string) {
 	try {
 		await db.delete(schedules).where(eq(schedules.id, scheduleId));
-		return { message: "スケジュールの削除に成功しました。", status: 200 };
+		return ok("スケジュールの削除に成功しました。", 200);
 	} catch {
-		return { error: "スケジュールの削除に失敗しました。", status: 500 };
+		return fail("スケジュールの削除に失敗しました。", 500);
 	}
 }

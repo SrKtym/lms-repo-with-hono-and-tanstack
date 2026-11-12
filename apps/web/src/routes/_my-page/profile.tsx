@@ -8,15 +8,15 @@ import { UserProfileInfo } from "@lms-repo/ui/components/surfaces/user-profile-i
 import { TabsForProfile } from "@lms-repo/ui/components/tabs";
 import { toast } from "@lms-repo/ui/components/toast";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { CreateProfDataForm } from "@/components/_my-page/_prof/shared/create-prof-data-form";
 import { CreateStudentDataForm } from "@/components/_my-page/_student/shared/create-student-data-form";
+import { CreateProfDataForm } from "@/components/_my-page/prof/shared/create-prof-data-form";
 import {
 	useEmailNotificationSettings,
 	useUpdateEmailNotificationSettings,
 } from "@/hooks/settings";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { requestRoleChangeMutationFn } from "@/utils/mutation/students";
-import { fetchCompletedCoursesQueryFn } from "@/utils/query/courses";
+import { fetchCompletedCreditsQueryFn } from "@/utils/query/courses";
 import { fetchProfDataQueryFn } from "@/utils/query/professors";
 import { fetchEmailNotificationSettingsQueryFn } from "@/utils/query/settings";
 import { fetchStudentDataQueryFn } from "@/utils/query/students";
@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_my-page/profile")({
 			role === "student"
 				? queryClient.ensureQueryData({
 						queryKey: ["totalCredits"],
-						queryFn: fetchCompletedCoursesQueryFn,
+						queryFn: fetchCompletedCreditsQueryFn,
 						...QUERY_CONFIG.USER_DATA,
 					})
 				: null,
@@ -121,9 +121,7 @@ function RouteComponent() {
 		if ("error" in result) {
 			toast.danger(result.error);
 		} else {
-			toast.success(
-				"教員アカウントへの変更申請が送信されました。管理者に承認されるまでお待ちください。",
-			);
+			toast.success(result.message);
 		}
 	};
 

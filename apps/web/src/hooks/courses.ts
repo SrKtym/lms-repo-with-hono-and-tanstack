@@ -4,6 +4,8 @@ import type {
 } from "@lms-repo/db/utils/query/courses";
 import { toast } from "@lms-repo/ui/components/toast";
 import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
+import type { InferResponseType } from "hono";
+import type { client } from "@/lib/hono-client";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import {
 	checkCourseMutationFn,
@@ -18,30 +20,16 @@ import {
 
 // トースト表示
 function showToast(
-	res:
-		| {
-				message: string;
-				status: number;
-		  }
-		| {
-				error: string;
-				status: number;
-		  },
+	res: InferResponseType<
+		(typeof client.api.students.courses.registrations)[":course-id"]["$post"]
+	>,
 ) {
 	if ("message" in res) {
 		return;
 	}
-
-	switch (res.status) {
-		case 400:
-		case 404:
-			toast.danger("講義の登録に失敗しました", {
-				description: res.error,
-			});
-			break;
-		case 500:
-			toast.danger(res.error);
-	}
+	toast.danger("講義の登録に失敗しました", {
+		description: res.error,
+	});
 }
 
 // 登録済み講義を取得するカスタムフック
@@ -62,10 +50,10 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 		queryKey: ["search-courses", weekdays, period],
 		queryFn: async ({ pageParam }) => {
 			return fetchCoursesByWeekdayAndPeriodQueryFn(
-				weekdays,
-				period,
 				10, // limit
 				pageParam * 10, // offset
+				weekdays,
+				period,
 			);
 		},
 		initialPageParam: 0,
@@ -73,7 +61,7 @@ export const useSearchCourses = (weekdays?: number, period?: number) => {
 		...QUERY_CONFIG.USER_DATA,
 		getNextPageParam: (lastPage, allPages) => {
 			if (lastPage.length < 10) {
-				return; // データが10件未満の場合はこれ以上データがない
+				return;
 			}
 			return allPages.length; // 次のページ番号
 		},

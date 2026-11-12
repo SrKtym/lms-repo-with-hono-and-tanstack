@@ -1,7 +1,7 @@
 import { Dropdown } from "@heroui/react";
+import type { LinkComponentProps } from "@lms-repo/ui/utils/link";
 import type React from "react";
 import { useState } from "react";
-import type { LinkComponentProps } from "../../lib/utils";
 import { DefaultAvatar } from "../avatar";
 import { CancelButton, DefaultButton, DropdownButton } from "../button";
 import { ControlledModal } from "../modals/controlled-modal";

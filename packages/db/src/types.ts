@@ -6,7 +6,6 @@ import type {
 	emailNotificationSettings,
 	fileSubmissionsMetadata,
 	notifications,
-	registration,
 	schedules,
 	textSubmissions,
 } from "@lms-repo/db/schema/service";
@@ -20,7 +19,6 @@ export type Assignments = typeof assignments.$inferInsert;
 export type Comments = typeof comments.$inferInsert;
 export type Notifications = typeof notifications.$inferInsert;
 export type Schedules = typeof schedules.$inferInsert;
-export type Registration = typeof registration.$inferInsert;
 export type EmailNotificationSettings =
 	typeof emailNotificationSettings.$inferInsert;
 export type TextSubmissions = typeof textSubmissions.$inferInsert;
@@ -29,7 +27,11 @@ export type FileSubmissionsMetadata =
 
 // データ挿入時のオプショナルフィールド
 export type CoursesOptional = "departmentId" | "professorId";
-export type AssignmentsOptional = "id" | "courseId" | "createdAt" | "updatedAt";
+export type NotificationsOptional = "id" | "createdAt";
+export type FileSubmissionsMetadataOptional =
+	| "assignmentId"
+	| "createdBy"
+	| "bucket";
 
 type PartiallyPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 type PickUserDataType = Pick<

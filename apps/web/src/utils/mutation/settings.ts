@@ -5,7 +5,7 @@ import { client } from "@/lib/hono-client";
 export const updateEmailNotificationSettingsMutationFn = async (
 	settings: Omit<EmailNotificationSettings, "userId">,
 ) => {
-	const res = await client.api.settings.email_notification.$post({
+	const res = await client.api.settings["email-notification"].$post({
 		json: settings,
 	});
 	const data = await res.json();

@@ -199,12 +199,8 @@ export function SubmissionsTable({
 									</button>
 								</Table.Cell>
 								<Table.Cell>{file.mimeType}</Table.Cell>
-								<Table.Cell>
-									<span className="text-gray-500 dark:text-gray-400">-</span>
-								</Table.Cell>
-								<Table.Cell>
-									<span className="text-gray-500 dark:text-gray-400">-</span>
-								</Table.Cell>
+								<Table.Cell />
+								<Table.Cell />
 							</Table.Row>
 						)}
 					</Table.Collection>

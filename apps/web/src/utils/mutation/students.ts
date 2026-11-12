@@ -14,7 +14,7 @@ export const registerStudentDataMutationFn = async (data: {
 
 // ロール変更申請のmutationFn
 export const requestRoleChangeMutationFn = async () => {
-	const res = await client.api.students.role_change_request.$post();
+	const res = await client.api.students["role-change-request"].$post();
 	const result = await res.json();
 	return result;
 };

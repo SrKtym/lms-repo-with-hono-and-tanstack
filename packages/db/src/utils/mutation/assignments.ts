@@ -4,8 +4,11 @@ import { assignments } from "../../schema";
 import type { Assignments } from "../../types";
 import {
 	createNotification,
+	fail,
 	fetchCourseData,
 	fetchEmailsForNotification,
+	ok,
+	warn,
 } from "./helpers";
 
 // 課題の作成
@@ -17,6 +20,7 @@ export async function createAssignments(assignmentsData: Assignments) {
 				.insert(assignments)
 				.values(assignmentsData)
 				.returning({
+					id: assignments.id,
 					title: assignments.title,
 					description: assignments.description,
 					points: assignments.points,
@@ -29,28 +33,30 @@ export async function createAssignments(assignmentsData: Assignments) {
 			const courseId = result?.courseId;
 
 			if (!courseId) {
-				return { error: "講義が見つかりません", status: 404 };
+				return fail("講義が見つかりません", 404);
 			}
 
 			// 講義名と受講者IDを取得
 			const courseData = await fetchCourseData(tx, courseId);
 
-			if (!courseData?.studentId) {
-				return {
-					error: "受講者がいないため通知を作成できませんでした。",
-					status: 404,
-				};
+			if (courseData.length === 0) {
+				return warn(
+					"課題の作成に成功しました",
+					"受講者がいないため通知を作成できませんでした。",
+					201,
+				);
 			}
 
 			// 通知の作成
 			await createNotification(
 				tx,
 				{
-					title: `${courseData.name}に新しい課題: ${result.title}`,
+					title: `${courseData[0]?.name}に新しい課題: ${result.title}`,
 					description: `提出形式: ${result.format}\n説明: ${result.description}`,
 					type: "assignment",
+					assignmentId: result.id,
 				},
-				[courseData],
+				courseData,
 			);
 
 			// メール通知を有効にしているユーザーのメール一覧
@@ -68,7 +74,7 @@ export async function createAssignments(assignmentsData: Assignments) {
 		});
 		return result;
 	} catch {
-		return { error: "課題の作成に失敗しました。", status: 500 };
+		return fail("課題の作成に失敗しました。", 500);
 	}
 }
 
@@ -76,9 +82,9 @@ export async function createAssignments(assignmentsData: Assignments) {
 export async function updateAssignments(assignmentsData: Assignments) {
 	try {
 		await db.update(assignments).set(assignmentsData);
-		return { message: "課題の更新に成功しました。", status: 200 };
+		return ok("課題の更新に成功しました。", 200);
 	} catch {
-		return { error: "課題の更新に失敗しました。", status: 500 };
+		return fail("課題の更新に失敗しました。", 500);
 	}
 }
 
@@ -86,8 +92,8 @@ export async function updateAssignments(assignmentsData: Assignments) {
 export async function deleteAssignments(assignmentId: string) {
 	try {
 		await db.delete(assignments).where(eq(assignments.id, assignmentId));
-		return { message: "課題の削除に成功しました。", status: 200 };
+		return ok("課題の削除に成功しました。", 200);
 	} catch {
-		return { error: "課題の削除に失敗しました。", status: 500 };
+		return fail("課題の削除に失敗しました。", 500);
 	}
 }

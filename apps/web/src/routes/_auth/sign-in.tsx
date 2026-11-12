@@ -68,6 +68,11 @@ function RouteComponent() {
 						},
 						onError: ({ response }) => {
 							switch (response.status) {
+								case 403:
+									setError(
+										"メールアドレスが認証されていないためログインできません",
+									);
+									break;
 								case 429:
 									setError(
 										"ログイン試行回数が多すぎます。しばらくしてからもう一度お試しください。",

@@ -5,8 +5,10 @@ import { client } from "@/lib/hono-client";
 export const createAssignmentMutationFn = async (
 	assignmentData: Assignments,
 ) => {
-	const res = await client.api.professors.assignments.$post({
-		json: assignmentData,
+	const { courseId, ...rest } = assignmentData;
+	const res = await client.api.professors.assignments[":course-id"].$post({
+		param: { "course-id": courseId },
+		json: rest,
 	});
 	const data = await res.json();
 	return data;

@@ -2,7 +2,7 @@ import type { FetchSchedulesReturnType } from "@lms-repo/db/utils/query/schedule
 import { CalendarClock } from "@lms-repo/ui/assets/icons/calendar-clock";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { useCourseEvents } from "@lms-repo/ui/hooks/use-course-events";
-import { isSameDay, viewLabels } from "@lms-repo/ui/lib/utils";
+import { isSameDay, viewLabels } from "@lms-repo/ui/utils/datetime";
 import { createFileRoute } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";

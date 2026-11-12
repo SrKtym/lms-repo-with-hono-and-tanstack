@@ -1,5 +1,5 @@
 import type { FetchCommentsWithAssignmentReturnType } from "@lms-repo/db/utils/query/comments";
-import { DATETIME_FORMAT_CONFIG } from "@lms-repo/ui/lib/utils";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { DefaultAvatar } from "../avatar";
 import { BaseCard } from "../cards/base-card";
 

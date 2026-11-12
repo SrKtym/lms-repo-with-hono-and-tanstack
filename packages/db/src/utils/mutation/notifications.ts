@@ -1,4 +1,4 @@
-import { and, eq, gt, inArray, lte } from "drizzle-orm";
+import { and, eq, gt, inArray, lte, notExists } from "drizzle-orm";
 import { db } from "../../index";
 import {
 	assignments,
@@ -9,6 +9,7 @@ import {
 	user,
 	userNotifications,
 } from "../../schema";
+import { fail, ok } from "./helpers";
 
 // 通知を削除
 export async function deleteNotification(
@@ -27,9 +28,9 @@ export async function deleteNotification(
 				),
 			);
 
-		return { message: "通知の削除に成功しました。", status: 200 };
+		return ok("通知の削除に成功しました。", 200);
 	} catch {
-		return { error: "通知の削除に失敗しました。", status: 500 };
+		return fail("通知の削除に失敗しました。", 500);
 	}
 }
 
@@ -51,9 +52,9 @@ export async function markNotificationAsRead(
 				),
 			);
 
-		return { message: "通知の既読処理に成功しました。", status: 200 };
+		return ok("通知の既読処理に成功しました。", 200);
 	} catch {
-		return { error: "通知の既読処理に失敗しました。", status: 500 };
+		return fail("通知の既読処理に失敗しました。", 500);
 	}
 }
 
@@ -67,8 +68,20 @@ export async function createReminder() {
 	try {
 		const result = await db.transaction(async (tx) => {
 			// 現在日時よりも後で、3日後の日時より前の課題を取得
+			// NOT EXISTS を使用して、既に通知がある課題を除外
+			const subQuery = tx
+				.select()
+				.from(notifications)
+				.where(
+					and(
+						eq(notifications.assignmentId, assignments.id),
+						eq(notifications.type, "system"),
+					),
+				);
+
 			const tasks = await tx
 				.select({
+					id: assignments.id,
 					title: assignments.title,
 					description: assignments.description,
 					dueDate: assignments.dueDate,
@@ -77,11 +90,15 @@ export async function createReminder() {
 				.from(assignments)
 				.innerJoin(courses, eq(assignments.courseId, courses.id))
 				.where(
-					and(lte(assignments.dueDate, target), gt(assignments.dueDate, now)),
+					and(
+						lte(assignments.dueDate, target),
+						gt(assignments.dueDate, now),
+						notExists(subQuery),
+					),
 				);
 
 			if (tasks.length === 0) {
-				return { error: "該当する課題が見つかりません。", status: 404 };
+				return fail("該当する課題が見つかりません。", 404);
 			}
 
 			const courseIds = tasks.map((v) => v.courseId);
@@ -99,9 +116,10 @@ export async function createReminder() {
 
 			// 通知データ
 			const notificationsData = tasks.map((v) => ({
-				title: `リマインダー: 課題（${v.title})`,
+				title: `リマインダー: 課題（${v.title}）`,
 				description: v.description,
 				type: "system",
+				assignmentId: v.id,
 			}));
 
 			// リマインダー通知をデータベースに保存
@@ -110,8 +128,7 @@ export async function createReminder() {
 				.values(notificationsData)
 				.returning({
 					id: notifications.id,
-				})
-				.onConflictDoNothing();
+				});
 
 			if (dataList.length > 0) {
 				const userNotificationData = dataList.flatMap((data) =>
@@ -149,6 +166,6 @@ export async function createReminder() {
 
 		return result;
 	} catch {
-		return { error: "リマインダーの作成に失敗しました。", status: 500 };
+		return fail("リマインダーの作成に失敗しました。", 500);
 	}
 }

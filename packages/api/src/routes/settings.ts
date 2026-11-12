@@ -14,20 +14,21 @@ export const settingsRouteForCommon = new Hono<{
 }>()
 	// メール通知設定更新
 	.post(
-		"/email_notification",
+		"/email-notification",
 		zValidator("json", z.custom<Omit<EmailNotificationSettings, "userId">>()),
 		async (c) => {
 			const { userId } = c.get("session");
-			const settings = await updateEmailNotificationSettings({
-				...c.req.valid("json"),
+			const emailNotificationSettings = c.req.valid("json");
+			const { status, ...body } = await updateEmailNotificationSettings({
+				...emailNotificationSettings,
 				userId,
 			});
-			return c.json(settings);
+			return c.json(body, status);
 		},
 	)
 	// メール通知設定取得
-	.get("/email_notification", async (c) => {
+	.get("/email-notification", async (c) => {
 		const { userId } = c.get("session");
-		const settings = await fetchEmailNotificationSettings(userId);
-		return c.json(settings);
+		const result = await fetchEmailNotificationSettings(userId);
+		return c.json(result, 200);
 	});

@@ -1,13 +1,14 @@
 import { db } from "../../index";
 import { comments } from "../../schema";
 import type { Comments } from "../../types";
+import { fail, ok } from "./helpers";
 
 // コメント作成
 export async function createComments(commentsData: Comments) {
 	try {
 		await db.insert(comments).values(commentsData);
-		return { message: "コメントの作成に成功しました。", status: 201 };
+		return ok("コメントの作成に成功しました。", 201);
 	} catch {
-		return { error: "コメントの作成に失敗しました。", status: 500 };
+		return fail("コメントの作成に失敗しました。", 500);
 	}
 }

@@ -2,9 +2,9 @@ import { client } from "../../lib/hono-client";
 
 // お知らせ取得用のqueryFn
 export const fetchAnnouncementsQueryFn = async (courseId?: string) => {
-	const res = await client.api.announcements.$get({
-		query: {
-			courseId,
+	const res = await client.api.announcements[":course-id?"].$get({
+		param: {
+			"course-id": courseId,
 		},
 	});
 	const data = await res.json();

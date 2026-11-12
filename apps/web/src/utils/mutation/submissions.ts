@@ -17,8 +17,12 @@ export const createTextSubmissionMutationFn = async (submissionData: {
 	description: string;
 	assignmentId: string;
 }) => {
-	const res = await client.api.students.submissions.text.$post({
-		json: submissionData,
+	const { assignmentId, ...rest } = submissionData;
+	const res = await client.api.students.submissions[
+		":assignment-id"
+	].text.$post({
+		param: { "assignment-id": assignmentId },
+		json: rest,
 	});
 
 	const result = await res.json();
@@ -46,47 +50,37 @@ export const submitMultipleFilesMutationFn = async ({
 	assignmentId: string;
 }) => {
 	// エミュレータ環境かどうかを判定（環境変数などで判断）
-	// 開発環境では直接アップロードエンドポイントを使用
 	const isEmulator = import.meta.env.DEV;
 
 	if (isEmulator) {
-		// エミュレータ環境：直接アップロードエンドポイントを使用
-		const uploadPromises = files.map(async (file) => {
-			const formData = new FormData();
-			formData.append("file", file);
-			formData.append("fileName", file.name);
-
-			const uploadRes = await fetch(
-				"http://localhost:3000/api/students/submissions/upload",
-				{
-					method: "POST",
-					body: formData,
-					credentials: "include",
-				},
-			);
-
-			if (!uploadRes.ok) {
-				throw new Error(`${file.name}のアップロードに失敗しました`);
-			}
-
-			return uploadRes.json();
-		});
-
-		const uploadedMetadata = await Promise.all(uploadPromises);
-
-		// メタデータを一括保存
-		const metadataRes = await client.api.students.submissions.metadata.$post({
-			json: {
-				metadataList: uploadedMetadata,
-				assignmentId,
+		// エミュレータ環境：1回のリクエストで複数ファイルを一括アップロード
+		const uploadRes = await client.api.students.submissions[
+			":assignment-id"
+		].upload.$post({
+			param: { "assignment-id": assignmentId },
+			form: {
+				files,
 			},
 		});
-
+		if (!uploadRes.ok) {
+			throw new Error("ファイルのアップロードに失敗しました");
+		}
+		// サーバーから返ってきたメタデータ配列
+		const uploadedMetadata = await uploadRes.json();
+		// メタデータを一括保存
+		const metadataRes = await client.api.students.submissions[
+			":assignment-id"
+		].files.$post({
+			param: { "assignment-id": assignmentId },
+			json: {
+				metadataList: uploadedMetadata,
+			},
+		});
 		return metadataRes.json();
 	}
 	// 本番環境：署名付きURLを使用
 	// 1. 署名付きURLを一括取得（1回のAPIリクエスト）
-	const signedUrlsRes = await client.api.submissions.signed_urls.$post({
+	const signedUrlsRes = await client.api.submissions["signed-urls"].$post({
 		json: files.map((file) => ({
 			fileName: file.name,
 			fileType: file.type,
@@ -131,10 +125,12 @@ export const submitMultipleFilesMutationFn = async ({
 	const uploadedMetadata = await Promise.all(uploadPromises);
 
 	// 3. メタデータを一括保存（1回のAPIリクエスト）
-	const metadataRes = await client.api.students.submissions.metadata.$post({
+	const metadataRes = await client.api.students.submissions[
+		":assignment-id"
+	].files.$post({
+		param: { "assignment-id": assignmentId },
 		json: {
 			metadataList: uploadedMetadata,
-			assignmentId,
 		},
 	});
 
@@ -151,8 +147,11 @@ export const gradeSubmissionMutationFn = async ({
 	assignmentId: string;
 	score: number;
 }) => {
-	const res = await client.api.professors.submissions.grade.$post({
-		json: { userId, assignmentId, score },
+	const res = await client.api.professors.submissions[
+		":assignment-id"
+	].grade.$post({
+		param: { "assignment-id": assignmentId },
+		json: { userId, score },
 	});
 
 	const result = await res.json();

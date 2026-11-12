@@ -1,20 +1,22 @@
+import { EDIT_PERIOD_DAYS } from "@lms-repo/shared/utils";
 import { and, eq, lte, or, sql } from "drizzle-orm";
 import { db } from "../../index";
 import { courses, departments, registration, students } from "../../schema";
 import type { Courses } from "../../types";
 import {
 	createNotificationForUser,
-	EDIT_PERIOD_DAYS,
+	fail,
 	isWithinEditPeriod,
+	ok,
 } from "./helpers";
 
 // 講義を作成する
 export async function createCourses(coursesData: Courses) {
 	try {
 		await db.insert(courses).values(coursesData).onConflictDoNothing();
-		return { message: "講義の作成に成功しました。", status: 201 };
+		return ok("講義の作成に成功しました。", 201);
 	} catch {
-		return { error: "講義の作成に失敗しました。", status: 500 };
+		return fail("講義の作成に失敗しました。", 500);
 	}
 }
 
@@ -25,10 +27,10 @@ export async function registerCourses(courseId: string, userId: string) {
 			// 編集期限内かチェック
 			const isEditable = await isWithinEditPeriod(tx, userId);
 			if (!isEditable) {
-				return {
-					error: `編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の登録・変更はできません。`,
-					status: 403,
-				};
+				return fail(
+					`編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の登録・変更はできません。`,
+					403,
+				);
 			}
 
 			// 登録しようとする講義の曜日・時限・単位数を取得
@@ -43,7 +45,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				.limit(1);
 
 			if (!targetCourse) {
-				return { error: "指定された講義が見つかりません。", status: 404 };
+				return fail("指定された講義が見つかりません。", 404);
 			}
 
 			const { weekdays, period, credits } = targetCourse;
@@ -59,7 +61,7 @@ export async function registerCourses(courseId: string, userId: string) {
 				.limit(1);
 
 			if (!studentInfo) {
-				return { error: "学生情報が見つかりません。", status: 404 };
+				return fail("学生情報が見つかりません。", 404);
 			}
 
 			const { departmentId, grade } = studentInfo;
@@ -93,10 +95,10 @@ export async function registerCourses(courseId: string, userId: string) {
 					(course) => course.courseId !== courseId,
 				);
 				if (requiredCourseName && selectedIsNotRequied) {
-					return {
-						error: `同じ曜日・時限に必修の講義「${requiredCourseName}」が存在するため、登録できません。`,
-						status: 400,
-					};
+					return fail(
+						`同じ曜日・時限に必修の講義「${requiredCourseName}」が存在するため、登録できません。`,
+						400,
+					);
 				}
 			}
 
@@ -114,18 +116,16 @@ export async function registerCourses(courseId: string, userId: string) {
 				);
 
 				if (!selectedIsRequired) {
-					return {
-						error:
-							"同じ曜日・時限に複数の必修の講義が存在するため、登録できません。",
-						status: 400,
-					};
+					return fail(
+						"同じ曜日・時限に複数の必修の講義が存在するため、登録できません。",
+						400,
+					);
 				}
 				if (selectedIsRequired && !selectedIsLowest) {
-					return {
-						error:
-							"必修講義が複数存在する場合は、対象学年がより低い方を優先して登録してください。",
-						status: 400,
-					};
+					return fail(
+						"必修講義が複数存在する場合は、対象学年がより低い方を優先して登録してください。",
+						400,
+					);
 				}
 			}
 
@@ -143,10 +143,10 @@ export async function registerCourses(courseId: string, userId: string) {
 			const totalCredits = currentValue + credits;
 
 			if (totalCredits >= 50) {
-				return {
-					error: `登録できる講義の単位数の上限に達しています。（現在: ${currentValue}単位 + 登録予定: ${credits}単位）`,
-					status: 400,
-				};
+				return fail(
+					`登録できる講義の単位数の上限に達しています。（現在: ${currentValue}単位 + 登録予定: ${credits}単位）`,
+					400,
+				);
 			}
 
 			// 3. ユーザーが既に同じ曜日・時限の講義を登録していないかチェック
@@ -168,10 +168,7 @@ export async function registerCourses(courseId: string, userId: string) {
 			// 3-1. 重複がある場合、登録講義を更新する
 			if (conflictingCourse) {
 				if (conflictingCourse.courseId === courseId) {
-					return {
-						error: "既に同じ講義を登録しています。",
-						status: 400,
-					};
+					return fail("既に同じ講義を登録しています。", 400);
 				}
 				await tx
 					.update(registration)
@@ -185,10 +182,7 @@ export async function registerCourses(courseId: string, userId: string) {
 						),
 					);
 
-				return {
-					message: "登録講義の更新に成功しました。",
-					status: 200,
-				};
+				return ok("登録講義の更新に成功しました。", 200);
 			}
 
 			// 重複がなければ講義を登録
@@ -200,12 +194,12 @@ export async function registerCourses(courseId: string, userId: string) {
 				})
 				.onConflictDoNothing();
 
-			return { message: "講義の登録に成功しました。", status: 201 };
+			return ok("講義の登録に成功しました。", 201);
 		});
 
 		return result;
 	} catch {
-		return { error: "講義の登録に失敗しました。", status: 500 };
+		return fail("講義の登録に失敗しました。", 500);
 	}
 }
 
@@ -231,9 +225,9 @@ export async function checkCourse(userId: string) {
 			);
 		});
 
-		return { message: "登録講義の確定に成功しました。", status: 200 };
+		return ok("登録講義の確定に成功しました。", 200);
 	} catch {
-		return { error: "登録講義の確定に失敗しました。", status: 500 };
+		return fail("登録講義の確定に失敗しました。", 500);
 	}
 }
 
@@ -244,10 +238,10 @@ export async function unregisterCourse(courseId: string, userId: string) {
 			// 編集期限内かチェック
 			const isEditable = await isWithinEditPeriod(tx, userId);
 			if (!isEditable) {
-				return {
-					error: `編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の削除はできません。`,
-					status: 403,
-				};
+				return fail(
+					`編集期限（アカウント作成から${EDIT_PERIOD_DAYS}日間）を過ぎているため、講義の削除はできません。`,
+					403,
+				);
 			}
 
 			await tx
@@ -259,11 +253,11 @@ export async function unregisterCourse(courseId: string, userId: string) {
 					),
 				);
 
-			return { message: "講義の登録解除に成功しました。", status: 200 };
+			return ok("講義の登録解除に成功しました。", 200);
 		});
 
 		return result;
 	} catch {
-		return { error: "講義の登録解除に失敗しました。", status: 500 };
+		return fail("講義の登録解除に失敗しました。", 500);
 	}
 }

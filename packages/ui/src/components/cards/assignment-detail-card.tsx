@@ -1,11 +1,11 @@
 import type { FetchAssignmentsFromUserCoursesReturnType } from "@lms-repo/db/utils/query/assignments";
-import { getIconByFormat } from "../../lib/utils";
-import { BaseCard } from "../cards/base-card";
-import { DefaultChip } from "../chip";
-import { DefaultSeparator } from "../separator";
+import { BaseCard } from "@lms-repo/ui/components/cards/base-card";
+import { DefaultChip } from "@lms-repo/ui/components/chip";
+import { DefaultSeparator } from "@lms-repo/ui/components/separator";
+import { getIconByFormat } from "@lms-repo/ui/utils/file-icon";
 
 interface AssignmentDetailCardProps {
-	targetAssignment?: FetchAssignmentsFromUserCoursesReturnType[number];
+	targetAssignment: FetchAssignmentsFromUserCoursesReturnType[number];
 	score?: number | null;
 }
 
@@ -14,7 +14,7 @@ export function AssignmentDetailCard({
 	targetAssignment,
 	score,
 }: AssignmentDetailCardProps) {
-	const Icon = getIconByFormat(targetAssignment?.format);
+	const Icon = getIconByFormat(targetAssignment.format);
 
 	return (
 		<BaseCard className="border-divider border">
@@ -27,12 +27,10 @@ export function AssignmentDetailCard({
 							</div>
 						</div>
 						<div className="space-y-2">
-							<h1 className="text-2xl font-medium">
-								{targetAssignment?.title}
-							</h1>
+							<h1 className="text-2xl font-medium">{targetAssignment.title}</h1>
 							<div className="mt-2">
 								<DefaultChip color="accent">
-									{targetAssignment?.points || 0} 点
+									{targetAssignment.points} 点
 								</DefaultChip>
 							</div>
 						</div>
@@ -49,7 +47,7 @@ export function AssignmentDetailCard({
 								<span className="font-medium">期限</span>
 							</div>
 							<p className="text-default-600 ml-6">
-								{targetAssignment?.dueDate.toLocaleDateString()}
+								{targetAssignment.dueDate.toLocaleDateString()}
 							</p>
 						</div>
 
@@ -58,7 +56,7 @@ export function AssignmentDetailCard({
 								<span className="font-medium">説明</span>
 							</div>
 							<p className="text-default-600 ml-6 leading-relaxed">
-								{targetAssignment?.description}
+								{targetAssignment.description}
 							</p>
 						</div>
 
@@ -91,9 +89,7 @@ export function AssignmentDetailCard({
 										<span className="font-medium">採点の結果</span>
 									</div>
 									<p className="text-default-600 ml-6">
-										{score !== null
-											? `${score}/${targetAssignment?.points} 点`
-											: "まだ採点されていません"}
+										{`${score}/${targetAssignment.points} 点`}
 									</p>
 								</div>
 							</div>

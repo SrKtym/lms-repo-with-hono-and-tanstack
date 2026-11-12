@@ -16,16 +16,10 @@ import { user } from "./auth";
 
 export const requirements = ["必修", "選択必修", "任意"] as const;
 export const requirementsEnum = pgEnum("requirements", requirements);
-export const assignmentFormat = [
-	"text",
-	"pdf",
-	"excel",
-	"word",
-	"powerpoint",
-] as const;
-export const announcementType = ["資料", "アンケート", "その他"] as const;
-const statusList = ["未提出", "提出済み", "評定済み"] as const;
-const notificationType = ["announcement", "assignment", "system"] as const;
+export const assignmentFormat = ["text", "pdf", "excel", "word", "powerpoint"];
+export const announcementType = ["資料", "アンケート", "その他"];
+const statusList = ["未提出", "提出済み", "評定済み"];
+const notificationType = ["announcement", "assignment", "system"];
 
 // 学生テーブル
 export const students = pgTable(
@@ -246,7 +240,7 @@ export const textSubmissions = pgTable(
 			.notNull()
 			.references(() => assignments.id, { onDelete: "cascade" }),
 		title: text("title").notNull(),
-		description: text("description").notNull().default(""),
+		description: text("description").notNull(),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
@@ -338,9 +332,13 @@ export const notifications = pgTable(
 		title: text("title").notNull(),
 		description: text("description").notNull(),
 		type: text("type").notNull(),
+		assignmentId: text("assignment_id").references(() => assignments.id, {
+			onDelete: "cascade",
+		}),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
 	},
 	(t) => [
+		index("notifications_assignment_id_idx").on(t.assignmentId),
 		check(
 			"type_check",
 			sql`${t.type} IN (${sql.raw([...notificationType].map((t) => `'${t}'`).join(","))})`,

@@ -7,13 +7,13 @@ import {
 	TimeField,
 	type TimeValue,
 } from "@heroui/react";
+import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import {
-	DATETIME_FORMAT_CONFIG,
 	DateFormatter,
 	type DateValue,
 	getLocalTimeZone,
 	type ZonedDateTime,
-} from "@lms-repo/ui/lib/utils";
+} from "@lms-repo/ui/lib/internationalized-date";
 
 interface DateRangePickerProps {
 	defaultValue: { start: ZonedDateTime; end: ZonedDateTime };

@@ -9,7 +9,7 @@ import {
 	getLocalTimeZone,
 	now,
 	type ZonedDateTime,
-} from "@lms-repo/ui/lib/utils";
+} from "@lms-repo/ui/lib/internationalized-date";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useCreateSchedule } from "@/hooks/schedules";
@@ -49,11 +49,12 @@ export function CreateScheduleForm({
 			};
 
 			const res = await createSchedule(scheduleData);
+			const isSuccess = "message" in res;
 
-			if (res.status === 200) {
+			if (isSuccess) {
 				onOpenChange(false);
 			} else {
-				return;
+				return res.error;
 			}
 		},
 		validators: {
