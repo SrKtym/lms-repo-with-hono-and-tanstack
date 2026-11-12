@@ -9,7 +9,7 @@ import {
 	getLocalTimeZone,
 	now,
 	type ZonedDateTime,
-} from "@lms-repo/ui/lib/utils";
+} from "@lms-repo/ui/lib/internationalized-date";
 import { useForm } from "@tanstack/react-form";
 import { z } from "zod";
 import { useCreateSchedule } from "@/hooks/schedules";
