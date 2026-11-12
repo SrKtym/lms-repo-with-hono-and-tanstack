@@ -8,6 +8,7 @@ import {
 	fetchCourseData,
 	fetchEmailsForNotification,
 	ok,
+	warn,
 } from "./helpers";
 
 // アナウンスメント作成
@@ -35,19 +36,23 @@ export async function createAnnouncements(announcementsData: Announcements) {
 			// 講義名と受講者IDを取得
 			const courseData = await fetchCourseData(tx, courseId);
 
-			if (!courseData?.studentId) {
-				return fail("受講者がいないため通知を作成できませんでした。", 404);
+			if (courseData.length === 0) {
+				return warn(
+					"アナウンスメントの作成に成功しました",
+					"受講者がいないため通知を作成できませんでした",
+					201,
+				);
 			}
 
 			// 通知の作成
 			await createNotification(
 				tx,
 				{
-					title: `${courseData.name}に新しいお知らせ: ${result.title}`,
+					title: `${courseData[0]?.name}に新しいお知らせ: ${result.title}`,
 					description: `${result.type}: ${result.description}`,
 					type: "announcement",
 				},
-				[courseData],
+				courseData,
 			);
 
 			// メール通知を有効にしているユーザーのメール一覧
