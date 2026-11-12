@@ -9,20 +9,11 @@ import { resend } from "@lms-repo/emails";
 import RoleChangeRequestEmail from "@lms-repo/emails/components/role-change-request-email";
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
-import { z } from "zod";
+import { formSchema } from "../schema/students";
 import { coursesRouteForStudent } from "./courses";
 import { notificationsRouteForStudent } from "./notifications";
 import { schedulesRouteForStudent } from "./schedules";
 import { submissionsRouteForStudent } from "./submissions";
-
-const formSchema = z.object({
-	grade: z
-		.number()
-		.int("対象学年は整数で入力してください")
-		.min(1, "対象学年は1から4の間で入力してください")
-		.max(4, "対象学年は1から4の間で入力してください"),
-	departmentName: z.string(),
-});
 
 // 学生関連のルート
 export const studentsRoute = new Hono<{
@@ -32,16 +23,25 @@ export const studentsRoute = new Hono<{
 	};
 }>()
 	// 学生の所属登録
-	.post("/", zValidator("json", formSchema), async (c) => {
-		const { userId } = c.get("session");
-		const { grade, departmentName } = c.req.valid("json");
-		const { status, ...body } = await registerStudentData(
-			userId,
-			departmentName,
-			grade,
-		);
-		return c.json(body, status);
-	})
+	.post(
+		"/",
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { grade, departmentName } = c.req.valid("json");
+			const { status, ...body } = await registerStudentData(
+				userId,
+				departmentName,
+				grade,
+			);
+			return c.json(body, status);
+		},
+	)
 	// ユーザーロール変更の申請
 	.post("/role-change-request", async (c) => {
 		const { id, email, name } = c.get("user");

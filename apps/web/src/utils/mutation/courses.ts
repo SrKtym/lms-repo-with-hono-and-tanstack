@@ -1,10 +1,11 @@
-import type { Courses, CoursesOptional } from "@lms-repo/db/types";
+import type { formSchema } from "@lms-repo/api/schema/courses";
+import type { z } from "zod";
 import { client } from "@/lib/hono-client";
 
+type CourseData = z.infer<typeof formSchema>;
+
 // 講義を作成するmutationFn
-export const createCourseMutationFn = async (
-	courseData: Omit<Courses, CoursesOptional>,
-) => {
+export const createCourseMutationFn = async (courseData: CourseData) => {
 	const res = await client.api.professors.courses.$post({
 		json: courseData,
 	});

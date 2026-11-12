@@ -7,22 +7,7 @@ import NewAssignmentEmail from "@lms-repo/emails/components/new-assignment-email
 import { env } from "@lms-repo/env/server";
 import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
-import { z } from "zod";
-
-const formSchema = z.object({
-	title: z.string().min(1, "課題名は必須です"),
-	description: z.string(),
-	points: z
-		.number()
-		.int("点数は整数で入力してください")
-		.min(0, "点数は0以上で入力してください")
-		.max(100, "点数は100以下で入力してください"),
-	dueDate: z.coerce
-		.date()
-		.min(new Date(), "締切日は未来の日付を入力してください"),
-	format: z.string().min(1, "提出形式を選択してください"),
-	courseId: z.string().min(1),
-});
+import { formSchema } from "../schema/assignments";
 
 // 課題に関するロジック（教員用）
 export const assignmentsRouteForProf = new Hono<{
@@ -32,39 +17,53 @@ export const assignmentsRouteForProf = new Hono<{
 	};
 }>()
 	// 課題作成
-	.post("/", zValidator("json", formSchema), async (c) => {
-		const assignmentData = c.req.valid("json");
-		const result = await createAssignments(assignmentData);
+	.post(
+		"/:course-id",
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
+		async (c) => {
+			const { "course-id": courseId } = c.req.param();
+			const assignmentData = c.req.valid("json");
+			const result = await createAssignments({ ...assignmentData, courseId });
 
-		if ("error" in result) {
-			const { status, ...body } = result;
-			return c.json(body, status);
-		}
+			if ("error" in result) {
+				const { status, ...body } = result;
+				return c.json(body, status);
+			}
+			if ("warning" in result) {
+				const { status, ...body } = result;
+				return c.json(body, status);
+			}
 
-		const { emails, title, description, dueDate } = result;
+			const { emails, title, description, dueDate } = result;
 
-		const viewUrl = `${env.CORS_ORIGIN}/notifications`;
+			const viewUrl = `${env.CORS_ORIGIN}/notifications`;
 
-		// バッチでメールを送信（全員に同じ内容）
-		const batchEmails = emails.map((email) => ({
-			from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
-			to: email,
-			subject: "新しい課題",
-			react: NewAssignmentEmail({
-				assignmentTitle: title,
-				assignmentDescription: description,
-				dueDate: dueDate.toLocaleDateString(
-					DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
-					DATETIME_FORMAT_CONFIG.DEFAULT.options,
-				),
-				viewUrl,
-			}),
-		}));
+			// バッチでメールを送信（全員に同じ内容）
+			const batchEmails = emails.map((email) => ({
+				from: `LMS-repo <${env.EMAIL_ADDRESS}>`,
+				to: email,
+				subject: "新しい課題",
+				react: NewAssignmentEmail({
+					assignmentTitle: title,
+					assignmentDescription: description,
+					dueDate: dueDate.toLocaleDateString(
+						DATETIME_FORMAT_CONFIG.DEFAULT.defaultLocale,
+						DATETIME_FORMAT_CONFIG.DEFAULT.options,
+					),
+					viewUrl,
+				}),
+			}));
 
-		await resend.batch.send(batchEmails);
+			await resend.batch.send(batchEmails);
 
-		return c.json({ message: "課題を作成しました" }, 201);
-	});
+			return c.json({ message: "課題を作成しました" }, 201);
+		},
+	);
 
 // 課題に関するロジック（共通）
 export const assignmentsRouteForCommon = new Hono<{

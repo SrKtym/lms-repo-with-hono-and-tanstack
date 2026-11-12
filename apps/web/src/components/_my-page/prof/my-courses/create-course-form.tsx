@@ -1,10 +1,10 @@
+import { formSchema } from "@lms-repo/api/schema/courses";
 import { requirements } from "@lms-repo/db/schema/service";
+import { DAYS_EXCEPT_WEEKEND } from "@lms-repo/shared/utils";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { ControlledModal } from "@lms-repo/ui/components/modals/controlled-modal";
-import { DAYS } from "@lms-repo/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
 import { useCreateCourse } from "@/hooks/courses";
 
 interface CreateCourseFormProps {
@@ -18,15 +18,6 @@ export function CreateCourseForm({
 }: CreateCourseFormProps) {
 	type Requirement = (typeof requirements)[number];
 
-	// 土曜日と日曜日を除外
-	const DAYS_EXCEPT_WEEKEND = DAYS.filter(
-		(day) => day !== "土" && day !== "日",
-	);
-	// 曜日と数字のマッピング
-	const daysMap: Record<string, number> = Object.fromEntries(
-		DAYS_EXCEPT_WEEKEND.map((day, i) => [day, i + 1]),
-	);
-
 	const { mutateAsync: createCourse } = useCreateCourse();
 
 	const form = useForm({
@@ -36,53 +27,26 @@ export function CreateCourseForm({
 			weekdays: "月",
 			period: 1,
 			credits: 1,
-			requirements: "任意" as Requirement,
+			requirements: "任意",
 			classRoom: "",
 		},
 		onSubmit: async ({ value }) => {
-			const weekdays = daysMap[value.weekdays];
-
-			if (!weekdays) {
+			const parsed = formSchema.safeParse(value);
+			if (!parsed.success) {
 				return;
 			}
 
-			const transformedValue = {
-				...value,
-				weekdays,
-			};
-			const res = await createCourse(transformedValue);
+			const res = await createCourse(parsed.data);
 			const isSuccess = "message" in res;
 
 			if (isSuccess) {
 				onOpenChange(false);
 			} else {
-				return;
+				return res.error;
 			}
 		},
 		validators: {
-			onSubmit: z.object({
-				name: z.string().min(1, "講義名は必須です"),
-				targetGrade: z
-					.number()
-					.int("対象学年は整数で入力してください")
-					.min(1, "対象学年は1から4の間で入力してください")
-					.max(4, "対象学年は1から4の間で入力してください"),
-				weekdays: z.enum(DAYS_EXCEPT_WEEKEND),
-				period: z
-					.number()
-					.int("時限は整数で入力してください")
-					.min(1, "時限は1から5の間で入力してください")
-					.max(5, "時限は1から5の間で入力してください"),
-				credits: z
-					.number()
-					.int("単位数は整数で入力してください")
-					.min(1, "単位数は1から4の間で入力してください")
-					.max(4, "単位数は1から4の間で入力してください"),
-				requirements: z.enum(requirements, {
-					error: "履修区分を選択してください。",
-				}),
-				classRoom: z.string(),
-			}),
+			onSubmit: formSchema,
 		},
 	});
 

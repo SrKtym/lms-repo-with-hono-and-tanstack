@@ -1,3 +1,4 @@
+import { textSubmissionsSchema } from "@lms-repo/api/schema/submissions";
 import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Check } from "@lms-repo/ui/assets/icons/check";
 import { Close } from "@lms-repo/ui/assets/icons/close";
@@ -45,17 +46,15 @@ export function CreateTextSubmissionForm({
 		defaultValues: {
 			title: "",
 			description: "",
-			assignmentId: assignmentId || "",
+			assignmentId,
 		},
 		onSubmit: async ({ value }) => {
 			await createTextSubmission(value);
 			setSuccess(true);
 		},
 		validators: {
-			onSubmit: z.object({
-				title: z.string().min(1).max(100),
-				description: z.string().min(1).max(2000),
-				assignmentId: z.string().min(1),
+			onSubmit: textSubmissionsSchema.safeExtend({
+				assignmentId: z.uuidv4(),
 			}),
 		},
 	});

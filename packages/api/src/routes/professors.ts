@@ -3,7 +3,7 @@ import type { Session } from "@lms-repo/auth/server";
 import { registerProfData } from "@lms-repo/db/utils/mutation/professors";
 import { fetchProfData } from "@lms-repo/db/utils/query/professors";
 import { Hono } from "hono";
-import { z } from "zod";
+import { formSchema } from "../schema/professors";
 import { announcementsRouteForProf } from "./announcements";
 import { assignmentsRouteForProf } from "./assignments";
 import { coursesRouteForProf } from "./courses";
@@ -18,7 +18,12 @@ export const professorsRoute = new Hono<{
 	// 教授の所属登録
 	.post(
 		"/",
-		zValidator("json", z.object({ departmentName: z.string() })),
+		zValidator("json", formSchema, (result, c) => {
+			if (!result.success) {
+				const firstError = result.error.issues[0]?.message;
+				return c.json({ error: firstError }, 400);
+			}
+		}),
 		async (c) => {
 			const { userId } = c.get("session");
 			const { departmentName } = c.req.valid("json");
