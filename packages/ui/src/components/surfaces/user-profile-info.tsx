@@ -78,7 +78,7 @@ export function UserProfileInfo({ user, onUpdateName }: UserProfileInfoProps) {
 									</div>
 									<div className={`${style} col-span-2`}>
 										<p className="font-medium">修了済み講義の単位数:</p>
-										<p>{user.totalCredits || 0}単位</p>
+										<p>{user.totalCredits}単位</p>
 									</div>
 								</div>
 							</div>
