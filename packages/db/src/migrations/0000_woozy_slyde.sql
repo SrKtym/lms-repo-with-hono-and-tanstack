@@ -229,7 +229,7 @@ CREATE TABLE "text_submissions" (
 	"id" text PRIMARY KEY NOT NULL,
 	"assignment_id" text NOT NULL,
 	"title" text NOT NULL,
-	"description" text DEFAULT '' NOT NULL,
+	"description" text NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"created_by" text NOT NULL,
