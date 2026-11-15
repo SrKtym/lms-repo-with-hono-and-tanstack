@@ -1,9 +1,19 @@
 import { client } from "@/lib/hono-client";
 
 // ファイル削除のmutationFn
-export const deleteFileMutationFn = async (fileId: string) => {
-	const res = await client.api.students.submissions.files[":id"].$delete({
-		param: { id: fileId },
+export const deleteFileMutationFn = async ({
+	fileId,
+	courseId,
+	assignmentId,
+}: {
+	fileId: string;
+	courseId: string;
+	assignmentId: string;
+}) => {
+	const res = await client.api.courses[":course-id"].assignments[
+		":assignment-id"
+	].submissions.files[":id"].$delete({
+		param: { "course-id": courseId, "assignment-id": assignmentId, id: fileId },
 	});
 
 	const result = await res.json();
@@ -16,12 +26,13 @@ export const createTextSubmissionMutationFn = async (submissionData: {
 	title: string;
 	description: string;
 	assignmentId: string;
+	courseId: string;
 }) => {
-	const { assignmentId, ...rest } = submissionData;
-	const res = await client.api.students.submissions[
+	const { assignmentId, courseId, ...rest } = submissionData;
+	const res = await client.api.courses[":course-id"].assignments[
 		":assignment-id"
-	].text.$post({
-		param: { "assignment-id": assignmentId },
+	].submissions.text.$post({
+		param: { "course-id": courseId, "assignment-id": assignmentId },
 		json: rest,
 	});
 
@@ -31,9 +42,23 @@ export const createTextSubmissionMutationFn = async (submissionData: {
 };
 
 // テキスト提出物削除のmutationFn
-export const deleteTextSubmissionMutationFn = async (submissionId: string) => {
-	const res = await client.api.students.submissions.text[":id"].$delete({
-		param: { id: submissionId },
+export const deleteTextSubmissionMutationFn = async ({
+	submissionId,
+	courseId,
+	assignmentId,
+}: {
+	submissionId: string;
+	courseId: string;
+	assignmentId: string;
+}) => {
+	const res = await client.api.courses[":course-id"].assignments[
+		":assignment-id"
+	].submissions.text[":id"].$delete({
+		param: {
+			"course-id": courseId,
+			"assignment-id": assignmentId,
+			id: submissionId,
+		},
 	});
 
 	const result = await res.json();
@@ -45,42 +70,50 @@ export const deleteTextSubmissionMutationFn = async (submissionId: string) => {
 export const submitMultipleFilesMutationFn = async ({
 	files,
 	assignmentId,
+	courseId,
 }: {
 	files: File[];
 	assignmentId: string;
+	courseId: string;
 }) => {
 	// エミュレータ環境かどうかを判定（環境変数などで判断）
 	const isEmulator = import.meta.env.DEV;
 
 	if (isEmulator) {
 		// エミュレータ環境：1回のリクエストで複数ファイルを一括アップロード
-		const uploadRes = await client.api.students.submissions[
+		const res = await client.api.courses[":course-id"].assignments[
 			":assignment-id"
-		].upload.$post({
-			param: { "assignment-id": assignmentId },
+		].submissions.upload.$post({
+			param: { "course-id": courseId, "assignment-id": assignmentId },
 			form: {
 				files,
 			},
 		});
-		if (!uploadRes.ok) {
-			throw new Error("ファイルのアップロードに失敗しました");
+
+		const metadataList = await res.json();
+
+		if ("error" in metadataList) {
+			return metadataList;
 		}
-		// サーバーから返ってきたメタデータ配列
-		const uploadedMetadata = await uploadRes.json();
+
 		// メタデータを一括保存
-		const metadataRes = await client.api.students.submissions[
+		const metadataRes = await client.api.courses[":course-id"].assignments[
 			":assignment-id"
-		].files.$post({
-			param: { "assignment-id": assignmentId },
+		].submissions.files.$post({
+			param: { "course-id": courseId, "assignment-id": assignmentId },
 			json: {
-				metadataList: uploadedMetadata,
+				metadataList,
 			},
 		});
 		return metadataRes.json();
 	}
+
 	// 本番環境：署名付きURLを使用
 	// 1. 署名付きURLを一括取得（1回のAPIリクエスト）
-	const signedUrlsRes = await client.api.submissions["signed-urls"].$post({
+	const signedUrlsRes = await client.api.courses[":course-id"].assignments[
+		":assignment-id"
+	].submissions["signed-urls"].$post({
+		param: { "course-id": courseId, "assignment-id": assignmentId },
 		json: files.map((file) => ({
 			fileName: file.name,
 			fileType: file.type,
@@ -90,10 +123,10 @@ export const submitMultipleFilesMutationFn = async ({
 	const signedUrls = await signedUrlsRes.json();
 
 	if ("error" in signedUrls) {
-		throw new Error(signedUrls.error);
+		return signedUrls;
 	}
 
-	// 2. Cloud Storageにファイルを並列アップロード
+	// 2. Cloud Storageにファイルを並列アップロード（クライアントから直接アップロード）
 	const uploadPromises = signedUrls.map(
 		async ({ fileName, signedUrl, objectName }) => {
 			const file = files.find((f) => f.name === fileName);
@@ -125,10 +158,10 @@ export const submitMultipleFilesMutationFn = async ({
 	const uploadedMetadata = await Promise.all(uploadPromises);
 
 	// 3. メタデータを一括保存（1回のAPIリクエスト）
-	const metadataRes = await client.api.students.submissions[
+	const metadataRes = await client.api.courses[":course-id"].assignments[
 		":assignment-id"
-	].files.$post({
-		param: { "assignment-id": assignmentId },
+	].submissions.files.$post({
+		param: { "course-id": courseId, "assignment-id": assignmentId },
 		json: {
 			metadataList: uploadedMetadata,
 		},
@@ -141,16 +174,18 @@ export const submitMultipleFilesMutationFn = async ({
 export const gradeSubmissionMutationFn = async ({
 	userId,
 	assignmentId,
+	courseId,
 	score,
 }: {
 	userId: string;
 	assignmentId: string;
+	courseId: string;
 	score: number;
 }) => {
-	const res = await client.api.professors.submissions[
+	const res = await client.api.courses[":course-id"].assignments[
 		":assignment-id"
-	].grade.$post({
-		param: { "assignment-id": assignmentId },
+	].submissions.grade.$post({
+		param: { "course-id": courseId, "assignment-id": assignmentId },
 		json: { userId, score },
 	});
 

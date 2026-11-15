@@ -1,17 +1,13 @@
+import { parseDatesInArray } from "@lms-repo/ui/utils/datetime";
 import { client } from "../../lib/hono-client";
 
 // お知らせ取得用のqueryFn
-export const fetchAnnouncementsQueryFn = async (courseId?: string) => {
-	const res = await client.api.announcements[":course-id?"].$get({
+export const fetchAnnouncementsQueryFn = async (courseId: string) => {
+	const res = await client.api.courses[":course-id"].announcements.$get({
 		param: {
 			"course-id": courseId,
 		},
 	});
 	const data = await res.json();
-	const parsedData = data.map((announcement) => ({
-		...announcement,
-		createdAt: new Date(announcement.createdAt),
-		updatedAt: new Date(announcement.updatedAt),
-	}));
-	return parsedData;
+	return parseDatesInArray(data, ["createdAt", "updatedAt"]);
 };

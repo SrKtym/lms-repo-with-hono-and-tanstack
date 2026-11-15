@@ -6,7 +6,7 @@ export const createAssignmentMutationFn = async (
 	assignmentData: Assignments,
 ) => {
 	const { courseId, ...rest } = assignmentData;
-	const res = await client.api.professors.assignments[":course-id"].$post({
+	const res = await client.api.courses[":course-id"].assignments.$post({
 		param: { "course-id": courseId },
 		json: rest,
 	});

@@ -21,13 +21,15 @@ import {
 
 // 指定された課題のすべての提出状況を取得するフック（教員用、無限スクロール対応）
 export const useAllSubmissionsWithStudents = (
+	courseId: string,
 	assignmentId: string,
 	initialData: FetchAllSubmissionsWithStudentsReturnType,
 ) => {
 	return useInfiniteQuery({
-		queryKey: ["all-submissions-with-students", assignmentId],
+		queryKey: ["all-submissions-with-students", courseId, assignmentId],
 		queryFn: async ({ pageParam = 0 }) => {
 			const data = await fetchAllSubmissionsWithStudentsQueryFn(
+				courseId,
 				assignmentId,
 				10,
 				pageParam * 10,
@@ -50,26 +52,30 @@ export const useAllSubmissionsWithStudents = (
 };
 
 // テキスト提出取得のフック
-export const useTextSubmissions = (assignmentId: string) => {
+export const useTextSubmissions = (courseId: string, assignmentId: string) => {
 	return useQuery({
-		queryKey: ["text-submissions", assignmentId],
-		queryFn: () => fetchTextSubmissionsQueryFn(assignmentId),
+		queryKey: ["text-submissions", courseId, assignmentId],
+		queryFn: () => fetchTextSubmissionsQueryFn(courseId, assignmentId),
 	});
 };
 
 // ファイルメタデータ取得のフック
-export const useFileMetadata = (assignmentId: string) => {
+export const useFileMetadata = (courseId: string, assignmentId: string) => {
 	return useQuery({
-		queryKey: ["file-metadata", assignmentId],
-		queryFn: () => fetchFileMetadataQueryFn(assignmentId),
+		queryKey: ["file-metadata", courseId, assignmentId],
+		queryFn: () => fetchFileMetadataQueryFn(courseId, assignmentId),
 	});
 };
 
 // ダウンロードURL取得のフック
-export const useDownloadUrl = (fileId: string) => {
+export const useDownloadUrl = (
+	fileId: string,
+	courseId: string,
+	assignmentId: string,
+) => {
 	return useQuery({
 		queryKey: ["download-url", fileId],
-		queryFn: () => fetchDownloadUrlQueryFn(fileId),
+		queryFn: () => fetchDownloadUrlQueryFn(fileId, courseId, assignmentId),
 		enabled: !!fileId,
 	});
 };
@@ -78,7 +84,7 @@ export const useDownloadUrl = (fileId: string) => {
 export const useDeleteFile = () => {
 	return useMutation({
 		mutationFn: deleteFileMutationFn,
-		onMutate: async (fileId) => {
+		onMutate: async ({ fileId }) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["file-metadata"] });
 
@@ -134,7 +140,7 @@ export const useCreateTextSubmission = () => {
 export const useDeleteTextSubmission = () => {
 	return useMutation({
 		mutationFn: deleteTextSubmissionMutationFn,
-		onMutate: async (submissionId) => {
+		onMutate: async ({ submissionId }) => {
 			// 古いデータの再取得をキャンセルする
 			await queryClient.cancelQueries({ queryKey: ["text-submissions"] });
 

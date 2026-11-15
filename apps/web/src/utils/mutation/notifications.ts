@@ -5,7 +5,7 @@ export const markNotificationAsReadMutationFn = async (
 	notificationId?: string,
 ) => {
 	if (notificationId) {
-		const res = await client.api.students.notifications[":notification-id"][
+		const res = await client.api.notifications[":notification-id"][
 			"mark-as-read"
 		].$patch({
 			param: {
@@ -16,16 +16,14 @@ export const markNotificationAsReadMutationFn = async (
 		return data;
 	}
 	// 全通知を既読にするmutationFn
-	const res = await client.api.students.notifications["mark-as-read"].$patch();
+	const res = await client.api.notifications["mark-as-read"].$patch();
 	const data = await res.json();
 	return data;
 };
 
 // 通知を削除するmutationFn
 export const deleteNotificationMutationFn = async (notificationId?: string) => {
-	const res = await client.api.students.notifications[
-		":notification-id?"
-	].$delete({
+	const res = await client.api.notifications[":notification-id?"].$delete({
 		param: {
 			"notification-id": notificationId,
 		},

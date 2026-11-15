@@ -1,3 +1,4 @@
+import { parseDatesInArray } from "@lms-repo/ui/utils/datetime";
 import { client } from "../../lib/hono-client";
 
 // 通知取得用のqueryFn
@@ -5,18 +6,14 @@ export const fetchNotificationsQueryFn = async (
 	limit: number,
 	offset: number,
 ) => {
-	const res = await client.api.students.notifications.$get({
+	const res = await client.api.notifications.$get({
 		query: {
 			limit: limit.toString(),
 			offset: offset.toString(),
 		},
 	});
 	const data = await res.json();
-	const parsedData = data.map((notification) => ({
-		...notification,
-		createdAt: new Date(notification.createdAt),
-	}));
-	return parsedData;
+	return parseDatesInArray(data, ["createdAt"]);
 };
 
 // 通知総数取得用のqueryFn
@@ -28,7 +25,7 @@ export const fetchNotificationsCountQueryFn = async (
 		queryParams.filter = filter;
 	}
 
-	const res = await client.api.students.notifications.count.$get({
+	const res = await client.api.notifications.count.$get({
 		query: queryParams,
 	});
 	const count = await res.json();

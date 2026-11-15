@@ -4,7 +4,7 @@ import { client } from "@/lib/hono-client";
 export const registerProfDataMutationFn = async (data: {
 	departmentName: string;
 }) => {
-	const res = await client.api.professors.$post({
+	const res = await client.api.professors.me.profile.$post({
 		json: data,
 	});
 	const result = await res.json();

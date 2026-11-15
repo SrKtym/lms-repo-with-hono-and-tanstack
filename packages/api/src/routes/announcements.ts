@@ -1,23 +1,20 @@
 import { zValidator } from "@hono/zod-validator";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import { createAnnouncements } from "@lms-repo/db/utils/mutation/announcements";
 import { fetchAnnouncementsFromUserCourses } from "@lms-repo/db/utils/query/announcements";
 import { resend } from "@lms-repo/emails";
 import NewAnnouncementEmail from "@lms-repo/emails/components/new-announcement-email";
 import { env } from "@lms-repo/env/server";
 import { Hono } from "hono";
+import { requireCourseAccess } from "../middleware/authorization";
 import { formSchema } from "../schema/announcements";
 
-// アナウンスメントに関するロジック（教員用）
-export const announcementsRouteForProf = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+// アナウンスメントに関するロジック
+export const announcementsRoute = new Hono<{ Variables: AuthVariables }>()
 	// アナウンスメントの作成
 	.post(
-		"/:course-id",
+		"/:course-id/announcements",
+		requireCourseAccess({ allow: ["professor", "admin"] }),
 		zValidator("json", formSchema, (result, c) => {
 			if (!result.success) {
 				const firstError = result.error.issues[0]?.message;
@@ -61,22 +58,16 @@ export const announcementsRouteForProf = new Hono<{
 
 			return c.json({ message: "アナウンスメントを作成しました" }, 201);
 		},
-	);
-
-// アナウンスメントに関するロジック（共通）
-export const announcementsRouteForCommon = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+	)
 	// アナウンスメントの取得
-	.get("/:course-id?", async (c) => {
+	.get("/:course-id/announcements", requireCourseAccess(), async (c) => {
 		const { userId } = c.get("session");
+		const { role } = c.get("user");
 		const { "course-id": courseId } = c.req.param();
 		const announcements = await fetchAnnouncementsFromUserCourses(
 			userId,
 			courseId,
+			{ isAdmin: role === "admin" },
 		);
 		return c.json(announcements, 200);
 	});

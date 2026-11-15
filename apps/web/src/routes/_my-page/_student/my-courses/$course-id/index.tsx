@@ -69,8 +69,11 @@ function RouteComponent() {
 		throw new Error("講義が見つかりません");
 	}
 
-	const { data: announcementsData = [] } = useAnnouncements(announcements);
-	const { data: assignmentsData = [] } = useAssignments(assignments);
+	const { data: announcementsData = [] } = useAnnouncements(
+		courseId,
+		announcements,
+	);
+	const { data: assignmentsData = [] } = useAssignments(courseId, assignments);
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
 
 	const targetAnnouncements = announcementsData.filter(

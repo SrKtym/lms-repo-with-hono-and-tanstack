@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import {
 	createSchedules,
 	deleteSchedules,
@@ -9,13 +9,8 @@ import { Hono } from "hono";
 import { formSchema } from "../schema/schedules";
 
 // スケジュールに関するロジック
-export const schedulesRouteForStudent = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
-	// スケジュール作成
+export const schedulesRoute = new Hono<{ Variables: AuthVariables }>()
+	// スケジュール作成と編集
 	.post(
 		"/",
 		zValidator("json", formSchema, (result, c) => {
@@ -42,7 +37,8 @@ export const schedulesRouteForStudent = new Hono<{
 	})
 	// スケジュール削除
 	.delete("/:schedule-id", async (c) => {
+		const { userId } = c.get("session");
 		const { "schedule-id": scheduleId } = c.req.param();
-		const { status, ...body } = await deleteSchedules(scheduleId);
+		const { status, ...body } = await deleteSchedules(scheduleId, userId);
 		return c.json(body, status);
 	});

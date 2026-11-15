@@ -16,7 +16,7 @@ import {
 	useGradeSubmission,
 } from "@/hooks/submissions";
 import { queryClient } from "@/lib/query-client";
-import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchAssignmentQueryFn } from "@/utils/query/assignments";
 import { fetchAllSubmissionsWithStudentsQueryFn } from "@/utils/query/submissions";
 
 export const Route = createFileRoute(
@@ -26,24 +26,22 @@ export const Route = createFileRoute(
 	loader: async ({
 		params: { "course-id": courseId, "assignment-id": assignmentId },
 	}) => {
-		const [assignments, initialSubmissions] = await Promise.all([
+		const [assignment, initialSubmissions] = await Promise.all([
 			queryClient.ensureQueryData({
-				queryKey: ["assignments-related-courses"],
-				queryFn: () => fetchAssignmentsQueryFn(courseId),
+				queryKey: ["assignment", courseId, assignmentId],
+				queryFn: () => fetchAssignmentQueryFn(courseId, assignmentId),
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["submissions", assignmentId],
 				queryFn: () =>
-					fetchAllSubmissionsWithStudentsQueryFn(assignmentId, 10, 0),
+					fetchAllSubmissionsWithStudentsQueryFn(courseId, assignmentId, 10, 0),
 			}),
 		]);
 
-		return { assignments, initialSubmissions };
+		return { assignment, initialSubmissions };
 	},
 	head: ({ match }) => {
-		const assignmentTitle = match.loaderData?.assignments.find(
-			({ id }) => id === match.params["assignment-id"],
-		)?.title;
+		const assignmentTitle = match.loaderData?.assignment?.title;
 
 		return {
 			meta: [
@@ -58,15 +56,7 @@ export const Route = createFileRoute(
 function RouteComponent() {
 	const { "course-id": courseId, "assignment-id": assignmentId } =
 		Route.useParams();
-	const { assignments, initialSubmissions } = Route.useLoaderData();
-
-	const targetAssignment = assignments.find(
-		(assignment) => assignment.id === assignmentId,
-	);
-
-	if (!targetAssignment) {
-		throw new Error("課題が見つかりません");
-	}
+	const { assignment, initialSubmissions } = Route.useLoaderData();
 
 	const propaties = {
 		initial: { opacity: 0, y: 10 },
@@ -81,11 +71,16 @@ function RouteComponent() {
 	const [isTextModalOpen, setIsTextModalOpen] = useState(false);
 
 	// コメントの取得
-	const { data: comments = [] } = useCommentsWithAssignment(assignmentId);
+	const { data: comments = [] } = useCommentsWithAssignment(
+		courseId,
+		assignmentId,
+	);
 
 	// すべての提出物を取得
 	const { data, isLoading, hasNextPage, fetchNextPage, isFetchingNextPage } =
-		useAllSubmissionsWithStudents(assignmentId, initialSubmissions);
+		useAllSubmissionsWithStudents(courseId, assignmentId, initialSubmissions);
+
+	const allSubmissions = data?.pages.flat() || [];
 
 	const { mutate: gradeSubmission } = useGradeSubmission();
 
@@ -96,7 +91,7 @@ function RouteComponent() {
 		score: number,
 	) => {
 		gradeSubmission(
-			{ userId, assignmentId, score },
+			{ userId, assignmentId, courseId, score },
 			{
 				onSuccess: (data) => {
 					if ("error" in data) {
@@ -114,15 +109,17 @@ function RouteComponent() {
 		);
 	};
 
-	const allSubmissions = data?.pages.flat() || [];
-
 	// ファイルIDを取得
 	const handleDownloadFile = (fileId: string) => {
 		setSelectedFileId(fileId);
 	};
 
 	// ファイルダウンロード用の署名付きURLとファイル名を取得
-	const { data: downloadData } = useDownloadUrl(selectedFileId ?? "");
+	const { data: downloadData } = useDownloadUrl(
+		selectedFileId ?? "",
+		courseId,
+		assignmentId,
+	);
 
 	// テキスト提出物を表示
 	const handleViewTextSubmission = (submissionId: string) => {
@@ -162,11 +159,10 @@ function RouteComponent() {
 								戻る
 							</CancelButton>
 						</Link>
-						{targetAssignment && (
-							<div className="text-sm text-white opacity-80">
-								{targetAssignment.courseName} / 課題の詳細
-							</div>
-						)}
+
+						<div className="text-sm text-white opacity-80">
+							{assignment.courseName} / 課題の詳細
+						</div>
 					</div>
 				</div>
 			</div>
@@ -175,7 +171,7 @@ function RouteComponent() {
 				<div className="grid grid-cols-1 gap-6">
 					{/* 課題の詳細 */}
 					<m.div {...propaties}>
-						<AssignmentDetailCard targetAssignment={targetAssignment} />
+						<AssignmentDetailCard targetAssignment={assignment} />
 					</m.div>
 
 					{/* 提出（教員用 - 学生の提出物を表示） */}
@@ -202,7 +198,10 @@ function RouteComponent() {
 						transition={{ ...propaties.transition, delay: 0.2 }}
 					>
 						<CommentsCard comments={comments}>
-							<CreateCommentForm assignmentId={assignmentId} />
+							<CreateCommentForm
+								assignmentId={assignmentId}
+								courseId={courseId}
+							/>
 						</CommentsCard>
 					</m.div>
 				</div>
