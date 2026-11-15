@@ -1,5 +1,10 @@
 import { describe, expect, it } from "bun:test";
-import { formatTimestamp, isProgressingOrUpcoming } from "./datetime";
+import {
+	formatTimestamp,
+	isProgressingOrUpcoming,
+	parseDates,
+	parseDatesInArray,
+} from "./datetime";
 
 describe("formatTimestamp", () => {
 	it("たった今（1分未満）", () => {
@@ -74,5 +79,38 @@ describe("isProgressingOrUpcoming", () => {
 		const now = new Date();
 		const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
 		expect(isProgressingOrUpcoming(oneHourAgo, now)).toBe("past");
+	});
+});
+
+describe("parseDates", () => {
+	it("指定フィールドをDateに変換する", () => {
+		const result = parseDates(
+			{ id: "1", dueDate: "2025-01-01T00:00:00.000Z", title: "test" },
+			["dueDate"],
+		);
+		expect(result.dueDate).toBeInstanceOf(Date);
+		expect(result.dueDate.toISOString()).toBe("2025-01-01T00:00:00.000Z");
+		expect(result.title).toBe("test");
+	});
+
+	it("nullはそのまま保持する", () => {
+		const result = parseDates({ id: "1", dueDate: null as string | null }, [
+			"dueDate",
+		]);
+		expect(result.dueDate).toBeNull();
+	});
+});
+
+describe("parseDatesInArray", () => {
+	it("配列の各要素を変換する", () => {
+		const result = parseDatesInArray(
+			[
+				{ id: "1", createdAt: "2025-01-01T00:00:00.000Z" },
+				{ id: "2", createdAt: "2025-06-01T00:00:00.000Z" },
+			],
+			["createdAt"],
+		);
+		expect(result[0]?.createdAt).toBeInstanceOf(Date);
+		expect(result[1]?.createdAt).toBeInstanceOf(Date);
 	});
 });
