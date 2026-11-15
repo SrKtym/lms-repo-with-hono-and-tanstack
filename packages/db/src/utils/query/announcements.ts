@@ -6,6 +6,7 @@ import { announcements, courses, registration } from "../../schema";
 export async function fetchAnnouncementsFromUserCourses(
 	userId: string,
 	courseId?: string,
+	{ isAdmin = false }: { isAdmin?: boolean } = {},
 ) {
 	const subQuery = db
 		.select()
@@ -31,11 +32,14 @@ export async function fetchAnnouncementsFromUserCourses(
 		.from(announcements)
 		.innerJoin(courses, eq(announcements.courseId, courses.id))
 		.where(
-			or(
-				eq(courses.professorId, userId),
-				exists(subQuery),
-				courseId ? eq(announcements.courseId, courseId) : undefined,
-			),
+			isAdmin
+				? courseId
+					? eq(announcements.courseId, courseId)
+					: undefined
+				: and(
+						courseId ? eq(announcements.courseId, courseId) : undefined,
+						or(eq(courses.professorId, userId), exists(subQuery)),
+					),
 		);
 
 	return announcementsList;

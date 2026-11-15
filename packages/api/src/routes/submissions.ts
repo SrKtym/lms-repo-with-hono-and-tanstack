@@ -11,8 +11,8 @@ import {
 } from "@lms-repo/db/utils/mutation/submissions";
 import { fetchAssignmentPointsById } from "@lms-repo/db/utils/query/assignments";
 import {
-	getAssignmentAccess,
-	getCourseAccess,
+	fetchAssignmentAccess,
+	fetchCourseAccess,
 } from "@lms-repo/db/utils/query/helpers";
 import {
 	type FetchFileMetadataByIdReturnType,
@@ -155,7 +155,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 			);
 		}
 
-		const access = await getAssignmentAccess(userId, courseId, assignmentId, {
+		const access = await fetchAssignmentAccess(userId, courseId, assignmentId, {
 			isAdmin: role === "admin",
 		});
 
@@ -214,7 +214,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 			);
 		}
 
-		const access = await getAssignmentAccess(userId, courseId, assignmentId, {
+		const access = await fetchAssignmentAccess(userId, courseId, assignmentId, {
 			isAdmin: role === "admin",
 		});
 
@@ -472,7 +472,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 				return c.json({ error: "課題が見つかりません" }, 404);
 			}
 
-			const targetAccess = await getCourseAccess(userId, courseId);
+			const targetAccess = await fetchCourseAccess(userId, courseId);
 
 			if (targetAccess?.access !== "student") {
 				return c.json({ error: "対象の学生が見つかりません" }, 404);
