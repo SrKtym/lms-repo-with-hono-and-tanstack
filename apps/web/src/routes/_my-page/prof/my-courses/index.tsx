@@ -10,19 +10,20 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import * as m from "motion/react-m";
 import { useState } from "react";
 import { CreateCourseForm } from "@/components/_my-page/prof/my-courses/create-course-form";
+import { useCreatedCourses } from "@/hooks/courses";
 import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
 import { fetchCreatedCoursesQueryFn } from "@/utils/query/courses";
 
 export const Route = createFileRoute("/_my-page/prof/my-courses/")({
 	component: RouteComponent,
 	loader: async () => {
-		const courses = await queryClient.ensureQueryData({
+		const initialCourses = await queryClient.ensureQueryData({
 			queryKey: ["created-courses"],
 			queryFn: fetchCreatedCoursesQueryFn,
 			...QUERY_CONFIG.USER_DATA,
 		});
 
-		return { courses };
+		return initialCourses;
 	},
 	head: () => {
 		return {
@@ -36,12 +37,13 @@ export const Route = createFileRoute("/_my-page/prof/my-courses/")({
 });
 
 function RouteComponent() {
-	const { courses } = Route.useLoaderData();
+	const initialCourses = Route.useLoaderData();
 	const selectItems = ["昇順", "降順"];
 	const [searchQuery, setSearchQuery] = useState("");
 	const [sortOrder, setSortOrder] = useState("昇順");
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
+	const { data: courses = [] } = useCreatedCourses(initialCourses);
 	const coursesWithCoverImage = addCoverImagesToCourses(courses);
 
 	// 検索フィルタリング

@@ -1,5 +1,6 @@
 import type {
 	FetchCoursesReturnType,
+	FetchCreatedCoursesReturnType,
 	FetchRegisteredCoursesReturnType,
 } from "@lms-repo/db/utils/query/courses";
 import { toast } from "@lms-repo/ui/components/toast";
@@ -15,6 +16,7 @@ import {
 } from "@/utils/mutation/courses";
 import {
 	fetchCoursesByWeekdayAndPeriodQueryFn,
+	fetchCreatedCoursesQueryFn,
 	fetchRegisteredCoursesQueryFn,
 } from "@/utils/query/courses";
 
@@ -31,6 +33,18 @@ function showToast(
 		description: res.error,
 	});
 }
+
+// 作成済み講義を取得するカスタムフック
+export const useCreatedCourses = (
+	initialData?: FetchCreatedCoursesReturnType,
+) => {
+	return useQuery({
+		queryKey: ["created-courses"],
+		queryFn: fetchCreatedCoursesQueryFn,
+		...QUERY_CONFIG.USER_DATA,
+		initialData,
+	});
+};
 
 // 登録済み講義を取得するカスタムフック
 export const useRegisteredCourses = (
