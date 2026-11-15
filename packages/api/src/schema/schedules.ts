@@ -8,9 +8,13 @@ export const formSchema = z
 			.optional(),
 		title: z
 			.string()
+			.max(100, "タイトルは100文字以内で入力してください")
 			.transform((value) => (value === "" ? "タイトルなし" : value))
 			.optional(),
-		description: z.string().optional(),
+		description: z
+			.string()
+			.max(500, "説明は500文字以内で入力してください")
+			.optional(),
 		startTime: z.coerce
 			.date()
 			.min(new Date(), "開始日時は現在時刻以降でなければなりません。"),
