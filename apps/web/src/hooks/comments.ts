@@ -5,10 +5,13 @@ import { createCommentMutationFn } from "@/utils/mutation/comments";
 import { fetchCommentsWithAssignmentQueryFn } from "@/utils/query/comments";
 
 // 課題についてのコメントを取得するカスタムフック
-export const useCommentsWithAssignment = (assignmentId: string) => {
+export const useCommentsWithAssignment = (
+	courseId: string,
+	assignmentId: string,
+) => {
 	return useQuery({
-		queryKey: ["comments-with-assignment", assignmentId],
-		queryFn: () => fetchCommentsWithAssignmentQueryFn(assignmentId),
+		queryKey: ["comments-with-assignment", courseId, assignmentId],
+		queryFn: () => fetchCommentsWithAssignmentQueryFn(courseId, assignmentId),
 		...QUERY_CONFIG.USER_DATA,
 	});
 };

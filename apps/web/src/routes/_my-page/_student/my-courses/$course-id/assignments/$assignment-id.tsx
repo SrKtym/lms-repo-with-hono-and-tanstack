@@ -11,7 +11,7 @@ import { CreateTextSubmissionForm } from "@/components/_my-page/_student/my-cour
 import { CreateCommentForm } from "@/components/_my-page/shared/create-comment-form";
 import { useCommentsWithAssignment } from "@/hooks/comments";
 import { queryClient } from "@/lib/query-client";
-import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
+import { fetchAssignmentQueryFn } from "@/utils/query/assignments";
 import { fetchSubmissionsStatusQueryFn } from "@/utils/query/submissions";
 
 export const Route = createFileRoute(
@@ -21,23 +21,21 @@ export const Route = createFileRoute(
 	loader: async ({
 		params: { "course-id": courseId, "assignment-id": assignmentId },
 	}) => {
-		const [assignments, submission] = await Promise.all([
+		const [assignment, [submission]] = await Promise.all([
 			queryClient.ensureQueryData({
-				queryKey: ["assignments-related-courses"],
-				queryFn: () => fetchAssignmentsQueryFn(courseId),
+				queryKey: ["assignment", courseId, assignmentId],
+				queryFn: () => fetchAssignmentQueryFn(courseId, assignmentId),
 			}),
 			queryClient.ensureQueryData({
 				queryKey: ["submissions-status", assignmentId],
-				queryFn: () => fetchSubmissionsStatusQueryFn(assignmentId),
+				queryFn: () => fetchSubmissionsStatusQueryFn(courseId, assignmentId),
 			}),
 		]);
 
-		return { assignments, submission };
+		return { assignment, submission };
 	},
 	head: ({ match }) => {
-		const assignmentTitle = match.loaderData?.assignments?.find(
-			({ id }) => id === match.params["assignment-id"],
-		)?.title;
+		const assignmentTitle = match.loaderData?.assignment?.title;
 
 		return {
 			meta: [
@@ -50,18 +48,9 @@ export const Route = createFileRoute(
 });
 
 function RouteComponent() {
-	const { "assignment-id": assignmentId } = Route.useParams();
-	const { assignments, submission } = Route.useLoaderData();
-
-	const targetAssignment = assignments.find(
-		(assignment) => assignment.id === assignmentId,
-	);
-
-	if (!targetAssignment) {
-		throw new Error("課題が見つかりません");
-	}
-
-	const targetSubmission = submission[0];
+	const { "course-id": courseId, "assignment-id": assignmentId } =
+		Route.useParams();
+	const { assignment, submission } = Route.useLoaderData();
 
 	const propaties = {
 		initial: { opacity: 0, y: 10 },
@@ -69,7 +58,10 @@ function RouteComponent() {
 		transition: { duration: 0.3 },
 	};
 
-	const { data: comments = [] } = useCommentsWithAssignment(assignmentId);
+	const { data: comments = [] } = useCommentsWithAssignment(
+		courseId,
+		assignmentId,
+	);
 
 	return (
 		<div className="space-y-8 pb-12">
@@ -81,7 +73,7 @@ function RouteComponent() {
 						<Link
 							to="/my-courses/$course-id"
 							params={{
-								"course-id": targetAssignment?.courseId || "",
+								"course-id": assignment.courseId,
 							}}
 							className="flex items-center gap-1"
 						>
@@ -90,11 +82,10 @@ function RouteComponent() {
 								戻る
 							</CancelButton>
 						</Link>
-						{targetAssignment && (
-							<div className="text-sm text-white opacity-80">
-								{targetAssignment.courseName} / 課題の詳細
-							</div>
-						)}
+
+						<div className="text-sm text-white opacity-80">
+							{assignment.courseName} / 課題の詳細
+						</div>
 					</div>
 				</div>
 			</div>
@@ -104,8 +95,8 @@ function RouteComponent() {
 					{/* 課題の詳細 */}
 					<m.div {...propaties} className="lg:col-span-2">
 						<AssignmentDetailCard
-							targetAssignment={targetAssignment}
-							score={targetSubmission?.score}
+							targetAssignment={assignment}
+							score={submission?.score}
 						/>
 					</m.div>
 
@@ -116,16 +107,22 @@ function RouteComponent() {
 						transition={{ duration: 0.3, delay: 0.1 }}
 					>
 						<SubmissionsCard
-							targetAssignment={targetAssignment}
-							targetSubmission={targetSubmission}
+							targetAssignment={assignment}
+							targetSubmission={submission}
 						>
 							<div className="space-y-2">
 								<TabsForSubmissions
 									textTab={
-										<CreateTextSubmissionForm assignmentId={assignmentId} />
+										<CreateTextSubmissionForm
+											assignmentId={assignmentId}
+											courseId={courseId}
+										/>
 									}
 									attachmentsTab={
-										<CreateFileSubmissionForm assignmentId={assignmentId} />
+										<CreateFileSubmissionForm
+											assignmentId={assignmentId}
+											courseId={courseId}
+										/>
 									}
 								/>
 							</div>
@@ -138,7 +135,10 @@ function RouteComponent() {
 						transition={{ ...propaties.transition, delay: 0.2 }}
 					>
 						<CommentsCard comments={comments}>
-							<CreateCommentForm assignmentId={assignmentId} />
+							<CreateCommentForm
+								assignmentId={assignmentId}
+								courseId={courseId}
+							/>
 						</CommentsCard>
 					</m.div>
 				</div>

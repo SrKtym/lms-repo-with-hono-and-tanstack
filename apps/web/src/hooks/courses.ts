@@ -21,7 +21,7 @@ import {
 // トースト表示
 function showToast(
 	res: InferResponseType<
-		(typeof client.api.students.courses.registrations)[":course-id"]["$post"]
+		(typeof client.api.courses)[":course-id"]["register"]["$post"]
 	>,
 ) {
 	if ("message" in res) {

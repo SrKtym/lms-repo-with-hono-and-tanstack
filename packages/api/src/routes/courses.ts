@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import {
 	checkCourse,
 	createCourses,
@@ -16,66 +16,17 @@ import { fetchProfData } from "@lms-repo/db/utils/query/professors";
 import { fetchMembersByCourseId } from "@lms-repo/db/utils/query/students";
 import { DAYS_EXCEPT_WEEKEND } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
+import { requireCourseAccess, requireRole } from "../middleware/authorization";
 import { courseSearchQuerySchema, formSchema } from "../schema/courses";
+import { announcementsRoute } from "./announcements";
+import { assignmentsRoute } from "./assignments";
 
-// 講義に関するロジック（学生用）
-export const coursesRouteForStudent = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
-	// 講義検索
-	.get("/", zValidator("query", courseSearchQuerySchema), async (c) => {
-		const { userId } = c.get("session");
-		const { weekdays, period, limit, offset } = c.req.valid("query");
-
-		const result = await fetchCourses(userId, weekdays, period, limit, offset);
-		return c.json(result, 200);
-	})
-	// 修了した講義の単位数の合計を取得
-	.get("/completed-credits", async (c) => {
-		const { userId } = c.get("session");
-		const result = await fetchCompletedCourses(userId);
-		return c.json(result, 200);
-	})
-	.basePath("/registrations")
-	// 講義登録
-	.post("/:course-id", async (c) => {
-		const { userId } = c.get("session");
-		const { "course-id": courseId } = c.req.param();
-		const { status, ...body } = await registerCourses(courseId, userId);
-		return c.json(body, status);
-	})
-	// 登録講義一覧取得
-	.get("/", async (c) => {
-		const { userId } = c.get("session");
-		const result = await fetchRegisteredCourses(userId);
-		return c.json(result, 200);
-	})
-	// 登録講義の確定
-	.patch("/confirm", async (c) => {
-		const { userId } = c.get("session");
-		const { status, ...body } = await checkCourse(userId);
-		return c.json(body, status);
-	})
-	// 登録講義削除
-	.delete("/:course-id", async (c) => {
-		const { userId } = c.get("session");
-		const { "course-id": courseId } = c.req.param();
-		const { status, ...body } = await unregisterCourse(courseId, userId);
-		return c.json(body, status);
-	});
-
-// 講義に関するロジック（教員用）
-export const coursesRouteForProf = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>() // 講義作成
+// 講義に関するロジック
+export const coursesRoute = new Hono<{ Variables: AuthVariables }>()
+	// 講義作成
 	.post(
 		"/",
+		requireRole("professor", "admin"),
 		zValidator("json", formSchema, (result, c) => {
 			if (!result.success) {
 				const firstError = result.error.issues[0]?.message;
@@ -116,22 +67,72 @@ export const coursesRouteForProf = new Hono<{
 		},
 	)
 	// 作成した講義を取得
-	.get("/", async (c) => {
+	.get("/creations", requireRole("professor", "admin"), async (c) => {
 		const { userId } = c.get("session");
 		const result = await fetchCreatedCourses(userId);
 		return c.json(result, 200);
-	});
+	})
+	// 講義検索
+	.get(
+		"/",
+		requireRole("student", "admin"),
+		zValidator("query", courseSearchQuerySchema),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { weekdays, period, limit, offset } = c.req.valid("query");
 
-// 講義に関連するロジック（共通用）
-export const coursesRouteForCommon = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+			const result = await fetchCourses(
+				userId,
+				weekdays,
+				period,
+				limit,
+				offset,
+			);
+			return c.json(result, 200);
+		},
+	)
 	// 講義を登録しているメンバーの取得
-	.get("/:courseId", async (c) => {
-		const { courseId } = c.req.param();
+	.get("/:course-id/members", requireCourseAccess(), async (c) => {
+		const { "course-id": courseId } = c.req.param();
 		const result = await fetchMembersByCourseId(courseId);
 		return c.json(result, 200);
+	})
+	// 修了した講義の単位数の合計を取得
+	.get("/completed-credits", requireRole("student", "admin"), async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchCompletedCourses(userId);
+		return c.json(result, 200);
+	})
+	// 講義登録
+	.post("/:course-id/register", requireRole("student", "admin"), async (c) => {
+		const { userId } = c.get("session");
+		const { "course-id": courseId } = c.req.param();
+		const { status, ...body } = await registerCourses(courseId, userId);
+		return c.json(body, status);
+	})
+	// 登録講義の解除
+	.delete(
+		"/:course-id/unregister",
+		requireRole("student", "admin"),
+		async (c) => {
+			const { userId } = c.get("session");
+			const { "course-id": courseId } = c.req.param();
+			const { status, ...body } = await unregisterCourse(courseId, userId);
+			return c.json(body, status);
+		},
+	)
+	.route("/", announcementsRoute)
+	.route("/", assignmentsRoute)
+	.basePath("/registrations")
+	// 登録講義一覧取得
+	.get("/", requireRole("student", "admin"), async (c) => {
+		const { userId } = c.get("session");
+		const result = await fetchRegisteredCourses(userId);
+		return c.json(result, 200);
+	})
+	// 登録講義の確定
+	.patch("/confirm", requireRole("student", "admin"), async (c) => {
+		const { userId } = c.get("session");
+		const { status, ...body } = await checkCourse(userId);
+		return c.json(body, status);
 	});

@@ -6,8 +6,8 @@ import { fetchAnnouncementsQueryFn } from "@/utils/query/announcements";
 
 // 登録済み講義に関連するアナウンスメントを取得するカスタムフック
 export const useAnnouncements = (
+	courseId: string,
 	initialData?: FetchAnnouncementsFromUserCoursesReturnType,
-	courseId?: string,
 ) => {
 	return useQuery({
 		queryKey: ["announcements", courseId],

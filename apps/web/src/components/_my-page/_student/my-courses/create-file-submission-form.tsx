@@ -14,17 +14,23 @@ import {
 
 export function CreateFileSubmissionForm({
 	assignmentId,
+	courseId,
 }: {
 	assignmentId: string;
+	courseId: string;
 }) {
 	const [uploadedFiles, setUploadedFiles] = useState<UploadedFile[]>([]);
 	const { mutateAsync: submitMultipleFiles, isPending } =
 		useSubmitMultipleFiles();
-	const { data: fileMetadata = [] } = useFileMetadata(assignmentId);
+	const { data: fileMetadata = [] } = useFileMetadata(courseId, assignmentId);
 	const [downloadingFileId, setDownloadingFileId] = useState<string | null>(
 		null,
 	);
-	const { data: downloadData } = useDownloadUrl(downloadingFileId || "");
+	const { data: downloadData } = useDownloadUrl(
+		downloadingFileId || "",
+		courseId,
+		assignmentId,
+	);
 	const { mutate: deleteFile } = useDeleteFile();
 
 	// データベースから取得したアップロード済みファイルをコンポーネントの状態に変換
@@ -60,19 +66,22 @@ export function CreateFileSubmissionForm({
 
 	// ファイル削除時の処理
 	const handleFileDelete = (fileId: string) => {
-		deleteFile(fileId, {
-			onSuccess: (data) => {
-				if ("error" in data) {
-					toast.danger(data.error);
-				}
-				setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
+		deleteFile(
+			{ fileId, courseId, assignmentId },
+			{
+				onSuccess: (data) => {
+					if ("error" in data) {
+						toast.danger(data.error);
+					}
+					setUploadedFiles((prev) => prev.filter((f) => f.id !== fileId));
+				},
+				onError: (error) => {
+					toast.danger("ファイルの削除に失敗しました", {
+						description: error.message,
+					});
+				},
 			},
-			onError: (error) => {
-				toast.danger("ファイルの削除に失敗しました", {
-					description: error.message,
-				});
-			},
-		});
+		);
 	};
 
 	// ファイル選択時に新規ファイルをアップロード処理する
@@ -103,6 +112,7 @@ export function CreateFileSubmissionForm({
 		const res = await submitMultipleFiles({
 			files: fileObjects,
 			assignmentId,
+			courseId,
 		});
 
 		if ("error" in res) {

@@ -10,47 +10,26 @@ import {
 	useMarkNotificationAsRead,
 	useNotifications,
 } from "@/hooks/notifications";
-import { QUERY_CONFIG, queryClient } from "@/lib/query-client";
-import { fetchAssignmentsQueryFn } from "@/utils/query/assignments";
-import { fetchRegisteredCoursesQueryFn } from "@/utils/query/courses";
-import { fetchNotificationsQueryFn } from "@/utils/query/notifications";
-import { fetchSchedulesQueryFn } from "@/utils/query/schedules";
-import { fetchSubmissionsStatusQueryFn } from "@/utils/query/submissions";
+import { queryClient } from "@/lib/query-client";
+import { fetchDashboardSummaryQueryFn } from "@/utils/query/dashboard";
 
 export const Route = createFileRoute("/_my-page/_student/dashboard")({
 	component: RouteComponent,
 	loader: async () => {
 		// キャッシュがあればキャッシュからデータ取得（既にプリフェッチ済み）
-		const [courses, schedules, assignments, initialNotifications, submissions] =
-			await Promise.all([
-				queryClient.ensureQueryData({
-					queryKey: ["registered-courses"],
-					queryFn: fetchRegisteredCoursesQueryFn,
-					...QUERY_CONFIG.USER_DATA,
-				}),
-
-				queryClient.ensureQueryData({
-					queryKey: ["schedules"],
-					queryFn: fetchSchedulesQueryFn,
-				}),
-
-				queryClient.ensureQueryData({
-					queryKey: ["assignments-related-courses"],
-					queryFn: () => fetchAssignmentsQueryFn(),
-				}),
-
-				queryClient.ensureQueryData({
-					queryKey: ["notifications"],
-					queryFn: () => fetchNotificationsQueryFn(10, 0),
-				}),
-				queryClient.ensureQueryData({
-					queryKey: ["submissions-status"],
-					queryFn: () => fetchSubmissionsStatusQueryFn(),
-				}),
-			]);
+		const {
+			registrations,
+			schedules,
+			assignments,
+			notifications: initialNotifications,
+			submissions,
+		} = await queryClient.ensureQueryData({
+			queryKey: ["dashboard"],
+			queryFn: fetchDashboardSummaryQueryFn,
+		});
 
 		return {
-			courses,
+			registrations,
 			schedules,
 			assignments,
 			initialNotifications,
@@ -68,8 +47,13 @@ export const Route = createFileRoute("/_my-page/_student/dashboard")({
 
 function RouteComponent() {
 	const now = new Date();
-	const { courses, schedules, assignments, initialNotifications, submissions } =
-		Route.useLoaderData();
+	const {
+		registrations,
+		schedules,
+		assignments,
+		initialNotifications,
+		submissions,
+	} = Route.useLoaderData();
 
 	const {
 		data: notificationsData,
@@ -86,10 +70,10 @@ function RouteComponent() {
 	// アニメーションの再トリガーを防ぐため、DailySchedulesCardのpropsをメモ化
 	const memoizedDailySchedulesProps = useMemo(
 		() => ({
-			courses,
+			courses: registrations,
 			schedules,
 		}),
-		[courses, schedules],
+		[registrations, schedules],
 	);
 
 	// 期限切れの課題

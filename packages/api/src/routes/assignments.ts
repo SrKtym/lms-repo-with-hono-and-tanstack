@@ -1,24 +1,30 @@
 import { zValidator } from "@hono/zod-validator";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import { createAssignments } from "@lms-repo/db/utils/mutation/assignments";
-import { fetchAssignmentsFromUserCourses } from "@lms-repo/db/utils/query/assignments";
+import {
+	fetchAssignmentByCourseAndId,
+	fetchAssignmentsFromUserCourses,
+} from "@lms-repo/db/utils/query/assignments";
 import { resend } from "@lms-repo/emails";
 import NewAssignmentEmail from "@lms-repo/emails/components/new-assignment-email";
 import { env } from "@lms-repo/env/server";
 import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
+import {
+	requireAssignmentAccess,
+	requireCourseAccess,
+} from "../middleware/authorization";
 import { formSchema } from "../schema/assignments";
+import { commentsRoute } from "./comments";
+import { submissionsRoute } from "./submissions";
 
-// 課題に関するロジック（教員用）
-export const assignmentsRouteForProf = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+// 課題に関するロジック
+export const assignmentsRoute = new Hono<{ Variables: AuthVariables }>()
+	.basePath("/:course-id/assignments")
 	// 課題作成
 	.post(
-		"/:course-id",
+		"/",
+		requireCourseAccess({ allow: ["professor", "admin"] }),
 		zValidator("json", formSchema, (result, c) => {
 			if (!result.success) {
 				const firstError = result.error.issues[0]?.message;
@@ -63,19 +69,31 @@ export const assignmentsRouteForProf = new Hono<{
 
 			return c.json({ message: "課題を作成しました" }, 201);
 		},
-	);
-
-// 課題に関するロジック（共通）
-export const assignmentsRouteForCommon = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+	)
 	// 課題一覧取得
-	.get("/:course-id?", async (c) => {
+	.get("/", requireCourseAccess(), async (c) => {
 		const { userId } = c.get("session");
+		const { role } = c.get("user");
 		const { "course-id": courseId } = c.req.param();
-		const assignments = await fetchAssignmentsFromUserCourses(userId, courseId);
+		const assignments = await fetchAssignmentsFromUserCourses(
+			userId,
+			courseId,
+			{
+				isAdmin: role === "admin",
+			},
+		);
 		return c.json(assignments, 200);
-	});
+	})
+	// 特定の課題取得
+	.get("/:assignment-id", requireAssignmentAccess(), async (c) => {
+		const { "course-id": courseId, "assignment-id": assignmentId } =
+			c.req.param();
+		const assignment = await fetchAssignmentByCourseAndId(
+			courseId,
+			assignmentId,
+		);
+
+		return c.json(assignment, 200);
+	})
+	.route("/", commentsRoute)
+	.route("/", submissionsRoute);
