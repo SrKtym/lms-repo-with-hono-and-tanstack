@@ -196,17 +196,6 @@ export function CreateScheduleForm({
 					)}
 				</form.Field>
 
-				<form.Field name="id">
-					{(field) => (
-						<input
-							type="hidden"
-							name="id"
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
-					)}
-				</form.Field>
-
 				<div className="flex justify-end gap-2">
 					<CancelButton onPress={() => onOpenChange(false)}>
 						キャンセル

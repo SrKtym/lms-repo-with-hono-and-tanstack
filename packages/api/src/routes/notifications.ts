@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import {
 	createReminder,
 	deleteNotification,
@@ -16,13 +16,8 @@ import { DATETIME_FORMAT_CONFIG } from "@lms-repo/shared/utils";
 import { Hono } from "hono";
 import { z } from "zod";
 
-// 通知に関するロジック(学生用)
-export const notificationsRouteForStudent = new Hono<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
-}>()
+// 通知に関するロジック
+export const notificationsRoute = new Hono<{ Variables: AuthVariables }>()
 	// 通知取得
 	.get(
 		"/",
@@ -62,7 +57,7 @@ export const notificationsRouteForStudent = new Hono<{
 		return c.json(body, status);
 	})
 	// 特定の通知を既読
-	.patch(":notification-id/mark-as-read", async (c) => {
+	.patch("/:notification-id/mark-as-read", async (c) => {
 		const { userId } = c.get("session");
 		const { "notification-id": notificationId } = c.req.param();
 		const { status, ...body } = await markNotificationAsRead(
@@ -83,9 +78,9 @@ export const notificationsRouteForStudent = new Hono<{
 	});
 
 // 通知に関するロジック(公開API)
-export const notificationsRouteForCommon = new Hono()
+export const notificationsReminderRoute = new Hono()
 	// リマインダーの作成（Cloud Schedulerによって定期実行される）
-	.post("/reminder", async (c) => {
+	.post("/", async (c) => {
 		const result = await createReminder();
 
 		if ("error" in result) {

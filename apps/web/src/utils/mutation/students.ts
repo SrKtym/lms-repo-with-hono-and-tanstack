@@ -5,7 +5,7 @@ export const registerStudentDataMutationFn = async (data: {
 	grade: number;
 	departmentName: string;
 }) => {
-	const res = await client.api.students.$post({
+	const res = await client.api.students.me.profile.$post({
 		json: data,
 	});
 	const result = await res.json();
@@ -14,7 +14,7 @@ export const registerStudentDataMutationFn = async (data: {
 
 // ロール変更申請のmutationFn
 export const requestRoleChangeMutationFn = async () => {
-	const res = await client.api.students["role-change-request"].$post();
+	const res = await client.api.students.me["role-change-request"].$post();
 	const result = await res.json();
 	return result;
 };

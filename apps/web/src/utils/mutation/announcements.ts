@@ -6,7 +6,7 @@ export const createAnnouncementMutationFn = async (
 	announcementData: Announcements,
 ) => {
 	const { courseId, ...rest } = announcementData;
-	const res = await client.api.professors.announcements[":course-id"].$post({
+	const res = await client.api.courses[":course-id"].announcements.$post({
 		param: { "course-id": courseId },
 		json: rest,
 	});

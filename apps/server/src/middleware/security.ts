@@ -1,5 +1,5 @@
 import { findIp } from "@arcjet/ip";
-import type { Session } from "@lms-repo/auth/server";
+import type { AuthVariables } from "@lms-repo/auth/server";
 import { createMiddleware } from "hono/factory";
 import { aj } from "../lib";
 
@@ -40,10 +40,7 @@ function getCachedIp(req: Request): string {
 
 // APIに対するレート制限、ボット検出などを行うミドルウェア
 export const securityMiddleware = createMiddleware<{
-	Variables: {
-		user: Session["user"];
-		session: Session["session"];
-	};
+	Variables: AuthVariables;
 }>(async (c, next) => {
 	const session = c.get("session");
 	const userId = session?.userId || getCachedIp(c.req.raw);

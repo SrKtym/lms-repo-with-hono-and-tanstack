@@ -2,7 +2,10 @@ import { assignmentFormat } from "@lms-repo/db/schema/service";
 import { z } from "zod";
 
 export const formSchema = z.object({
-	title: z.string().min(1, "課題名は必須です"),
+	title: z
+		.string()
+		.min(1, "課題名は必須です")
+		.max(100, "課題名は100文字以内で入力してください"),
 	description: z
 		.string()
 		.min(1, "説明は必須です")

@@ -1,3 +1,4 @@
+import { formSchema } from "@lms-repo/api/schema/assignments";
 import { assignmentFormat } from "@lms-repo/db/schema/service";
 import { CancelButton, DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
@@ -55,12 +56,8 @@ export function CreateAssignmentForm({
 			}
 		},
 		validators: {
-			onSubmit: z.object({
-				title: z.string().min(1).max(100),
-				description: z.string().min(1).max(500),
-				points: z.number().min(0).max(100),
+			onSubmit: formSchema.extend({
 				dueDate: z.custom<ZonedDateTime>(),
-				format: z.enum(assignmentFormat),
 				courseId: z.uuidv4(),
 			}),
 		},
@@ -234,17 +231,6 @@ export function CreateAssignmentForm({
 								</p>
 							))}
 						</div>
-					)}
-				</form.Field>
-
-				<form.Field name="courseId">
-					{(field) => (
-						<input
-							type="hidden"
-							name={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
 					)}
 				</form.Field>
 

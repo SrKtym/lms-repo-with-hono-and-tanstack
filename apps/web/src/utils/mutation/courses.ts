@@ -6,7 +6,7 @@ type CourseData = z.infer<typeof formSchema>;
 
 // 講義を作成するmutationFn
 export const createCourseMutationFn = async (courseData: CourseData) => {
-	const res = await client.api.professors.courses.$post({
+	const res = await client.api.courses.$post({
 		json: courseData,
 	});
 	const data = await res.json();
@@ -15,9 +15,7 @@ export const createCourseMutationFn = async (courseData: CourseData) => {
 
 // 講義を登録するmutationFn
 export const registerCourseMutationFn = async (courseId: string) => {
-	const res = await client.api.students.courses.registrations[
-		":course-id"
-	].$post({
+	const res = await client.api.courses[":course-id"].register.$post({
 		param: { "course-id": courseId },
 	});
 	const data = await res.json();
@@ -26,9 +24,7 @@ export const registerCourseMutationFn = async (courseId: string) => {
 
 // 講義を登録解除するmutationFn
 export const unregisterCourseMutationFn = async (courseId: string) => {
-	const res = await client.api.students.courses.registrations[
-		":course-id"
-	].$delete({
+	const res = await client.api.courses[":course-id"].unregister.$delete({
 		param: { "course-id": courseId },
 	});
 	const data = await res.json();
@@ -37,7 +33,7 @@ export const unregisterCourseMutationFn = async (courseId: string) => {
 
 // 登録講義を確定するmutationFn
 export const checkCourseMutationFn = async () => {
-	const res = await client.api.students.courses.registrations.confirm.$patch();
+	const res = await client.api.courses.registrations.confirm.$patch();
 	const data = await res.json();
 	return data;
 };

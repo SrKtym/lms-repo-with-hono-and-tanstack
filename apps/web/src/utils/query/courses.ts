@@ -11,7 +11,7 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 		return [];
 	}
 
-	const res = await client.api.students.courses.$get({
+	const res = await client.api.courses.$get({
 		query: {
 			weekdays: weekdays.toString(),
 			period: period.toString(),
@@ -25,29 +25,29 @@ export const fetchCoursesByWeekdayAndPeriodQueryFn = async (
 
 // 登録済み講義取得用のqueryFn
 export const fetchRegisteredCoursesQueryFn = async () => {
-	const res = await client.api.students.courses.registrations.$get();
+	const res = await client.api.courses.registrations.$get();
 	const data = await res.json();
 	return data;
 };
 
 // 修了済み講義の総単位数取得用のqueryFn
 export const fetchCompletedCreditsQueryFn = async () => {
-	const res = await client.api.students.courses["completed-credits"].$get();
+	const res = await client.api.courses["completed-credits"].$get();
 	const data = await res.json();
 	return data;
 };
 
 // 作成済み講義取得用のqueryFn
 export const fetchCreatedCoursesQueryFn = async () => {
-	const res = await client.api.professors.courses.$get();
+	const res = await client.api.courses.creations.$get();
 	const data = await res.json();
 	return data;
 };
 
 // 講義を登録しているメンバー取得用のqueryFn
 export const fetchMembersByCourseIdQueryFn = async (courseId: string) => {
-	const res = await client.api.courses[":courseId"].$get({
-		param: { courseId },
+	const res = await client.api.courses[":course-id"].members.$get({
+		param: { "course-id": courseId },
 	});
 	const data = await res.json();
 	return data;

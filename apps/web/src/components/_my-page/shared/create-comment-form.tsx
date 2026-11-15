@@ -1,3 +1,4 @@
+import { formSchema } from "@lms-repo/api/schema/comments";
 import { DefaultButton } from "@lms-repo/ui/components/button";
 import { InputForForm } from "@lms-repo/ui/components/input";
 import { useForm } from "@tanstack/react-form";
@@ -6,22 +7,27 @@ import { useCreateComment } from "@/hooks/comments";
 
 interface CreateCommentFormProps {
 	assignmentId: string;
+	courseId: string;
 }
 
-export function CreateCommentForm({ assignmentId }: CreateCommentFormProps) {
+export function CreateCommentForm({
+	assignmentId,
+	courseId,
+}: CreateCommentFormProps) {
 	const { mutate: createComment } = useCreateComment();
 	const form = useForm({
 		defaultValues: {
 			content: "",
 			assignmentId,
+			courseId,
 		},
 		onSubmit: ({ value }) => {
 			createComment(value);
 		},
 		validators: {
-			onSubmit: z.object({
-				content: z.string().min(1, "内容を入力してください"),
-				assignmentId: z.string().min(1, "課題IDを入力してください"),
+			onSubmit: formSchema.safeExtend({
+				assignmentId: z.uuidv4(),
+				courseId: z.uuidv4(),
 			}),
 		},
 	});
@@ -65,12 +71,6 @@ export function CreateCommentForm({ assignmentId }: CreateCommentFormProps) {
 							</p>
 						))}
 					</div>
-				)}
-			</form.Field>
-
-			<form.Field name="assignmentId">
-				{(field) => (
-					<input type="hidden" name={field.name} value={field.state.value} />
 				)}
 			</form.Field>
 

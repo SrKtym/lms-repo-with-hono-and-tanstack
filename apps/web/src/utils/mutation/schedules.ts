@@ -5,7 +5,7 @@ import { client } from "@/lib/hono-client";
 export const createScheduleMutationFn = async (
 	scheduleData: Omit<Schedules, "createdBy">,
 ) => {
-	const res = await client.api.students.schedules.$post({
+	const res = await client.api.schedules.$post({
 		json: scheduleData,
 	});
 	const data = await res.json();
@@ -14,7 +14,7 @@ export const createScheduleMutationFn = async (
 
 // スケジュールを削除するmutationFn
 export const deleteScheduleMutationFn = async (scheduleId: string) => {
-	const res = await client.api.students.schedules[":schedule-id"].$delete({
+	const res = await client.api.schedules[":schedule-id"].$delete({
 		param: {
 			"schedule-id": scheduleId,
 		},

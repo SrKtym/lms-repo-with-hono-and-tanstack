@@ -19,27 +19,32 @@ import {
 
 export function CreateTextSubmissionForm({
 	assignmentId,
+	courseId,
 }: {
 	assignmentId: string;
+	courseId: string;
 }) {
 	const { mutateAsync: createTextSubmission } = useCreateTextSubmission();
 	const { mutate: deleteTextSubmission } = useDeleteTextSubmission();
-	const { data: textSubmissions } = useTextSubmissions(assignmentId);
+	const { data: textSubmissions } = useTextSubmissions(courseId, assignmentId);
 	const [success, setSuccess] = useState(false);
 
 	const handleDelete = (submissionId: string) => {
-		deleteTextSubmission(submissionId, {
-			onSuccess: (data) => {
-				if ("error" in data) {
-					toast.danger(data.error);
-				}
+		deleteTextSubmission(
+			{ submissionId, courseId, assignmentId },
+			{
+				onSuccess: (data) => {
+					if ("error" in data) {
+						toast.danger(data.error);
+					}
+				},
+				onError: (error) => {
+					toast.danger("テキスト提出物の削除に失敗しました", {
+						description: error.message,
+					});
+				},
 			},
-			onError: (error) => {
-				toast.danger("テキスト提出物の削除に失敗しました", {
-					description: error.message,
-				});
-			},
-		});
+		);
 	};
 
 	const form = useForm({
@@ -47,14 +52,17 @@ export function CreateTextSubmissionForm({
 			title: "",
 			description: "",
 			assignmentId,
+			courseId,
 		},
 		onSubmit: async ({ value }) => {
-			await createTextSubmission(value);
-			setSuccess(true);
+			const res = await createTextSubmission(value);
+			const isSuccess = "message" in res;
+			setSuccess(isSuccess);
 		},
 		validators: {
 			onSubmit: textSubmissionsSchema.safeExtend({
 				assignmentId: z.uuidv4(),
+				courseId: z.uuidv4(),
 			}),
 		},
 	});
@@ -129,17 +137,6 @@ export function CreateTextSubmissionForm({
 							</p>
 						))}
 					</div>
-				)}
-			</form.Field>
-
-			<form.Field name="assignmentId">
-				{(field) => (
-					<input
-						type="hidden"
-						name={field.name}
-						value={field.state.value}
-						onChange={(e) => field.handleChange(e.target.value)}
-					/>
 				)}
 			</form.Field>
 

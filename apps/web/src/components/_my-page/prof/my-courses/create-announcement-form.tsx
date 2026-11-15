@@ -161,17 +161,6 @@ export function CreateAnnouncementForm({
 					)}
 				</form.Field>
 
-				<form.Field name="courseId">
-					{(field) => (
-						<input
-							type="hidden"
-							name={field.name}
-							value={field.state.value}
-							onChange={(e) => field.handleChange(e.target.value)}
-						/>
-					)}
-				</form.Field>
-
 				{/* エラーメッセージ */}
 				{error && (
 					<div className="alert-error">

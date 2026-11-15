@@ -70,8 +70,11 @@ function RouteComponent() {
 		throw new Error("講義が見つかりません");
 	}
 
-	const { data: announcementsData = [] } = useAnnouncements(announcements);
-	const { data: assignmentsData = [] } = useAssignments(assignments);
+	const { data: announcementsData = [] } = useAnnouncements(
+		courseId,
+		announcements,
+	);
+	const { data: assignmentsData = [] } = useAssignments(courseId, assignments);
 	const { data: members = [], isPending } = useMembersByCourseId(courseId);
 	const [isAnnouncementModalOpen, setIsAnnouncementModalOpen] = useState(false);
 	const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);

@@ -5,7 +5,7 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
 import { secureHeaders } from "hono/secure-headers";
-import { authMiddleware } from "./middleware/auth";
+import { authMiddleware } from "./middleware/authentication";
 import { oidcMiddleware } from "./middleware/oidc";
 import { securityMiddleware } from "./middleware/security";
 
@@ -37,17 +37,17 @@ const app = new Hono()
 		const allowMethods = ["GET", "OPTIONS"];
 
 		// 対象のパス（メール送信を伴う処理と署名付きURLを取得する処理）
-		const appliedPaths = [
-			"/api/students/role-change-request",
-			"/api/professors/announcements",
-			"/api/professors/assignments",
-			"/api/notifications/reminder",
-			"/api/submissions/signed-urls",
-		];
+		const isTargetPath =
+			path.startsWith("/api/students/me/role-change-request") ||
+			path.startsWith("/api/notifications/reminder") ||
+			/^\/api\/courses\/[^/]+\/announcements\/?$/.test(path) ||
+			/^\/api\/courses\/[^/]+\/assignments\/?$/.test(path) ||
+			/^\/api\/courses\/[^/]+\/assignments\/[^/]+\/submissions\/signed-urls\/?$/.test(
+				path,
+			);
 
 		// レスポンス速度に影響するので、特定のメソッド、パスのみに適用
 		const isTargetMethod = !allowMethods.includes(method);
-		const isTargetPath = appliedPaths.some((p) => path.startsWith(p));
 
 		if (isTargetMethod && isTargetPath) {
 			return securityMiddleware(c, next);

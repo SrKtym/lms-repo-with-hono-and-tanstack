@@ -53,3 +53,33 @@ export function isSameDay(date1: Date, date2: Date) {
 		date1.getDate() === date2.getDate()
 	);
 }
+
+// parseDates適用後の型（指定フィールドがDate型になる）
+type WithParsedDates<T, K extends keyof T> = Omit<T, K> & {
+	[P in K]: T[P] extends string | null | undefined
+		? Date | Extract<T[P], null | undefined>
+		: Date;
+};
+
+// オブジェクト内の指定したstring型フィールドをDate型に変換する
+export function parseDates<
+	T extends object,
+	K extends Extract<keyof T, string>,
+>(data: T, dateFields: readonly K[]): WithParsedDates<T, K> {
+	const result = { ...(data as Record<string, unknown>) };
+	for (const field of dateFields) {
+		const value = data[field];
+		if (typeof value === "string" && value !== "") {
+			result[field] = new Date(value);
+		}
+	}
+	return result as WithParsedDates<T, K>;
+}
+
+// 配列内の各オブジェクトにparseDatesを適用する
+export function parseDatesInArray<
+	T extends object,
+	K extends Extract<keyof T, string>,
+>(data: T[], dateFields: readonly K[]): WithParsedDates<T, K>[] {
+	return data.map((item) => parseDates(item, dateFields));
+}

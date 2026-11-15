@@ -3,7 +3,10 @@ import { DAYS_EXCEPT_WEEKEND } from "@lms-repo/shared/utils";
 import { z } from "zod";
 
 export const formSchema = z.object({
-	name: z.string().min(1, "講義名は必須です"),
+	name: z
+		.string()
+		.min(1, "講義名は必須です")
+		.max(100, "講義名は100文字以内で入力してください"),
 	targetGrade: z
 		.number()
 		.int("対象学年は整数で入力してください")
@@ -31,7 +34,10 @@ export const formSchema = z.object({
 	requirements: z.enum(requirements, {
 		error: "履修区分は必修、選択必修、任意のいずれかを指定してください",
 	}),
-	classRoom: z.string(),
+	classRoom: z
+		.string()
+		.min(1, "教室名は必須です")
+		.max(30, "教室名は30文字以内で入力してください"),
 });
 
 export const courseSearchQuerySchema = z.object({
