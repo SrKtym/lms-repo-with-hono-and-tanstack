@@ -18,6 +18,11 @@ export const Route = createFileRoute("/_my-page/_student")({
 				to: "/prof/my-courses",
 				throw: true,
 			});
+		} else if (role === "admin") {
+			redirect({
+				to: "/admin",
+				throw: true,
+			});
 		}
 	},
 	loader: async () => {

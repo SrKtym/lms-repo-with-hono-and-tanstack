@@ -33,11 +33,13 @@ export const Route = createFileRoute("/_my-page/profile")({
 						queryFn: fetchProfDataQueryFn,
 						...QUERY_CONFIG.USER_DATA,
 					})
-				: queryClient.ensureQueryData({
-						queryKey: ["studentData"],
-						queryFn: fetchStudentDataQueryFn,
-						...QUERY_CONFIG.USER_DATA,
-					}),
+				: role === "student"
+					? queryClient.ensureQueryData({
+							queryKey: ["studentData"],
+							queryFn: fetchStudentDataQueryFn,
+							...QUERY_CONFIG.USER_DATA,
+						})
+					: null,
 			role === "student"
 				? queryClient.ensureQueryData({
 						queryKey: ["totalCredits"],
@@ -74,7 +76,7 @@ export const Route = createFileRoute("/_my-page/profile")({
 function RouteComponent() {
 	const { profileData, completedCourses, initialSettings, ...userData } =
 		Route.useLoaderData();
-	const noData = "error" in profileData;
+	const noData = profileData && "error" in profileData;
 	const user = { ...userData, ...completedCourses, ...profileData };
 
 	// トースト表示
