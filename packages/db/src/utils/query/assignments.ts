@@ -6,6 +6,7 @@ import { assignments, courses, registration } from "../../schema";
 export async function fetchAssignmentsFromUserCourses(
 	userId: string,
 	courseId?: string,
+	{ isAdmin = false }: { isAdmin?: boolean } = {},
 ) {
 	const subQuery = db
 		.select()
@@ -31,11 +32,14 @@ export async function fetchAssignmentsFromUserCourses(
 		.from(assignments)
 		.innerJoin(courses, eq(assignments.courseId, courses.id))
 		.where(
-			or(
-				eq(courses.professorId, userId),
-				exists(subQuery),
-				courseId ? eq(assignments.courseId, courseId) : undefined,
-			),
+			isAdmin
+				? courseId
+					? eq(assignments.courseId, courseId)
+					: undefined
+				: and(
+						courseId ? eq(assignments.courseId, courseId) : undefined,
+						or(eq(courses.professorId, userId), exists(subQuery)),
+					),
 		);
 
 	return assignmentsList;
@@ -44,6 +48,32 @@ export async function fetchAssignmentsFromUserCourses(
 export type FetchAssignmentsFromUserCoursesReturnType = Awaited<
 	ReturnType<typeof fetchAssignmentsFromUserCourses>
 >;
+
+// 講義に属する単一の課題を取得
+export async function fetchAssignmentByCourseAndId(
+	courseId: string,
+	assignmentId: string,
+) {
+	const [assignment] = await db
+		.select({
+			id: assignments.id,
+			title: assignments.title,
+			description: assignments.description,
+			points: assignments.points,
+			dueDate: assignments.dueDate,
+			format: assignments.format,
+			courseId: courses.id,
+			courseName: courses.name,
+		})
+		.from(assignments)
+		.innerJoin(courses, eq(assignments.courseId, courses.id))
+		.where(
+			and(eq(assignments.id, assignmentId), eq(assignments.courseId, courseId)),
+		)
+		.limit(1);
+
+	return assignment;
+}
 
 // 課題の配点を取得
 export async function fetchAssignmentPointsById(assignmentId: string) {
