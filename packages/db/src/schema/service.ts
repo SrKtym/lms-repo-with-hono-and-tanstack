@@ -367,7 +367,6 @@ export const emailNotificationSettings = pgTable(
 	{
 		userId: text("user_id")
 			.primaryKey()
-			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 		announcementsEmail: boolean("announcements_email").default(false).notNull(),
 		assignmentsEmail: boolean("assignments_email").default(false).notNull(),
