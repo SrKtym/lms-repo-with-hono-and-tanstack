@@ -14,6 +14,7 @@ export interface UploadedFile {
 	name: string;
 	size: number;
 	type: string;
+	file?: File;
 }
 
 interface FileUploaderCardProps {
@@ -91,6 +92,7 @@ export function FileUploaderCard({
 				name: file.name,
 				size: file.size,
 				type: file.type,
+				file,
 			}));
 
 			onFilesChange([...uploadedFiles, ...newFiles]);
