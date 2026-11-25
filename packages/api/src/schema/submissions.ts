@@ -17,7 +17,7 @@ const UUID_V4_SOURCE =
 	"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}";
 const UUID_V4_PATTERN = new RegExp(`^${UUID_V4_SOURCE}$`);
 const SUBMISSION_OBJECT_NAME_PATTERN = new RegExp(
-	`^submissions/[^/]+/[^/]+/[^/]+/${UUID_V4_SOURCE}$`,
+	`^submissions/course-id:[^/]+/assignment-id:[^/]+/user-id:[^/]+/${UUID_V4_SOURCE}$`,
 );
 
 const allowedMimeTypeSchema = z
@@ -91,7 +91,7 @@ export const metadataSchema = z.object({
 		),
 });
 
-// objectNameは submissions/{courseId}/{assignmentId}/{userId}/{uuidv4} と
+// objectNameは submissions/course-id:{courseId}/assignment-id:{assignmentId}/user-id:{userId}/{uuidv4} と
 // 現在のリクエストのprefixに一致する場合のみ許可する
 export function createMetadataSchema(objectNamePrefix: string) {
 	return z.object({
