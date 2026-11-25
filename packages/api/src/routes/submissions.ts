@@ -94,7 +94,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 			// ファイル名をランダムなUUIDに変換して署名付きURLを生成
 			const signedUrls = await Promise.all(
 				files.map(async ({ fileName, fileType }) => {
-					const objectName = `submissions/${courseId}/${assignmentId}/${userId}/${crypto.randomUUID()}`;
+					const objectName = `submissions/course-id:${courseId}/assignment-id:${assignmentId}/user-id:${userId}/${crypto.randomUUID()}`;
 					let signedUrl: string;
 
 					// エミュレータ環境では署名なしURLを使用
@@ -276,7 +276,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 			const uploadedMetadata = await Promise.all(
 				fileList.map(async (file) => {
 					const fileName = file.name;
-					const objectName = `submissions/${courseId}/${assignmentId}/${userId}/${crypto.randomUUID()}`;
+					const objectName = `submissions/course-id:${courseId}/assignment-id:${assignmentId}/user-id:${userId}/${crypto.randomUUID()}`;
 					const fileObject = bucket.file(objectName);
 					const buffer = Buffer.from(await file.arrayBuffer());
 					await fileObject.save(buffer, {
@@ -314,7 +314,7 @@ export const submissionsRoute = new Hono<{ Variables: AuthVariables }>()
 				return c.json({ error: "courseID and assignmentID are required" }, 400);
 			}
 
-			const objectNamePrefix = `submissions/${courseId}/${assignmentId}/${userId}/`;
+			const objectNamePrefix = `submissions/course-id:${courseId}/assignment-id:${assignmentId}/user-id:${userId}/`;
 			const parsed = createMetadataSchema(objectNamePrefix).safeParse({
 				metadataList,
 			});

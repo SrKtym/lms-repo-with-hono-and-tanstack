@@ -104,13 +104,18 @@ export function CreateFileSubmissionForm({
 		// 一時ファイルを先に追加（ローディング表示用）
 		setUploadedFiles((prev) => [...prev, ...newFiles]);
 
-		// UploadedFileからFileオブジェクトを再構築
-		const fileObjects = newFiles.map((file) => {
-			return new File([file.name], file.name, { type: file.type });
-		});
+		// アップロード対象（実ファイルを保持しているもの）を抽出
+		const uploadTargets = newFiles.flatMap((file) =>
+			file.file ? [{ meta: file, file: file.file }] : [],
+		);
+
+		if (uploadTargets.length === 0) {
+			return;
+		}
+
 		// アップロード処理
 		const res = await submitMultipleFiles({
-			files: fileObjects,
+			files: uploadTargets.map((target) => target.file),
 			assignmentId,
 			courseId,
 		});
@@ -127,7 +132,7 @@ export function CreateFileSubmissionForm({
 			// tempIDをサーバーIDで置換
 			const tempToServerIdMap = new Map<string, string>();
 			res.forEach((serverFile, index) => {
-				const tempId = newFiles[index]?.id;
+				const tempId = uploadTargets[index]?.meta.id;
 				if (tempId) {
 					tempToServerIdMap.set(tempId, serverFile.id);
 				}
