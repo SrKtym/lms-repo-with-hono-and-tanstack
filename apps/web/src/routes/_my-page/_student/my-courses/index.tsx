@@ -26,7 +26,7 @@ export const Route = createFileRoute("/_my-page/_student/my-courses/")({
 		return {
 			meta: [
 				{
-					title: "講義一覧 | LMS-repo",
+					title: "登録講義一覧 | LMS-repo",
 				},
 			],
 		};
